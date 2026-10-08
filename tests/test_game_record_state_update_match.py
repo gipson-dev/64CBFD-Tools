@@ -374,10 +374,11 @@ class GameRecordStateUpdateTests(unittest.TestCase):
             reader=csv.DictReader(stream)
             fields,guards=reader.fieldnames,list(reader)
         assert_guard_history(self,guards[:11148])
+        assert_guard_history(self,guards)
         if len(guards)==11148:
             guards+=screen.owner_guards()
         else:
-            self.assertEqual(guards[11148:],screen.owner_guards())
+            self.assertEqual(guards[11148:11152],screen.owner_guards())
         manifest=self.out/'qualification-guards.csv'
         with manifest.open('w',newline='') as stream:
             writer=csv.DictWriter(stream,fieldnames=fields)
@@ -456,7 +457,7 @@ class GameRecordStateUpdateTests(unittest.TestCase):
         with (self.root/'conker/retail_word_patches.us.csv').open() as stream:
             guards=list(csv.DictReader(stream))
         assert_guard_history(self,guards)
-        self.assertEqual(guards[11148:],screen.owner_guards() if installed else [])
+        self.assertEqual(guards[11148:11152],screen.owner_guards() if installed else [])
         before=guards[:11148]
         proposed=before+screen.owner_guards()
         assert_guard_history(self,proposed)

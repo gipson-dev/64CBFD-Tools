@@ -83,8 +83,9 @@ def assert_guard_history(test, guards):
     from tools.experiments import game_node_effect_callback_candidates as callback
     from tools.experiments import game_record_player_registration_candidates as registration
     from tools.experiments import game_record_state_update_candidates as state_update
+    from tools.experiments import game_record_velocity_candidates as velocity
 
-    test.assertIn(len(guards), (11146, 11148, 11152))
+    test.assertIn(len(guards), (11146, 11148, 11152, 11155))
     digest = hashlib.sha256(json.dumps(guards[:10809], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     test.assertEqual(digest, 'e021c108eef6c84112743955be809d3bdf4ce4e1de0cba474897ed3b0bcabb8a')
     test.assertEqual(guards[10809:10811], resolver.owner_guards())
@@ -123,6 +124,8 @@ def assert_guard_history(test, guards):
     test.assertEqual(guards[11144:11146], callback.owner_guards())
     if len(guards) >= 11148:
         test.assertEqual(guards[11146:11148], registration.owner_guards())
-    if len(guards) == 11152:
-        test.assertEqual(guards[11148:], state_update.owner_guards())
+    if len(guards) >= 11152:
+        test.assertEqual(guards[11148:11152], state_update.owner_guards())
+    if len(guards) == 11155:
+        test.assertEqual(guards[11152:], velocity.owner_guards())
     return hashlib.sha256(json.dumps(guards, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
