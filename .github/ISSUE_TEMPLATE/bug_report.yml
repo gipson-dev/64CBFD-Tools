@@ -1,0 +1,22 @@
+name: Tool Bug
+description: Report a decomp tool failure using synthetic or local inputs.
+body:
+  - type: textarea
+    id: versions
+    attributes:
+      label: Revisions And Environment
+      description: Tools SHA, decomp SHA if applicable, OS, Python, and compiler/binutils versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Command, working directory, expected result, and actual result. Do not upload ROMs or extracted assets.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Diagnostics Or Synthetic Fixture
+      description: Bounded output or a small redistributable fixture.

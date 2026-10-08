@@ -1,0 +1,18 @@
+* text=auto eol=lf
+*.py text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.s text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.txt text eol=lf
+.gitmodules text eol=lf
+mkrawobject text eol=lf
+mksimpleelf text eol=lf
+mktextures text eol=lf
+gzip text eol=lf
+assetmgr/mk* text eol=lf
+# Preserve the imported legacy CRLF blob without incidental source changes.
+first-diff.py -text whitespace=cr-at-eol

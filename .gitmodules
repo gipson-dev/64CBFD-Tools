@@ -1,0 +1,21 @@
+[submodule "n64splat"]
+	path = n64splat
+	url = https://github.com/ethteck/n64splat.git
+[submodule "asm-differ"]
+	path = asm-differ
+	url = https://github.com/simonlindholm/asm-differ
+[submodule "asm-processor"]
+	path = asm-processor
+	url = https://github.com/simonlindholm/asm-processor.git
+[submodule "mips_to_c"]
+	path = mips_to_c
+	url = https://github.com/matt-kempster/m2c.git
+[submodule "CBFD_rabbitizer"]
+	path = CBFD_rabbitizer
+	url = https://github.com/gipson-dev/CBFD_rabbitizer.git
+[submodule "texture2c"]
+	path = texture2c
+	url = https://github.com/Decompollaborate/texture2c.git
+[submodule "ultralib"]
+	path = ultralib
+	url = https://github.com/decompals/ultralib.git

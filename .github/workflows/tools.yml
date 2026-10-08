@@ -1,0 +1,31 @@
+name: Tool Checks
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rom-free:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tools
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install MIPS binutils
+        run: sudo apt-get update && sudo apt-get install -y binutils-mips-linux-gnu
+      - name: Check repository setup
+        run: python3 -m unittest discover -s tests -p test_repository_setup.py -v
+      - name: Check MIPS object and vertex wrappers
+        run: python3 check_project_tools.py
+      - name: Check byte matcher and guarded padding
+        run: |
+          python3 -m unittest discover -s tests -p test_match_progress.py -v
+          python3 -m unittest discover -s tests -p test_pad_c_object_word_patches.py -v
+          python3 -m unittest discover -s tests -p test_pad_generated_pc16.py -v
