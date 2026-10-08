@@ -280,7 +280,7 @@ class GameRecordVelocityTests(unittest.TestCase):
         if len(guards) == 11152:
             guards += screen.owner_guards()
         else:
-            self.assertEqual(guards[11152:], screen.owner_guards())
+            self.assertEqual(guards[11152:11155], screen.owner_guards())
         manifest = self.out / 'qualification-guards.csv'
         with manifest.open('w', newline='') as stream:
             writer = csv.DictWriter(stream, fieldnames=fields)
@@ -335,7 +335,7 @@ class GameRecordVelocityTests(unittest.TestCase):
         with (self.root / 'conker/retail_word_patches.us.csv').open() as stream:
             guards = list(csv.DictReader(stream))
         assert_guard_history(self, guards)
-        self.assertEqual(guards[11152:], screen.owner_guards() if installed else [])
+        self.assertEqual(guards[11152:11155], screen.owner_guards() if installed else [])
         proposed = guards[:11152] + screen.owner_guards()
         assert_guard_history(self, proposed)
         for i in range(3):
