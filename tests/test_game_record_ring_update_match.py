@@ -33,9 +33,14 @@ INSERT = INSERT.replace('typedef struct {\n    RingPosition151D792C position;\n 
 
 def source_shapes(root):
     source = (root / SOURCE).read_text()
-    baseline = source.replace(screen.SELECTED, screen.ORIGINAL).replace(INSERT, '')
+    baseline = source.replace(screen.SELECTED, screen.ORIGINAL)
     assert baseline.count(screen.ORIGINAL) == 1
-    selected = baseline.replace('#include <ultra64.h>\n\n', '#include <ultra64.h>\n\n' + INSERT, 1).replace(screen.ORIGINAL, screen.SELECTED)
+    if INSERT in baseline:
+        selected = baseline.replace(screen.ORIGINAL, screen.SELECTED)
+        # Other converted callers still need the shared clock and integrator declarations.
+        baseline = baseline.replace(INSERT, 'extern f32 D_800BE9A4;\nvoid func_151D8718(f32 *, f32 *, f32);\n\n')
+    else:
+        selected = baseline.replace('#include <ultra64.h>\n\n', '#include <ultra64.h>\n\n' + INSERT, 1).replace(screen.ORIGINAL, screen.SELECTED)
     return baseline, selected
 
 
@@ -387,9 +392,13 @@ class GameRecordRingUpdateTests(unittest.TestCase):
         self.assertEqual({o - target['value']: r for o, r in rel.items() if target['value'] <= o < target['value'] + 268}, isolated_rel)
         with (self.root / 'conker/retail_word_patches.us.csv').open() as stream:
             guards = list(csv.DictReader(stream))
-        proposed = guards[:11155] + screen.owner_guards()
+        prefix, suffix = guards[:11155], guards[11168:]
+        target_guards = screen.owner_guards()
+        proposed = prefix + target_guards + suffix
         assert_guard_history(self, proposed)
-        for bad in (proposed[:-1], proposed + [dict(proposed[-1])], proposed[:11155] + list(reversed(screen.owner_guards()))):
+        for bad in (prefix + target_guards[:-1] + suffix,
+                    prefix + target_guards + [dict(target_guards[-1])] + suffix,
+                    prefix + list(reversed(target_guards)) + suffix):
             with self.assertRaises(AssertionError):
                 assert_guard_history(self, bad)
         manifest = self.out / 'proposed.csv'
@@ -475,7 +484,7 @@ class GameRecordRingUpdateTests(unittest.TestCase):
         with (self.root / 'conker/retail_word_patches.us.csv').open() as stream:
             guards = list(csv.DictReader(stream))
         assert_guard_history(self, guards)
-        self.assertEqual(guards[11155:], screen.owner_guards() if installed else [])
+        self.assertEqual(guards[11155:11168], screen.owner_guards() if installed else [])
         found = [struct.unpack_from('>I', data, TABLE + 52 - address)[0] for address, data in
             sections(self.root / 'conker/build/conker.us.elf').values() if address <= TABLE + 52 < address + len(data)]
         self.assertEqual(found, [screen.ENTRY])

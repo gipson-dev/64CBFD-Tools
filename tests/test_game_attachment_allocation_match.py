@@ -452,7 +452,7 @@ class GameAttachmentAllocationTests(unittest.TestCase):
         with (self.root / 'conker/retail_word_patches.us.csv').open() as stream:
             guards = list(csv.DictReader(stream))
         assert_guard_history(self, guards)
-        self.assertIn(len(guards), (11155, 11168))
+        self.assertIn(len(guards), (11155, 11168, 11205))
         self.receipt('installed', dict(complete_linked_target_and_caller_exact=True, guards_added=0,
             complete_guard_history_checked=True, guard_rows=len(guards), constructor_not_restored_by_this_conversion=True))
 
