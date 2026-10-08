@@ -372,6 +372,10 @@ for(v=0;v<65536;v++)if(!seen_results[v]||!seen_coordinates[v])return 4;
         source = (self.root / 'conker/src/game/generated_5D2C0.c').read_text()
         if screen.SELECTED in source:
             source = source.replace(screen.SELECTED,screen.STUB).replace(ADDED_DECLARATIONS+'\n','',1)
+        if 's32 func_15033AD8(u8 *node, u8 *actor)' in source:
+            self.assertEqual(source.count(screen.ALLOCATOR),0)
+            source = source.replace('#include <ultra64.h>\n',
+                '#include <ultra64.h>\n'+screen.ALLOCATOR+'\n',1)
         self.assertEqual(source.count(screen.STUB),1)
         selected = source.replace(screen.STUB,screen.SELECTED).replace('#include <ultra64.h>\n',
             '#include <ultra64.h>\n'+ADDED_DECLARATIONS+'\n',1)
