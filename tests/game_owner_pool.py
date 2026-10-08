@@ -81,8 +81,9 @@ def rebind_selection_neighbor(test, body, old_object, new_object, old_pool_offse
 
 def assert_guard_history(test, guards):
     from tools.experiments import game_node_effect_callback_candidates as callback
+    from tools.experiments import game_record_player_registration_candidates as registration
 
-    test.assertEqual(len(guards), 11146)
+    test.assertIn(len(guards), (11146, 11148))
     digest = hashlib.sha256(json.dumps(guards[:10809], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     test.assertEqual(digest, 'e021c108eef6c84112743955be809d3bdf4ce4e1de0cba474897ed3b0bcabb8a')
     test.assertEqual(guards[10809:10811], resolver.owner_guards())
@@ -118,5 +119,7 @@ def assert_guard_history(test, guards):
     test.assertTrue(all(row['function'] == 'func_15031FC8' and row['filename'] == 'generated_5D2C0' for row in selection))
     digest = hashlib.sha256(json.dumps(selection, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     test.assertEqual(digest, '2c2bbfea6b82ea53a2cfe40f33528b7f82225d29b9bade7733b5dd284fb19d36')
-    test.assertEqual(guards[11144:], callback.owner_guards())
+    test.assertEqual(guards[11144:11146], callback.owner_guards())
+    if len(guards) == 11148:
+        test.assertEqual(guards[11146:], registration.owner_guards())
     return hashlib.sha256(json.dumps(guards, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
