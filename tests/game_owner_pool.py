@@ -86,8 +86,9 @@ def assert_guard_history(test, guards):
     from tools.experiments import game_record_velocity_candidates as velocity
     from tools.experiments import game_record_ring_update_candidates as ring_update
     from tools.experiments import game_record_ring_sampling_candidates as ring_sampling
+    from tools.experiments import game_record_ring_shaping_candidates as ring_shaping
 
-    test.assertIn(len(guards), (11146, 11148, 11152, 11155, 11168, 11205))
+    test.assertIn(len(guards), (11146, 11148, 11152, 11155, 11168, 11205, 11275))
     digest = hashlib.sha256(json.dumps(guards[:10809], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     test.assertEqual(digest, 'e021c108eef6c84112743955be809d3bdf4ce4e1de0cba474897ed3b0bcabb8a')
     test.assertEqual(guards[10809:10811], resolver.owner_guards())
@@ -132,6 +133,8 @@ def assert_guard_history(test, guards):
         test.assertEqual(guards[11152:11155], velocity.owner_guards())
     if len(guards) >= 11168:
         test.assertEqual(guards[11155:11168], ring_update.owner_guards())
-    if len(guards) == 11205:
-        test.assertEqual(guards[11168:], ring_sampling.owner_guards())
+    if len(guards) >= 11205:
+        test.assertEqual(guards[11168:11205], ring_sampling.owner_guards())
+    if len(guards) == 11275:
+        test.assertEqual(guards[11205:], ring_shaping.owner_guards())
     return hashlib.sha256(json.dumps(guards, sort_keys=True, separators=(',', ':')).encode()).hexdigest()

@@ -402,9 +402,10 @@ class GameRecordRingSamplingTests(unittest.TestCase):
         self.assertEqual({o - target['value']: r for o, r in rel.items() if target['value'] <= o < target['value'] + 664}, isolated_rel)
         with (self.root / 'conker/retail_word_patches.us.csv').open() as stream:
             guards = list(csv.DictReader(stream))
-        proposed = guards[:11168] + screen.owner_guards()
+        proposed = guards[:11168] + screen.owner_guards() + guards[11205:]
         assert_guard_history(self, proposed)
-        for bad in (proposed[:-1], proposed + [dict(proposed[-1])], proposed[:11168] + list(reversed(screen.owner_guards()))):
+        for bad in (proposed[:-1], proposed + [dict(proposed[-1])],
+                proposed[:11168] + list(reversed(screen.owner_guards())) + guards[11205:]):
             with self.assertRaises(AssertionError):
                 assert_guard_history(self, bad)
         manifest = self.out / 'proposed.csv'
@@ -448,14 +449,14 @@ class GameRecordRingSamplingTests(unittest.TestCase):
         with (self.root / 'conker/retail_word_patches.us.csv').open() as stream:
             guards = list(csv.DictReader(stream))
         assert_guard_history(self, guards)
-        self.assertIn(len(guards), (11168, 11205))
+        self.assertIn(len(guards), (11168, 11205, 11275))
         source = (self.root / SOURCE).read_text()
         installed = screen.SELECTED in source
         self.assertIn(source, source_shapes(self.root))
         if not installed:
             self.assertEqual(hashlib.sha256((self.root / SOURCE).read_bytes()).hexdigest(),
                 '7a21550c195ea94906d3c19c5521cb503786be0af2282916afa97fdf64f76245')
-        self.assertEqual(guards[11168:], screen.owner_guards() if installed else [])
+        self.assertEqual(guards[11168:11205], screen.owner_guards() if installed else [])
         found = [struct.unpack_from('>I', data, TABLE + 64 - address)[0] for address, data in
             sections(self.root / 'conker/build/conker.us.elf').values() if address <= TABLE + 64 < address + len(data)]
         self.assertEqual(found, [screen.ENTRY])
