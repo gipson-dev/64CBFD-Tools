@@ -236,7 +236,6 @@ static Node nodes[8],saved[8],expected[8],header,saved_header,expected_header;
 static Block block __attribute__((aligned(256))),saved_block,expected_block;
 #define D_800C3EE0 header.pointer
 static u32 cases;
-static const u32 keys[13]={0,1,127,128,255,256,257,0x10080,0x100FF,0x7FFFFFFF,0x80000000,0xFFFFFF80,0xFFFFFFFF};
 static void copy(u8 *a,const u8 *b,u32 n){u32 i;for(i=0;i<n;i++)a[i]=b[i];}
 static int equal(const u8 *a,const u8 *b,u32 n){u32 i;for(i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
 static void fill(u8 *a,u32 n){u32 i;for(i=0;i<n;i++)a[i]=0xA5;}
@@ -266,6 +265,9 @@ static int general(u32 a,u32 b){
 '''
         for lower in range(0,256,32):
             extra=r'''
+u32 mask,order,i,j,k;
+static const u32 keys[13]={0,1,127,128,255,256,257,0x10080,0x100FF,0x7FFFFFFF,0x80000000,0xFFFFFF80,0xFFFFFFFF};
+static const u32 permutation[8]={3,0,7,2,5,1,6,4};
 for(a=0;a<13;a++)for(b=0;b<13;b++)for(g=0;g<256;g++)if(single(keys[a],keys[b],g))return 2;
 for(a=0;a<256;a++)for(mask=0;mask<256;mask++)for(order=0;order<2;order++){
     setup();
@@ -285,8 +287,7 @@ if(block.b[0x100]!=0x80)return 8;
 if(general(0x80,0xC0))return 9;
 ''' if lower==0 else ''
             wanted=2097152+(174341 if lower==0 else 0)
-            self.run_host('''u32 a,b,g,mask,order,i,j,k;
-static const u32 permutation[8]={3,0,7,2,5,1,6,4};
+            self.run_host('''u32 a,b,g;
 setup();D_800C3EE0=nodes[0].b;*(u8 **)(nodes[0].b+0x54)=0;
 copy(expected[0].b,nodes[0].b,sizeof(Node));copy(expected_header.b,header.b,sizeof(Node));
 for(a=%d;a<%d;a++)for(b=0;b<256;b++)for(g=0;g<256;g++)if(single(a,b,g))return 1;
