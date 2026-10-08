@@ -470,11 +470,11 @@ if(cases!=2163968)return 22;
             reader=csv.DictReader(stream)
             fields=reader.fieldnames
             guards=list(reader)
-        assert_guard_history(self,guards[:11146])
+        assert_guard_history(self,guards)
         if len(guards)==11146:
             guards+=screen.owner_guards()
         else:
-            self.assertEqual(guards[11146:],screen.owner_guards())
+            self.assertEqual(guards[11146:11148],screen.owner_guards())
         manifest=self.out/'qualification-guards.csv'
         with manifest.open('w',newline='') as stream:
             writer=csv.DictWriter(stream,fieldnames=fields)
@@ -550,8 +550,8 @@ if(cases!=2163968)return 22;
         self.assertEqual(source.count(screen.SELECTED if installed else screen.ORIGINAL),1)
         with (self.root/'conker/retail_word_patches.us.csv').open() as stream:
             guards=list(csv.DictReader(stream))
-        assert_guard_history(self,guards[:11146])
-        self.assertEqual(guards[11146:],screen.owner_guards() if installed else [])
+        assert_guard_history(self,guards)
+        self.assertEqual(guards[11146:11148],screen.owner_guards() if installed else [])
         self.receipt('connected',dict(cases=cases,actual_complete_predicate_words=34,
             complete_constructor_words=111,linked_predicate_and_constructor_retail_exact=True,
             later_checks_allocator_memcpy_registration_are_controlled_boundaries=True,
