@@ -16,13 +16,16 @@ cd "64CBFD Tools"
 
 The decomp pins this repository at `64CBFD/tools`. Its existing Makefiles,
 Python module names, Splat extensions, and documentation commands keep those
-paths. For an existing decomp checkout:
+paths. To migrate an existing decomp checkout after the split:
 
 ```sh
 git pull --ff-only
-git submodule sync --recursive
-git submodule update --init --recursive
+bash scripts/bootstrap-tools.sh
 ```
+
+The consumer bootstrap preserves legacy nested modules and refuses conflicting
+local files. After migration, ordinary `git submodule sync --recursive` and
+`git submodule update --init --recursive` use the recorded tools revision.
 
 ## Tools
 
