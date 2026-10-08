@@ -29,6 +29,8 @@ OWNER, RECORDS, PAYLOAD, ALTERNATE = 0x20000, 0x28000, 0x21000, 0x30000
 VERTICES, OUTPUT = 0x60000, 0x70000
 BACKEND, TEXTURE, GEOMETRY, COMBINE, MODE, COPY = (screen.SYMBOLS[n] for n in
     ('func_151D5D60', 'func_15142E24', 'func_15142B7C', 'func_1513F4E4', 'func_15142FBC', 'memcpy'))
+TARGET_NAMES = {screen.SYMBOLS[name]: name for name in
+    ('func_151D5D60', 'func_15142E24', 'func_15142B7C', 'func_1513F4E4', 'func_15142FBC', 'memcpy')}
 DISPATCHER, TRANSFORM, RELEASE, TABLE, ALLOCATE = 0x15147C4C, 0x151462C8, 0x1516972C, 0x8008A2A4, 0x10003C40
 SOURCE = 'conker/src/game/generated_204660.c'
 
@@ -51,7 +53,8 @@ def rounded(value):
     return floating(bits(value))
 
 
-def fixture(state=3, current=3, goal=0, count=4, flags=2, opacity=19, view=0, pattern=0):
+def fixture(state=3, current=3, goal=0, count=4, flags=2, opacity=19, view=0, pattern=0, symbols=None):
+    symbols = screen.SYMBOLS if symbols is None else symbols
     memory = {STACK + i: 0xA5 for i in range(-0x600, 0x140)}
     for base, length in ((OWNER, 0x200), (PAYLOAD, 0x100), (VERTICES, 17000), (OUTPUT, 7000)):
         memory.update({base + i: (i * 17 + 13) & 255 for i in range(-16, length)})
@@ -71,15 +74,18 @@ def fixture(state=3, current=3, goal=0, count=4, flags=2, opacity=19, view=0, pa
         (0x94, RECORDS, 4), (0x98, PAYLOAD, 4)):
         put(memory, OWNER + offset, value, width)
     put(memory, PAYLOAD + 0x18, bits(12500.5))
-    put(memory, screen.SYMBOLS['D_800D2C9C'], 0xAA551234)
+    put(memory, symbols['D_800D2C9C'], 0xAA551234)
     for index, value in enumerate((0xFFFF0000, 0xABCDEF01, 0x00112233, 0x44008800)):
-        put(memory, screen.SYMBOLS['D_800A4AC8'] + index * 4, value)
-    put(memory, screen.SYMBOLS['D_800DD1E8'] + narrow(view, 16) * 4, bits(0.25))
-    put(memory, screen.SYMBOLS['D_800DD1D8'] + narrow(view, 16) * 4, bits(-0.75))
+        put(memory, symbols['D_800A4AC8'] + index * 4, value)
+        put(memory, symbols['D_800DD1E8'] + index * 4, bits(0.25))
+        put(memory, symbols['D_800DD1D8'] + index * 4, bits(-0.75))
+    put(memory, symbols['D_800DD1E8'] + narrow(view, 16) * 4, bits(0.25))
+    put(memory, symbols['D_800DD1D8'] + narrow(view, 16) * 4, bits(-0.75))
     return memory
 
 
-def mutations(target, mode, copies):
+def mutations(target, mode, copies, symbols=None):
+    symbols = screen.SYMBOLS if symbols is None else symbols
     if target == MODE:
         return {1: [(OWNER + 0x94, ALTERNATE, 4)], 2: [(OWNER + 0x98, ALTERNATE, 4)],
             3: [(OWNER + 0x2E, 1, 1)], 4: [(OWNER + 0x1E, 10, 2)],
@@ -87,14 +93,16 @@ def mutations(target, mode, copies):
     if target == COPY and copies == 0:
         return {7: [(OWNER + 0x94, ALTERNATE, 4)], 8: [(OWNER + 0x2D, 1, 1)],
             9: [(OWNER + 0x1E, 0, 2), (OWNER + 0x1C, 0, 2)],
-            10: [(screen.SYMBOLS['D_800DD1E8'], bits(100.), 4)],
+            10: [(symbols['D_800DD1E8'], bits(100.), 4)],
             11: [(RECORDS + 28 + 0x18, bits(15000.), 4)]}.get(mode, [])
     return []
 
 
 class RibbonReference:
-    def __init__(self, memory, view=0, success=True, mode=0, start=VERTICES):
+    def __init__(self, memory, view=0, success=True, mode=0, start=VERTICES, symbols=None, output=OUTPUT):
         self.memory, self.view, self.success, self.mode, self.start = dict(memory), narrow(view, 16), success, mode, start
+        self.symbols = screen.SYMBOLS if symbols is None else symbols
+        self.output = output
         self.calls, self.events, self.copies, self.segments = [], [], 0, 0
 
     def get(self, address, width=4):
@@ -111,9 +119,9 @@ class RibbonReference:
         self.events.append(('W', address, width, value & ((1 << (width * 8)) - 1)))
 
     def call(self, target, args):
-        self.calls.append((target, args))
+        self.calls.append((self.symbols[TARGET_NAMES[target]], args))
         if target != COPY:
-            for address, value, width in mutations(target, self.mode, self.copies):
+            for address, value, width in mutations(target, self.mode, self.copies, self.symbols):
                 self.store(address, value, width)
 
     def pair(self, position, phase, alpha):
@@ -134,7 +142,7 @@ class RibbonReference:
         return self.get(OWNER + 0x25, 1) - 1 if index < 0 else index
 
     def run(self):
-        self.result = OUTPUT
+        self.result = self.output
         if narrow(self.get(OWNER + 0x2C, 1), 8) < 2:
             return self
         count = self.get(OWNER + 0x25, 1)
@@ -142,13 +150,13 @@ class RibbonReference:
         self.call(BACKEND, (OWNER + 0x84, self.view & 0xFFFFFFFF, count * 32 + 160, 'cursor', 0))
         if not self.success:
             return self
-        self.call(TEXTURE, (OUTPUT, screen.SYMBOLS['D_80090CD4'], 0, 0, 0, 0, 31, 0, 0, 'sync', 62))
-        self.call(GEOMETRY, (OUTPUT + 8, 0x200005, 0x1F0600))
-        self.call(COMBINE, (OUTPUT + 16, 0x4C, 'sync'))
-        blend = self.get(screen.SYMBOLS['D_800D2C9C']) | 0x80000 | 0x2CA0
-        other = self.get(screen.SYMBOLS['D_800A4AC8'] + 12) | self.get(screen.SYMBOLS['D_800A4AC8'] + 8)
-        self.call(MODE, (OUTPUT + 24, blend, other, 'sync'))
-        self.result = OUTPUT + 32
+        self.call(TEXTURE, (self.output, self.symbols['D_80090CD4'], 0, 0, 0, 0, 31, 0, 0, 'sync', 62))
+        self.call(GEOMETRY, (self.output + 8, 0x200005, 0x1F0600))
+        self.call(COMBINE, (self.output + 16, 0x4C, 'sync'))
+        blend = self.get(self.symbols['D_800D2C9C']) | 0x80000 | 0x2CA0
+        other = self.get(self.symbols['D_800A4AC8'] + 12) | self.get(self.symbols['D_800A4AC8'] + 8)
+        self.call(MODE, (self.output + 24, blend, other, 'sync'))
+        self.result = self.output + 32
         if self.get(OWNER + 0x1E, 2) & 2:
             index = self.previous(narrow(self.get(OWNER + 0x2E, 1), 8) - 1)
             previous = [self.number(OWNER + 0x10 + i * 4) for i in range(3)]
@@ -161,8 +169,8 @@ class RibbonReference:
             previous_phase = self.number(records + prior * 28 + 0x18)
         point = records + index * 28
         current = [self.number(point + i * 4) for i in range(3)]
-        self.x = rounded(self.number(screen.SYMBOLS['D_800DD1E8'] + self.view * 4) * 5.5)
-        self.z = rounded(self.number(screen.SYMBOLS['D_800DD1D8'] + self.view * 4) * 5.5)
+        self.x = rounded(self.number(self.symbols['D_800DD1E8'] + self.view * 4) * 5.5)
+        self.z = rounded(self.number(self.symbols['D_800DD1D8'] + self.view * 4) * 5.5)
         self.factor = ((narrow(self.get(OWNER + 0x1C, 2), 16) * 12) & 255) if self.get(OWNER + 0x1E, 2) & 8 else 255
         alpha, phase = self.get(point + 0x14, 1), self.number(point + 0x18)
         self.cursor = self.start
@@ -177,7 +185,7 @@ class RibbonReference:
                 snapshot = [self.get(self.cursor - 32 + i, 1) for i in range(32)]
                 for i, value in enumerate(snapshot):
                     self.store(self.cursor + i, value, 1)
-                for address, value, width in mutations(COPY, self.mode, self.copies):
+                for address, value, width in mutations(COPY, self.mode, self.copies, self.symbols):
                     self.store(address, value, width)
                 self.copies += 1
                 self.store(self.cursor - 24, narrow(self.get(self.cursor - 24, 2), 16) - 0x8000, 2)
@@ -200,10 +208,12 @@ class RibbonReference:
 
 class RibbonOracle(AreaOracle):
     def __init__(self, words, memory, view=0, success=True, mode=0, phase=0, start=VERTICES,
-                 connected=None, entry=screen.ENTRY, args=None):
+                 connected=None, entry=screen.ENTRY, args=None, symbols=None):
         super().__init__(words, memory, args or (OWNER, OUTPUT, view), phase=phase, entry=entry, connected=connected)
         self.view, self.success, self.mode, self.start = narrow(view, 16), success, mode, start
         self.copies, self.forwarded, self.setup = 0, [], []
+        self.symbols = screen.SYMBOLS if symbols is None else symbols
+        self.targets = {self.symbols[name]: target for target, name in TARGET_NAMES.items()}
 
     def execute(self, word):
         if word >> 26 == 32:
@@ -216,6 +226,7 @@ class RibbonOracle(AreaOracle):
         self.r[0] = 0
 
     def record_call(self, target):
+        actual_target, target = target, self.targets.get(target, target)
         if target == screen.ENTRY:
             self.forwarded.append(self.arguments(3)); return
         if target == TRANSFORM:
@@ -235,9 +246,10 @@ class RibbonOracle(AreaOracle):
             assert self.get(sync, 1) == (1 if target == TEXTURE else 0)
             args[index] = 'sync'
             self.sync_slot = sync
-        self.calls.append((target, tuple(args)))
+        self.calls.append((actual_target, tuple(args)))
 
     def hook(self, target):
+        target = self.targets.get(target, target)
         result = self.r[4]
         if target == BACKEND:
             self.put(self.cursor_slot, self.start if self.success else 0, 4)
@@ -254,7 +266,7 @@ class RibbonOracle(AreaOracle):
             snapshot = [self.get(source + i, 1) for i in range(length)]
             for i, value in enumerate(snapshot):
                 self.put(destination + i, value, 1)
-        for address, value, width in mutations(target, self.mode, self.copies):
+        for address, value, width in mutations(target, self.mode, self.copies, self.symbols):
             self.put(address, value, width)
         self.copies += target == COPY
         for register in (1, 2, 3, *range(4, 16), 24, 25):
@@ -265,12 +277,16 @@ class RibbonOracle(AreaOracle):
 
 class GameRecordRingRendererRecoveryTests(unittest.TestCase):
     run_host = native.GameRandomCurveRecordTests.run_host
+    FORM, body, expected_shape = 'selected', screen.SELECTED, (405, 0xE0, 319)
 
     @classmethod
     def setUpClass(cls):
         cls.root = Path(__file__).resolve().parents[2]
-        cls.out = cls.root / 'conker/build/game-record-ring-renderer-test'; cls.out.mkdir(exist_ok=True)
-        cls.record, cls.words = screen.compile_candidate(cls.root, cls.out, 'selected')
+        cls.out = cls.root / 'conker/build/game-record-ring-renderer-test'
+        if cls.FORM != 'selected':
+            cls.out /= 'fitted'
+        cls.out.mkdir(parents=True, exist_ok=True)
+        cls.record, cls.words = screen.compile_candidate(cls.root, cls.out, 'selected', cls.body)
         cls.rom = (cls.root / 'conker/conker.us.bin').read_bytes()
         cls.retail = list(struct.unpack_from('>%dI' % screen.WORDS, cls.rom, screen.ROM))
         cls.directory = tempfile.TemporaryDirectory(); cls.addClassCleanup(cls.directory.cleanup)
@@ -293,11 +309,11 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
         return reference, models
 
     def test_complete_candidate_uninstalled_and_guard_history_unchanged(self):
-        self.assertEqual((self.record['body_words'], self.record['frame'], self.record['differences']), (405, 0xE0, 319))
+        self.assertEqual((self.record['body_words'], self.record['frame'], self.record['differences']), self.expected_shape)
         self.assertEqual((self.record['diagnostics'], self.record['saved_FP'], self.record['pool_bytes']), ('', [22, 20], 0))
         source = (self.root / SOURCE).read_text()
         self.assertEqual(source.count(screen.ORIGINAL), 1)
-        self.assertNotIn(screen.SELECTED, source)
+        self.assertNotIn(self.body, source)
         production = load_elf_functions(str(self.root / 'conker/build/conker.us.elf'), 'mips-linux-gnu-objdump')[0]
         self.assertEqual(production[screen.FUNCTION], self.retail)
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
@@ -305,8 +321,9 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
         self.assertEqual(len(rows), 11275)
         self.assertFalse(any(row['function'] == screen.FUNCTION for row in rows))
         digest = assert_guard_history(self, rows)
-        self.receipt('status', dict(installed=False, candidate_words=405, retail_words=405,
-            candidate_frame=224, retail_frame=208, raw_differences=319, guard_rows=len(rows), guard_sha256=digest))
+        self.receipt('status', dict(installed=False, candidate_words=self.record['body_words'], retail_words=405,
+            candidate_frame=self.record['frame'], retail_frame=208, raw_differences=self.record['differences'],
+            guard_rows=len(rows), guard_sha256=digest, form=self.FORM))
 
     def test_guest_full_footprints_calls_vertices_phase_wrap_and_lifetimes(self):
         coverage, count = [set(), set()], 0
@@ -371,25 +388,29 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
 
     def test_full_source_profile_controls_and_effective_negative_witnesses(self):
         records = []
-        for name, body in screen.candidates():
+        forms = list(screen.candidates() if self.FORM == 'selected' else screen.fitting_candidates())
+        self.assertEqual(len(forms), len(dict(forms)), 'source form names must be unique')
+        for name, body in forms:
             record, words = screen.compile_candidate(self.root, self.out, 'control-' + name, body)
             records.append(record)
             self.compare(fixture(flags=10), mode=7, words=words)
         for profile in screen.PROFILES:
-            record, words = screen.compile_candidate(self.root, self.out, 'profile-' + profile, profile=profile)
+            record, words = screen.compile_candidate(self.root, self.out, 'profile-' + profile, self.body, profile)
             records.append(record)
             self.compare(fixture(flags=0, pattern=1), words=words, write_order=profile == 'o2g3')
         negatives = {
-            'unsigned-state': screen.SELECTED.replace('*(s8 *)(owner + 0x2C)', 'owner[0x2C]'),
-            'lost-alpha-scale': screen.SELECTED.replace(' >> 8', ' >> 7'),
-            'wrong-width': screen.SELECTED.replace('5.5f', '5.0f'),
-            'lost-join': screen.SELECTED.replace('currentPhase < previousPhase', 'currentPhase > previousPhase'),
-            'wrong-old-pair': screen.SELECTED.replace('cursor[-2].v.tc[0]', 'cursor[0].v.tc[0]'),
-            'live-buffer': screen.SELECTED.replace('point = records + index;', 'point = *(RibbonRecord151D80C4 **)(owner + 0x94) + index;'),
-            'wrong-request': screen.SELECTED.replace('* 32 + 160', '* 32 + 128'),
-            'unsigned-current': screen.SELECTED.replace('*(s8 *)(owner + 0x2E)', 'owner[0x2E]'),
+            'unsigned-state': self.body.replace('*(s8 *)(owner + 0x2C)', 'owner[0x2C]'),
+            'lost-alpha-scale': self.body.replace(' >> 8', ' >> 7'),
+            'wrong-width': self.body.replace('5.5f', '5.0f'),
+            'lost-join': self.body.replace('currentPhase < previousPhase', 'currentPhase > previousPhase'),
+            'wrong-old-pair': self.body.replace('cursor[-2].v.tc[0]', 'cursor[0].v.tc[0]'),
+            'live-buffer': self.body.replace('point = records + index;', 'point = *(RibbonRecord151D80C4 **)(owner + 0x94) + index;').replace(
+                'point = records + (index * 8 - index) * 4;', 'point = *(u8 **)(owner + 0x94) + (index * 8 - index) * 4;'),
+            'wrong-request': self.body.replace('* 32 + 160', '* 32 + 128'),
+            'unsigned-current': self.body.replace('*(s8 *)(owner + 0x2E)', 'owner[0x2E]'),
         }
         for name, body in negatives.items():
+            self.assertNotEqual(body, self.body, name)
             _, words = screen.compile_candidate(self.root, self.out, 'negative-' + name, body)
             memory = fixture(state=128 if name == 'unsigned-state' else 3,
                 current=128 if name == 'unsigned-current' else 3, goal=3 if name == 'unsigned-current' else 0, flags=10)
@@ -397,7 +418,7 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
             model = RibbonOracle(words, memory, mode=1).run()
             self.assertTrue(external(model.memory) != external(reference.memory) or model.calls != reference.calls
                 or model.r[2] != reference.result, name)
-        self.receipt('controls', dict(full_semantic_forms=len(list(screen.candidates())), profiles=4,
+        self.receipt('controls', dict(full_semantic_forms=len(forms), profiles=4,
             measurements=records, effective_negatives=list(negatives)))
 
     def test_complete_original_dispatcher_render_table_and_allocator_connection(self):
@@ -450,7 +471,7 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
     def test_copied_owner_neighbors_pools_and_relocations(self):
         baseline = (self.root / SOURCE).read_text()
         marker = '/* Non-matching placeholders for the text-only asm slice asm/204660.s. */'
-        selected = baseline.replace(marker, screen.DECLARATIONS + '\n' + marker).replace(screen.ORIGINAL, screen.SELECTED)
+        selected = baseline.replace(marker, screen.DECLARATIONS + '\n' + marker).replace(screen.ORIGINAL, self.body)
         before, warnings_before = compile_owner(self.root, self.out, baseline, 'owner-baseline')
         after, warnings_after = compile_owner(self.root, self.out, selected, 'owner-selected')
         self.assertEqual(warnings_before, warnings_after)
@@ -497,7 +518,7 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
             frame_and_register_schedule_still_open=True))
 
     def test_native32_independent_pairs_commands_canaries_and_callback_arguments(self):
-        self.fixture = NATIVE_TYPES + screen.DECLARATIONS + NATIVE_FIXTURE + '\n' + screen.SELECTED + '\n'
+        self.fixture = NATIVE_TYPES + screen.DECLARATIONS + NATIVE_FIXTURE + '\n' + self.body + '\n'
         self.run_host(r'''
 int i,j,n=0;
 for(i=0;i<256;i++) {if(check(i,3,0,4,10,19,0,0,0,1))return 1;n++;}
@@ -531,6 +552,91 @@ if(n!=1086)return 8;
         self.receipt('baseline', dict(all_6058_bodies_addresses_extents_unchanged=True,
             protected_sections_unchanged=True, source_manifest_layout_progress_unchanged=True, hashes=expected,
             complete_ELF_sha256=elf_hash))
+
+
+class GameRecordRingRendererFittingTests(GameRecordRingRendererRecoveryTests):
+    FORM, body, expected_shape = screen.FITTED_NAME, screen.FITTED, (405, 0xD0, 198)
+
+    def test_fitted_private_layout_and_complete_register_saves(self):
+        self.assertEqual(self.words[0x88 // 4], 0x27A7008C)
+        self.assertEqual(self.words[0x90 // 4], 0xAFA800A8)
+        self.assertEqual(self.words[0x9C // 4], 0x27B000A7)
+        addresses = {word & 65535 for word in self.words if word >> 26 == 9 and word >> 21 & 31 == 29
+            and word >> 16 & 31 != 29}
+        self.assertTrue({0x8C, 0xA7, 0xB4, 0xC0} <= addresses)
+        gp_saves = {word >> 16 & 31: word & 65535 for word in self.words[:20]
+            if word >> 26 == 43 and word >> 21 & 31 == 29 and word >> 16 & 31 in (*range(16, 24), 30, 31)}
+        self.assertEqual(gp_saves, {**{r: 0x48 + (r - 16) * 4 for r in range(16, 24)}, 30: 0x68, 31: 0x6C})
+        self.assertEqual(self.words[0x3E4 // 4], 0xC7A600C0)
+        self.assertEqual(self.words[0x56C // 4], self.retail[0x56C // 4])
+        ref, models = self.compare(fixture(flags=10))
+        self.assertTrue(ref.copies)
+        self.assertEqual(models[0].cursor_slot, models[1].cursor_slot)
+        self.assertEqual(models[0].sync_slot, models[1].sync_slot)
+        self.receipt('layout', dict(words=405, frame=208, cursor=140, sync=167, buffer=168,
+            previous_XYZ=180, current_XYZ=192, gp_saves=gp_saves, FP_saved=[20, 22],
+            loop_offset=996, memcpy_offset=1388, raw_differences=198, installed=False))
+
+    def test_independent_original_and_fitted_symbol_rebases(self):
+        asm, obj = self.out / 'original.s', self.out / 'original.o'
+        original = (self.root / 'conker/asm/nonmatchings/generated_204660/func_151D80C4.s').read_text()
+        asm.write_text('.text\n.include "conker/include/asm_processor_prelude.inc"\n.type ' + screen.FUNCTION +
+            ', @function\n' + original + '\n.size ' + screen.FUNCTION + ', . - ' + screen.FUNCTION + '\n')
+        subprocess.run(['mips-linux-gnu-as', '-EB', '-march=vr4300', '-o', str(obj), str(asm)],
+            cwd=self.root, check=True, capture_output=True)
+        _, original_functions, original_rel = parse_object(obj)
+        self.assertEqual(original_functions[screen.FUNCTION]['size'], 1620)
+        _, _, fitted_rel = parse_object(self.out / 'selected.o')
+        self.assertCountEqual([r for rows in original_rel.values() for r in rows],
+            [r for rows in fitted_rel.values() for r in rows])
+        self.assertEqual(sum(map(len, original_rel.values())), 16)
+        executions = 0
+        for variant, entry in enumerate((screen.ENTRY, 0x10008000, 0x80007FFC, 0x8FFF8000)):
+            symbols = dict(screen.SYMBOLS)
+            if variant:
+                globals_ = [name for name in symbols if name.startswith('D_')]
+                for index, name in enumerate(globals_):
+                    symbols[name] = (0x70000000 + (index + 1) * 0x100000 + (0x7FFC, 0x8000, 0xFFF8)[(index + variant) % 3])
+                for index, name in enumerate(TARGET_NAMES.values()):
+                    symbols[name] = (entry & 0xF0000000) + 0x100800 + index * 0x100
+            script = self.out / ('rebase-%d.ld' % variant)
+            script.write_text('SECTIONS { .text 0x%X : SUBALIGN(4) { *(.text) } }\n' % entry)
+            bodies = []
+            for kind, object_ in (('original', obj), ('fitted', self.out / 'selected.o')):
+                elf = self.out / ('rebase-%d-%s.elf' % (variant, kind))
+                subprocess.run(['mips-linux-gnu-ld', '-m', 'elf32btsmip', '-T', str(script), '-e', screen.FUNCTION,
+                    *['--defsym=%s=0x%X' % item for item in symbols.items()], '-o', str(elf), str(object_)],
+                    check=True, capture_output=True)
+                words = list(struct.unpack_from('>405I', screen.sections(elf)['.text'][1]))
+                if not variant:
+                    self.assertEqual(words, self.retail if kind == 'original' else self.words)
+                bodies.append(words)
+            for flags, mode, phase, view in itertools.product((0, 2, 8, 10), (0, 1, 7, 8, 10, 11), (0, 8), (0, 3)):
+                memory = fixture(flags=flags, view=view, symbols=symbols)
+                ref = RibbonReference(memory, view, mode=mode, symbols=symbols).run()
+                for words in bodies:
+                    model = RibbonOracle(words, memory, view, mode=mode, phase=phase, entry=entry, symbols=symbols).run()
+                    self.assertEqual((external(model.memory), model.calls, model.r[2], writes(model)),
+                        (external(ref.memory), ref.calls, ref.result, [e for e in ref.events if e[0] == 'W']))
+                    executions += 1
+        self.receipt('rebases', dict(independent_GNU_links=True, symbol_sets=4, executions=executions,
+            HI16_carry_LO16_sign_and_JAL_regions=True, relocation_uses=16, complete_body_words=405,
+            complete_reference_memory_calls_result_store_order=True, normalization=False))
+
+    def test_guest_input_output_aliases_with_post_segment_reads(self):
+        cases = 0
+        for start, output, flags, phase in itertools.product((VERTICES, RECORDS, RECORDS + 112, OWNER + 0x40),
+                (OUTPUT, RECORDS, PAYLOAD, VERTICES + 64), (2, 10), (0, 8)):
+            memory = fixture(current=1, goal=0, flags=flags, pattern=2)
+            ref = RibbonReference(memory, start=start, output=output).run()
+            for body in (self.words, self.retail):
+                model = RibbonOracle(body, memory, phase=phase, start=start, args=(OWNER, output, 0)).run()
+                self.assertEqual((external(model.memory), model.calls, model.r[2], writes(model)),
+                    (external(ref.memory), ref.calls, ref.result, [e for e in ref.events if e[0] == 'W']))
+            cases += 1
+        self.receipt('aliases', dict(cases=cases, executions=cases * 2, two_SP_phases=True,
+            vertex_record_owner_and_Gfx_record_payload_vertex_aliases=True, final_lookahead_reads=True,
+            arbitrary_invalid_or_nonterminating_domains=False, native_aliases=False))
 
 
 NATIVE_TYPES = r'''typedef unsigned char u8;typedef signed char s8;typedef short s16;

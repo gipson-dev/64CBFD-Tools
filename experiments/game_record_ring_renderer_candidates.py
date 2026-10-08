@@ -230,6 +230,114 @@ def candidates():
             'cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = (s32)currentPhase;')
 
 
+def fitting_candidates():
+    base = dict(candidates())['factored-byte-alpha']
+    yield 'factored-byte-alpha', base
+    for name, old, new in (
+        ('previous-int-alpha', 'u8 previousAlpha;', 's32 previousAlpha;'),
+        ('current-int-alpha', 'u8 currentAlpha;', 's32 currentAlpha;'),
+        ('unsigned-factor', 's32 factor;', 'u32 factor;'),
+        ('byte-factor', 's32 factor;', 'u8 factor;'),
+        ('half-factor', 's32 factor;', 'u16 factor;'),
+        ('cursor-first', '    Vtx *cursor;\n', ''),
+        ('sync-first', '    u8 sync;\n', ''),
+        ('register-output', 'Gfx *output,', 'register Gfx *output,'),
+        ('register-index', 's32 index;', 'register s32 index;'),
+    ):
+        body = base.replace(old, new)
+        if name == 'cursor-first':
+            body = body.replace('    RibbonPosition151D80C4 currentPosition;',
+                '    Vtx *cursor;\n    RibbonPosition151D80C4 currentPosition;')
+        if name == 'sync-first':
+            body = body.replace('    RibbonPosition151D80C4 currentPosition;',
+                '    u8 sync;\n    RibbonPosition151D80C4 currentPosition;')
+        yield name, body
+    yield 'reverse-factor', base.replace('    if (*(u16 *)(owner + 0x1E) & 8) {',
+        '    if (!(*(u16 *)(owner + 0x1E) & 8)) {\n        factor = 255;\n    } else {').replace(
+        '    } else {\n        factor = 255;\n    }', '    }')
+    yield 'conditional-factor', base.replace('''    if (*(u16 *)(owner + 0x1E) & 8) {
+        factor = (*(s16 *)(owner + 0x1C) * 12) & 255;
+    } else {
+        factor = 255;
+    }''', '''    factor = (*(u16 *)(owner + 0x1E) & 8) ?
+        (*(s16 *)(owner + 0x1C) * 12) & 255 : 255;''')
+    yield 'seed-factor', base.replace('    s32 factor;', '    s32 factor;\n    s32 seedFactor;').replace(
+        '        factor =', '        seedFactor =').replace(
+        '    previousAlpha = (previousAlpha * factor)', '    factor = seedFactor;\n    previousAlpha = (previousAlpha * seedFactor)')
+    yield 'phase-at-store', base.replace('    previousIndex = (s32)previousPhase;\n', '').replace(
+        '        previousIndex = (s32)currentPhase;\n', '').replace(
+        'cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = (s32)previousPhase;', 2).replace(
+        'cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = (s32)currentPhase;')
+    yield 'separate-phase', base.replace('    s32 previousIndex;', '    s32 previousIndex;\n    s32 phase;').replace(
+        'previousIndex = (s32)', 'phase = (s32)').replace('cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = phase;')
+    fitted = base.replace('s32 factor;', 'u8 factor;')
+    for name, body in fitting_candidates_base(base):
+        yield 'byte-factor-' + name, body.replace('s32 factor;', 'u8 factor;')
+    yield 'byte-factor-stride-seven', fitted.replace('(previousIndex * 8 - previousIndex) * 4',
+        'previousIndex * 7 * 4').replace('(index * 8 - index) * 4', 'index * 7 * 4')
+    yield 'byte-factor-stride-four', fitted.replace('(previousIndex * 8 - previousIndex) * 4',
+        '(previousIndex * 32 - previousIndex * 4)').replace('(index * 8 - index) * 4',
+        '(index * 32 - index * 4)')
+    yield 'byte-factor-separate-phases', fitted.replace('    s32 previousIndex;',
+        '    s32 previousIndex;\n    s32 previousS;\n    s32 currentS;').replace(
+        '    previousIndex = (s32)previousPhase;', '    previousS = (s32)previousPhase;').replace(
+        '        previousIndex = (s32)currentPhase;', '        currentS = (s32)currentPhase;').replace(
+        'cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = previousS;', 2).replace(
+        'cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = currentS;')
+    locals_begin = fitted.index('    RibbonPosition151D80C4 currentPosition;')
+    locals_end = fitted.index('\n\n    if (*(s8 *)')
+    locals_text = fitted[locals_begin:locals_end]
+    declarations = locals_text.splitlines(keepends=True)
+    for name, first in (
+        ('cursor-first', ('Vtx *cursor;',)),
+        ('cursor-last', tuple(line.strip() for line in declarations if 'Vtx *cursor;' not in line)),
+        ('positions-last', tuple(line.strip() for line in declarations if 'RibbonPosition151D80C4' not in line)),
+        ('positions-reverse', ('RibbonPosition151D80C4 previousPosition;', 'RibbonPosition151D80C4 currentPosition;')),
+        ('index-first', ('s32 index;', 's32 previousIndex;')),
+        ('alpha-first', ('u8 previousAlpha;', 'u8 currentAlpha;', 'u8 factor;')),
+        ('retail-local-order', ('s32 index;', 'RibbonPosition151D80C4 currentPosition;',
+            'RibbonPosition151D80C4 previousPosition;', 'RibbonRecord151D80C4 *payload;',
+            'u8 *point;', 'u8 *records;', 'u8 sync;', 'f32 previousPhase;', 'f32 currentPhase;',
+            'f32 xOffset;', 'f32 zOffset;', 's32 previousIndex;', 'Vtx *cursor;')),
+    ):
+        reordered = [next(line for line in declarations if line.strip() == item) for item in first]
+        reordered += [line for line in declarations if line.strip() not in first]
+        yield 'byte-factor-' + name, fitted[:locals_begin] + ''.join(reordered).rstrip('\n') + fitted[locals_end:]
+        if name == 'retail-local-order':
+            ordered = fitted[:locals_begin] + ''.join(reordered).rstrip('\n') + fitted[locals_end:]
+            for variant, body in fitting_candidates_base(ordered):
+                yield 'retail-local-order-' + variant, body
+            yield 'retail-local-order-request-lifetime', ordered.replace(
+                '    records = *(u8 **)(owner + 0x94);',
+                '    previousIndex = owner[0x25] * 32 + 160;\n    records = *(u8 **)(owner + 0x94);').replace(
+                'owner[0x25] * 32 + 160, &cursor', 'previousIndex, &cursor')
+            yield 'retail-local-order-scaled-factor', ordered.replace(
+                '        factor = (*(s16 *)(owner + 0x1C) * 12) & 255;',
+                '        factor = (*(s16 *)(owner + 0x1C) * 3) * 4;')
+            wide = ordered.replace('u8 previousAlpha;', 's32 previousAlpha;')
+            yield 'retail-local-order-wide-scaled-factor', wide.replace(
+                '        factor = (*(s16 *)(owner + 0x1C) * 12) & 255;',
+                '        factor = (*(s16 *)(owner + 0x1C) * 3) * 4;')
+            yield 'retail-local-order-wide-reverse-factor', dict(fitting_candidates_base(wide))['reverse-factor']
+
+
+def fitting_candidates_base(base):
+    for name, old, new in (
+        ('previous-int-alpha', 'u8 previousAlpha;', 's32 previousAlpha;'),
+        ('current-int-alpha', 'u8 currentAlpha;', 's32 currentAlpha;'),
+    ):
+        yield name, base.replace(old, new)
+    yield 'reverse-factor', base.replace('    if (*(u16 *)(owner + 0x1E) & 8) {',
+        '    if (!(*(u16 *)(owner + 0x1E) & 8)) {\n        factor = 255;\n    } else {').replace(
+        '    } else {\n        factor = 255;\n    }', '    }')
+    yield 'separate-phase', base.replace('    s32 previousIndex;', '    s32 previousIndex;\n    s32 phase;').replace(
+        'previousIndex = (s32)', 'phase = (s32)').replace('cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = phase;')
+
+
+FITTED_NAME = 'retail-local-order-wide-scaled-factor'
+FITTED = dict(fitting_candidates())[FITTED_NAME]
+
+
 def compile_candidate(root, out, name, body=SELECTED, profile='o2g3'):
     out.mkdir(exist_ok=True)
     source, obj, elf = (out / (name + suffix) for suffix in ('.c', '.o', '.elf'))
@@ -264,16 +372,26 @@ def compile_candidate(root, out, name, body=SELECTED, profile='o2g3'):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--profiles', action='store_true')
+    parser.add_argument('--fit', action='store_true', help='screen complete stride/alpha/lifetime fitting forms')
+    parser.add_argument('--form', help='compile one named complete source form')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     out = root / 'conker/build/game-record-ring-renderer'
     records = []
-    for name, body in candidates():
+    forms = dict(fitting_candidates() if args.fit else candidates())
+    if args.form:
+        if args.form not in forms:
+            parser.error('unknown form: ' + args.form)
+        forms = {args.form: forms[args.form]}
+    for name, body in forms.items():
         for profile in PROFILES if args.profiles else ('o2g3',):
             record, _ = compile_candidate(root, out, name + '-' + profile, body, profile)
             records.append(record)
             print(record['name'], record['body_words'], hex(record['frame']), record['differences'], flush=True)
-    (out / ('profiles.json' if args.profiles else 'measurements.json')).write_text(json.dumps(records, indent=2) + '\n')
+    receipt = ('fitting-' if args.fit else '') + ('profiles.json' if args.profiles else 'measurements.json')
+    if args.form:
+        receipt = args.form + '-' + receipt
+    (out / receipt).write_text(json.dumps(records, indent=2) + '\n')
 
 
 if __name__ == '__main__':
