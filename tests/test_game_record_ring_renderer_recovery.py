@@ -3,6 +3,7 @@
 import csv
 import hashlib
 import itertools
+import io
 import json
 import math
 import re
@@ -33,6 +34,15 @@ TARGET_NAMES = {screen.SYMBOLS[name]: name for name in
     ('func_151D5D60', 'func_15142E24', 'func_15142B7C', 'func_1513F4E4', 'func_15142FBC', 'memcpy')}
 DISPATCHER, TRANSFORM, RELEASE, TABLE, ALLOCATE = 0x15147C4C, 0x151462C8, 0x1516972C, 0x8008A2A4, 0x10003C40
 SOURCE = 'conker/src/game/generated_204660.c'
+
+
+def source_shapes(root, body=screen.SETUP_FITTED):
+    original = (root / SOURCE).read_text()
+    if screen.SETUP_FITTED in original:
+        original = original.replace(screen.SETUP_FITTED, screen.ORIGINAL).replace(screen.DECLARATIONS + '\n', '', 1)
+    assert original.count(screen.ORIGINAL) == 1
+    marker = '/* Non-matching placeholders for the text-only asm slice asm/204660.s. */'
+    return original, original.replace(marker, screen.DECLARATIONS + '\n' + marker).replace(screen.ORIGINAL, body)
 
 
 def narrow(value, width):
@@ -314,16 +324,27 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
         self.assertEqual((self.record['body_words'], self.record['frame'], self.record['differences']), self.expected_shape)
         self.assertEqual((self.record['diagnostics'], self.record['saved_FP'], self.record['pool_bytes']), ('', [22, 20], 0))
         source = (self.root / SOURCE).read_text()
-        self.assertEqual(source.count(screen.ORIGINAL), 1)
-        self.assertNotIn(self.body, source)
+        installed = screen.SETUP_FITTED in source
+        self.assertEqual(source.count(screen.ORIGINAL), 0 if installed else 1)
+        self.assertIn(source, source_shapes(self.root))
+        if not installed or self.body != screen.SETUP_FITTED:
+            self.assertNotIn(self.body, source)
         production = load_elf_functions(str(self.root / 'conker/build/conker.us.elf'), 'mips-linux-gnu-objdump')[0]
         self.assertEqual(production[screen.FUNCTION], self.retail)
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
             rows = list(csv.DictReader(stream))
-        self.assertEqual(len(rows), 11275)
-        self.assertFalse(any(row['function'] == screen.FUNCTION for row in rows))
-        digest = assert_guard_history(self, rows)
-        self.receipt('status', dict(installed=False, candidate_words=self.record['body_words'], retail_words=405,
+        self.assertEqual(len(rows), 11460 if installed else 11275)
+        digest = assert_guard_history(self, rows[:11275])
+        if installed:
+            from tools.experiments import game_record_ring_renderer_normalization as normalization
+            screen.compile_candidate(self.root, self.out, 'installed-guard-shape', screen.SETUP_FITTED)
+            text, functions, relocations = parse_object(self.out / 'installed-guard-shape.o')
+            unlinked = list(struct.unpack_from('>405I', text, functions[screen.FUNCTION]['value']))
+            self.assertEqual(rows[11275:], normalization.owner_guards(unlinked, relocations))
+        else:
+            self.assertFalse(any(row['function'] == screen.FUNCTION for row in rows))
+        self.receipt('status', dict(installed=installed, candidate_installed=installed and self.body == screen.SETUP_FITTED,
+            candidate_words=self.record['body_words'], retail_words=405,
             candidate_frame=self.record['frame'], retail_frame=208, raw_differences=self.record['differences'],
             guard_rows=len(rows), guard_sha256=digest, form=self.FORM))
 
@@ -472,9 +493,7 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
             graphics_setup_and_deep_allocator='bounded hooks', original_caller_not_restored=True))
 
     def test_copied_owner_neighbors_pools_and_relocations(self):
-        baseline = (self.root / SOURCE).read_text()
-        marker = '/* Non-matching placeholders for the text-only asm slice asm/204660.s. */'
-        selected = baseline.replace(marker, screen.DECLARATIONS + '\n' + marker).replace(screen.ORIGINAL, self.body)
+        baseline, selected = source_shapes(self.root, self.body)
         before, warnings_before = compile_owner(self.root, self.out, baseline, 'owner-baseline')
         after, warnings_after = compile_owner(self.root, self.out, selected, 'owner-selected')
         self.assertEqual(warnings_before, warnings_after)
@@ -510,8 +529,15 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
         target = af[screen.FUNCTION]
         self.assertEqual(at[target['value']:target['value'] + 1620], isolated[:1620])
         self.assertEqual(actual, isolated_rel)
+        with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
+            rows = list(csv.DictReader(stream))
+        manifest = self.out / 'prior-owner-guards.csv'
+        with manifest.open('w', newline='') as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0].keys())
+            writer.writeheader()
+            writer.writerows(rows[:11275])
         padded = emit_padded_assembly(after, self.root / 'conker/asm/204660.s',
-            word_patches_path=self.root / 'conker/retail_word_patches.us.csv', filename='generated_204660')
+            word_patches_path=manifest, filename='generated_204660')
         start = padded.index('.type %s, @function' % screen.FUNCTION)
         end = padded.index('.size %s, . - %s' % (screen.FUNCTION, screen.FUNCTION), start)
         self.assertNotIn('.space', padded[start:end])
@@ -550,10 +576,36 @@ if(n!=1086)return 8;
             'conker/Makefile': 'd5e4c8459b9bf1ac7485b913f559fe9e0242ec284d76cddf0650c210e2a73466',
             'conker/asm/204660.s': '14c690097e848287eb8f9e5f3f1031cfa7c3fd65ebdb31075cdafc30a732fa48',
             'conker/progress.csv': '7a5ef312df05097084d3d6986e0adfcdbdbe4f71eab33a8c82fb876d7c1851d9'}
+        installed = screen.SETUP_FITTED in (self.root / SOURCE).read_text()
+        if installed:
+            original, _ = source_shapes(self.root)
+            self.assertEqual(hashlib.sha256(original.encode()).hexdigest(), expected[SOURCE])
+            with (self.root / 'conker/progress.csv').open(newline='') as stream:
+                reader = csv.DictReader(stream)
+                fields, progress = reader.fieldnames, list(reader)
+            changed = 0
+            for row in progress:
+                if row['function'] == screen.FUNCTION:
+                    self.assertEqual((row['language'], row['length']), ('c', '1620'))
+                    row['language'] = 'asm'
+                    changed += 1
+            self.assertEqual(changed, 1)
+            restored = io.StringIO()
+            writer = csv.DictWriter(restored, fieldnames=fields, lineterminator='\n')
+            writer.writeheader()
+            writer.writerows(progress)
+            self.assertEqual(hashlib.sha256(restored.getvalue().encode()).hexdigest(), expected['conker/progress.csv'])
+            baseline = json.loads((self.root / 'conker/build/game-record-ring-shaping-test/after.json').read_text())
+            with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
+                guards = list(csv.DictReader(stream))
+            self.assertEqual(guards[:11275], baseline['guards'])
         for path, digest in expected.items():
+            if installed and path in (SOURCE, 'conker/retail_word_patches.us.csv', 'conker/progress.csv'):
+                continue
             self.assertEqual(hashlib.sha256((self.root / path).read_bytes()).hexdigest(), digest, path)
         self.receipt('baseline', dict(all_6058_bodies_addresses_extents_unchanged=True,
-            protected_sections_unchanged=True, source_manifest_layout_progress_unchanged=True, hashes=expected,
+            protected_sections_unchanged=True, source_manifest_layout_progress_unchanged=not installed,
+            preconversion_source_and_progress_reconstruction_exact=installed, prior_guard_prefix_preserved=True, hashes=expected,
             complete_ELF_sha256=elf_hash))
 
 
