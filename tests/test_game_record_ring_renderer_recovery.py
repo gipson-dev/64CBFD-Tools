@@ -639,6 +639,132 @@ class GameRecordRingRendererFittingTests(GameRecordRingRendererRecoveryTests):
             arbitrary_invalid_or_nonterminating_domains=False, native_aliases=False))
 
 
+class RibbonAccessOracle(RibbonOracle):
+    def record_call(self, target):
+        super().record_call(target)
+        self.events.append(('CALL', self.targets.get(target, target)))
+
+
+def after_setup_events(model):
+    start = model.events.index(('CALL', MODE)) + 1
+    return [event for event in model.events[start:]
+        if event[0] in ('R', 'W') and not STACK - 0x600 <= event[1] < STACK + 0x140]
+
+
+def operand_masks(word):
+    op, rs = word >> 26, word >> 21 & 31
+    if op in (2, 3):
+        return 0, 0
+    if op == 0:
+        return 0x03FFF800, 0
+    if op == 1:
+        return 0x03E00000, 0
+    if op == 17:
+        if rs in (0, 2, 4, 6):
+            return 0x001F0000, 0x0000F800 if rs in (0, 4) else 0
+        assert rs in (16, 17, 20), ('unexpected COP1 format', hex(word))
+        return 0, 0x001FFFC0
+    if op in (49, 53, 57, 61):
+        return 0x03E00000, 0x001F0000
+    assert op in (4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 32, 33, 35, 36, 37, 40, 41, 43), hex(word)
+    return 0x03FF0000, 0
+
+
+class GameRecordRingRendererSchedulingTests(unittest.TestCase):
+    compare = GameRecordRingRendererRecoveryTests.compare
+    receipt = GameRecordRingRendererRecoveryTests.receipt
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).resolve().parents[2]
+        cls.out = cls.root / 'conker/build/game-record-ring-renderer-test/scheduling'
+        cls.out.mkdir(parents=True, exist_ok=True)
+        cls.record, cls.words = screen.compile_candidate(cls.root, cls.out, 'fitted', screen.FITTED)
+        cls.rom = (cls.root / 'conker/conker.us.bin').read_bytes()
+        cls.retail = list(struct.unpack_from('>405I', cls.rom, screen.ROM))
+
+    def test_complete_scheduling_forms_preserve_public_results_and_order(self):
+        forms, records, cases = list(screen.scheduling_candidates()), [], 0
+        self.assertEqual(len(forms), len(dict(forms)))
+        for name, body in forms:
+            record, words = screen.compile_candidate(self.root, self.out, 'form-' + name, body)
+            records.append(record)
+            for flags, phase in itertools.product((0, 2, 8, 10), (0, 8)):
+                self.compare(fixture(flags=flags), phase=phase, words=words)
+                cases += 1
+            for mode in (1, 7, 8, 9, 10, 11):
+                self.compare(fixture(flags=10), mode=mode, words=words)
+                cases += 1
+        self.assertEqual(min(r['differences'] for r in records), 198)
+        self.receipt('forms', dict(complete_forms=len(forms), cases=cases, measurements=records,
+            exact_public_memory_calls_result_store_order=True, better_body_found=False, installed=False,
+            full_domain_and_native_sweeps_for_every_form=False))
+
+    def test_all_final_lookahead_bytes_preserve_post_setup_fault_prefixes(self):
+        pairs = 0
+        for flags, count, phase in itertools.product((0, 2, 8, 10), (4, 128, 255), (0, 8)):
+            memory = fixture(current=1 if flags & 2 else 2, goal=0, count=count, flags=flags, pattern=2)
+            offsets = (*range(12), 0x14, *range(0x18, 0x1C))
+            for offset in offsets:
+                changed = dict(memory)
+                del changed[RECORDS + (count - 1) * 28 + offset]
+                models = []
+                for body in (self.words, self.retail):
+                    model = RibbonAccessOracle(body, changed, phase=phase)
+                    with self.assertRaisesRegex(AssertionError, 'unmapped read'):
+                        model.run()
+                    self.assertTrue(writes(model), 'the missing byte must fault after the final rendered segment')
+                    models.append(model)
+                self.assertEqual(after_setup_events(models[0]), after_setup_events(models[1]))
+                self.assertEqual((external(models[0].memory), models[0].calls),
+                    (external(models[1].memory), models[1].calls))
+                pairs += 1
+        self.receipt('lookahead-prefixes', dict(pairs=pairs, executions=pairs * 2, missing_byte_offsets=offsets,
+            post_MODE_read_write_prefix_and_public_memory_calls_equal=True, full_entry_prefix=False,
+            GP_FP_private_fault_state=False, hardware_or_portable_C_fault_semantics=False))
+
+    def test_early_exit_negative_passes_ordinary_outputs_but_loses_lookahead_fault(self):
+        marker = '        currentPosition = *(RibbonPosition151D80C4 *)point;'
+        bad = screen.FITTED.replace(marker,
+            '        if (previousIndex == *(s8 *)(owner + 0x2D)) { return output; }\n' + marker)
+        self.assertEqual(bad.count('return output; }'), 1)
+        record, words = screen.compile_candidate(self.root, self.out, 'negative-early-exit', bad)
+        for flags in (0, 2, 8, 10):
+            memory = fixture(current=1 if flags & 2 else 2, goal=0, flags=flags, pattern=2)
+            self.compare(memory, words=words)
+            del memory[RECORDS + 3 * 28 + 0x18]
+            RibbonAccessOracle(words, memory).run()
+            for body in (self.words, self.retail):
+                with self.assertRaisesRegex(AssertionError, 'unmapped read'):
+                    RibbonAccessOracle(body, memory).run()
+        self.receipt('lookahead-negative', dict(ordinary_output_equivalent_cases=4,
+            effective_required_lookahead_fault_witnesses=4, measurement=record,
+            no_timeout_or_unsupported_instruction_witness=True))
+
+    def test_structural_operand_difference_partition_is_not_match_evidence(self):
+        groups = dict(GP_fields_only=[], FP_fields_only=[], combined_operand_fields=[], other=[])
+        for index, (word, retail) in enumerate(zip(self.words, self.retail)):
+            if word == retail:
+                continue
+            gp, fp = operand_masks(word)
+            retail_gp, retail_fp = operand_masks(retail)
+            if gp != retail_gp or fp != retail_fp:
+                group = 'other'
+            elif word & ~gp == retail & ~gp:
+                group = 'GP_fields_only'
+            elif word & ~fp == retail & ~fp:
+                group = 'FP_fields_only'
+            elif word & ~(gp | fp) == retail & ~(gp | fp):
+                group = 'combined_operand_fields'
+            else:
+                group = 'other'
+            groups[group].append(index * 4)
+        self.assertEqual(sum(map(len, groups.values())), 198)
+        self.receipt('operand-partition', dict(groups=groups, counts={k: len(v) for k,v in groups.items()},
+            raw_differences=198, syntactic_partition_only=True, consistent_register_mapping_proven=False,
+            guards_or_normalized_body=False, byte_match=False))
+
+
 NATIVE_TYPES = r'''typedef unsigned char u8;typedef signed char s8;typedef short s16;
 typedef unsigned short u16;typedef int s32;typedef unsigned int u32;typedef float f32;
 typedef struct {struct {s16 ob[3];u16 flag;s16 tc[2];u8 cn[4];} v;} Vtx;

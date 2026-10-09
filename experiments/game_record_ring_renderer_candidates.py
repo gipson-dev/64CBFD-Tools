@@ -338,6 +338,89 @@ FITTED_NAME = 'retail-local-order-wide-scaled-factor'
 FITTED = dict(fitting_candidates())[FITTED_NAME]
 
 
+def scheduling_candidates():
+    yield 'fitted-baseline', FITTED
+    for name, body in (
+        ('seed-product-order', FITTED.replace('(previousAlpha * factor)', '(factor * previousAlpha)')),
+        ('both-product-order', FITTED.replace('(previousAlpha * factor)', '(factor * previousAlpha)').replace(
+            '(currentAlpha * factor)', '(factor * currentAlpha)')),
+        ('explicit-byte-factor', FITTED.replace('factor = (*(s16 *)(owner + 0x1C) * 3) * 4;',
+            'factor = (u8)((*(s16 *)(owner + 0x1C) * 3) * 4);')),
+        ('masked-byte-factor', FITTED.replace('factor = (*(s16 *)(owner + 0x1C) * 3) * 4;',
+            'factor = ((*(s16 *)(owner + 0x1C) * 3) * 4) & 255;')),
+        ('masked-half-factor', FITTED.replace('u8 factor;', 'u16 factor;').replace(
+            'factor = (*(s16 *)(owner + 0x1C) * 3) * 4;', 'factor = ((*(s16 *)(owner + 0x1C) * 3) * 4) & 255;')),
+    ):
+        yield name, body
+    vertex = 'gSPVertex(output++, cursor - 4, 4, 0);'
+    triangles = ('gSP1Triangle(output++, 0, 1, 2, 0);', 'gSP1Triangle(output++, 1, 3, 2, 0);')
+    for name, commands in (('vertex-cursor-lifetime', (vertex,)),
+            ('triangle-cursor-lifetime', triangles), ('all-command-cursor-lifetimes', (vertex, *triangles))):
+        body = FITTED
+        for command in commands:
+            body = body.replace(command, command.replace('output++', 'output') + '\n        output++;')
+        yield name, body
+    for type_ in ('u32', 'f32'):
+        words = FITTED.replace('u8 *records;', type_ + ' *records;').replace('u8 *point;', type_ + ' *point;').replace(
+            'records = *(u8 **)', 'records = *(' + type_ + ' **)').replace(
+            'records[(previousIndex * 8 - previousIndex) * 4 + 0x14]',
+            '((u8 *)(records + (previousIndex * 8 - previousIndex)))[0x14]').replace(
+            '(previousIndex * 8 - previousIndex) * 4 + 0x18', '(previousIndex * 8 - previousIndex) + 6').replace(
+            '(previousIndex * 8 - previousIndex) * 4', '(previousIndex * 8 - previousIndex)').replace(
+            '(index * 8 - index) * 4', '(index * 8 - index)').replace('point[0x14]', '((u8 *)point)[0x14]').replace(
+            '*(f32 *)(point + 0x18)', '*(f32 *)(point + 6)').replace('point -= 28;', 'point -= 7;')
+        yield type_ + '-word-records', words
+        yield type_ + '-seven-word-records', words.replace('(previousIndex * 8 - previousIndex)',
+            '(previousIndex * 7)').replace('(index * 8 - index)', '(index * 7)')
+    seed, loop = FITTED.split('    do {', 1)
+    yield 'view-seed-phase-lifetime', seed.replace('previousIndex = (s32)previousPhase;',
+        'view = (s32)previousPhase;').replace('cursor->v.tc[0] = previousIndex;',
+        'cursor->v.tc[0] = view;') + '    do {' + loop
+    yield 'view-both-phase-lifetimes', FITTED.replace('previousIndex = (s32)previousPhase;',
+        'view = (s32)previousPhase;').replace('previousIndex = (s32)currentPhase;',
+        'view = (s32)currentPhase;').replace('cursor->v.tc[0] = previousIndex;', 'cursor->v.tc[0] = view;')
+    for name, declaration in (
+        ('seed-alpha-first', '    s32 previousAlpha;\n'),
+        ('factor-before-seed-alpha', '    u8 factor;\n'),
+    ):
+        body = FITTED.replace(declaration, '').replace('    s32 index;\n', '    s32 index;\n' + declaration)
+        yield name, body
+    yield 'stride-seven-compound', FITTED.replace(
+        '        previousPosition = *(RibbonPosition151D80C4 *)(records + (previousIndex * 8 - previousIndex) * 4);',
+        '        previousIndex *= 7;\n        previousIndex *= 4;\n' +
+        '        previousPosition = *(RibbonPosition151D80C4 *)(records + previousIndex);').replace(
+        'previousAlpha = records[(previousIndex * 8 - previousIndex) * 4 + 0x14];',
+        'previousAlpha = records[previousIndex + 0x14];').replace(
+        'previousPhase = *(f32 *)(records + (previousIndex * 8 - previousIndex) * 4 + 0x18);',
+        'previousPhase = *(f32 *)(records + previousIndex + 0x18);', 1)
+    for type_ in ('u8', 's32'):
+        yield type_ + '-request-count-lifetime', FITTED.replace('    u8 factor;',
+            '    u8 factor;\n    ' + type_ + ' count;').replace('    records = *(u8 **)(owner + 0x94);',
+            '    count = owner[0x25];\n    records = *(u8 **)(owner + 0x94);').replace(
+            'owner[0x25] * 32 + 160, &cursor', 'count * 32 + 160, &cursor')
+    yield 'initial-ring-offset-lifetime', FITTED.replace('    point = records + (index * 8 - index) * 4;',
+        '    previousIndex = index * 7;\n    point = records + previousIndex * 4;', 1)
+    yield 'tail-Gfx-lifetime', FITTED.replace('    u8 factor;', '    u8 factor;\n    Gfx *tail;').replace(
+        '    output = func_15142FBC(', '    tail = func_15142FBC(', 1).replace(
+        'gSPVertex(output++', 'gSPVertex(tail++').replace('gSP1Triangle(output++', 'gSP1Triangle(tail++').replace(
+        '    return output;\n}', '    return tail;\n}')
+    yield 'integer-record-addresses', FITTED.replace('records + (index * 8 - index) * 4',
+        '(u8 *)((u32)records + (u32)((index * 8 - index) * 4))').replace(
+        'records + (previousIndex * 8 - previousIndex) * 4',
+        '(u8 *)((u32)records + (u32)((previousIndex * 8 - previousIndex) * 4))')
+    factor_start = '    if (*(u16 *)(owner + 0x1E) & 8) {'
+    first_x = '    cursor->v.ob[0] = (s32)(previousPosition.x + xOffset);'
+    yield 'view-seed-X-lifetime', FITTED.replace(factor_start,
+        '    view = (s32)(previousPosition.x + xOffset);\n' + factor_start).replace(first_x, '    cursor->v.ob[0] = view;')
+    yield 'separate-seed-X-lifetime', FITTED.replace('    u8 factor;', '    u8 factor;\n    s32 firstX;').replace(
+        factor_start, '    firstX = (s32)(previousPosition.x + xOffset);\n' + factor_start).replace(
+        first_x, '    cursor->v.ob[0] = firstX;')
+    yield 'byte-alpha-separate-seed-X', FITTED.replace('s32 previousAlpha;', 'u8 previousAlpha;').replace(
+        '    u8 factor;', '    u8 factor;\n    s32 firstX;').replace(factor_start,
+        '    firstX = (s32)(previousPosition.x + xOffset);\n' + factor_start).replace(
+        first_x, '    cursor->v.ob[0] = firstX;')
+
+
 def compile_candidate(root, out, name, body=SELECTED, profile='o2g3'):
     out.mkdir(exist_ok=True)
     source, obj, elf = (out / (name + suffix) for suffix in ('.c', '.o', '.elf'))
@@ -372,13 +455,15 @@ def compile_candidate(root, out, name, body=SELECTED, profile='o2g3'):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--profiles', action='store_true')
-    parser.add_argument('--fit', action='store_true', help='screen complete stride/alpha/lifetime fitting forms')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--fit', action='store_true', help='screen complete stride/alpha/lifetime fitting forms')
+    mode.add_argument('--schedule', action='store_true', help='screen complete register-role and scheduling forms')
     parser.add_argument('--form', help='compile one named complete source form')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     out = root / 'conker/build/game-record-ring-renderer'
     records = []
-    forms = dict(fitting_candidates() if args.fit else candidates())
+    forms = dict(scheduling_candidates() if args.schedule else fitting_candidates() if args.fit else candidates())
     if args.form:
         if args.form not in forms:
             parser.error('unknown form: ' + args.form)
@@ -388,7 +473,7 @@ def main():
             record, _ = compile_candidate(root, out, name + '-' + profile, body, profile)
             records.append(record)
             print(record['name'], record['body_words'], hex(record['frame']), record['differences'], flush=True)
-    receipt = ('fitting-' if args.fit else '') + ('profiles.json' if args.profiles else 'measurements.json')
+    receipt = ('scheduling-' if args.schedule else 'fitting-' if args.fit else '') + ('profiles.json' if args.profiles else 'measurements.json')
     if args.form:
         receipt = args.form + '-' + receipt
     (out / receipt).write_text(json.dumps(records, indent=2) + '\n')
