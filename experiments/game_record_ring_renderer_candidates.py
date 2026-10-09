@@ -421,6 +421,55 @@ def scheduling_candidates():
         first_x, '    cursor->v.ob[0] = firstX;')
 
 
+def setup_candidates():
+    block = '''    if (*(u16 *)(owner + 0x1E) & 8) {
+        factor = (*(s16 *)(owner + 0x1C) * 3) * 4;
+    } else {
+        factor = 255;
+    }'''
+    reverse = '''    if (!(*(u16 *)(owner + 0x1E) & 8)) {
+        factor = 255;
+    } else {
+        factor = (*(s16 *)(owner + 0x1C) * 3) * 4;
+    }'''
+    mode = FITTED.replace('D_800A4AC8[3] | D_800A4AC8[2]', 'D_800A4AC8[2] | D_800A4AC8[3]')
+    yield 'fitted-baseline', FITTED
+    yield 'mode-operands', mode
+    yield 'reverse-factor', FITTED.replace(block, reverse)
+    yield 'retail-mode-order-reverse-factor', mode.replace(block, reverse)
+    yield 'conditional-factor', mode.replace(block, '''    factor = (*(u16 *)(owner + 0x1E) & 8) ?
+        (*(s16 *)(owner + 0x1C) * 3) * 4 : 255;''')
+    yield 'default-before-factor', mode.replace(block, '''    factor = 255;
+    if (*(u16 *)(owner + 0x1E) & 8) {
+        factor = (*(s16 *)(owner + 0x1C) * 3) * 4;
+    }''')
+    for type_ in ('s32', 'u32'):
+        yield type_ + '-common-narrow', mode.replace('u8 factor;', type_ + ' factor;').replace(
+            block, block + '\n    factor = (u8)factor;')
+    yield 'signed-byte-factor', mode.replace('u8 factor;', 's8 factor;').replace(
+        '(previousAlpha * factor)', '(previousAlpha * (u8)factor)').replace(
+        '(currentAlpha * factor)', '(currentAlpha * (u8)factor)')
+    for name, expression in (
+        ('scaled-stages', 'factor = *(s16 *)(owner + 0x1C) * 3;\n        factor *= 4;'),
+        ('narrow-opacity', 'factor = *(s16 *)(owner + 0x1C);\n        factor *= 12;'),
+        ('index-scale-lifetime', 'previousIndex = *(s16 *)(owner + 0x1C) * 3;\n        factor = previousIndex * 4;'),
+        ('view-opacity-lifetime', 'view = *(s16 *)(owner + 0x1C);\n        factor = (view * 3) * 4;'),
+    ):
+        yield name, mode.replace('factor = (*(s16 *)(owner + 0x1C) * 3) * 4;', expression)
+    yield 'switch-default-factor', mode.replace(block, '''    switch (*(u16 *)(owner + 0x1E) & 8) {
+    case 0:
+        factor = 255;
+        break;
+    default:
+        factor = (*(s16 *)(owner + 0x1C) * 3) * 4;
+        break;
+    }''')
+
+
+SETUP_FITTED_NAME = 'retail-mode-order-reverse-factor'
+SETUP_FITTED = dict(setup_candidates())[SETUP_FITTED_NAME]
+
+
 def compile_candidate(root, out, name, body=SELECTED, profile='o2g3'):
     out.mkdir(exist_ok=True)
     source, obj, elf = (out / (name + suffix) for suffix in ('.c', '.o', '.elf'))
@@ -458,12 +507,14 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--fit', action='store_true', help='screen complete stride/alpha/lifetime fitting forms')
     mode.add_argument('--schedule', action='store_true', help='screen complete register-role and scheduling forms')
+    mode.add_argument('--setup', action='store_true', help='screen complete factor and mode-load fitting forms')
     parser.add_argument('--form', help='compile one named complete source form')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     out = root / 'conker/build/game-record-ring-renderer'
     records = []
-    forms = dict(scheduling_candidates() if args.schedule else fitting_candidates() if args.fit else candidates())
+    forms = dict(setup_candidates() if args.setup else scheduling_candidates() if args.schedule
+        else fitting_candidates() if args.fit else candidates())
     if args.form:
         if args.form not in forms:
             parser.error('unknown form: ' + args.form)
@@ -473,7 +524,7 @@ def main():
             record, _ = compile_candidate(root, out, name + '-' + profile, body, profile)
             records.append(record)
             print(record['name'], record['body_words'], hex(record['frame']), record['differences'], flush=True)
-    receipt = ('scheduling-' if args.schedule else 'fitting-' if args.fit else '') + ('profiles.json' if args.profiles else 'measurements.json')
+    receipt = ('setup-' if args.setup else 'scheduling-' if args.schedule else 'fitting-' if args.fit else '') + ('profiles.json' if args.profiles else 'measurements.json')
     if args.form:
         receipt = args.form + '-' + receipt
     (out / receipt).write_text(json.dumps(records, indent=2) + '\n')

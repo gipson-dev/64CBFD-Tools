@@ -283,7 +283,9 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
     def setUpClass(cls):
         cls.root = Path(__file__).resolve().parents[2]
         cls.out = cls.root / 'conker/build/game-record-ring-renderer-test'
-        if cls.FORM != 'selected':
+        if hasattr(cls, 'OUT_NAME'):
+            cls.out /= cls.OUT_NAME
+        elif cls.FORM != 'selected':
             cls.out /= 'fitted'
         cls.out.mkdir(parents=True, exist_ok=True)
         cls.record, cls.words = screen.compile_candidate(cls.root, cls.out, 'selected', cls.body)
@@ -388,7 +390,8 @@ class GameRecordRingRendererRecoveryTests(unittest.TestCase):
 
     def test_full_source_profile_controls_and_effective_negative_witnesses(self):
         records = []
-        forms = list(screen.candidates() if self.FORM == 'selected' else screen.fitting_candidates())
+        forms = list(screen.setup_candidates() if self.FORM == screen.SETUP_FITTED_NAME
+            else screen.candidates() if self.FORM == 'selected' else screen.fitting_candidates())
         self.assertEqual(len(forms), len(dict(forms)), 'source form names must be unique')
         for name, body in forms:
             record, words = screen.compile_candidate(self.root, self.out, 'control-' + name, body)
@@ -575,7 +578,7 @@ class GameRecordRingRendererFittingTests(GameRecordRingRendererRecoveryTests):
         self.assertEqual(models[0].sync_slot, models[1].sync_slot)
         self.receipt('layout', dict(words=405, frame=208, cursor=140, sync=167, buffer=168,
             previous_XYZ=180, current_XYZ=192, gp_saves=gp_saves, FP_saved=[20, 22],
-            loop_offset=996, memcpy_offset=1388, raw_differences=198, installed=False))
+            loop_offset=996, memcpy_offset=1388, raw_differences=self.record['differences'], installed=False))
 
     def test_independent_original_and_fitted_symbol_rebases(self):
         asm, obj = self.out / 'original.s', self.out / 'original.o'
@@ -670,6 +673,27 @@ def operand_masks(word):
     return 0x03FF0000, 0
 
 
+def operand_partition(words, retail):
+    groups = dict(GP_fields_only=[], FP_fields_only=[], combined_operand_fields=[], other=[])
+    for index, (word, original) in enumerate(zip(words, retail)):
+        if word == original:
+            continue
+        gp, fp = operand_masks(word)
+        original_gp, original_fp = operand_masks(original)
+        if (gp, fp) != (original_gp, original_fp):
+            group = 'other'
+        elif word & ~gp == original & ~gp:
+            group = 'GP_fields_only'
+        elif word & ~fp == original & ~fp:
+            group = 'FP_fields_only'
+        elif word & ~(gp | fp) == original & ~(gp | fp):
+            group = 'combined_operand_fields'
+        else:
+            group = 'other'
+        groups[group].append(index * 4)
+    return groups
+
+
 class GameRecordRingRendererSchedulingTests(unittest.TestCase):
     compare = GameRecordRingRendererRecoveryTests.compare
     receipt = GameRecordRingRendererRecoveryTests.receipt
@@ -742,27 +766,97 @@ class GameRecordRingRendererSchedulingTests(unittest.TestCase):
             no_timeout_or_unsupported_instruction_witness=True))
 
     def test_structural_operand_difference_partition_is_not_match_evidence(self):
-        groups = dict(GP_fields_only=[], FP_fields_only=[], combined_operand_fields=[], other=[])
-        for index, (word, retail) in enumerate(zip(self.words, self.retail)):
-            if word == retail:
-                continue
-            gp, fp = operand_masks(word)
-            retail_gp, retail_fp = operand_masks(retail)
-            if gp != retail_gp or fp != retail_fp:
-                group = 'other'
-            elif word & ~gp == retail & ~gp:
-                group = 'GP_fields_only'
-            elif word & ~fp == retail & ~fp:
-                group = 'FP_fields_only'
-            elif word & ~(gp | fp) == retail & ~(gp | fp):
-                group = 'combined_operand_fields'
-            else:
-                group = 'other'
-            groups[group].append(index * 4)
+        groups = operand_partition(self.words, self.retail)
         self.assertEqual(sum(map(len, groups.values())), 198)
         self.receipt('operand-partition', dict(groups=groups, counts={k: len(v) for k,v in groups.items()},
             raw_differences=198, syntactic_partition_only=True, consistent_register_mapping_proven=False,
             guards_or_normalized_body=False, byte_match=False))
+
+
+class GameRecordRingRendererSetupFittingTests(GameRecordRingRendererFittingTests):
+    FORM, body, expected_shape = screen.SETUP_FITTED_NAME, screen.SETUP_FITTED, (405, 0xD0, 185)
+    OUT_NAME = 'setup-fitted'
+    test_all_final_lookahead_bytes_preserve_post_setup_fault_prefixes = (
+        GameRecordRingRendererSchedulingTests.test_all_final_lookahead_bytes_preserve_post_setup_fault_prefixes)
+
+    @staticmethod
+    def public_events(model):
+        return [event for event in model.events if event[0] == 'CALL'
+            or event[0] in ('R', 'W') and not STACK - 0x600 <= event[1] < STACK + 0x140]
+
+    def test_whole_entry_public_access_order_and_pre_vertex_fault_prefixes(self):
+        cases, pairs, complete_private_memory_equal = 0, 0, 0
+        for flags, pattern, view, phase, mode in itertools.product((0, 2, 8, 10), range(3),
+                (0, 3, 0xFFFF), (0, 8), (0, 1, 7, 8, 10, 11)):
+            memory = fixture(flags=flags, pattern=pattern, view=view)
+            models = [RibbonAccessOracle(words, memory, view, mode=mode, phase=phase).run()
+                for words in (self.words, self.retail)]
+            self.assertEqual(self.public_events(models[0]), self.public_events(models[1]))
+            self.assertEqual((external(models[0].memory), models[0].calls, models[0].r[2]),
+                (external(models[1].memory), models[1].calls, models[1].r[2]))
+            complete_private_memory_equal += models[0].memory == models[1].memory
+            cases += 1
+        self.assertEqual(complete_private_memory_equal, cases)
+        for flags, phase in itertools.product((0, 2, 8, 10), (0, 8)):
+            memory = fixture(flags=flags)
+            ordinary = RibbonAccessOracle(self.retail, memory, phase=phase).run()
+            missing = set()
+            for event in self.public_events(ordinary):
+                if event[0] == 'W' and event[1] == VERTICES:
+                    break
+                if event[0] == 'R':
+                    missing.update(range(event[1], event[1] + event[2]))
+            missing.update(range(VERTICES, VERTICES + 16))
+            for address in sorted(missing):
+                changed = dict(memory)
+                del changed[address]
+                models = []
+                for words in (self.words, self.retail):
+                    model = RibbonAccessOracle(words, changed, phase=phase)
+                    with self.assertRaisesRegex(AssertionError, 'unmapped read|unmapped store'):
+                        model.run()
+                    models.append(model)
+                self.assertEqual(self.public_events(models[0]), self.public_events(models[1]))
+                self.assertEqual((external(models[0].memory), models[0].calls),
+                    (external(models[1].memory), models[1].calls))
+                pairs += 1
+        self.receipt('entry-prefixes', dict(ordinary_whole_entry_public_prefix_cases=cases,
+            pre_vertex_read_and_first_vertex_store_byte_fault_pairs=pairs, fault_executions=pairs * 2,
+            complete_private_memory_equal_at_completed_exit_cases=complete_private_memory_equal,
+            private_fault_state_and_store_prefix=False, hardware_or_portable_C_fault_semantics=False))
+
+    def test_remaining_difference_partition_does_not_prove_register_mapping(self):
+        groups = operand_partition(self.words, self.retail)
+        counts = {k: len(v) for k, v in groups.items()}
+        self.assertEqual(counts, dict(GP_fields_only=176, FP_fields_only=0, combined_operand_fields=0, other=9))
+        self.assertEqual(groups['other'], [0x14, 0x34, 0x278, 0x280, 0x284, 0x288, 0x290, 0x294, 0x298])
+        self.receipt('operand-partition', dict(groups=groups, counts=counts, raw_differences=185,
+            syntactic_partition_only=True, consistent_register_mapping_proven=False,
+            guards_or_normalized_body=False, byte_match=False))
+
+    def test_mode_load_order_negative_passes_outputs_but_changes_required_fault_prefix(self):
+        bad = self.body.replace('D_800A4AC8[2] | D_800A4AC8[3]', 'D_800A4AC8[3] | D_800A4AC8[2]')
+        self.assertNotEqual(bad, self.body)
+        record, words = screen.compile_candidate(self.root, self.out, 'negative-mode-load-order', bad)
+        witnesses = 0
+        for flags, offset in itertools.product((0, 2, 8, 10), range(4)):
+            memory = fixture(flags=flags)
+            self.compare(memory, words=words)
+            del memory[screen.SYMBOLS['D_800A4AC8'] + 12 + offset]
+            models = []
+            for body in (self.words, words, self.retail):
+                model = RibbonAccessOracle(body, memory)
+                with self.assertRaisesRegex(AssertionError, 'unmapped read'):
+                    model.run()
+                models.append(model)
+            self.assertEqual(self.public_events(models[0]), self.public_events(models[2]))
+            self.assertNotEqual(self.public_events(models[1]), self.public_events(models[2]))
+            self.assertEqual((external(models[0].memory), models[0].calls),
+                (external(models[1].memory), models[1].calls))
+            witnesses += 1
+        self.receipt('mode-order-negative', dict(ordinary_output_equivalent_cases=witnesses,
+            effective_read_prefix_witnesses=witnesses, measurement=record,
+            no_timeout_or_unsupported_instruction_witness=True))
 
 
 NATIVE_TYPES = r'''typedef unsigned char u8;typedef signed char s8;typedef short s16;
