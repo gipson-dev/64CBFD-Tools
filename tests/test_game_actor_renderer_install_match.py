@@ -17,7 +17,7 @@ from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
 from tools.tests import test_game_actor_renderer_schedule as schedule
 from tools.tests import test_game_actor_renderer_recovery as proof
-from tools.tests.test_game_record_constructor_match import elf_slot_offset, elf_symbol_size_offset
+from tools.tests.test_game_record_constructor_match import elf_slot_offset, ELF_HEADER, SECTION_HEADER, SYMBOL
 from tools.tests.test_game_owner_state_match import metadata
 from tools.tests.game_owner_pool import normalized_pools
 from tools.check_game_data_layout import audit_layout
@@ -25,6 +25,24 @@ from tools.experiments import game_actor_renderer_native32 as native
 from tools.tests.test_game_row_destination_fill import START
 
 COLORS = 0x2E000
+
+
+def symbol_size_offset(data, name, entry):
+    header = ELF_HEADER.unpack_from(data)
+    sections = [SECTION_HEADER.unpack_from(data, header[6] + i * header[11]) for i in range(header[12])]
+    matches = []
+    for section in sections:
+        if section[1] != 2:
+            continue
+        strings = sections[section[6]]
+        names = data[strings[4]:strings[4] + strings[5]]
+        for offset in range(section[4], section[4] + section[5], section[9]):
+            symbol = SYMBOL.unpack_from(data, offset)
+            if names[symbol[0]:].split(b'\0', 1)[0].decode() == name:
+                assert symbol[1] == entry and symbol[3] & 15 == 2
+                matches.append(offset + 8)
+    assert len(matches) == 1
+    return matches[0]
 
 NATIVE_FIXTURE = r'''
 typedef unsigned char u8;typedef int s32;typedef unsigned int u32;typedef float f32;
@@ -410,10 +428,14 @@ class GameActorRendererInstallMatchTests(unittest.TestCase):
             self.assertEqual((self.root / self.paths[name]).read_bytes(), (self.out / ('before-' + name)).read_bytes())
         before = (self.out / 'before-elf').read_bytes()
         expected = bytearray(before)
+        with self.assertRaises(AssertionError):
+            symbol_size_offset(before, color.FUNCTION, renderer.ENTRY)
+        with self.assertRaises(AssertionError):
+            symbol_size_offset(before, 'missing_actor_install_symbol', color.ENTRY)
         for function, entry, words in ((color.FUNCTION, color.ENTRY, self.original_color),
                 (renderer.FUNCTION, renderer.ENTRY, self.original_renderer)):
             struct.pack_into('>%dI' % len(words), expected, elf_slot_offset(before, entry, len(words) * 4), *words)
-            struct.pack_into('>I', expected, elf_symbol_size_offset(before, function), len(words) * 4)
+            struct.pack_into('>I', expected, symbol_size_offset(before, function, entry), len(words) * 4)
         actual = (self.root / self.paths['elf']).read_bytes()
         em, am = metadata(bytes(expected)), metadata(actual)
         self.assertEqual(em[:4], am[:4])
