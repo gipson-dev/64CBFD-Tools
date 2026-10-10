@@ -121,6 +121,13 @@ class GameActorRenderDispatchMatchTests(recovery.GameActorRenderDispatchRecovery
         self.assertEqual((models[0].memory,models[0].events),(models[2].memory,models[2].events))
         return models
 
+    def test_01_full_semantic_paths_and_signed_boundaries(self):
+        super().test_01_full_semantic_paths_and_signed_boundaries()
+        self.receipt('semantic',cases=2160,original_raw_and_fitted_public_order_exact=True,
+            complete_compiled_C_forms=1,raw_and_fitted_from_same_semantic_C=True,
+            fitted_complete_private_public_traces_exact=True,
+            raw_private_alias_or_fault_order_not_claimed=True)
+
     def test_06_owner_neighbors_and_unchanged_production_gate(self):
         before=(self.out/'before-source').read_text()
         objects=[]
