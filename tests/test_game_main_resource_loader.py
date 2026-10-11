@@ -417,18 +417,28 @@ class GameMainResourceLoaderTests(unittest.TestCase):
         if source==(self.out/'before-source').read_text():
             for name,path in self.paths.items():self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes())
             self.receipt('linked',installed=False,immutable_baseline_verified=True);return
-        self.assertEqual(source,screen.install((self.out/'before-source').read_text()))
+        recovery_source=screen.install((self.out/'before-source').read_text())
+        words=self.link('padded');emitted_words=self.meta['body_words']
+        if source!=recovery_source:
+            from tools.experiments import game_main_resource_loader_lifetimes as lifetime
+            self.assertEqual(source,lifetime.install(recovery_source))
+            latest,words=screen.compile_candidate(self.root,self.out,'latest-lifetime',lifetime.SELECTED)
+            self.assertEqual((latest['body_words'],latest['frame'],latest['differences']), (274,0x80,271))
+            self.assertEqual((latest['diagnostics'],latest['pool_bytes']),('',0))
+            emitted_words=latest['body_words']
+        else:
+            self.assertEqual(source,recovery_source)
         actual=(self.root/self.paths['elf']).read_bytes();expected=bytearray(self.before)
         offset=elf_slot_offset(self.before,screen.ENTRY,274*4)
-        words=self.link('padded');struct.pack_into('>274I',expected,offset,*words)
+        struct.pack_into('>274I',expected,offset,*words)
         extent=installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)
         self.assertEqual(struct.unpack_from('>I',self.before,extent)[0],12)
-        struct.pack_into('>I',expected,extent,272*4)
+        struct.pack_into('>I',expected,extent,emitted_words*4)
         previous,current=metadata(self.before),metadata(actual)
         self.assertEqual(previous[:2],current[:2]);self.assertEqual(previous[3],current[3])
         symbols=previous[2].copy()
         target=next(s for s in symbols if s[0]==screen.FUNCTION.encode() and s[1]==screen.ENTRY)
-        self.assertEqual(target[2],12);symbols[target]-=1;symbols[(target[0],target[1],272*4,*target[3:])]+=1
+        self.assertEqual(target[2],12);symbols[target]-=1;symbols[(target[0],target[1],emitted_words*4,*target[3:])]+=1
         self.assertEqual(+symbols,current[2])
         changed_metadata=0
         for table in current[4:]:
