@@ -20,6 +20,16 @@ OFFSETS = tuple(sorted(SPILLS+RETURN+CLEANUP))
 SELECTED = schedule.SELECTED
 
 
+def parent_source(root):
+    from tools.experiments import game_command_stream_relocator_candidates as child
+    return child.parent_source(root)
+
+
+def parent_elf(root, before):
+    from tools.experiments import game_command_stream_relocator_candidates as child
+    return child.parent_elf(root, before)
+
+
 def normalized(raw, retail):
     retail = list(retail)
     assert len(raw) == len(retail) == 274
@@ -90,7 +100,7 @@ def current_guard_bytes(root, before):
     current = (root/'conker/retail_word_patches.us.csv').read_bytes()
     if current == before:
         return current
-    assert hashlib.sha256((root/schedule.screen.SOURCE).read_bytes()).hexdigest() == SOURCE_SHA
+    assert hashlib.sha256(parent_source(root).encode('ascii')).hexdigest() == SOURCE_SHA
     assert current == before+qualified_guard_suffix(root)
     return current
 
@@ -99,7 +109,7 @@ def validate_current_guards(root):
     current = (root/'conker/retail_word_patches.us.csv').read_bytes()
     if hashlib.sha256(current).hexdigest() == GUARDS_SHA:
         return current
-    assert hashlib.sha256((root/schedule.screen.SOURCE).read_bytes()).hexdigest() == SOURCE_SHA
+    assert hashlib.sha256(parent_source(root).encode('ascii')).hexdigest() == SOURCE_SHA
     suffix = qualified_guard_suffix(root)
     assert current.endswith(suffix)
     assert hashlib.sha256(current[:-len(suffix)]).hexdigest() == GUARDS_SHA

@@ -88,7 +88,7 @@ class GameMainResourceLoaderLifetimeTests(recovery.GameMainResourceLoaderTests):
         for name in self.paths:
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(), self.baseline[name])
             self.assertEqual(hashlib.sha256((self.out/('checkpoint-'+name)).read_bytes()).hexdigest(), self.checkpointHashes[name])
-        source = (self.root/lifetime.loader.SOURCE).read_text()
+        source = matching.parent_source(self.root)
         banked = (self.out/'checkpoint-source').read_text()
         if source == banked:
             for name, path in self.paths.items():
@@ -117,7 +117,7 @@ class GameMainResourceLoaderLifetimeTests(recovery.GameMainResourceLoaderTests):
                     latest, words = lifetime.loader.compile_candidate(self.root, self.out, 'latest-remaining-schedule', schedule.SELECTED)
                     self.assertEqual((latest['body_words'], latest['frame'], latest['differences']), (274, 0x78, 22))
             self.assertEqual((latest['diagnostics'], latest['pool_bytes']), ('', 0))
-        actual = (self.root/self.paths['elf']).read_bytes()
+        actual = matching.parent_elf(self.root, self.checkpoint)
         expected = bytearray(self.checkpoint)
         offset = recovery.elf_slot_offset(self.checkpoint, lifetime.loader.ENTRY, 274*4)
         struct.pack_into('>274I', expected, offset, *matching.installed_words(self.root, words))

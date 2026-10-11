@@ -413,7 +413,7 @@ class GameMainResourceLoaderTests(unittest.TestCase):
     def test_08_immutable_baseline_and_linked_installation_audit(self):
         for name in self.paths:
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
-        source=(self.root/screen.SOURCE).read_text()
+        source=matching.parent_source(self.root)
         if source==(self.out/'before-source').read_text():
             for name,path in self.paths.items():self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes())
             self.receipt('linked',installed=False,immutable_baseline_verified=True);return
@@ -446,7 +446,7 @@ class GameMainResourceLoaderTests(unittest.TestCase):
             emitted_words=latest['body_words']
         else:
             self.assertEqual(source,recovery_source)
-        actual=(self.root/self.paths['elf']).read_bytes();expected=bytearray(self.before)
+        actual=matching.parent_elf(self.root,self.before);expected=bytearray(self.before)
         offset=elf_slot_offset(self.before,screen.ENTRY,274*4)
         struct.pack_into('>274I',expected,offset,*matching.installed_words(self.root,words))
         extent=installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)

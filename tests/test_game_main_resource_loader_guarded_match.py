@@ -110,11 +110,11 @@ class GameMainResourceLoaderGuardedMatchTests(previous.GameMainResourceLoaderRem
         for name in self.paths:
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(), self.baseline[name])
             self.assertEqual(hashlib.sha256((self.out/('checkpoint-'+name)).read_bytes()).hexdigest(), self.checkpointHashes[name])
-        self.assertEqual((self.root/self.paths['source']).read_bytes(), (self.out/'checkpoint-source').read_bytes())
+        self.assertEqual(matching.parent_source(self.root).encode('ascii'), (self.out/'checkpoint-source').read_bytes())
         guard_data = (self.root/self.paths['guards']).read_bytes()
         installed = guard_data != (self.out/'checkpoint-guards').read_bytes()
         self.assertEqual(guard_data, self.guards.read_bytes() if installed else (self.out/'checkpoint-guards').read_bytes())
-        actual = (self.root/self.paths['elf']).read_bytes()
+        actual = matching.parent_elf(self.root, self.checkpoint)
         expected = bytearray(self.checkpoint)
         offset = recovery.elf_slot_offset(self.checkpoint, recovery.screen.ENTRY, 1096)
         if installed:
@@ -123,13 +123,15 @@ class GameMainResourceLoaderGuardedMatchTests(previous.GameMainResourceLoaderRem
         self.assertEqual(recovery.metadata(self.checkpoint), recovery.metadata(actual))
         for name, path in self.paths.items():
             if name not in ('elf', 'guards'):
-                self.assertEqual((self.root/path).read_bytes(), (self.out/('checkpoint-'+name)).read_bytes())
+                data = matching.parent_source(self.root).encode('ascii') if name == 'source' else (self.root/path).read_bytes()
+                self.assertEqual(data, (self.out/('checkpoint-'+name)).read_bytes())
         audit = recovery.audit_layout(self.root/self.paths['elf'], self.root/'conker')
         self.assertTrue(audit['exact'], audit)
         self.receipt('linked', installed=installed, ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a != b for a,b in zip(self.checkpoint, actual)),
             only_target_bytes_change=True, all_other_metadata_extents_data_conversion_inputs_exact=True,
-            source_unchanged=True, guard_history_exact_only_22_rows_appended=installed, protected_data=audit)
+            source_unchanged_after_exact_child_projection=True,
+            guard_history_exact_only_22_rows_appended=installed, protected_data=audit)
 
     def test_10_actual_parent_main_extras_relocator_buffer_chain(self):
         recovery.GameMainResourceLoaderTests.test_10_actual_parent_main_extras_relocator_buffer_chain(self)

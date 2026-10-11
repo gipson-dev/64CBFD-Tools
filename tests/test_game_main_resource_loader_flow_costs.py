@@ -22,6 +22,7 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
         cls.out = cls.root/'conker/build/game-main-resource-loader-flow-costs-test'
         cls.out.mkdir(exist_ok=True)
         checkpoint = cls.root/'conker/build/game-main-resource-loader-lifetimes-test'
+        cls.parentCheckpoint = (checkpoint/'checkpoint-elf').read_bytes()
         cls.paths = dict(source=recovery.screen.SOURCE, elf='conker/build/conker.us.elf',
             guards='conker/retail_word_patches.us.csv', progress='conker/progress.csv',
             rodata='conker/asm/data/23B8A0.rodata.s', symbols='conker/symbol_addrs.us.txt',
@@ -29,7 +30,7 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
         cls.expected = json.loads((checkpoint/'checkpoint.json').read_text())
         cls.expected.update(source='25fd41ff70c4fb4db5c7649c74c27fbd4d72ed10831f95ffcb1abdaf75f18a52',
             elf='2129eb586ceac58a8201542a83a62601853a16d8589f49596fdeb137fb02fcaf')
-        source = (cls.root/cls.paths['source']).read_bytes()
+        source = matching.parent_source(cls.root).encode('ascii')
         if hashlib.sha256(source).hexdigest() != cls.expected['source']:
             from tools.experiments import game_main_resource_loader_count_lifetimes as count
             banked = cls.root/'conker/build/game-main-resource-loader-count-lifetimes-test'
@@ -56,7 +57,7 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
             expected_elf = bytearray(original_elf)
             offset = recovery.elf_slot_offset(original_elf, recovery.screen.ENTRY, 274*4)
             struct.pack_into('>274I', expected_elf, offset, *matching.installed_words(cls.root, words))
-            actual_elf = (cls.root/cls.paths['elf']).read_bytes()
+            actual_elf = matching.parent_elf(cls.root, original_elf)
             assert bytes(expected_elf) == actual_elf
             assert recovery.metadata(original_elf) == recovery.metadata(actual_elf)
             cls.expected.update(source=hashlib.sha256(source).hexdigest(),
@@ -65,7 +66,7 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
             if name == 'guards':
                 current = matching.current_guard_bytes(cls.root, (checkpoint/'checkpoint-guards').read_bytes())
                 cls.expected[name] = hashlib.sha256(current).hexdigest()
-            assert hashlib.sha256((cls.root/path).read_bytes()).hexdigest() == cls.expected[name]
+            assert hashlib.sha256(cls.current_input(name, path)).hexdigest() == cls.expected[name]
         cls.retail = list(struct.unpack_from('>274I',
             (cls.root/'conker/conker.us.bin').read_bytes(), recovery.screen.ROM))
         assembly = (cls.root/'conker/asm/6A3D0.s').read_text().split(
@@ -79,6 +80,14 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
             cls.records[name] = flow.measure(cls.root, cls.out, name, body)
         (cls.out/'measurements.json').write_text(json.dumps(
             [record[0] for record in cls.records.values()], indent=2)+'\n')
+
+    @classmethod
+    def current_input(cls, name, path):
+        if name == 'source':
+            return matching.parent_source(cls.root).encode('ascii')
+        if name == 'elf':
+            return matching.parent_elf(cls.root, cls.parentCheckpoint)
+        return (cls.root/path).read_bytes()
 
     def compare(self, memory, forms=None, **settings):
         settings.setdefault('entry', self.entry)
@@ -184,11 +193,12 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
 
     def test_05_preserve_current_linked_baseline(self):
         for name, path in self.paths.items():
-            self.assertEqual(hashlib.sha256((self.root/path).read_bytes()).hexdigest(), self.expected[name])
+            self.assertEqual(hashlib.sha256(self.current_input(name, path)).hexdigest(), self.expected[name])
         audit = recovery.audit_layout(self.root/'conker/build/conker.us.elf', self.root/'conker')
         self.assertTrue(audit['exact'], audit)
         self.candidate = 'all'
-        self.receipt('baseline', hashes=self.expected, installed_source_ELF_data_guards_conversion_rows_unchanged=True,
+        self.receipt('baseline', hashes=self.expected,
+            installed_source_ELF_data_guards_conversion_rows_unchanged_after_exact_child_projection=True,
             protected_data=audit)
 
 

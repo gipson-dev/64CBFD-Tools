@@ -87,7 +87,7 @@ class GameMainResourceLoaderRemainingScheduleTests(previous.GameMainResourceLoad
         for name in self.paths:
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(), self.baseline[name])
             self.assertEqual(hashlib.sha256((self.out/('checkpoint-'+name)).read_bytes()).hexdigest(), self.checkpointHashes[name])
-        source = (self.root/recovery.screen.SOURCE).read_text()
+        source = matching.parent_source(self.root)
         banked = (self.out/'checkpoint-source').read_text()
         if source == banked:
             for name, path in self.paths.items():
@@ -95,7 +95,7 @@ class GameMainResourceLoaderRemainingScheduleTests(previous.GameMainResourceLoad
             self.receipt('linked', installed=False, immutable_recovery_and_checkpoint_verified=True)
             return
         self.assertEqual(source, schedule.install(banked))
-        actual = (self.root/self.paths['elf']).read_bytes()
+        actual = matching.parent_elf(self.root, self.checkpoint)
         expected = bytearray(self.checkpoint)
         offset = recovery.elf_slot_offset(self.checkpoint, recovery.screen.ENTRY, 274*4)
         struct.pack_into('>274I', expected, offset, *matching.installed_words(self.root, self.raw))
