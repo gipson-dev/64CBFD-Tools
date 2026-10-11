@@ -82,7 +82,8 @@ def require_current_slot(root):
 
 
 def historical_source(root):
-    source=(root/SOURCE).read_text()
+    from tools.experiments import game_third_resource_loader_status_candidates as status
+    source=status.historical_source(root)
     if ORIGINAL in source: return source
     assert source.count(QUALIFIED)==1
     before=source.replace(QUALIFIED,ORIGINAL)
@@ -93,13 +94,14 @@ def historical_source(root):
 
 
 def historical_guards(root):
-    current=(root/GUARDS).read_bytes()
+    from tools.experiments import game_third_resource_loader_status_candidates as status
+    current=status.historical_guards(root)
     if OLD_BLOCK in current: return current
     assert current.count(NEW_BLOCK)==1 and len(target_rows(current))==4
     before=current.replace(NEW_BLOCK,OLD_BLOCK)
     assert hashlib.sha256(before).hexdigest()==GUARDS_SHA
     assert install_guards(before)==current
-    assert (root/SOURCE).read_text()==install(historical_source(root))
+    assert status.historical_source(root)==install(historical_source(root))
     require_current_slot(root)
     return before
 

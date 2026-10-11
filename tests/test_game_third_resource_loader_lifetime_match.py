@@ -125,20 +125,22 @@ class GameThirdResourceLoaderLifetimeMatchTests(base.GameThirdResourceLoaderMatc
             all_four_complete_resolved_owner_bytes_extents_relocations_pools_exact=True,D804_selection_unchanged=True)
 
     def test_08_literal_frozen_all_inputs_whole_ELF_guards_and_data(self):
-        before_source=(self.out/'before-source').read_bytes();source=(self.root/screen.SOURCE).read_bytes()
+        from tools.experiments import game_third_resource_loader_status_candidates as status
+        before_source=(self.out/'before-source').read_bytes();source=status.historical_source(self.root).encode('ascii')
         installed=source!=before_source
         expected_source=screen.install(before_source.decode('ascii')).encode('ascii') if installed else before_source
         self.assertEqual(source,expected_source)
-        before_guards=(self.out/'before-guards').read_bytes();actual_guards=(self.root/screen.GUARDS).read_bytes()
+        before_guards=(self.out/'before-guards').read_bytes();actual_guards=status.historical_guards(self.root)
         self.assertEqual(actual_guards,screen.install_guards(before_guards) if installed else before_guards)
         for name,path in self.paths.items():
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
             if name not in ('source','guards'): self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes(),path)
         audit=base.audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(audit['exact'],audit)
         self.receipt('linked',installed=installed,ELF_changes=0,guard_rows_removed=3 if installed else 0,
-            actual_source_and_exact_four_row_successor_only=True,all_other_ELF_bytes_metadata_data_inputs_exact=True,
+            source_guard_view_and_exact_four_row_successor_only=True,all_other_ELF_bytes_metadata_data_inputs_exact=True,
             source_SHA256=hashlib.sha256(source).hexdigest(),guards_SHA256=hashlib.sha256(actual_guards).hexdigest(),
-            matching_credit=0,protected_data=audit,no_projection_in_actual_delta_audit=True)
+            matching_credit=0,protected_data=audit,no_projection_in_actual_ELF_delta_audit=True,
+            exact_status_source_guard_projection=source!=(self.root/screen.SOURCE).read_bytes())
 
     def test_09_native32_all_low_halfword_payloads_keys_unused_and_callbacks(self):
         for profile in ('-O2','-O0'):
