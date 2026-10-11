@@ -170,7 +170,7 @@ class GameNodeTransformSubmitMatchTests(unittest.TestCase):
         return models
     def test_01_shape_stale_body_relocations_and_publication(self):
         self.assertEqual((self.meta['body_words'],self.meta['frame'],self.meta['differences'],self.meta['pool_bytes'],
-            self.meta['diagnostics']),(66,72,5,0,''))
+            self.meta['diagnostics']),(66,72,2,0,''))
         text,functions,relocations=parse_object(self.out/'selected.o');start=functions[screen.FUNCTION]['value']
         for i in range(66):
             words=list(screen.RAW);words[i]^=1
@@ -183,9 +183,9 @@ class GameNodeTransformSubmitMatchTests(unittest.TestCase):
             screen.append_guards(self.full_guards,b'wrong\n',self.out/'selected.o')
         with self.assertRaisesRegex(ValueError,'already published'):
             screen.append_guards(self.full_guards,self.full_guards.read_bytes(),self.out/'selected.o')
-        self.assertEqual(len(self.rows),5)
+        self.assertEqual(len(self.rows),2)
         self.assertTrue(all(r['insert_after']=='' and r['omit']=='false' for r in self.rows))
-        self.receipt('shape',words=66,frame=72,guards=5,private_marker_raw=62,private_marker_retail=64,
+        self.receipt('shape',words=66,frame=72,guards=2,private_marker_raw=62,private_marker_retail=64,
             stale_word_controls=66,stale_relocation_controls=14,insertions_omissions=0,diagnostic_bytes=0,pool_bytes=0)
     def test_02_all_selector_count_bytes_gates_NULL_temporary_and_float_bits(self):
         cases=0;coverage=set()
@@ -342,7 +342,7 @@ class GameNodeTransformSubmitMatchTests(unittest.TestCase):
             self.assertEqual((self.root/self.paths[name]).read_bytes(),(self.out/('before-'+name)).read_bytes())
         self.receipt('linked',installed=True,changed_function_count=1,changed_symbol_extents=1,all_other_ELF_bytes_exact=True,
             ELF_bytes=len(actual),ELF_sha256=hashlib.sha256(actual).hexdigest(),
-            changed_ELF_bytes=sum(a!=b for a,b in zip(before,actual)),appended_guards=5,old_guard_prefix_exact=True,
+            changed_ELF_bytes=sum(a!=b for a,b in zip(before,actual)),appended_guards=2,old_guard_prefix_exact=True,
             data_audit=audit,conversion_rows_unchanged=True)
     def test_10_three_retail_JAL_delay_slot_windows(self):
         cases=0
@@ -389,10 +389,9 @@ static void *allocate_memory(s32 size,s32 a,s32 b,s32 c){
     if(plan==1)D_800BE9C0^=1;
     return missing?0:temporaryWords;
 }
-static s32 func_1502D824(u8 *p,s32 zero,void *temp){
+static void func_1502D824(u8 *p,u8 *zero,u8 *temp){
     record(2,(u32)p,(u32)zero,(u32)temp,0,0,0,0,0,0,0);
     if(plan==2){D_800BE9C0^=1;p[1012]=255;*(u32 *)(p+1008)=0x81238004u;}
-    return -1;
 }
 static void func_150A81D0(u8 **cursor,void *matrix,u8 *p,u8 *source,s32 count,s16 *marker,s32 a,s32 b){
     record(3,1,(u32)matrix,(u32)p,(u32)source,(u32)count,2,(u32)a,(u32)b,(u32)*cursor,(u32)(unsigned short)*marker);
