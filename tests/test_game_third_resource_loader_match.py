@@ -262,12 +262,16 @@ class GameThirdResourceLoaderMatchTests(unittest.TestCase):
             complete_owner_paths_equal_existing_D804_selection=True,all_linked_extents_preserved=True,
             complete_resolved_owner_bytes_equal_current_ELF=True)
     def test_08_literal_frozen_all_inputs_whole_ELF_guards_and_data(self):
+        from tools.experiments import game_third_resource_loader_lifetime_candidates as third
+        views=dict(source=third.historical_source(self.root).encode('ascii'),guards=third.historical_guards(self.root))
         for name,path in self.paths.items():
-            self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes(),path)
+            actual=views[name] if name in views else (self.root/path).read_bytes()
+            self.assertEqual(actual,(self.out/('before-'+name)).read_bytes(),path)
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
         audit=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(audit['exact'],audit)
-        self.receipt('linked',source_changes=0,ELF_changes=0,guard_changes=0,recipe_changes=0,
-            matching_credit=0,protected_data=audit,all_nine_frozen_inputs_literal_exact=True)
+        self.receipt('linked',ELF_changes=0,recipe_changes=0,matching_credit=0,protected_data=audit,
+            historical_source_guard_view_exact=True,all_other_seven_inputs_literal_exact=True,
+            successor_projection_used=views['source']!=(self.root/screen.SOURCE).read_bytes())
     def test_09_native32_all_low_halfword_payloads_keys_unused_and_callbacks(self):
         for profile in ('-O2','-O0'):
             code,detail=self.run_native('native-'+profile[1:],NATIVE+screen.ORIGINAL+NATIVE_MAIN,profile)

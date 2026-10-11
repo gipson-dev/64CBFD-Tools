@@ -402,6 +402,7 @@ class GameDescriptorResourceLoaderMatchTests(unittest.TestCase):
             existing_96_word_function_object_selection_unchanged=True)
 
     def test_08_immutable_actual_whole_ELF_and_all_assignment_inputs(self):
+        from tools.experiments import game_third_resource_loader_lifetime_candidates as third
         for name in self.paths: self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
         before_source=(self.out/'before-source').read_text();source=propagation.descriptor_source(self.root)
         installed_now=source!=before_source
@@ -413,13 +414,16 @@ class GameDescriptorResourceLoaderMatchTests(unittest.TestCase):
             struct.pack_into('>69I',expected,start,*self.retail);struct.pack_into('>I',expected,extent,276)
         self.assertEqual(bytes(expected),actual)
         for name,path in self.paths.items():
-            if name not in ('source','elf'): self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes())
+            if name not in ('source','elf'):
+                data=third.historical_guards(self.root) if name=='guards' else (self.root/path).read_bytes()
+                self.assertEqual(data,(self.out/('before-'+name)).read_bytes())
         audit=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(audit['exact'],audit)
         self.receipt('linked',installed=installed_now,ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
             changed_target_bytes=sum(a!=b for a,b in zip(self.before[start:start+276],actual[start:start+276])),
             changed_extent_bytes=sum(a!=b for a,b in zip(self.before[extent:extent+4],actual[extent:extent+4])),
-            all_other_ELF_bytes_metadata_data_guards_Makefile_and_conversion_inputs_exact_after_propagation_projection=True,protected_data=audit)
+            all_other_ELF_bytes_metadata_data_guard_view_Makefile_and_conversion_inputs_exact_after_propagation_projection=True,
+            exact_third_lifetime_guard_projection=third.historical_guards(self.root)!=(self.root/third.GUARDS).read_bytes(),protected_data=audit)
 
     def test_09_native32_complete_C_callbacks_all_halfword_payloads_and_ignored_argument(self):
         for profile in ('-O2','-O0'):

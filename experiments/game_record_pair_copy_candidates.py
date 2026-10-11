@@ -303,7 +303,8 @@ def counter_elf(root, before):
 
 
 def counter_guards(root):
-    current = (root/'conker/retail_word_patches.us.csv').read_bytes()
+    from tools.experiments import game_third_resource_loader_lifetime_candidates as third
+    current = third.historical_guards(root)
     if hashlib.sha256(current).hexdigest() == COUNTER_GUARDS_SHA:
         return current
     assert current.endswith(guard_suffix())

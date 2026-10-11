@@ -61,7 +61,8 @@ def install(before):
 
 def propagation_source(root):
     """Reverse only the complete qualified cleanup for immutable older audits."""
-    source=(root/SOURCE).read_text()
+    from tools.experiments import game_third_resource_loader_lifetime_candidates as third
+    source=third.historical_source(root)
     if ORIGINAL in source:
         return source
     assert source.count(QUALIFIED)==source.count(TYPED_PROTOTYPE)==source.count(RELEASE_DECLARATION)==1

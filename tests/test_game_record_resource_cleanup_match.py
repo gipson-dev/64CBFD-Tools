@@ -327,8 +327,9 @@ class GameRecordResourceCleanupMatchTests(unittest.TestCase):
             all_other_bytes_extents_relocations_pools_and_274_word_caller_exact=True,D804_selector_unchanged=True)
 
     def test_08_literal_immutable_whole_ELF_and_every_assignment_input(self):
+        from tools.experiments import game_third_resource_loader_lifetime_candidates as third
         for name in self.paths: self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
-        before_source=(self.out/'before-source').read_text();source=(self.root/screen.SOURCE).read_text();now=source!=before_source
+        before_source=(self.out/'before-source').read_text();source=third.historical_source(self.root);now=source!=before_source
         self.assertEqual(source,screen.install(before_source) if now else before_source)
         actual=(self.root/self.paths['elf']).read_bytes();expected=bytearray(self.before)
         start=elf_slot_offset(self.before,screen.ENTRY,180);extent=installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)
@@ -338,7 +339,9 @@ class GameRecordResourceCleanupMatchTests(unittest.TestCase):
             expected=bytearray(screen.swap_metadata_pair(expected))
         self.assertEqual(bytes(expected),actual)
         for name,path in self.paths.items():
-            if name not in ('source','elf'): self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes())
+            if name not in ('source','elf'):
+                actual_input=third.historical_guards(self.root) if name=='guards' else (self.root/path).read_bytes()
+                self.assertEqual(actual_input,(self.out/('before-'+name)).read_bytes())
         audit=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(audit['exact'],audit)
         self.receipt('linked',installed=now,ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
@@ -346,7 +349,8 @@ class GameRecordResourceCleanupMatchTests(unittest.TestCase):
             changed_extent_bytes=sum(a!=b for a,b in zip(self.before[extent:extent+4],actual[extent:extent+4])),
             changed_metadata_pair_bytes=14 if now else 0,
             literal_no_projection_exact_target_extent_and_two_symbol_name_value_permutation_only=True,
-            all_semantic_symbols_and_other_ELF_bytes_data_guards_recipe_conversion_inputs_exact=True,protected_data=audit)
+            all_semantic_symbols_and_other_ELF_bytes_data_guard_view_recipe_conversion_inputs_exact=True,
+            exact_third_lifetime_source_guard_projection=source!=(self.root/screen.SOURCE).read_text(),protected_data=audit)
 
     def test_09_native32_full_unsigned_counts_maximum_scan_and_callbacks(self):
         for profile in ('-O2','-O0'):

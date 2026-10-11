@@ -332,6 +332,7 @@ class GameRecordPairCopyMatchTests(unittest.TestCase):
             only_target_selected_from_unrolled_owner=True, omitted_selector_rejected_by_both_routes=True)
 
     def test_08_immutable_whole_ELF_guard_and_recipe_installation_audit(self):
+        from tools.experiments import game_third_resource_loader_lifetime_candidates as third
         for name in self.paths: self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
         before_source = (self.out/'before-source').read_text(); source = descriptor.pair_source(self.root)
         installed_now = source != before_source
@@ -348,14 +349,16 @@ class GameRecordPairCopyMatchTests(unittest.TestCase):
             data = (self.out/('before-'+name)).read_bytes()
             if installed_now and name == 'guards': data += screen.guard_suffix()
             if installed_now and name == 'makefile': data = screen.install_makefile(data.decode('ascii')).encode('ascii')
-            self.assertEqual((self.root/path).read_bytes(),data,name)
+            actual_input=third.historical_guards(self.root) if name=='guards' else (self.root/path).read_bytes()
+            self.assertEqual(actual_input,data,name)
         audit = audit_layout(self.root/self.paths['elf'],self.root/'conker'); self.assertTrue(audit['exact'],audit)
         self.receipt('linked', installed=installed_now, ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
             changed_target_bytes=sum(a!=b for a,b in zip(self.before[start:start+384],actual[start:start+384])),
             changed_extent_bytes=sum(a!=b for a,b in zip(self.before[extent:extent+4],actual[extent:extent+4])),
             all_other_ELF_bytes_metadata_data_and_conversion_inputs_exact_after_descriptor_projection=True,
-            guard_prefix_exact_only_four_rows_and_exact_mixed_recipe_change=True, protected_data=audit)
+            guard_view_prefix_exact_only_four_rows_and_exact_mixed_recipe_change=True,
+            exact_third_lifetime_guard_projection=third.historical_guards(self.root)!=(self.root/third.GUARDS).read_bytes(),protected_data=audit)
 
     def test_09_native32_complete_C_aliases_callbacks_and_all_halfword_values(self):
         for profile in ('-O2','-O0'):

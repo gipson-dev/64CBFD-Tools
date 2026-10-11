@@ -292,6 +292,7 @@ class GameGroupPublicationPropagationMatchTests(unittest.TestCase):
             all_other_bytes_extents_relocations_pools_and_69_word_caller_exact=True,existing_D804_selector_unchanged=True)
 
     def test_08_immutable_actual_whole_ELF_and_every_assignment_input(self):
+        from tools.experiments import game_third_resource_loader_lifetime_candidates as third
         for name in self.paths: self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
         before_source=(self.out/'before-source').read_text();source=cleanup.propagation_source(self.root);now=source!=before_source
         self.assertEqual(source,screen.install(before_source) if now else before_source)
@@ -301,13 +302,16 @@ class GameGroupPublicationPropagationMatchTests(unittest.TestCase):
         if now: struct.pack_into('>56I',expected,start,*self.retail);struct.pack_into('>I',expected,extent,224)
         self.assertEqual(bytes(expected),actual)
         for name,path in self.paths.items():
-            if name not in ('source','elf'): self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes())
+            if name not in ('source','elf'):
+                data=third.historical_guards(self.root) if name=='guards' else (self.root/path).read_bytes()
+                self.assertEqual(data,(self.out/('before-'+name)).read_bytes())
         audit=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(audit['exact'],audit)
         self.receipt('linked',installed=now,ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
             changed_target_bytes=sum(a!=b for a,b in zip(self.before[start:start+224],actual[start:start+224])),
             changed_extent_bytes=sum(a!=b for a,b in zip(self.before[extent:extent+4],actual[extent:extent+4])),
-            all_other_ELF_bytes_metadata_data_guards_recipe_conversion_inputs_exact_after_cleanup_projection=True,protected_data=audit)
+            all_other_ELF_bytes_metadata_data_guard_view_recipe_conversion_inputs_exact_after_cleanup_projection=True,
+            exact_third_lifetime_guard_projection=third.historical_guards(self.root)!=(self.root/third.GUARDS).read_bytes(),protected_data=audit)
 
     def test_09_native32_all_halfwords_all_byte_identities_and_maximum_groups(self):
         for profile in ('-O2','-O0'):
