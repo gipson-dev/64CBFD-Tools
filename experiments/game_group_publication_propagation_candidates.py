@@ -165,7 +165,8 @@ def install(before):
 def descriptor_source(root):
     """Reverse only this complete exact successor for older frozen audits."""
     import hashlib
-    source = (root/SOURCE).read_text()
+    from tools.experiments import game_record_resource_cleanup_candidates as cleanup
+    source = cleanup.propagation_source(root)
     if ORIGINAL in source:
         return source
     assert source.count(QUALIFIED) == 1
@@ -181,8 +182,9 @@ def descriptor_elf(root, before):
     from tools.tests.test_game_actor_renderer_install_match import symbol_size_offset
 
     source = descriptor_source(root)
-    actual = (root/'conker/build/conker.us.elf').read_bytes()
-    if source == (root/SOURCE).read_text():
+    from tools.experiments import game_record_resource_cleanup_candidates as cleanup
+    actual = cleanup.propagation_elf(root,before)
+    if source == cleanup.propagation_source(root):
         return actual
     start = elf_slot_offset(actual,ENTRY,WORDS*4)
     extent = symbol_size_offset(actual,FUNCTION,ENTRY)

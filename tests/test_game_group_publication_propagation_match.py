@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tools.experiments import game_group_publication_propagation_candidates as screen
+from tools.experiments import game_record_resource_cleanup_candidates as cleanup
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
@@ -292,9 +293,9 @@ class GameGroupPublicationPropagationMatchTests(unittest.TestCase):
 
     def test_08_immutable_actual_whole_ELF_and_every_assignment_input(self):
         for name in self.paths: self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
-        before_source=(self.out/'before-source').read_text();source=(self.root/screen.SOURCE).read_text();now=source!=before_source
+        before_source=(self.out/'before-source').read_text();source=cleanup.propagation_source(self.root);now=source!=before_source
         self.assertEqual(source,screen.install(before_source) if now else before_source)
-        actual=(self.root/self.paths['elf']).read_bytes();expected=bytearray(self.before)
+        actual=cleanup.propagation_elf(self.root,self.before);expected=bytearray(self.before)
         start=elf_slot_offset(self.before,screen.ENTRY,224);extent=installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)
         self.assertEqual(struct.unpack_from('>I',self.before,extent)[0],12)
         if now: struct.pack_into('>56I',expected,start,*self.retail);struct.pack_into('>I',expected,extent,224)
@@ -306,7 +307,7 @@ class GameGroupPublicationPropagationMatchTests(unittest.TestCase):
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
             changed_target_bytes=sum(a!=b for a,b in zip(self.before[start:start+224],actual[start:start+224])),
             changed_extent_bytes=sum(a!=b for a,b in zip(self.before[extent:extent+4],actual[extent:extent+4])),
-            all_other_ELF_bytes_metadata_data_guards_recipe_conversion_inputs_exact=True,protected_data=audit)
+            all_other_ELF_bytes_metadata_data_guards_recipe_conversion_inputs_exact_after_cleanup_projection=True,protected_data=audit)
 
     def test_09_native32_all_halfwords_all_byte_identities_and_maximum_groups(self):
         for profile in ('-O2','-O0'):
