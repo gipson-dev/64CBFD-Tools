@@ -28,6 +28,26 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
         cls.expected = json.loads((checkpoint/'checkpoint.json').read_text())
         cls.expected.update(source='25fd41ff70c4fb4db5c7649c74c27fbd4d72ed10831f95ffcb1abdaf75f18a52',
             elf='2129eb586ceac58a8201542a83a62601853a16d8589f49596fdeb137fb02fcaf')
+        source = (cls.root/cls.paths['source']).read_bytes()
+        if hashlib.sha256(source).hexdigest() != cls.expected['source']:
+            from tools.experiments import game_main_resource_loader_count_lifetimes as count
+            banked = cls.root/'conker/build/game-main-resource-loader-count-lifetimes-test'
+            for name in cls.paths:
+                assert hashlib.sha256((banked/('checkpoint-'+name)).read_bytes()).hexdigest() == cls.expected[name]
+            original_source = (banked/'checkpoint-source').read_text()
+            assert source.decode().replace('\r\n', '\n') == count.install(original_source)
+            meta, words = count.measure(cls.root, cls.out, 'qualified-count-lifetime', count.SELECTED)
+            assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 98)
+            assert (meta['diagnostics'], meta['pool_bytes']) == ('', 0)
+            original_elf = (banked/'checkpoint-elf').read_bytes()
+            expected_elf = bytearray(original_elf)
+            offset = recovery.elf_slot_offset(original_elf, recovery.screen.ENTRY, 274*4)
+            struct.pack_into('>274I', expected_elf, offset, *words)
+            actual_elf = (cls.root/cls.paths['elf']).read_bytes()
+            assert bytes(expected_elf) == actual_elf
+            assert recovery.metadata(original_elf) == recovery.metadata(actual_elf)
+            cls.expected.update(source=hashlib.sha256(source).hexdigest(),
+                elf=hashlib.sha256(expected_elf).hexdigest())
         for name, path in cls.paths.items():
             assert hashlib.sha256((cls.root/path).read_bytes()).hexdigest() == cls.expected[name]
         cls.retail = list(struct.unpack_from('>274I',

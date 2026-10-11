@@ -95,11 +95,20 @@ class GameMainResourceLoaderLifetimeTests(recovery.GameMainResourceLoaderTests):
                 self.assertEqual((self.root/path).read_bytes(), (self.out/('checkpoint-'+name)).read_bytes())
             self.receipt('linked', installed=False, immutable_recovery_and_checkpoint_verified=True)
             return
-        self.assertEqual(source, lifetime.install(banked))
+        lifetime_source = lifetime.install(banked)
+        words = self.raw
+        if source == lifetime_source:
+            self.assertEqual(source, lifetime_source)
+        else:
+            from tools.experiments import game_main_resource_loader_count_lifetimes as count
+            self.assertEqual(source, count.install(lifetime_source))
+            latest, words = lifetime.loader.compile_candidate(self.root, self.out, 'latest-count-lifetime', count.SELECTED)
+            self.assertEqual((latest['body_words'], latest['frame'], latest['differences']), (274, 0x78, 98))
+            self.assertEqual((latest['diagnostics'], latest['pool_bytes']), ('', 0))
         actual = (self.root/self.paths['elf']).read_bytes()
         expected = bytearray(self.checkpoint)
         offset = recovery.elf_slot_offset(self.checkpoint, lifetime.loader.ENTRY, 274*4)
-        struct.pack_into('>274I', expected, offset, *self.raw)
+        struct.pack_into('>274I', expected, offset, *words)
         extent = recovery.installed.symbol_size_offset(self.checkpoint, lifetime.loader.FUNCTION, lifetime.loader.ENTRY)
         self.assertEqual(struct.unpack_from('>I', self.checkpoint, extent)[0], 272*4)
         struct.pack_into('>I', expected, extent, 274*4)
