@@ -120,11 +120,18 @@ class GameMainResourceLoaderPrivateLayoutTests(previous.GameMainResourceLoaderCo
                 self.assertEqual((self.root/path).read_bytes(), (self.out/('checkpoint-'+name)).read_bytes())
             self.receipt('linked', installed=False, immutable_recovery_and_checkpoint_verified=True)
             return
-        self.assertEqual(source, layout.install(banked))
+        layout_source = layout.install(banked)
+        words = self.raw
+        if source != layout_source:
+            from tools.experiments import game_main_resource_loader_remaining_schedule as schedule
+            self.assertEqual(source, schedule.install(layout_source))
+            latest, words = schedule.measure(self.root, self.out, 'latest-remaining-schedule', schedule.SELECTED)
+            self.assertEqual((latest['body_words'], latest['frame'], latest['differences']), (274, 0x78, 22))
+            self.assertEqual((latest['diagnostics'], latest['pool_bytes']), ('', 0))
         actual = (self.root/self.paths['elf']).read_bytes()
         expected = bytearray(self.checkpoint)
         offset = recovery.elf_slot_offset(self.checkpoint, recovery.screen.ENTRY, 274*4)
-        struct.pack_into('>274I', expected, offset, *self.raw)
+        struct.pack_into('>274I', expected, offset, *words)
         self.assertEqual(bytes(expected), actual)
         self.assertEqual(recovery.metadata(self.checkpoint), recovery.metadata(actual))
         for name, path in self.paths.items():

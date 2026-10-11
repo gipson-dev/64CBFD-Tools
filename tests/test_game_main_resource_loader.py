@@ -433,9 +433,15 @@ class GameMainResourceLoaderTests(unittest.TestCase):
                     self.assertEqual((latest['body_words'],latest['frame'],latest['differences']), (274,0x78,98))
                 else:
                     from tools.experiments import game_main_resource_loader_private_layout as layout
-                    self.assertEqual(source,layout.install(count_source))
-                    latest,words=screen.compile_candidate(self.root,self.out,'latest-private-layout',layout.SELECTED)
-                    self.assertEqual((latest['body_words'],latest['frame'],latest['differences']), (274,0x78,24))
+                    layout_source=layout.install(count_source)
+                    if source==layout_source:
+                        latest,words=screen.compile_candidate(self.root,self.out,'latest-private-layout',layout.SELECTED)
+                        self.assertEqual((latest['body_words'],latest['frame'],latest['differences']), (274,0x78,24))
+                    else:
+                        from tools.experiments import game_main_resource_loader_remaining_schedule as schedule
+                        self.assertEqual(source,schedule.install(layout_source))
+                        latest,words=screen.compile_candidate(self.root,self.out,'latest-remaining-schedule',schedule.SELECTED)
+                        self.assertEqual((latest['body_words'],latest['frame'],latest['differences']), (274,0x78,22))
             self.assertEqual((latest['diagnostics'],latest['pool_bytes']),('',0))
             emitted_words=latest['body_words']
         else:

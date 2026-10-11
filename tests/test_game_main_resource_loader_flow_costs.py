@@ -41,9 +41,15 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
                 assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 98)
             else:
                 from tools.experiments import game_main_resource_loader_private_layout as layout
-                assert source.decode().replace('\r\n', '\n') == layout.install(count_source)
-                meta, words = layout.measure(cls.root, cls.out, 'qualified-private-layout', layout.SELECTED)
-                assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 24)
+                layout_source = layout.install(count_source)
+                if source.decode().replace('\r\n', '\n') == layout_source:
+                    meta, words = layout.measure(cls.root, cls.out, 'qualified-private-layout', layout.SELECTED)
+                    assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 24)
+                else:
+                    from tools.experiments import game_main_resource_loader_remaining_schedule as schedule
+                    assert source.decode().replace('\r\n', '\n') == schedule.install(layout_source)
+                    meta, words = schedule.measure(cls.root, cls.out, 'qualified-remaining-schedule', schedule.SELECTED)
+                    assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 22)
             assert (meta['diagnostics'], meta['pool_bytes']) == ('', 0)
             original_elf = (banked/'checkpoint-elf').read_bytes()
             expected_elf = bytearray(original_elf)
