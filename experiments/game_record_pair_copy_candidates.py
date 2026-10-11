@@ -257,7 +257,8 @@ def guard_suffix():
 
 def counter_source(root):
     """Admit only the exact qualified successor without refreshing frozen audits."""
-    source = (root/SOURCE).read_text()
+    from tools.experiments import game_descriptor_resource_loader_candidates as descriptor
+    source = descriptor.pair_source(root)
     if ORIGINAL in source:
         return source
     assert source.count(QUALIFIED) == 1
@@ -285,10 +286,11 @@ def require_current_slot(root, actual):
 def counter_elf(root, before):
     from tools.tests.test_game_record_constructor_match import elf_slot_offset
     from tools.tests.test_game_actor_renderer_install_match import symbol_size_offset
+    from tools.experiments import game_descriptor_resource_loader_candidates as descriptor
 
     source = counter_source(root)
-    actual = (root/'conker/build/conker.us.elf').read_bytes()
-    if (root/SOURCE).read_text() == source:
+    actual = descriptor.pair_elf(root, before)
+    if descriptor.pair_source(root) == source:
         return actual
     start, extent = require_current_slot(root, actual)
     old_start = elf_slot_offset(before, ENTRY, WORDS*4)

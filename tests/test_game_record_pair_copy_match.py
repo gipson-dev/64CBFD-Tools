@@ -11,6 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tools.experiments import game_record_pair_copy_candidates as screen
+from tools.experiments import game_descriptor_resource_loader_candidates as descriptor
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
@@ -332,10 +333,10 @@ class GameRecordPairCopyMatchTests(unittest.TestCase):
 
     def test_08_immutable_whole_ELF_guard_and_recipe_installation_audit(self):
         for name in self.paths: self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
-        before_source = (self.out/'before-source').read_text(); source = (self.root/screen.SOURCE).read_text()
+        before_source = (self.out/'before-source').read_text(); source = descriptor.pair_source(self.root)
         installed_now = source != before_source
         self.assertEqual(source,screen.install(before_source) if installed_now else before_source)
-        actual = (self.root/self.paths['elf']).read_bytes(); expected = bytearray(self.before)
+        actual = descriptor.pair_elf(self.root,self.before); expected = bytearray(self.before)
         start = elf_slot_offset(self.before,screen.ENTRY,384)
         extent = installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)
         self.assertEqual(struct.unpack_from('>I',self.before,extent)[0],12)
@@ -353,7 +354,7 @@ class GameRecordPairCopyMatchTests(unittest.TestCase):
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
             changed_target_bytes=sum(a!=b for a,b in zip(self.before[start:start+384],actual[start:start+384])),
             changed_extent_bytes=sum(a!=b for a,b in zip(self.before[extent:extent+4],actual[extent:extent+4])),
-            all_other_ELF_bytes_metadata_data_and_conversion_inputs_exact=True,
+            all_other_ELF_bytes_metadata_data_and_conversion_inputs_exact_after_descriptor_projection=True,
             guard_prefix_exact_only_four_rows_and_exact_mixed_recipe_change=True, protected_data=audit)
 
     def test_09_native32_complete_C_aliases_callbacks_and_all_halfword_values(self):
