@@ -35,9 +35,15 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
             for name in cls.paths:
                 assert hashlib.sha256((banked/('checkpoint-'+name)).read_bytes()).hexdigest() == cls.expected[name]
             original_source = (banked/'checkpoint-source').read_text()
-            assert source.decode().replace('\r\n', '\n') == count.install(original_source)
-            meta, words = count.measure(cls.root, cls.out, 'qualified-count-lifetime', count.SELECTED)
-            assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 98)
+            count_source = count.install(original_source)
+            if source.decode().replace('\r\n', '\n') == count_source:
+                meta, words = count.measure(cls.root, cls.out, 'qualified-count-lifetime', count.SELECTED)
+                assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 98)
+            else:
+                from tools.experiments import game_main_resource_loader_private_layout as layout
+                assert source.decode().replace('\r\n', '\n') == layout.install(count_source)
+                meta, words = layout.measure(cls.root, cls.out, 'qualified-private-layout', layout.SELECTED)
+                assert (meta['body_words'], meta['frame'], meta['differences']) == (274, 0x78, 24)
             assert (meta['diagnostics'], meta['pool_bytes']) == ('', 0)
             original_elf = (banked/'checkpoint-elf').read_bytes()
             expected_elf = bytearray(original_elf)

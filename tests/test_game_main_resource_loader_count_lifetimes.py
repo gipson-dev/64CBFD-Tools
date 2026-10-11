@@ -122,11 +122,18 @@ class GameMainResourceLoaderCountLifetimeTests(previous.GameMainResourceLoaderLi
                 self.assertEqual((self.root/path).read_bytes(), (self.out/('checkpoint-'+name)).read_bytes())
             self.receipt('linked', installed=False, immutable_recovery_and_checkpoint_verified=True)
             return
-        self.assertEqual(source, count.install(banked))
+        count_source = count.install(banked)
+        words = self.raw
+        if source != count_source:
+            from tools.experiments import game_main_resource_loader_private_layout as layout
+            self.assertEqual(source, layout.install(count_source))
+            latest, words = count.measure(self.root, self.out, 'latest-private-layout', layout.SELECTED)
+            self.assertEqual((latest['body_words'], latest['frame'], latest['differences']), (274, 0x78, 24))
+            self.assertEqual((latest['diagnostics'], latest['pool_bytes']), ('', 0))
         actual = (self.root/self.paths['elf']).read_bytes()
         expected = bytearray(self.checkpoint)
         offset = recovery.elf_slot_offset(self.checkpoint, recovery.screen.ENTRY, 274*4)
-        struct.pack_into('>274I', expected, offset, *self.raw)
+        struct.pack_into('>274I', expected, offset, *words)
         self.assertEqual(bytes(expected), actual)
         self.assertEqual(recovery.metadata(self.checkpoint), recovery.metadata(actual))
         for name, path in self.paths.items():
