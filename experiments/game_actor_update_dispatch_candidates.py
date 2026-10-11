@@ -42,7 +42,7 @@ s32 func_1502E4C4();
 s32 func_1503A08C();
 s32 func_150345E4();
 s32 func_1503A830();
-s32 func_1503DF48();
+void func_1503DF48(s32);
 s32 func_1502EEF4();
 s32 func_1502F264();
 s32 func_1502EAFC();
@@ -121,7 +121,7 @@ def candidates():
          .replace('        func_1503DF48(slot);', '        func_1503DF48(state);')),
         ('nested-nonzero', BASELINE.replace('    if (actor->active != 0) {', early)),
         ('index-state-early', BASELINE.replace(table_gate, state_gate).replace('    if (actor->active != 0) {', early)),
-        ('typed-table-callback', 's32 func_1503DF48(s32 slot);\n' + BASELINE),
+        ('typed-table-callback', 'void func_1503DF48(s32 slot);\n' + BASELINE),
         ('void-table-callback', BASELINE.replace('        func_1503DF48(slot);',
                                               '        ((void (*)(s32))func_1503DF48)(slot);')),
         ('volatile-slot', BASELINE.replace('s32 slot)', 'volatile s32 slot)')),

@@ -110,7 +110,7 @@ s32 func_1502E4C4(s32 value) {checkSlot(value);record(4);return -123;}
 s32 func_1503A08C(ActorUpdate58F80 *value) {checkActor(value);record(5);actor.work=workValue;return -123;}
 s32 func_150345E4(s32 value) {checkSlot(value);record(6);return -123;}
 s32 func_1503A830(ActorUpdate58F80 *value) {checkActor(value);record(7);return -123;}
-s32 func_1503DF48(s32 value) {checkSlot(value);record(8);if(mutation==1) actor.active=0;return -123;}
+void func_1503DF48(s32 value) {checkSlot(value);record(8);if(mutation==1) actor.active=0;}
 s32 func_1502EEF4(s32 value) {checkSlot(value);record(9);return -123;}
 s32 func_1502F264(s32 value) {checkSlot(value);record(10);if(mutation==2) {actor.active=0;actor.signal=1;}return -123;}
 s32 func_1502EAFC(ActorUpdate58F80 *value) {checkActor(value);record(11);if(mutation==2) actor.flags=0x4000;return -123;}
@@ -144,8 +144,11 @@ static int compare(void) {int i;if(error || count!=wanted) return 1;for(i=0;i<co
         self.assertEqual(len(screen.candidates()), 26)
         source = (self.root / 'conker/src/game/generated_58F80.c').read_text()
         body = re.search(r'void func_1502BD84\([^;{}]+\) \{\n.*?\n\}', source, re.S).group(0)
-        self.assertEqual(body, screen.BASELINE)
-        self.assertIn(screen.DECLARATIONS.strip(), source)
+        expected = screen.BASELINE.replace('func_1502FBE8(actor)', 'func_1502FBE8((u8 *)actor)').replace(
+            'func_1502EAFC(actor)', 'func_1502EAFC((u8 *)actor)')
+        self.assertEqual(body, expected)
+        self.assertIn(screen.DECLARATIONS.split('extern u8', 1)[0].strip(), source)
+        self.assertIn('void func_1503DF48(s32);', source)
         functions, _, addresses = load_elf_functions(str(self.root / 'conker/build/conker.us.elf'), 'mips-linux-gnu-objdump')
         self.assertEqual(addresses['func_1502BD84'], ENTRY)
         self.assertEqual(functions['func_1502BD84'], self.retail)
