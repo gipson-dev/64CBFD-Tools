@@ -10,6 +10,7 @@ from unittest.mock import patch
 from tools.experiments import game_main_resource_loader_remaining_schedule as schedule
 from tools.tests import test_game_main_resource_loader_private_layout as previous
 from tools.tests import test_game_main_resource_loader as recovery
+from tools.experiments import game_main_resource_loader_guarded_match as matching
 
 
 class GameMainResourceLoaderRemainingScheduleTests(previous.GameMainResourceLoaderPrivateLayoutTests):
@@ -77,8 +78,7 @@ class GameMainResourceLoaderRemainingScheduleTests(previous.GameMainResourceLoad
         self.assertFalse(self.meta['masked_initial_count_store'])
         self.assertEqual(self.link('original'), self.retail)
         self.assertEqual(self.link('padded'), self.raw)
-        with (self.root/self.paths['guards']).open(newline='') as stream:
-            self.assertFalse(any(row['function'] == recovery.screen.FUNCTION for row in csv.DictReader(stream)))
+        matching.validate_current_guards(self.root)
         self.receipt('shape', words=274, frame=0x78, raw_differences=22,
             original_first_count_private_store_and_delay_initialization=True,
             complete_body_still_nonmatching=True, new_guards=0)
@@ -98,11 +98,13 @@ class GameMainResourceLoaderRemainingScheduleTests(previous.GameMainResourceLoad
         actual = (self.root/self.paths['elf']).read_bytes()
         expected = bytearray(self.checkpoint)
         offset = recovery.elf_slot_offset(self.checkpoint, recovery.screen.ENTRY, 274*4)
-        struct.pack_into('>274I', expected, offset, *self.raw)
+        struct.pack_into('>274I', expected, offset, *matching.installed_words(self.root, self.raw))
         self.assertEqual(bytes(expected), actual)
         self.assertEqual(recovery.metadata(self.checkpoint), recovery.metadata(actual))
         for name, path in self.paths.items():
-            if name not in ('source', 'elf'):
+            if name == 'guards':
+                matching.current_guard_bytes(self.root, (self.out/'checkpoint-guards').read_bytes())
+            elif name not in ('source', 'elf'):
                 self.assertEqual((self.root/path).read_bytes(), (self.out/('checkpoint-'+name)).read_bytes())
         audit = recovery.audit_layout(self.root/self.paths['elf'], self.root/'conker')
         self.assertTrue(audit['exact'], audit)

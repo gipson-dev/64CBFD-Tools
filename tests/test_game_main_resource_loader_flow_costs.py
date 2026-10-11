@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 from tools.experiments import game_main_resource_loader_flow_costs as flow
+from tools.experiments import game_main_resource_loader_guarded_match as matching
 from tools.tests import test_game_main_resource_loader as recovery
 
 
@@ -54,13 +55,16 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
             original_elf = (banked/'checkpoint-elf').read_bytes()
             expected_elf = bytearray(original_elf)
             offset = recovery.elf_slot_offset(original_elf, recovery.screen.ENTRY, 274*4)
-            struct.pack_into('>274I', expected_elf, offset, *words)
+            struct.pack_into('>274I', expected_elf, offset, *matching.installed_words(cls.root, words))
             actual_elf = (cls.root/cls.paths['elf']).read_bytes()
             assert bytes(expected_elf) == actual_elf
             assert recovery.metadata(original_elf) == recovery.metadata(actual_elf)
             cls.expected.update(source=hashlib.sha256(source).hexdigest(),
                 elf=hashlib.sha256(expected_elf).hexdigest())
         for name, path in cls.paths.items():
+            if name == 'guards':
+                current = matching.current_guard_bytes(cls.root, (checkpoint/'checkpoint-guards').read_bytes())
+                cls.expected[name] = hashlib.sha256(current).hexdigest()
             assert hashlib.sha256((cls.root/path).read_bytes()).hexdigest() == cls.expected[name]
         cls.retail = list(struct.unpack_from('>274I',
             (cls.root/'conker/conker.us.bin').read_bytes(), recovery.screen.ROM))

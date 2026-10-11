@@ -10,6 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tools.experiments import game_main_resource_loader_candidates as screen
+from tools.experiments import game_main_resource_loader_guarded_match as matching
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
@@ -249,8 +250,7 @@ class GameMainResourceLoaderTests(unittest.TestCase):
         self.assertEqual((self.meta['pool_bytes'],self.meta['diagnostics']),(0,''))
         self.assertEqual(self.link('original'),self.retail)
         self.assertEqual(self.link('padded')[:272],self.raw)
-        with (self.root/self.paths['guards']).open(newline='') as stream:
-            self.assertFalse(any(row['function']==screen.FUNCTION for row in csv.DictReader(stream)))
+        matching.validate_current_guards(self.root)
         self.receipt('shape',words=272,slot_words=274,frame=0x88,raw_differences=273,
             matching_not_achieved=True,new_guards=0)
     def test_02_full_reference_and_all_retail_words(self):
@@ -448,7 +448,7 @@ class GameMainResourceLoaderTests(unittest.TestCase):
             self.assertEqual(source,recovery_source)
         actual=(self.root/self.paths['elf']).read_bytes();expected=bytearray(self.before)
         offset=elf_slot_offset(self.before,screen.ENTRY,274*4)
-        struct.pack_into('>274I',expected,offset,*words)
+        struct.pack_into('>274I',expected,offset,*matching.installed_words(self.root,words))
         extent=installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)
         self.assertEqual(struct.unpack_from('>I',self.before,extent)[0],12)
         struct.pack_into('>I',expected,extent,emitted_words*4)
@@ -465,7 +465,10 @@ class GameMainResourceLoaderTests(unittest.TestCase):
             expected[start:end]=actual[start:end]
         self.assertEqual(bytes(expected),actual)
         for name,path in self.paths.items():
-            if name not in ('source','elf'): self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes())
+            if name == 'guards':
+                matching.current_guard_bytes(self.root,(self.out/'before-guards').read_bytes())
+            elif name not in ('source','elf'):
+                self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+name)).read_bytes())
         audit=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(audit['exact'],audit)
         self.receipt('linked',installed=True,ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
