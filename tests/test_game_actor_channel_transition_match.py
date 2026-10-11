@@ -115,6 +115,13 @@ class GameActorChannelTransitionMatchTests(unittest.TestCase):
             (cls.out/'linker-baseline.json').write_text(json.dumps({'sha256':hashlib.sha256(data).hexdigest()},indent=2)+'\n')
         cls.linker_hash=json.loads((cls.out/'linker-baseline.json').read_text())['sha256']
         assert hashlib.sha256((cls.out/'before-undefined').read_bytes()).hexdigest()==cls.linker_hash
+        if not (cls.out/'before-symbols').exists():
+            data=(cls.root/'conker/symbol_addrs.us.txt').read_bytes()
+            assert b'func_1507E7E4' not in data
+            (cls.out/'before-symbols').write_bytes(data)
+            (cls.out/'symbols-baseline.json').write_text(json.dumps({'sha256':hashlib.sha256(data).hexdigest()},indent=2)+'\n')
+        cls.symbols_hash=json.loads((cls.out/'symbols-baseline.json').read_text())['sha256']
+        assert hashlib.sha256((cls.out/'before-symbols').read_bytes()).hexdigest()==cls.symbols_hash
         with (cls.out/'before-guards').open(newline='') as stream:
             cls.fields=csv.DictReader(stream).fieldnames
         cls.meta,cls.raw=screen.compile_candidate(cls.root,cls.out,'selected')
@@ -355,6 +362,46 @@ class GameActorChannelTransitionMatchTests(unittest.TestCase):
             newly_counted_function=1,converted_bytes_added=292,target_symbol_ABS_to_game_only=True,
             guards_prefix_byte_identical=True,
             only_five_guard_rows_added=True,protected_data=audit)
+
+    def test_09_durable_defined_symbol_actual_Splat_parser_and_writer(self):
+        before=(self.out/'before-symbols').read_bytes()
+        self.assertEqual(hashlib.sha256(before).hexdigest(),self.symbols_hash)
+        actual=(self.root/'conker/symbol_addrs.us.txt').read_bytes()
+        added=b'func_1507E7E4 = 0x1507E7E4; // type:func defined:true'
+        self.assertTrue(actual.startswith(before))
+        self.assertEqual(actual[len(before):].strip(),added)
+        script=r'''
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+from intervaltree import IntervalTree
+root,out=map(Path,sys.argv[1:])
+sys.path.insert(0,str(root/'tools/n64splat/src'))
+from splat.util import symbols,options
+from splat.scripts import split
+source=root/'conker/symbol_addrs.us.txt';text=source.read_text()
+for defined in (True,False):
+    symbols.all_symbols=[];symbols.all_symbols_dict={};symbols.all_symbols_ranges=IntervalTree()
+    lines=text.splitlines() if defined else text.replace('defined:true','defined:false').splitlines()
+    symbols.handle_sym_addrs(source,lines,[])
+    matches=[s for s in symbols.all_symbols if s.name=='func_1507E7E4']
+    assert len(matches)==1
+    target=matches[0];target.referenced=True
+    assert (target.vram_start,target.type,target.defined)==(0x1507E7E4,'func',defined)
+    symbols.add_symbol(symbols.Symbol(0x15500000,given_name='unresolved_canary',type='func',referenced=True))
+    dest=out/('Splat-defined-%s.txt'%defined)
+    options.opts=SimpleNamespace(create_undefined_funcs_auto=True,undefined_funcs_auto_path=dest)
+    split.write_undefined_funcs_auto()
+    expected=('' if defined else 'func_1507E7E4 = 0x1507E7E4;\n')+'unresolved_canary = 0x15500000;\n'
+    assert dest.read_text()==expected
+print('actual parser/writer and missing-defined negative passed')
+'''
+        result=subprocess.run(['python3','-c',script,str(self.root),str(self.out)],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertIn('missing-defined negative passed',result.stdout)
+        self.receipt('Splat-symbol',tracked_symbol_only_addition=True,actual_parser_and_writer=True,
+            stale_override_absent_after_generation=True,unrelated_unresolved_canary_retained=True,
+            missing_defined_negative_effective=True,no_full_extraction_or_dependency_changes=True)
 
 
 NATIVE=r'''
