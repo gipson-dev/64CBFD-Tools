@@ -112,7 +112,8 @@ PARENT_SOURCE_SHA = 'f43fa661893aadea680107f8ebe446bdad763489b5558996c8a906802be
 
 def parent_source(root):
     """Project only the exact qualified child back onto historical parent audits."""
-    source = (root/SOURCE).read_text()
+    from tools.experiments import game_command_weight_counter_candidates as counter
+    source = counter.command_source(root)
     if ORIGINAL in source:
         return source
     assert source.count(QUALIFIED) == 1
@@ -130,10 +131,11 @@ def parent_elf(root, before):
     """Validate the direct child, then reverse only its slot and symbol extent."""
     from tools.tests.test_game_record_constructor_match import elf_slot_offset
     from tools.tests.test_game_actor_renderer_install_match import symbol_size_offset
+    from tools.experiments import game_command_weight_counter_candidates as counter
 
     source = parent_source(root)
-    actual = (root/'conker/build/conker.us.elf').read_bytes()
-    if (root/SOURCE).read_text() == source:
+    actual = counter.command_elf(root, before)
+    if counter.command_source(root) == source:
         return actual
     assert hashlib.sha256(source.encode('ascii')).hexdigest() == PARENT_SOURCE_SHA
     start = elf_slot_offset(actual, ENTRY, WORDS*4)

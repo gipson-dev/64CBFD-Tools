@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tools.experiments import game_command_stream_relocator_candidates as screen
+from tools.experiments import game_command_weight_counter_candidates as counter
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
@@ -320,11 +321,11 @@ class GameCommandStreamRelocatorMatchTests(unittest.TestCase):
     def test_08_immutable_whole_ELF_installation_audit(self):
         for name in self.paths:
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(), self.baseline[name])
-        source = (self.root/screen.SOURCE).read_text()
+        source = counter.command_source(self.root)
         before_source = (self.out/'before-source').read_text()
         installed_now = source != before_source
         self.assertEqual(source, screen.install(before_source) if installed_now else before_source)
-        actual = (self.root/self.paths['elf']).read_bytes()
+        actual = counter.command_elf(self.root, self.before)
         expected = bytearray(self.before)
         start = elf_slot_offset(self.before, screen.ENTRY, 208)
         extent = installed.symbol_size_offset(self.before, screen.FUNCTION, screen.ENTRY)
@@ -342,7 +343,8 @@ class GameCommandStreamRelocatorMatchTests(unittest.TestCase):
             changed_ELF_bytes=sum(a != b for a,b in zip(self.before, actual)),
             changed_target_bytes=sum(a != b for a,b in zip(self.before[start:start+208], actual[start:start+208])),
             changed_extent_bytes=sum(a != b for a,b in zip(self.before[extent:extent+4], actual[extent:extent+4])),
-            every_other_byte_metadata_extent_data_guard_and_CSV_exact=True, protected_data=audit)
+            every_other_byte_metadata_extent_data_guard_and_CSV_exact_after_counter_projection=True,
+            protected_data=audit)
 
     def test_09_actual_native32_complete_C(self):
         for profile in ('-O2', '-O0'):
