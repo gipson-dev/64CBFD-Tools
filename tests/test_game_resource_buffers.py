@@ -1,5 +1,7 @@
 """Complete resource-buffer modes, live helper mutations and failure rollback."""
+import csv
 import hashlib
+import io
 import itertools
 import json
 import struct
@@ -8,6 +10,7 @@ import unittest
 from pathlib import Path
 from tools.experiments import game_resource_buffers_candidates as screen
 from tools.experiments import game_resource_buffers_matching as matching
+from tools.experiments import game_resource_buffers_registers as registers
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
@@ -203,10 +206,28 @@ class GameResourceBuffersTests(unittest.TestCase):
         cls.matching_baseline=json.loads((cls.out/'matching-baseline.json').read_text())
         for name in cls.paths:
             assert hashlib.sha256((cls.out/('matching-before-'+name)).read_bytes()).hexdigest()==cls.matching_baseline[name]
-        cls.body=matching.QUALIFIED
+        if not (cls.out/'register-baseline.json').exists():
+            assert (cls.root/screen.SOURCE).read_text()==screen.install(
+                (cls.out/'before-source').read_text(),matching.QUALIFIED)
+            hashes={}
+            for name,path in cls.paths.items():
+                data=(cls.root/path).read_bytes(); (cls.out/('register-before-'+name)).write_bytes(data)
+                hashes[name]=hashlib.sha256(data).hexdigest()
+            (cls.out/'register-baseline.json').write_text(json.dumps(hashes,indent=2)+'\n')
+        cls.register_baseline=json.loads((cls.out/'register-baseline.json').read_text())
+        for name in cls.paths:
+            assert hashlib.sha256((cls.out/('register-before-'+name)).read_bytes()).hexdigest()==cls.register_baseline[name]
+        cls.body=registers.QUALIFIED
         cls.meta,cls.raw=screen.compile_candidate(cls.root,cls.out,'selected',cls.body)
         cls.rom=(cls.root/'conker/conker.us.bin').read_bytes()
         cls.retail=list(struct.unpack_from('>194I',cls.rom,screen.ROM))
+        original_guards=(cls.out/'before-guards').read_bytes()
+        newline=b'\r\n' if b'\r\n' in original_guards.splitlines(keepends=True)[0] else b'\n'
+        cls.guard_rows=registers.guard_text(cls.raw,cls.retail,cls.meta['relocations']).encode('ascii').replace(b'\n',newline)
+        cls.candidate_guards=cls.out/'candidate-guards.csv'
+        cls.candidate_guards.write_bytes((cls.out/'before-guards').read_bytes()+cls.guard_rows)
+        cls.only_guards=cls.out/'only-guards.csv'
+        cls.only_guards.write_bytes((cls.out/'before-guards').read_bytes().splitlines(keepends=True)[0]+cls.guard_rows)
         cls.before=(cls.out/'before-elf').read_bytes()
         body=(cls.root/'conker/asm/AEB40.s').read_text().split('glabel '+screen.FUNCTION,1)[1].split(
             'endlabel '+screen.FUNCTION,1)[0]
@@ -214,9 +235,12 @@ class GameResourceBuffersTests(unittest.TestCase):
         cls.assemble('original','.text\n.set noat\n.set noreorder\n.globl '+screen.FUNCTION+
             '\n.type '+screen.FUNCTION+',@function\n'+screen.FUNCTION+':\n'+body+
             '\n.size '+screen.FUNCTION+',.-'+screen.FUNCTION+'\n')
-        cls.assemble('padded',emit_padded_assembly(cls.out/'selected.o',slot,filename='generated_AEB40'))
+        cls.assemble('padded',emit_padded_assembly(cls.out/'selected.o',slot,
+            word_patches_path=cls.only_guards,filename='generated_AEB40'))
         cls.historical_meta,_=screen.compile_candidate(cls.root,cls.out,'historical',screen.QUALIFIED)
         cls.assemble('historical-padded',emit_padded_assembly(cls.out/'historical.o',slot,filename='generated_AEB40'))
+        cls.previous_meta,_=screen.compile_candidate(cls.root,cls.out,'previous',matching.QUALIFIED)
+        cls.assemble('previous-padded',emit_padded_assembly(cls.out/'previous.o',slot,filename='generated_AEB40'))
     def receipt(self,name,**values):
         assert name!='baseline'
         (self.out/(name+'.json')).write_text(json.dumps(values,indent=2)+'\n')
@@ -234,11 +258,12 @@ class GameResourceBuffersTests(unittest.TestCase):
     def test_01_complete_candidate_shape(self):
         self.assertEqual((self.meta['body_words'],self.meta['frame'],self.meta['pool_bytes'],self.meta['diagnostics']),
             (194,0x60,0,''))
-        self.assertEqual(self.meta['differences'],39)
+        self.assertEqual(self.meta['differences'],29)
+        self.assertEqual(self.link('padded'),self.retail)
         self.assertEqual((self.historical_meta['body_words'],self.historical_meta['differences']),(192,130))
-        self.receipt('shape',words=194,retail_words=194,frame=96,real_word_differences=39,
+        self.receipt('shape',words=194,retail_words=194,frame=96,raw_word_differences=29,
             historical_words=192,historical_differences=130,
-            matching=False,new_guards=0)
+            matching=True,direct_match=False,new_guards=29,register_only_guards=26,copy_schedule_guards=3)
     def test_02_all_modes_boundaries_pairs_failures(self):
         coverage=set(); cases=0
         for mode,identity,refs,slots,results,phase in itertools.product(range(4),(0,1,128,255),
@@ -269,8 +294,15 @@ class GameResourceBuffersTests(unittest.TestCase):
                 {('free',0):((ACTOR+0x28C,ALTERNATE,4),)},
                 {('alloc',1):((S['D_800D19A0']+28,PRIVATE,4),(S['D_800D1F80']+7,0,1))})):
             self.compare(fixture(mode),results=results,actions=actions); cases+=1
+        for mode,results,phase in itertools.product((1,2),
+                ((0x90024000,0xF0025000),(0x90024000,0),(0,0xF0025000),(0,0)),(0,8)):
+            memory=fixture(mode)
+            for base in (0x90024000,0xF0025000):
+                for i in range(256): memory[base+i]=(i*137+19)&255
+            self.compare(memory,results=results,phase=phase); cases+=1
         self.receipt('mutations',cases=cases,executions=cases*2,full_unsigned_parent_and_size_extremes=True,
-            large_copy_callbacks_record_only=True,live_resource_size_count_slot_and_free_mutations=True)
+            large_copy_callbacks_record_only=True,live_resource_size_count_slot_and_free_mutations=True,
+            high_bit_copy_destination_round_trip_and_failure_cleanup=True)
     def test_04_fired_all_access_fault_prefixes(self):
         pairs=0
         for mode,slots,results,phase in itertools.product(range(4),((0,0),(PRIVATE,0),(SOURCE,0)),
@@ -314,7 +346,7 @@ class GameResourceBuffersTests(unittest.TestCase):
                     'pad_generated_object.py',str(obj),str(self.root/'conker/asm/AEB40.s'),str(asm),
                     '--filename','generated_AEB40','--rodata-symbol','jtbl_8009CC40_game']
                 subprocess.run(['python3',str(self.root/'tools'/args[0]),*args[1:],
-                    '--word-patches',str(self.out/'before-guards')],check=True,capture_output=True)
+                    '--word-patches',str(self.candidate_guards if i else self.out/'before-guards')],check=True,capture_output=True)
                 subprocess.run(['mips-linux-gnu-as','-EB','-march=vr4300','-o',str(asm.with_suffix('.o')),str(asm)],
                     check=True,capture_output=True); padded.append(parse_object(asm.with_suffix('.o')))
             start=padded[1][1][screen.FUNCTION]['value']; end=start+776
@@ -399,10 +431,13 @@ class GameResourceBuffersTests(unittest.TestCase):
             self.receipt('linked',installed=False); return
         original_source=(self.out/'before-source').read_text()
         historical=source==screen.install(original_source,screen.QUALIFIED)
-        self.assertEqual(source,screen.install(original_source,screen.QUALIFIED if historical else self.body))
+        previous=source==screen.install(original_source,matching.QUALIFIED)
+        self.assertEqual(source,screen.install(original_source,
+            screen.QUALIFIED if historical else matching.QUALIFIED if previous else self.body))
         selected_words=self.historical_meta['body_words'] if historical else self.meta['body_words']
         selected_size=selected_words*4
-        padded=self.link('historical-padded' if historical else 'padded'); expected=bytearray(self.before)
+        padded=self.link('historical-padded' if historical else 'previous-padded' if previous else 'padded')
+        expected=bytearray(self.before)
         struct.pack_into('>194I',expected,elf_slot_offset(self.before,screen.ENTRY,776),*padded)
         extent=installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)
         self.assertEqual(struct.unpack_from('>I',self.before,extent)[0],12)
@@ -425,15 +460,18 @@ class GameResourceBuffersTests(unittest.TestCase):
         self.assertEqual(bytes(expected),actual)
         for name in self.paths:
             if name not in ('source','elf'):
-                self.assertEqual((self.root/self.paths[name]).read_bytes(),(self.out/('before-'+name)).read_bytes())
+                expected_input=self.candidate_guards if name=='guards' and not (historical or previous) else self.out/('before-'+name)
+                self.assertEqual((self.root/self.paths[name]).read_bytes(),expected_input.read_bytes())
         audit=audit_layout(self.root/self.paths['elf'],self.root/'conker'); self.assertTrue(audit['exact'],audit)
-        self.receipt('linked',installed=not historical,historical_recovery_installed=historical,
+        self.receipt('linked',installed=not (historical or previous),historical_recovery_installed=historical,
+            previous_retail_length_installed=previous,
             target_words=selected_words,ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
             only_target_slot_extent_and_existing_metadata_order_change=True,
             changed_metadata_bytes=metadata_bytes,
             all_other_ELF_bytes_exact=True,all_other_symbol_values_and_names_exact=True,
-            data_guards_census_layout_symbols_and_auto_assignments_unchanged=True,protected_data=audit)
+            data_census_layout_symbols_and_auto_assignments_unchanged=True,
+            guard_history_exact_only_29_target_rows_added=not (historical or previous),protected_data=audit)
     def test_10_real_allocator_wrapper_and_sdk_copy(self):
         functions=load_elf_functions(str(self.root/self.paths['elf']),'mips-linux-gnu-objdump')[0]
         connected={}
@@ -545,23 +583,83 @@ class GameResourceBuffersTests(unittest.TestCase):
                 self.assertEqual((self.root/path).read_bytes(),(self.out/('matching-before-'+name)).read_bytes())
             self.receipt('matching-linked',installed=False,baseline_verified=True); return
         self.assertEqual(before_source.count(screen.QUALIFIED),1)
-        self.assertEqual(source,before_source.replace(screen.QUALIFIED,self.body))
+        previous=source==before_source.replace(screen.QUALIFIED,matching.QUALIFIED)
+        self.assertEqual(source,before_source.replace(screen.QUALIFIED,matching.QUALIFIED if previous else self.body))
         actual=(self.root/self.paths['elf']).read_bytes(); expected=bytearray(before)
         slot=elf_slot_offset(before,screen.ENTRY,screen.WORDS*4)
-        struct.pack_into('>194I',expected,slot,*self.link('padded'))
+        struct.pack_into('>194I',expected,slot,*self.link('previous-padded' if previous else 'padded'))
         extent=installed.symbol_size_offset(before,screen.FUNCTION,screen.ENTRY)
         self.assertEqual(struct.unpack_from('>I',before,extent)[0],768)
         struct.pack_into('>I',expected,extent,self.meta['body_words']*4)
         self.assertEqual(bytes(expected),actual)
         for name,path in self.paths.items():
             if name not in ('source','elf'):
-                self.assertEqual((self.root/path).read_bytes(),(self.out/('matching-before-'+name)).read_bytes())
+                expected_input=self.candidate_guards if name=='guards' and not previous else self.out/('matching-before-'+name)
+                self.assertEqual((self.root/path).read_bytes(),expected_input.read_bytes())
         self.receipt('matching-linked',installed=True,ELF_sha256=hashlib.sha256(actual).hexdigest(),
             changed_ELF_bytes=sum(a!=b for a,b in zip(before,actual)),
             changed_slot_bytes=sum(a!=b for a,b in zip(before[slot:slot+776],actual[slot:slot+776])),
             changed_extent_bytes=sum(a!=b for a,b in zip(before[extent:extent+4],actual[extent:extent+4])),
             every_other_ELF_byte_exact=True,source_only_selected_body_change=True,
-            protected_inputs_unchanged=True)
+            non_guard_protected_inputs_unchanged=True,all_old_guard_bytes_exact=True)
+
+    def test_13_all_guard_words_and_relocations_fail_closed(self):
+        rows=list(csv.DictReader(io.StringIO(self.only_guards.read_text())))
+        self.assertEqual(tuple(int(r['offset'],0) for r in rows),registers.OFFSETS)
+        self.assertTrue(all(r['expected_relocations']==r['replacement_relocations']=='-' for r in rows))
+        full=list(csv.DictReader(io.StringIO(self.candidate_guards.read_text())))
+        history=list(csv.DictReader(io.StringIO((self.out/'before-guards').read_text())))
+        self.assertEqual(full[:-29],history); self.assertEqual(full[-29:],rows)
+        attempts=0
+        for index,row in enumerate(rows):
+            for field,value,message in (
+                    ('expected','0x%08X'%(int(row['expected'],0)^1),'stale word patch'),
+                    ('expected_relocations','R_MIPS_HI16:D_800D19A0','stale relocations')):
+                for route,original in (('generated',rows),('layout',full)):
+                    changed=[dict(r) for r in original]
+                    changed[index if route=='generated' else len(history)+index][field]=value
+                    stale=self.out/'stale-guards.csv'
+                    with stale.open('w',newline='') as stream:
+                        writer=csv.DictWriter(stream,fieldnames=list(row),lineterminator='\n')
+                        writer.writeheader(); writer.writerows(changed)
+                    if route=='generated':
+                        with self.assertRaisesRegex(ValueError,message):
+                            emit_padded_assembly(self.out/'selected.o',self.out/'slot.s',
+                                word_patches_path=stale,filename='generated_AEB40')
+                    else:
+                        result=subprocess.run(['python3',str(self.root/'tools/pad_c_object.py'),
+                            str(self.out/'owner-after.o'),str(self.out/'before-layout'),'generated_AEB40',
+                            str(self.out/'stale.s'),'--word-patches',str(stale)],capture_output=True,text=True)
+                        self.assertNotEqual(result.returncode,0); self.assertIn(message,result.stderr+result.stdout)
+                    attempts+=1
+        self.receipt('guards',rows=29,register_fields_only=26,copy_schedule_words=3,
+            no_relocation_changes=True,all_old_guard_rows_exact=True,
+            fired_expected_word_and_relocation_rejections=attempts,both_padding_routes=True)
+
+    def test_14_previous_retail_length_delta(self):
+        before_source=(self.out/'register-before-source').read_text()
+        before=(self.out/'register-before-elf').read_bytes()
+        self.assertEqual(hashlib.sha256(before).hexdigest(),
+            'd543a0960902f688cb569ca95d96e563b105f2ff37ff1a8dc7a73f62d1987056')
+        source=(self.root/screen.SOURCE).read_text()
+        if source==before_source:
+            for name,path in self.paths.items():
+                self.assertEqual((self.root/path).read_bytes(),(self.out/('register-before-'+name)).read_bytes())
+            self.receipt('register-linked',installed=False,baseline_verified=True); return
+        self.assertEqual(before_source.count(matching.QUALIFIED),1)
+        self.assertEqual(source,before_source.replace(matching.QUALIFIED,self.body))
+        actual=(self.root/self.paths['elf']).read_bytes(); expected=bytearray(before)
+        slot=elf_slot_offset(before,screen.ENTRY,776)
+        struct.pack_into('>194I',expected,slot,*self.retail)
+        self.assertEqual(bytes(expected),actual)
+        for name,path in self.paths.items():
+            if name not in ('source','elf'):
+                expected_input=self.candidate_guards if name=='guards' else self.out/('register-before-'+name)
+                self.assertEqual((self.root/path).read_bytes(),expected_input.read_bytes())
+        self.receipt('register-linked',installed=True,ELF_sha256=hashlib.sha256(actual).hexdigest(),
+            changed_ELF_bytes=sum(a!=b for a,b in zip(before,actual)),every_other_ELF_byte_exact=True,
+            target_all_194_words_exact=True,target_extent_unchanged=True,
+            source_only_selected_body_change=True,only_29_guard_rows_added=True)
 
 
 NATIVE_PREFIX='''typedef unsigned char u8; typedef unsigned short u16;
