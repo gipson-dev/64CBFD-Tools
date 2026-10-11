@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tools.experiments import game_descriptor_resource_loader_candidates as screen
+from tools.experiments import game_group_publication_propagation_candidates as propagation
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
@@ -402,10 +403,10 @@ class GameDescriptorResourceLoaderMatchTests(unittest.TestCase):
 
     def test_08_immutable_actual_whole_ELF_and_all_assignment_inputs(self):
         for name in self.paths: self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(),self.baseline[name])
-        before_source=(self.out/'before-source').read_text();source=(self.root/screen.SOURCE).read_text()
+        before_source=(self.out/'before-source').read_text();source=propagation.descriptor_source(self.root)
         installed_now=source!=before_source
         self.assertEqual(source,screen.install(before_source) if installed_now else before_source)
-        actual=(self.root/self.paths['elf']).read_bytes();expected=bytearray(self.before)
+        actual=propagation.descriptor_elf(self.root,self.before);expected=bytearray(self.before)
         start=elf_slot_offset(self.before,screen.ENTRY,276);extent=installed.symbol_size_offset(self.before,screen.FUNCTION,screen.ENTRY)
         self.assertEqual(struct.unpack_from('>I',self.before,extent)[0],12)
         if installed_now:
@@ -418,7 +419,7 @@ class GameDescriptorResourceLoaderMatchTests(unittest.TestCase):
             changed_ELF_bytes=sum(a!=b for a,b in zip(self.before,actual)),
             changed_target_bytes=sum(a!=b for a,b in zip(self.before[start:start+276],actual[start:start+276])),
             changed_extent_bytes=sum(a!=b for a,b in zip(self.before[extent:extent+4],actual[extent:extent+4])),
-            all_other_ELF_bytes_metadata_data_guards_Makefile_and_conversion_inputs_exact=True,protected_data=audit)
+            all_other_ELF_bytes_metadata_data_guards_Makefile_and_conversion_inputs_exact_after_propagation_projection=True,protected_data=audit)
 
     def test_09_native32_complete_C_callbacks_all_halfword_payloads_and_ignored_argument(self):
         for profile in ('-O2','-O0'):

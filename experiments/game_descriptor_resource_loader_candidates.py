@@ -137,7 +137,8 @@ def install(before, body=QUALIFIED):
 
 def pair_source(root):
     """Reverse only this exact complete successor for the frozen pair-stage audit."""
-    source = (root/SOURCE).read_text()
+    from tools.experiments import game_group_publication_propagation_candidates as propagation
+    source = propagation.descriptor_source(root)
     if ORIGINAL in source:
         return source
     assert source.count(QUALIFIED) == 1
@@ -154,10 +155,11 @@ def pair_source(root):
 def pair_elf(root, before):
     from tools.tests.test_game_record_constructor_match import elf_slot_offset
     from tools.tests.test_game_actor_renderer_install_match import symbol_size_offset
+    from tools.experiments import game_group_publication_propagation_candidates as propagation
 
     source = pair_source(root)
-    actual = (root/'conker/build/conker.us.elf').read_bytes()
-    if source == (root/SOURCE).read_text():
+    actual = propagation.descriptor_elf(root, before)
+    if source == propagation.descriptor_source(root):
         return actual
     start = elf_slot_offset(actual,ENTRY,WORDS*4)
     extent = symbol_size_offset(actual,FUNCTION,ENTRY)
