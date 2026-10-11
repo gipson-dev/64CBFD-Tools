@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from tools.experiments import game_command_stream_relocator_candidates as screen
 from tools.experiments import game_command_weight_counter_candidates as counter
+from tools.experiments import game_record_pair_copy_candidates as pairs
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.pad_generated_object import parse_object, emit_padded_assembly
@@ -336,7 +337,8 @@ class GameCommandStreamRelocatorMatchTests(unittest.TestCase):
         self.assertEqual(bytes(expected), actual)
         for name, path in self.paths.items():
             if name not in ('source', 'elf'):
-                self.assertEqual((self.root/path).read_bytes(), (self.out/('before-'+name)).read_bytes())
+                data = pairs.counter_guards(self.root) if name == 'guards' else (self.root/path).read_bytes()
+                self.assertEqual(data, (self.out/('before-'+name)).read_bytes())
         audit = audit_layout(self.root/self.paths['elf'], self.root/'conker')
         self.assertTrue(audit['exact'], audit)
         self.receipt('linked', installed=installed_now, ELF_sha256=hashlib.sha256(actual).hexdigest(),

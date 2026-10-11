@@ -111,7 +111,8 @@ class GameMainResourceLoaderGuardedMatchTests(previous.GameMainResourceLoaderRem
             self.assertEqual(hashlib.sha256((self.out/('before-'+name)).read_bytes()).hexdigest(), self.baseline[name])
             self.assertEqual(hashlib.sha256((self.out/('checkpoint-'+name)).read_bytes()).hexdigest(), self.checkpointHashes[name])
         self.assertEqual(matching.parent_source(self.root).encode('ascii'), (self.out/'checkpoint-source').read_bytes())
-        guard_data = (self.root/self.paths['guards']).read_bytes()
+        from tools.experiments import game_record_pair_copy_candidates as pairs
+        guard_data = pairs.counter_guards(self.root)
         installed = guard_data != (self.out/'checkpoint-guards').read_bytes()
         self.assertEqual(guard_data, self.guards.read_bytes() if installed else (self.out/'checkpoint-guards').read_bytes())
         actual = matching.parent_elf(self.root, self.checkpoint)

@@ -87,6 +87,8 @@ class GameMainResourceLoaderFlowCostTests(unittest.TestCase):
             return matching.parent_source(cls.root).encode('ascii')
         if name == 'elf':
             return matching.parent_elf(cls.root, cls.parentCheckpoint)
+        if name == 'guards':
+            return matching.validate_current_guards(cls.root)
         return (cls.root/path).read_bytes()
 
     def compare(self, memory, forms=None, **settings):

@@ -190,7 +190,8 @@ COMMAND_SOURCE_SHA = '0f8594be47c2082c073901586c8a3a7ee74b6a4b70588de92729e61d3b
 
 def command_source(root):
     """Reverse only the exact counter successor for earlier command/parent audits."""
-    source = (root/SOURCE).read_text()
+    from tools.experiments import game_record_pair_copy_candidates as pairs
+    source = pairs.counter_source(root)
     if ORIGINAL in source:
         return source
     assert source.count(QUALIFIED) == 1
@@ -208,10 +209,11 @@ def command_elf(root, before):
     """Validate the counter's full linked words/extent before historical projection."""
     from tools.tests.test_game_record_constructor_match import elf_slot_offset
     from tools.tests.test_game_actor_renderer_install_match import symbol_size_offset
+    from tools.experiments import game_record_pair_copy_candidates as pairs
 
     source = command_source(root)
-    actual = (root/'conker/build/conker.us.elf').read_bytes()
-    if (root/SOURCE).read_text() == source:
+    actual = pairs.counter_elf(root, before)
+    if pairs.counter_source(root) == source:
         return actual
     start = elf_slot_offset(actual, ENTRY, WORDS*4)
     original_start = elf_slot_offset(before, ENTRY, WORDS*4)

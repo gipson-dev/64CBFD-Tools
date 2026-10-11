@@ -96,19 +96,23 @@ def qualified_guard_suffix(root):
 
 
 def current_guard_bytes(root, before):
+    from tools.experiments import game_record_pair_copy_candidates as pairs
     assert hashlib.sha256(before).hexdigest() == GUARDS_SHA
     current = (root/'conker/retail_word_patches.us.csv').read_bytes()
     if current == before:
         return current
+    current = pairs.counter_guards(root)
     assert hashlib.sha256(parent_source(root).encode('ascii')).hexdigest() == SOURCE_SHA
     assert current == before+qualified_guard_suffix(root)
     return current
 
 
 def validate_current_guards(root):
+    from tools.experiments import game_record_pair_copy_candidates as pairs
     current = (root/'conker/retail_word_patches.us.csv').read_bytes()
     if hashlib.sha256(current).hexdigest() == GUARDS_SHA:
         return current
+    current = pairs.counter_guards(root)
     assert hashlib.sha256(parent_source(root).encode('ascii')).hexdigest() == SOURCE_SHA
     suffix = qualified_guard_suffix(root)
     assert current.endswith(suffix)
