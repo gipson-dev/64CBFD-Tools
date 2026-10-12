@@ -452,10 +452,11 @@ class GameRecordMaskActiveMatchTests(unittest.TestCase):
                     super().hook(target)
                 else:
                     state.StateOracle.hook(model, target)
-        cases = 0
-        for marker, count, clock, phase, mode in itertools.product((1, 2, 3), (0, 1, 3),
-                (1, 300, -1), (0, 8), ('none', 'free-mutation')):
-            memory = state.fixture(state=marker, count=count, group=2, existing=True, types=(254,), symbols=SYMBOLS)
+        cases, reached = 0, set()
+        for marker, count, clock, masks, phase, mode in itertools.product((1, 2, 3), (0, 1, 3, 33),
+                (1, 300, -1), ((0, 0), (0xFFFFFFFF, 0xFFFFFFFF)), (0, 8), ('none', 'free-mutation')):
+            memory = state.fixture(state=marker, count=count, group=2, existing=True,
+                types=(0, 254, 255), masks=masks, symbols=SYMBOLS)
             record = address(SYMBOLS['D_800C6660'], 7, 16)
             put(memory, record+12, 1, 2); put(memory, SYMBOLS['D_800BE9E4'], clock)
             put(memory, SYMBOLS['D_8008443C']+8, finish_entry); put(memory, SYMBOLS['D_80084448']+8, screen.ENTRY)
@@ -472,15 +473,18 @@ class GameRecordMaskActiveMatchTests(unittest.TestCase):
                 model = ChainOracle(dispatch_words, memory, start=dispatch_entry, actions=actions, connected=code, actual=True)
                 model.chain_actor = None; model.allocation = state.BUFFER
                 model.run(); models.append(model)
+                reached.update(model.visits)
                 self.assertEqual((public(model.memory), model.calls), (public(expected.memory), expected.calls))
             for model in models[1:]:
                 self.assertEqual((model.memory, model.events, model.r, model.f),
                     (models[0].memory, models[0].events, models[0].r, models[0].f))
             cases += 1
-        self.receipt('original-dispatch-chain', cases=cases,
+        predicate_reached = len(reached & set(range(state.HELPER, state.HELPER+108, 4)))
+        self.assertEqual(predicate_reached, 26)
+        self.receipt('original-dispatch-chain', cases=cases, predicate_reached_words=predicate_reached,
             actual_dispatch171_finish81_active85_teardown89_predicate27_query30=True,
             original_group2_finish_and_active_tables=True, initial_NULL_teardown_table=True,
-            preparation_free_and_motion_matrix_tails_bounded_models=True, element_skip_fixtures_not_full_gameplay=True)
+            element_setup_callbacks_preparation_free_and_motion_matrix_tails_bounded_models=True, not_full_gameplay=True)
 
     def test_11_native32_timer_width_flags_callbacks_and_actual_helper(self):
         helper = re.findall(r'^s32 func_1503EF4C\([^;{}]+\) \{.*?^\}', (self.out/'before-source').read_text(), re.M | re.S)
