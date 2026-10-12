@@ -456,6 +456,134 @@ def candidates():
             changed=changed.replace(marker,marker+declarations)
         yield 'capture-declaration-'+position,changed
         if position=='after-record':
+            yield 'capture-constant-spill',changed.replace('metrics.useFont = useFont;', 'metrics.useFont = 0;')
+            yield 'capture-automatic-spill',changed.replace('                            metrics.useFont = useFont;\n','').replace(
+                '                            useFont = metrics.useFont;\n','')
+            yield 'capture-widened-glyph',changed.replace('u8 glyph;', 'u32 glyph;').replace(
+                'glyph = func_15042C40(text[index]);', 'glyph = (u8)func_15042C40(text[index]);')
+            for declaration in ('u8 glyph;', 's32 index;', 's32 *height,'):
+                yield 'capture-priority-'+declaration.split()[1].strip(';*,'),changed.replace(
+                    declaration, 'register '+declaration)
+            for kind in ('s32','u32'):
+                yield 'capture-call-promotion-'+kind,changed.replace('func_150415E0(glyph,',
+                    'func_150415E0(('+kind+')glyph,')
+            dispatch='''                    if (glyph == 0x60) {
+                        *width = (s32)((u32)*width + 4);
+                        if (lineHeight < 12) lineHeight = 12;
+                        goto glyph_done;
+                    }
+                    if (glyph >= 0xA1 && glyph < 0xA8) goto glyph_done;
+                    if (glyph >= 0xA8 && glyph < 0x100) {
+                        metrics.useFont = useFont;
+                        func_150415E0(glyph, &metrics.width, &metrics.height,
+                            &metrics.baseline, &metrics.mode, &metrics.factor);
+                        useFont = metrics.useFont;
+                        *width = (s32)((f32)*width + (f32)metrics.width * metrics.factor);
+                        extent = (s32)((f32)(s32)((f32)metrics.height * metrics.factor) - metrics.baseline) + 1;
+                        if (lineHeight < extent) lineHeight = extent;
+                        if ((f32)*baseline < metrics.baseline) *baseline = (s32)metrics.baseline;
+                        goto glyph_done;
+                    }
+                    if (glyph < 0xA1) {
+                        if (text[index] == 0xA) {
+                            if (maximumWidth < *width) maximumWidth = *width;
+                            *width = 0;
+                            if (lineHeight < 12) lineHeight = 12;
+                            *height = (s32)((u32)*height + (u32)lineHeight);
+                            lineHeight = 0;
+                        } else useFont = 1;
+                    }
+glyph_done:
+'''
+            start=changed.index('                    if (glyph == 0x60) {')
+            end=changed.index('                    index++;',start)
+            flat=changed[:start]+dispatch+changed[end:]
+            yield 'capture-flat-dispatch',flat
+            yield 'capture-flat-automatic',flat.replace('                        metrics.useFont = useFont;\n','').replace(
+                '                        useFont = metrics.useFont;\n','')
+            late_flag=flat.replace('                    useFont = 0;\n','').replace(
+                '                        goto glyph_done;\n                    }\n                    if (glyph >= 0xA1',
+                '                        useFont = 0;\n                        goto glyph_done;\n                    }\n                    if (glyph >= 0xA1').replace(
+                'if (glyph >= 0xA1 && glyph < 0xA8) goto glyph_done;',
+                'if (glyph >= 0xA1 && glyph < 0xA8) { useFont = 0; goto glyph_done; }').replace(
+                'metrics.useFont = useFont;', 'metrics.useFont = 0;').replace(
+                '                            lineHeight = 0;\n                        } else useFont = 1;',
+                '                            lineHeight = 0;\n                            useFont = 0;\n                        } else useFont = 1;').replace(
+                '                    }\nglyph_done:', '                    } else useFont = 0;\nglyph_done:')
+            yield 'capture-flat-late-flag',late_flag
+            local_dispatch='''                    if (glyph == 0x60) {
+                        *width = (s32)((u32)*width + 4);
+                        if (lineHeight < 12) lineHeight = 12;
+                        goto glyph_skip;
+                    }
+                    if (glyph >= 0xA1 && glyph < 0xA8) goto glyph_skip;
+                    if (glyph >= 0xA8 && glyph < 0x100) {
+                        metrics.useFont = 0;
+                        func_150415E0(glyph, &metrics.width, &metrics.height,
+                            &metrics.baseline, &metrics.mode, &metrics.factor);
+                        useFont = metrics.useFont;
+                        *width = (s32)((f32)*width + (f32)metrics.width * metrics.factor);
+                        extent = (s32)((f32)(s32)((f32)metrics.height * metrics.factor) - metrics.baseline) + 1;
+                        if (lineHeight < extent) lineHeight = extent;
+                        if ((f32)*baseline < metrics.baseline) *baseline = (s32)metrics.baseline;
+                        if (useFont) goto glyph_font;
+                        goto glyph_skip;
+                    }
+                    if (glyph < 0xA1) {
+                        if (text[index] == 0xA) {
+                            if (maximumWidth < *width) maximumWidth = *width;
+                            *width = 0;
+                            if (lineHeight < 12) lineHeight = 12;
+                            *height = (s32)((u32)*height + (u32)lineHeight);
+                            lineHeight = 0;
+                        } else goto glyph_font;
+                    }
+                    goto glyph_skip;
+glyph_font:
+                    index++;
+                    *width = (s32)((u32)*width + (*fontAddress)[glyph * 4] +
+                        (*fontAddress)[glyph * 4 + 2] - 1);
+                    extent = (*fontAddress)[glyph * 4 + 3] + (*fontAddress)[glyph * 4 + 1];
+                    if (extent >= lineHeight) lineHeight = extent;
+                    goto glyph_next;
+glyph_skip:
+                    index++;
+glyph_next:
+                    ;
+'''
+            end=changed.index('                }\n            } while (text[index] != 0);',start)
+            local=changed[:start].replace('                    useFont = 0;\n','')+local_dispatch+changed[end:]
+            yield 'capture-local-dispatch',local
+            shared=local_dispatch.split('glyph_font:\n',1)[0].replace(
+                '                        if (useFont) goto glyph_font;\n                        goto glyph_skip;',
+                '                        goto glyph_done;')+'''glyph_font:
+                    useFont = 1;
+                    goto glyph_done;
+glyph_skip:
+                    useFont = 0;
+glyph_done:
+'''
+            footer=changed[changed.index('                    index++;',start):end]
+            yield 'capture-shared-flag-exit',changed[:start].replace('                    useFont = 0;\n','')+shared+footer+changed[end:]
+            reused_local=local.replace('    u8 glyph;\n','').replace('    s32 extent;',
+                '    u8 *base = text;\n    s32 extent;').replace('text[index]','base[index]').replace(
+                'glyph = func_15042C40(base[index]);', 'text = (u8 *)(u32)(u8)func_15042C40(base[index]);')
+            for op in ('== 0x60','< 0xA1','>= 0xA1','>= 0xA8','< 0xA8','< 0x100'):
+                reused_local=reused_local.replace('glyph '+op,'(s32)text '+op)
+            reused_local=reused_local.replace('func_150415E0(glyph,','func_150415E0((s32)text,').replace(
+                '[glyph *','[(s32)text *')
+            yield 'capture-local-reuse-typed',reused_local
+            deferred=reused_local.replace('    u8 *base = text;', '    u8 *base;')
+            for marker in ('        *baseline = 0;', '        index = 0;'):
+                yield 'capture-local-reuse-at-'+('outputs' if 'baseline' in marker else 'index'),deferred.replace(
+                    marker,marker+'\n        base = text;')
+            numeric=reused_local.replace('u8 *text,', 'u32 text,').replace('u8 *base = text;',
+                'u8 *base = (u8 *)text;').replace('text != NULL', 'text != 0').replace(
+                'if (*text == 0)', 'if (*((u8 *)text) == 0)').replace(
+                'text = (u8 *)(u32)(u8)func_', 'text = (u8)func_').replace('(s32)text','text')
+            yield 'capture-local-reuse-address',numeric
+            yield 'capture-local-reuse-address-index',numeric.replace('u8 *base = (u8 *)text;',
+                'u8 *base;').replace('        index = 0;', '        index = 0;\n        base = (u8 *)text;')
             for mask in range(1,4):
                 callbacks=changed
                 if mask&1:

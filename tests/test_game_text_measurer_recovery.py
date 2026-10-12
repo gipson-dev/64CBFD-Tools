@@ -1,5 +1,7 @@
 """Full original/candidate measurers with real helpers; not a byte-match claim."""
+import csv
 import hashlib
+import io
 import itertools
 import json
 import math
@@ -717,6 +719,117 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'changed code, relocations or pools'):
                 screen.trace_ugen(self.root,self.out,'ugen-changed',body)
         self.assertFalse(json.loads((self.out/'ugen-changed-trace.json').read_text())['code_unchanged'])
+
+
+    def qualify_seven_save_dispatch(self,name,differences,original_frame=False):
+        body=dict(screen.candidates())[name]
+        entry=screen.ENTRY+0x200000
+        with patch.object(screen,'ENTRY',entry):
+            meta,words=screen.compile_candidate(self.root,self.out,name+'-seven-saves',body)
+        self.assertEqual((meta['body_words'],meta['frame'],meta['differences'],meta['pool_bytes']),
+            (222,0x80,differences,0))
+        self.assertLess(entry+len(words)*4,0x16000000)
+        self.assertFalse(set(range(entry,entry+len(words)*4,4))&self.connected.keys())
+        saves=[(w>>16&31,w&65535) for w in words[:13] if w>>26==43 and w>>21&31==29]
+        self.assertEqual(set(saves),{(r,0x20+(r-16)*4) for r in range(16,23)}|{(31,0x3C)})
+        self.assertEqual(saves[0],(22,0x38) if original_frame else (21,0x34))
+        if original_frame:self.assertEqual(words[:13],self.retail[:13])
+        asm=(self.out/'before-assembly').read_text()
+        slot=self.out/(name+'-retail-slot.s')
+        block=asm.split('glabel '+screen.FUNCTION+'\n',1)[1].split('endlabel '+screen.FUNCTION,1)[0]
+        slot.write_text('glabel '+screen.FUNCTION+'\n'+block+'endlabel '+screen.FUNCTION+'\n')
+        obj=self.out/(name+'-seven-saves.o')
+        with self.assertRaisesRegex(ValueError,'span is only 0x36C'):
+            emit_padded_assembly(obj,slot,filename='generated_6E770')
+        row=next(row for row in csv.DictReader(io.StringIO((self.out/'before-layout').read_text()))
+            if row['function']==screen.FUNCTION)
+        self.assertEqual(int(row['end'],0)-int(row['address'],0),876)
+        layout=self.out/(name+'-single-function-layout.csv')
+        with layout.open('w',newline='') as stream:
+            writer=csv.DictWriter(stream,fieldnames=list(row));writer.writeheader();writer.writerow(row)
+        padded=self.out/(name+'-legacy-overflow.s')
+        result=subprocess.run(['python3',str(self.root/'tools/pad_c_object.py'),str(obj),str(layout),
+            row['filename'],str(padded)],capture_output=True,text=True)
+        self.assertEqual((result.returncode,result.stdout+result.stderr),(0,''))
+        result=subprocess.run(['mips-linux-gnu-as','-EB','-march=vr4300','-o',str(padded.with_suffix('.o')),
+            str(padded)],capture_output=True,text=True)
+        self.assertEqual((result.returncode,result.stdout+result.stderr),(0,''))
+        raw,functions,relocs=parse_object(padded.with_suffix('.o'))
+        self.assertEqual(raw[:4],bytes.fromhex('08000000'))
+        self.assertEqual(relocs[0],[('R_MIPS_26','__retail_overflow_'+screen.FUNCTION)])
+        self.assertEqual(functions[screen.FUNCTION]['size'],876)
+        self.assertIn('.game_overflow',sections(padded.with_suffix('.o')))
+        self.assertNotEqual(raw[:876],struct.pack('>219I',*self.retail))
+        def models(memory,args,phase=0):
+            original=MeasurerOracle(self.retail,memory,args,self.connected,phase)
+            with patch.object(screen,'ENTRY',entry):
+                candidate=MeasurerOracle(words,memory,args,self.connected,phase)
+            return original,candidate
+        cases=0
+        def compare(text,alias=0,phase=0,scales=(1.0,1.0),null=False,factor=None):
+            nonlocal cases
+            memory,args=fixture(text,self.table,alias,scales)
+            if null:args=(0,*args[1:])
+            if factor is not None:put(memory,metrics.SYMBOLS['D_80098B00'],bits(factor))
+            expected=Reference(memory,args).run()
+            for model in models(memory,args,phase):
+                model.run()
+                self.assertEqual(public(model.memory),public(expected.memory))
+                self.assertEqual(model.calls,expected.calls)
+            cases+=1
+        for byte,phase in itertools.product(range(256),(0,8)):
+            compare(bytes((byte,0,0)) if byte!=0xBC else bytes((byte,7,65,0)),phase=phase)
+        for text,alias,phase,scales in itertools.product((b'\0',b'A\0',b'A\nB\0',b' AB\0',
+                bytes((0xBC,0,65,0)),bytes((0xA8,0xAA,0xBA,0xAE,65,0))),range(10),(0,8),
+                ((1.0,1.0),(0.75,1.25))):compare(text,alias,phase,scales)
+        compare(b'A\0',null=True)
+        compare(bytes((0xAA,0)),factor=1.0/18.0)
+        memory,args=self.font_pointer_fixture();expected=Reference(memory,args).run()
+        for model in models(memory,args):
+            model.run();self.assertEqual(public(model.memory),public(expected.memory))
+            self.assertEqual(model.calls,expected.calls)
+        cases+=1;self.assertEqual(cases,755)
+        private=[]
+        for text,phase in itertools.product((b'A\0',bytes((0xA8,0)),bytes((65,0xA8,0))),(0,8)):
+            memory,args=fixture(text,self.table);args=(args[0],STACK+phase-128+0x68,args[2],args[3])
+            pair=models(memory,args,phase)
+            for model in pair:model.run()
+            outputs=[tuple(signed(read(model.memory,a)) for a in args[1:]) for model in pair]
+            self.assertEqual(outputs[0],outputs[1]);private.append(dict(text=list(text),phase=phase,outputs=outputs[0]))
+        source=self.native_source(body,self.native_cases())
+        for profile in ('-O2','-O0'):
+            self.assertEqual(self.run_native('native-'+name+'-'+profile[1:],source,profile),(0,''))
+        faults=[]
+        for phase,fault in itertools.product((0,8),range(14) if original_frame else (0,1)):
+            memory,args=fixture(b'A\0',self.table);pair=models(memory,args,phase)
+            for model in pair:
+                model.fault=fault
+                with self.assertRaises(guest.AccessFault):model.run()
+                self.assertEqual(model.accesses,fault)
+            state=lambda m:(m.memory,m.events,m.r,m.f)
+            if original_frame or fault==0:self.assertEqual(state(pair[0]),state(pair[1]))
+            else:
+                self.assertNotEqual(state(pair[0]),state(pair[1]))
+                self.assertEqual(pair[0].events[0],('W',STACK+phase-128+0x38,4,pair[0].before[22]))
+                self.assertEqual(pair[1].events[0],('W',STACK+phase-128+0x34,4,pair[1].before[21]))
+            faults.append(dict(phase=phase,fault=fault,equal=original_frame or fault==0))
+        self.receipt(name+'-seven-saves',entry=entry,body_words=222,frame=128,differences=differences,
+            saves=saves,guest_cases=cases,actual_retail_helpers_at_original_addresses=True,
+            private_flag_home_cases=private,native_cases_per_profile=733,native_profiles=['O2','O0'],
+            fired_fault_pairs=faults,original_first13_words_and_28_early_fault_pairs_exact=original_frame,
+            first_completed_store_retail_S6_SP38_candidate_S5_SP34=not original_frame,
+            seven_saved_register_count_does_not_prove_original_lifetimes_or_store_order=True,
+            strict_padder_rejects_888_into_876=True,
+            legacy_padder_emits_in_slot_jump_and_separate_game_overflow_not_retail_match=True,
+            slot_overflow12_not_installed_or_matched=True)
+
+
+    def test_17_call_local_flag_seven_saves_semantics_and_frame_rejection(self):
+        self.qualify_seven_save_dispatch('capture-local-dispatch',148)
+
+    def test_18_late_flags_restore_original_frame_and_early_partial_states(self):
+        for name,differences in (('flag-branches-captured',146),('capture-flat-late-flag',178)):
+            with self.subTest(name=name):self.qualify_seven_save_dispatch(name,differences,True)
 
 
 if __name__=='__main__':
