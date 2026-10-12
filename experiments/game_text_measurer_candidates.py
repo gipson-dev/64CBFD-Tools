@@ -1,6 +1,7 @@
 """Recover the complete three-output text measure with live font metadata."""
 import argparse
 import json
+import subprocess
 from pathlib import Path
 from unittest.mock import patch
 
@@ -239,6 +240,11 @@ def candidates():
             'D_80085994[glyph *', '(*fontAddress)[glyph *')
         yield 'rematerialize-'+name+'-font-address',font_address
         if name=='indexed':
+            pointer_flag=font_address.replace('s32 useFont;', 'void *useFont;').replace('useFont = 0;',
+                'useFont = NULL;').replace('useFont = 1;', 'useFont = (void *)1;')
+            yield 'pointer-flag-indexed',pointer_flag
+            yield 'pointer-flag-indexed-const',pointer_flag.replace('void *useFont;', 'const void *useFont;')
+            yield 'pointer-flag-indexed-register',pointer_flag.replace('void *useFont;', 'register void *useFont;')
             local=font_address.replace('    s32 useFont;\n','').replace(
                 '                    useFont = 0;', '                    {\n                    s32 useFont = 0;').replace(
                 '                }\n            } while (text[index] != 0);',
@@ -554,16 +560,50 @@ def compile_candidate(root,out,name,body=SELECTED,profile='owner',declarations=D
     return meta,words
 
 
+def trace_ugen(root,out,name,body):
+    meta,_=compile_candidate(root,out,name+'-baseline',body)
+    obj=out/(name+'-trace.o')
+    obj.unlink(missing_ok=True)
+    command=['ido/ido5.3_recomp/cc','-c','-32','-G','0','-Xfullwarn','-Xcpluscomm',
+        '-signed','-nostdinc','-non_shared','-Wab,-r4300_mul','-mips2','-o32',
+        '-I','conker/include','-I','conker/include/2.0L','-I','conker/include/2.0L/PR',
+        '-I','conker/include/libc','-D_LANGUAGE_C','-D_FINALROM','-DF3DEX_GBI_2','-D_MIPS_SZLONG=32',
+        *PROFILES['owner'],'-Wc,-d','-o',str(obj.relative_to(root)),
+        str((out/(name+'-baseline.c')).relative_to(root))]
+    result=subprocess.run(command,cwd=root,capture_output=True,text=True)
+    log=result.stdout+result.stderr
+    (out/(name+'-ugen.txt')).write_text(log)
+    record=dict(name=name,exit_code=result.returncode,bytes=len(log.encode()),baseline=meta,code_unchanged=False)
+    receipt=out/(name+'-trace.json')
+    receipt.write_text(json.dumps(record,indent=2)+'\n')
+    if result.returncode or not log or not obj.is_file():
+        raise ValueError('UGEN trace failed, empty or missing object: '+name)
+    baseline=out/(name+'-baseline.o')
+    before,after=compiler.sections(baseline),compiler.sections(obj)
+    if compiler.parse_object(baseline)!=compiler.parse_object(obj) or any(
+            before.get(section)!=after.get(section) for section in ('.rodata','.data')):
+        raise ValueError('UGEN diagnostic changed code, relocations or pools: '+name)
+    record['code_unchanged']=True
+    receipt.write_text(json.dumps(record,indent=2)+'\n')
+    return record
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--filter',default='selected')
     parser.add_argument('--profiles',action='store_true')
     parser.add_argument('--allocation',action='store_true')
     parser.add_argument('--allocation-pairs',action='store_true')
+    parser.add_argument('--trace-ugen',action='store_true')
     args=parser.parse_args();root=Path(__file__).resolve().parents[2]
     out=root/'conker/build/game-text-measurer';records=[]
     for name,body in candidates():
         if args.filter and args.filter not in name:continue
+        if args.trace_ugen:
+            trace=root/'conker/build/game-text-measurer-ugen-trace-20261012';trace.mkdir(exist_ok=True)
+            record=trace_ugen(root,trace,name,body)
+            print(name,'trace exit',record['exit_code'],'bytes',record['bytes'],flush=True)
+            continue
         for profile in (('owner','o2g3','o2','o1g3','o1') if args.profiles else ('owner',)):
             declarations=DECLARATIONS.replace('extern u8 *D_80085994;', 'extern u8 *D_80085994[1];') if name=='array-pointer' else DECLARATIONS
             if name=='record-fields':
@@ -587,7 +627,8 @@ def main():
                     meta,_=compile_candidate(root,out,name+'-'+profile,body,profile,declarations)
                 records.append(meta)
                 print(meta['name'],meta['body_words'],hex(meta['frame']),meta['differences'],meta['pool_bytes'],flush=True)
-    (out/'measurements.json').write_text(json.dumps(records,indent=2)+'\n')
+    if not args.trace_ugen:
+        (out/'measurements.json').write_text(json.dumps(records,indent=2)+'\n')
 
 
 if __name__=='__main__':

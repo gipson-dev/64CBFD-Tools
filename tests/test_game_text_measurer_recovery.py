@@ -691,5 +691,33 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             not_complete_fault_sweep_or_native_hardware_fault_claim=True)
 
 
+    def test_16_ugen_trace_preserves_code_and_rejects_invalid_receipts(self):
+        body=self.captured_lifetime_candidate()
+        record=screen.trace_ugen(self.root,self.out,'ugen-diagnostic',body)
+        self.assertTrue(record['code_unchanged'])
+        self.assertGreater(record['bytes'],0)
+        self.assertEqual((record['baseline']['body_words'],record['baseline']['frame'],
+            record['baseline']['differences']),(218,0x80,174))
+        run=subprocess.run
+        for name,status,log in (('failed',1,'failed'),('empty',0,''),('missing',0,'trace')):
+            def controlled(command,*args,**kwargs):
+                if '-Wc,-d' in command:return subprocess.CompletedProcess(command,status,log,'')
+                return run(command,*args,**kwargs)
+            with self.subTest(name=name),patch.object(screen.subprocess,'run',side_effect=controlled):
+                with self.assertRaisesRegex(ValueError,'failed, empty or missing'):
+                    screen.trace_ugen(self.root,self.out,'ugen-'+name,body)
+            receipt=json.loads((self.out/('ugen-'+name+'-trace.json')).read_text())
+            self.assertFalse(receipt['code_unchanged'])
+        parse=screen.compiler.parse_object
+        def changed(path):
+            text,functions,relocations=parse(path)
+            if str(path).endswith('-trace.o'):text=bytes((text[0]^1,))+text[1:]
+            return text,functions,relocations
+        with patch.object(screen.compiler,'parse_object',side_effect=changed):
+            with self.assertRaisesRegex(ValueError,'changed code, relocations or pools'):
+                screen.trace_ugen(self.root,self.out,'ugen-changed',body)
+        self.assertFalse(json.loads((self.out/'ugen-changed-trace.json').read_text())['code_unchanged'])
+
+
 if __name__=='__main__':
     unittest.main()
