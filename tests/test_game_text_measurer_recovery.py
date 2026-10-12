@@ -4,6 +4,7 @@ import itertools
 import json
 import math
 import struct
+import subprocess
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -19,6 +20,10 @@ from tools.tests.test_game_extended_character_metrics_match import CASES,DEFAULT
 from tools.check_game_data_layout import audit_layout
 from tools.experiments import game_text_measurer_native32 as native
 from tools.tests import test_game_actor_renderer_install_match as installed
+from tools.experiments.game_context_classifier_candidates import compile_owner
+from tools.experiments.game_actor_classifier_candidates import sections
+from tools.pad_generated_object import parse_object
+from tools.tests.game_owner_pool import normalized_pools
 
 STACK,TEXT,FONT,OUTPUT=guest.STACK,0x22000,0x24000,0x26000
 
@@ -398,6 +403,175 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
         self.receipt('native-controls',seven_fresh_compiled_controls=True,all_effective_public_mismatches=True,
             failure_receipts=failures,four_effective_compiled_buffer_table_canary_controls=canaries,
             guest_only_low_pointer_cached_font_control_not_portable=True)
+
+    def shape_candidate(self):
+        return dict(screen.candidates())['remat-metrics-state-after']
+
+    def captured_lifetime_candidate(self):
+        return dict(screen.candidates())['capture-declaration-after-record']
+
+    def test_10_original_saves_metric_homes_and_public_semantics(self):
+        body=self.shape_candidate()
+        meta,words=screen.compile_candidate(self.root,self.out,'lifetime-fit',body)
+        self.assertEqual((meta['body_words'],meta['frame'],meta['differences'],meta['pool_bytes']),(218,128,168,0))
+        self.assertEqual(words[:13],self.retail[:13])
+        self.assertEqual(words[14:28],self.retail[14:28])
+        cases=0
+        with patch.object(self,'raw',words):
+            for byte,phase in itertools.product(range(256),(0,8)):
+                text=bytes((byte,0,0)) if byte!=0xBC else bytes((byte,7,65,0))
+                models=self.compare(text,phase=phase)
+                self.assertEqual([e for e in models[0].events if e[0]=='CALL'],
+                    [e for e in models[1].events if e[0]=='CALL'])
+                cases+=1
+            for text,alias,phase,scales in itertools.product((b'\0',b'A\0',b'A\nB\0',b' AB\0',
+                    bytes((0xBC,0,65,0)),bytes((0xA8,0xAA,0xBA,0xAE,65,0))),range(10),(0,8),
+                    ((1.0,1.0),(0.75,1.25))):
+                models=self.compare(text,alias,phase,scales)
+                self.assertEqual([e for e in models[0].events if e[0]=='CALL'],
+                    [e for e in models[1].events if e[0]=='CALL'])
+                cases+=1
+            self.compare(b'A\0',null=True);cases+=1
+            self.compare(bytes((0xAA,0)),factor=1.0/18.0);cases+=1
+        memory,args=self.font_pointer_fixture();expected=Reference(memory,args).run()
+        self.assertEqual(public(MeasurerOracle(words,memory,args,self.connected).run().memory),public(expected.memory));cases+=1
+        source=self.native_source(body,self.native_cases())
+        for profile in ('-O2','-O0'):
+            self.assertEqual(self.run_native('native-lifetime-'+profile[1:],source,profile),(0,''))
+        self.receipt('lifetime-fit',body_words=218,frame=128,differences=168,pool_bytes=0,guest_cases=cases,
+            saves_S0_to_S6_RA_exact_and_opening_index_reads_exact=True,
+            original_five_private_metrics_output_homes_and_full_call_arguments_exact=True,
+            complete_original_candidate_actual_helpers_and_public_memory_exact=True,
+            native_cases_per_profile=733,native_profiles=['O2','O0'],owner_profile_unchanged=True,
+            one_body_word_short_and_flag_spill_reload_schedule_unmatched=True,
+            private_fault_order_GPR_FPR_hardware_and_installation_not_claimed=True)
+
+    def test_11_copied_owner_seven_neighbors_pools_and_both_padders(self):
+        self.check_copied_owner(self.shape_candidate(),'lifetime')
+        self.check_copied_owner(self.captured_lifetime_candidate(),'captured-lifetime')
+
+    def check_copied_owner(self,body,tag):
+        source=(self.out/'before-source').read_text()
+        self.assertEqual(source.count(screen.ORIGINAL),1)
+        updated=source.replace(screen.ORIGINAL,body).replace('#include <ultra64.h>\n',
+            '#include <ultra64.h>\n'+screen.DECLARATIONS,1)
+        owners=[];run=subprocess.run
+        def compact(command,*a,**k):
+            if str(command[0]).endswith('/cc'):command=list(command)+['-Wo,-loopunroll,0']
+            return run(command,*a,**k)
+        for stage,text in (('before',source),('candidate',updated)):
+            with patch('subprocess.run',side_effect=compact):
+                obj,warnings=compile_owner(self.root,self.out,text,tag+'-owner-'+stage)
+            self.assertEqual(warnings,[])
+            subprocess.run(['python3',str(self.root/'tools/asm-processor/asm_processor.py'),'-O2','-g3',
+                str((self.out/(tag+'-owner-'+stage+'.c')).relative_to(self.root/'conker')),'--post-process',
+                str(obj.relative_to(self.root/'conker')),'--assembler',
+                'mips-linux-gnu-as -EB -mtune=vr4300 -march=vr4300 -mabi=32 -I include',
+                '--asm-prelude','include/asm_processor_prelude.inc'],cwd=self.root/'conker',check=True,capture_output=True)
+            owners.append(obj)
+        def fingerprint(obj,name):
+            text,functions,relocs=parse_object(obj);f=functions[name];a,b=f['value'],f['value']+f['size']
+            return f['size'],text[a:b],{o-a:r for o,r in relocs.items() if a<=o<b}
+        names=set(parse_object(owners[0])[1])
+        self.assertEqual(names,set(parse_object(owners[1])[1]));self.assertEqual(len(names-{screen.FUNCTION}),7)
+        for name in names-{screen.FUNCTION}:
+            self.assertEqual(fingerprint(owners[0],name),fingerprint(owners[1],name),name)
+        self.assertEqual(normalized_pools(owners[0]),normalized_pools(owners[1]))
+        screen.compile_candidate(self.root,self.out,tag+'-owner-isolated',body)
+        self.assertEqual(fingerprint(owners[1],screen.FUNCTION),fingerprint(self.out/(tag+'-owner-isolated.o'),screen.FUNCTION))
+        routes=[]
+        for route in ('pad_c_object.py','pad_generated_object.py'):
+            parsed=[]
+            for stage,obj in zip(('before','candidate'),owners):
+                asm=self.out/(tag+'-'+route+'-'+stage+'.s')
+                args=[str(obj),str(self.out/'before-layout'),'generated_6E770',str(asm)] if route=='pad_c_object.py' else [
+                    str(obj),str(self.out/'before-assembly'),str(asm),'--filename','generated_6E770']
+                subprocess.run(['python3',str(self.root/'tools'/route),*args,'--word-patches',str(self.out/'before-guards'),
+                    '--rodata-symbol',metrics.ANCHOR],check=True,capture_output=True)
+                subprocess.run(['mips-linux-gnu-as','-EB','-march=vr4300','-o',str(asm.with_suffix('.o')),str(asm)],
+                    check=True,capture_output=True)
+                parsed.append(parse_object(asm.with_suffix('.o')))
+                self.assertNotIn('.rodata',sections(asm.with_suffix('.o')))
+            start=parsed[1][1][screen.FUNCTION]['value'];expected=bytearray(parsed[0][0])
+            self.assertEqual(parsed[1][1][screen.FUNCTION]['size'],872)
+            self.assertEqual(parsed[1][0][start+872:start+876],bytes(4))
+            self.assertEqual(parsed[1][1][lookup.FUNCTION]['value'],start+876)
+            expected[start:start+876]=parsed[1][0][start:start+876]
+            self.assertEqual(bytes(expected),parsed[1][0])
+            self.assertEqual({o:r for o,r in parsed[0][2].items() if not start<=o<start+876},
+                {o:r for o,r in parsed[1][2].items() if not start<=o<start+876})
+            for name in names-{screen.FUNCTION}:
+                self.assertEqual(parsed[0][1][name],parsed[1][1][name])
+            routes.append(parsed[1])
+        self.assertEqual(routes[0],routes[1])
+        self.receipt(tag+'-owner',neighbors7=True,all_other_bodies_extents_relocations_and_pools_exact=True,
+            whole_padded_text_and_relocations_outside_target_exact=True,raw_target_matches_isolated=True,
+            target_slot876_body872_zero_tail4_not_retail_match=True,
+            actual_no_unroll_profile_asm_processor_both_padders_existing_metrics_binding=True,
+            old_guards_unchanged_no_target_guards_added=True,not_installed_or_byte_exact=True)
+
+    def test_12_private_flag_home_witness_rejects_current_candidate_as_match(self):
+        _,words=screen.compile_candidate(self.root,self.out,'lifetime-private-witness',self.shape_candidate())
+        witnesses=[]
+        for text,phase in itertools.product((b'A\0',bytes((0xA8,0))),(0,8)):
+            memory,args=fixture(text,self.table)
+            args=(args[0],STACK+phase-128+0x68,args[2],args[3])
+            models=[MeasurerOracle(code,memory,args,self.connected,phase).run() for code in (self.retail,words)]
+            outputs=[tuple(signed(read(m.memory,a)) for a in args[1:]) for m in models]
+            self.assertNotEqual(outputs[0],outputs[1])
+            self.assertEqual(outputs,[(19,18,0),(20,18,0)] if text[0]==65 else [(32,15,3),(41,25,3)])
+            witnesses.append(dict(byte=text[0],phase=phase,width_address=args[1],retail=outputs[0],candidate=outputs[1]))
+        self.receipt('lifetime-private-witness',four_actual_instruction_chain_discriminants=witnesses,
+            current_struct_flag_home_always_stored_and_late_read_is_not_retail_spill=True,
+            candidate_rejected_for_full_private_equivalence=True,not_installed_or_byte_exact=True,
+            synthetic_guest_stack_alias_not_native_portable_pointer_claim=True)
+
+    def test_13_call_only_flag_capture_public_and_bounded_private_qualification(self):
+        body=self.captured_lifetime_candidate()
+        meta,words=screen.compile_candidate(self.root,self.out,'captured-lifetime',body)
+        self.assertEqual((meta['body_words'],meta['frame'],meta['differences'],meta['pool_bytes']),(218,128,174,0))
+        cases=0
+        with patch.object(self,'raw',words):
+            for byte,phase in itertools.product(range(256),(0,8)):
+                text=bytes((byte,0,0)) if byte!=0xBC else bytes((byte,7,65,0))
+                models=self.compare(text,phase=phase)
+                self.assertEqual([e for e in models[0].events if e[0]=='CALL'],
+                    [e for e in models[1].events if e[0]=='CALL']);cases+=1
+            for text,alias,phase,scales in itertools.product((b'\0',b'A\0',b'A\nB\0',b' AB\0',
+                    bytes((0xBC,0,65,0)),bytes((0xA8,0xAA,0xBA,0xAE,65,0))),range(10),(0,8),
+                    ((1.0,1.0),(0.75,1.25))):
+                models=self.compare(text,alias,phase,scales)
+                self.assertEqual([e for e in models[0].events if e[0]=='CALL'],
+                    [e for e in models[1].events if e[0]=='CALL']);cases+=1
+            self.compare(b'A\0',null=True);cases+=1
+            self.compare(bytes((0xAA,0)),factor=1.0/18.0);cases+=1
+        memory,args=self.font_pointer_fixture();expected=Reference(memory,args).run()
+        self.assertEqual(public(MeasurerOracle(words,memory,args,self.connected).run().memory),public(expected.memory));cases+=1
+        private=[]
+        for text,phase in itertools.product((b'A\0',bytes((0xA8,0)),bytes((65,0xA8,0))),(0,8)):
+            memory,args=fixture(text,self.table);args=(args[0],STACK+phase-128+0x68,args[2],args[3])
+            models=[MeasurerOracle(code,memory,args,self.connected,phase).run() for code in (self.retail,words)]
+            outputs=[tuple(signed(read(m.memory,a)) for a in args[1:]) for m in models]
+            self.assertEqual(outputs[0],outputs[1]);private.append(dict(text=list(text),phase=phase,outputs=outputs[0]))
+        source=self.native_source(body,self.native_cases())
+        for profile in ('-O2','-O0'):
+            self.assertEqual(self.run_native('native-captured-lifetime-'+profile[1:],source,profile),(0,''))
+        restore='                            useFont = metrics.useFont;\n'
+        width='                            *width = (s32)((f32)*width + (f32)metrics.width * metrics.factor);'
+        self.assertEqual(body.count(restore),1);self.assertEqual(body.count(width),1)
+        late=body.replace(restore,'').replace(width,width+'\n'+restore.rstrip())
+        _,bad=screen.compile_candidate(self.root,self.out,'captured-negative-late-flag-read',late)
+        memory,args=fixture(bytes((0xA8,0)),self.table);args=(args[0],STACK-128+0x68,args[2],args[3])
+        models=[MeasurerOracle(code,memory,args,self.connected).run() for code in (self.retail,bad)]
+        outputs=[tuple(signed(read(m.memory,a)) for a in args[1:]) for m in models]
+        self.assertNotEqual(outputs[0],outputs[1])
+        self.receipt('captured-lifetime',body_words=218,frame=128,differences=174,guest_cases=cases,
+            actual_helpers_complete_public_memory_calls_and_five_homes_exact=True,
+            native_cases_per_profile=733,native_profiles=['O2','O0'],bounded_private_flag_home_cases6=private,
+            fresh_late_flag_reload_private_negative_effective=outputs,
+            call_only_capture_then_reload_before_width_store_restored=True,
+            saved_register_set_S0_to_S7_instead_of_retail_S0_to_S6_still_unmatched=True,
+            full_private_equivalence_fault_order_hardware_and_installation_not_claimed=True)
 
 
 if __name__=='__main__':
