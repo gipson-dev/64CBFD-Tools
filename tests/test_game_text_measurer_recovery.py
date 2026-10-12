@@ -156,6 +156,12 @@ class MeasurerOracle(guest.AttachmentOracle):
         else:super().execute(word)
 
 
+class InstructionFaultMeasurer(MeasurerOracle):
+    def execute(self,word):
+        self.dispatched_word=word
+        super().execute(word)
+
+
 class GameTextMeasurerRecoveryTests(unittest.TestCase):
     maxDiff=None
     run_native=installed.GameActorRendererInstallMatchTests.run_native
@@ -830,6 +836,90 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
     def test_18_late_flags_restore_original_frame_and_early_partial_states(self):
         for name,differences in (('flag-branches-captured',146),('capture-flat-late-flag',178)):
             with self.subTest(name=name):self.qualify_seven_save_dispatch(name,differences,True)
+
+
+    def test_19_all_instruction_access_cuts_reject_current_flag_lifetime(self):
+        entry=screen.ENTRY+0x200000
+        body=dict(screen.candidates())['flag-branches-captured']
+        with patch.object(screen,'ENTRY',entry):
+            meta,words=screen.compile_candidate(self.root,self.out,'complete-fault-seed',body)
+        asm=(self.out/'before-assembly').read_text().split('glabel '+screen.FUNCTION+'\n',1)[1].split(
+            'endlabel '+screen.FUNCTION,1)[0]
+        source=self.out/'fault-original.s';obj=source.with_suffix('.o')
+        source.write_text('.include "'+str(self.root/'conker/include/asm_processor_prelude.inc')+'"\n'+
+            '.section .text.measurer,"ax"\n.set noreorder\n.set noat\n.globl '+screen.FUNCTION+'\n'+
+            '.type '+screen.FUNCTION+',@function\n'+screen.FUNCTION+':\n'+asm+
+            '\n.size '+screen.FUNCTION+',.-'+screen.FUNCTION+'\n')
+        subprocess.run(['mips-linux-gnu-as','-EB','-march=vr4300','-o',str(obj),str(source)],check=True,capture_output=True)
+        script=self.out/'fault-original.ld';elf=script.with_suffix('.elf')
+        script.write_text('SECTIONS { .text 0x%X : SUBALIGN(4) { *(.text.measurer) } }\n'%entry)
+        subprocess.run(['mips-linux-gnu-ld','-m','elf32btsmip','-T',str(script),'-e',screen.FUNCTION,
+            *['--defsym=%s=0x%X'%item for item in screen.SYMBOLS.items()],'-o',str(elf),str(obj)],
+            check=True,capture_output=True)
+        original=list(struct.unpack('>219I',sections(elf)['.text'][1]))
+        self.assertEqual(original,self.retail)
+        def models(memory,args,phase):
+            with patch.object(screen,'ENTRY',entry):
+                return [InstructionFaultMeasurer(code,memory,args,self.connected,phase) for code in (original,words)]
+        state=lambda m:(m.memory,m.events,m.r,m.f,m.condition)
+        records=[];pairs=0
+        for text,phase in itertools.product((b'A\0',b' \0',b'\n\0',bytes((0xA8,0))),(0,8)):
+            memory,args=fixture(text,self.table);normal=models(memory,args,phase)
+            expected=Reference(memory,args).run()
+            for model in normal:
+                model.run()
+                self.assertEqual(public(model.memory),public(expected.memory));self.assertEqual(model.calls,expected.calls)
+                self.assertEqual(model.accesses,sum(e[0] in ('R','W') for e in model.events))
+            counts=[model.accesses for model in normal];self.assertEqual(counts[0],counts[1])
+            first=None;equal=0
+            for fault in range(counts[0]):
+                pair=models(memory,args,phase)
+                for model in pair:
+                    model.fault=fault
+                    with self.assertRaises(guest.AccessFault):model.run()
+                    self.assertEqual(model.accesses,fault)
+                    self.assertIn(model.dispatched_word>>26,(32,33,35,36,37,40,41,43,49,57))
+                same=state(pair[0])==state(pair[1]);equal+=same;pairs+=1
+                if not same and first is None:
+                    self.assertGreaterEqual(fault,14)
+                    self.assertEqual(pair[0].r[31],pair[1].r[31])
+                    self.assertEqual(pair[0].r[8],0);self.assertNotEqual(pair[1].r[8],0)
+                    first=dict(fault=fault,words=['0x%08X'%model.dispatched_word for model in pair],
+                        changed_gprs=[i for i in range(32) if pair[0].r[i]!=pair[1].r[i]],
+                        t0=[model.r[8] for model in pair],memory_equal=pair[0].memory==pair[1].memory,
+                        events_equal=pair[0].events==pair[1].events)
+            self.assertIsNotNone(first)
+            for model in models(memory,args,phase):
+                model.fault=counts[0];model.run();self.assertEqual(model.accesses,counts[0])
+            records.append(dict(text=list(text),phase=phase,instruction_accesses=counts[0],
+                equal_cut_states=equal,first_difference=first))
+        self.receipt('complete-instruction-fault-rejection',entry=entry,cases=records,fired_pairs=pairs,
+            both_original_and_candidate_independently_linked_same_code_base=True,
+            original219_still_byte_exact_no_instruction_projection=True,
+            call_argument_observation_is_not_a_guest_memory_access=True,
+            first_divergence_not_a_rebase_only_return_address_difference=True,
+            all_instruction_access_ordinals_for_four_named_calls_two_phases_exercised=True,
+            current_source_flag_lifetime_rejected_not_complete_match_qualification=True,
+            not_all_inputs_private_aliases_FCSR_or_hardware_fault_claim=True)
+
+
+    def test_20_call_observations_do_not_fire_instruction_access_faults(self):
+        memory,args=fixture(bytes((0xA8,0)),self.table)
+        model=InstructionFaultMeasurer(self.retail,memory,args,self.connected)
+        model.fault=0
+        snapshot=(model.memory.copy(),model.events.copy(),model.r.copy(),model.f.copy(),model.condition)
+        observed=model.arguments(6)
+        self.assertEqual(observed,tuple(model.r[4:8])+(read(model.memory,model.r[29]+16),
+            read(model.memory,model.r[29]+20)))
+        self.assertEqual((model.memory,model.events,model.r,model.f,model.condition),snapshot)
+        self.assertEqual(model.accesses,0)
+        contaminated=InstructionFaultMeasurer(self.retail,memory,args,self.connected);contaminated.fault=0
+        with patch.object(contaminated,'peek',side_effect=contaminated.get):
+            with self.assertRaises(guest.AccessFault):contaminated.arguments(6)
+        self.assertEqual(contaminated.accesses,0)
+        self.assertFalse(hasattr(contaminated,'dispatched_word'))
+        with self.assertRaises(guest.AccessFault):model.run()
+        self.assertEqual(model.accesses,0);self.assertEqual(model.dispatched_word,self.retail[1])
 
 
 if __name__=='__main__':

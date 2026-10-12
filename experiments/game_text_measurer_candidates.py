@@ -456,6 +456,25 @@ def candidates():
             changed=changed.replace(marker,marker+declarations)
         yield 'capture-declaration-'+position,changed
         if position=='after-record':
+            for kind in ('u8','u16','s8','s16'):
+                yield 'capture-subword-'+kind,changed.replace('    s32 useFont;', '    '+kind+' useFont;')
+            yield 'capture-normalize-extent',changed.replace(
+                '                    glyph = func_15042C40(text[index]);\n                    useFont = 0;',
+                '                    extent = func_15042C40(text[index]);\n                    useFont = 0;\n                    glyph = (u8)extent;')
+            merged=changed.replace('    s32 useFont;', '    s32 useFont;\n    s32 capturedFont;').replace(
+                '                            useFont = metrics.useFont;', '                            capturedFont = metrics.useFont;').replace(
+                '                        } else if (glyph < 0xA1) {',
+                '                            useFont = capturedFont;\n                        } else if (glyph < 0xA1) {')
+            yield 'capture-post-call-merge',merged
+            yield 'capture-post-call-merge-comma',merged.replace(
+                '                            capturedFont = metrics.useFont;\n                            *width',
+                '                            capturedFont = metrics.useFont,\n                            *width')
+            reused_merge=merged.replace('    s32 capturedFont;\n','').replace('    s32 index;',
+                '    s32 index;\n    u8 *cursor;').replace('text[index]','*cursor').replace(
+                'index += 2;', 'cursor += 2;').replace('index++;','cursor++;').replace(
+                '        if (*cursor != 0) {', '        cursor = text + index;\n        if (*text != 0) {').replace(
+                'capturedFont', 'index')
+            yield 'capture-post-call-reuse-index',reused_merge
             yield 'capture-constant-spill',changed.replace('metrics.useFont = useFont;', 'metrics.useFont = 0;')
             yield 'capture-automatic-spill',changed.replace('                            metrics.useFont = useFont;\n','').replace(
                 '                            useFont = metrics.useFont;\n','')
@@ -603,6 +622,124 @@ glyph_done:
                 '                        }\n                    }\n                    index++;',
                 '                        } else {\n                            useFont = 0;\n                        }\n                    } else {\n                        useFont = 0;\n                    }\n                    index++;')
             yield 'flag-branches-captured',branched
+            font_record=branched.replace('    s32 lineHeight;',
+                '    typedef struct { u8 left, top, right, bottom; } FontGlyph;\n    s32 lineHeight;')
+            for suffix,member in (('', 'left'),(' + 1','top'),(' + 2','right'),(' + 3','bottom')):
+                font_record=font_record.replace('(*fontAddress)[glyph * 4'+suffix+']',
+                    '((FontGlyph *)*fontAddress)[glyph].'+member)
+            yield 'flag-branches-font-record',font_record
+            cast_font=branched
+            for suffix in ('',' + 2'):
+                cast_font=cast_font.replace('(*fontAddress)[glyph * 4'+suffix+']',
+                    '(u32)(*fontAddress)[glyph * 4'+suffix+']')
+            yield 'flag-branches-font-casts',cast_font
+            font_reads='''                        u8 *row;
+                        s32 currentWidth;
+                        u8 left, right, bottom, top;
+
+                        row = *fontAddress + glyph * 4;
+                        currentWidth = *(volatile s32 *)width;
+                        left = *(volatile u8 *)(row + 0);
+                        right = *(volatile u8 *)(row + 2);
+                        *width = (s32)((u32)currentWidth + left + right - 1);
+                        row = *fontAddress + glyph * 4;
+                        bottom = *(volatile u8 *)(row + 3);
+                        top = *(volatile u8 *)(row + 1);
+                        extent = bottom + top;'''
+            font_expression='''                        *width = (s32)((u32)*width + (*fontAddress)[glyph * 4] +
+                            (*fontAddress)[glyph * 4 + 2] - 1);
+                        extent = (*fontAddress)[glyph * 4 + 3] + (*fontAddress)[glyph * 4 + 1];'''
+            ordered=branched.replace(font_expression,font_reads)
+            yield 'flag-branches-font-read-order',ordered
+            yield 'flag-branches-font-read-temporaries',ordered.replace('volatile ','')
+            declarations='''                        u8 *row;
+                        s32 currentWidth;
+                        u8 left, right, bottom, top;
+
+'''
+            yield 'flag-branches-font-read-outer',ordered.replace(declarations,'').replace(
+                '    u8 **fontAddress = &D_80085994;',
+                '    u8 **fontAddress = &D_80085994;\n    u8 *row;\n    s32 currentWidth;\n    u8 left, right, bottom, top;')
+            reuse_reads='''                        row = *fontAddress + glyph * 4;
+                        useFont = *width;
+                        left = row[0];
+                        right = row[2];
+                        *width = (s32)((u32)useFont + left + right - 1);
+                        row = *fontAddress + glyph * 4;
+                        extent = row[3];
+                        left = row[1];
+                        extent = extent + left;'''
+            yield 'flag-branches-font-reuse',branched.replace(font_expression,reuse_reads).replace(
+                '    u8 **fontAddress = &D_80085994;',
+                '    u8 **fontAddress = &D_80085994;\n    u8 *row;\n    u8 left, right;')
+            automatic=changed.replace(font_expression,reuse_reads).replace(
+                '    u8 **fontAddress = &D_80085994;',
+                '    u8 **fontAddress = &D_80085994;\n    u8 *row;\n    u8 left, right;').replace(
+                '                            metrics.useFont = useFont;\n','').replace(
+                '                            useFont = metrics.useFont;\n','')
+            yield 'capture-font-automatic-six',automatic
+            yield 'capture-font-automatic-five',automatic.replace('width, useFont; } metrics;', 'width; } metrics;')
+            compact_reads='''                        index = glyph * 4;
+                        text = *fontAddress + index;
+                        useFont = *width;
+                        glyph = text[0];
+                        extent = text[2];
+                        *width = (s32)((u32)useFont + glyph + extent - 1);
+                        text = *fontAddress + index;
+                        extent = text[3];
+                        glyph = text[1];
+                        extent = extent + glyph;'''
+            compact=branched.replace(font_expression,compact_reads).replace('    s32 index;',
+                '    s32 index;\n    u8 *cursor;').replace('text[index]','*cursor').replace(
+                'index += 2;', 'cursor += 2;').replace('                    index++;','                    cursor++;').replace(
+                '        if (*cursor != 0) {', '        cursor = text + index;\n        if (*text != 0) {')
+            yield 'flag-branches-font-reuse-inputs',compact
+            unified=compact.replace('    u8 glyph;\n','').replace('    u8 *cursor;', '    u8 *cursor;\n    u32 character;').replace(
+                'glyph = func_15042C40(*cursor);','character = (u8)func_15042C40(*cursor);').replace('glyph','character')
+            yield 'flag-branches-font-reuse-wide',unified
+            parameter_reads='''                        index = (s32)text * 4;
+                        text = *fontAddress + index;
+                        useFont = *width;
+                        extent = text[0];
+                        useFont = (s32)((u32)useFont + (u32)extent);
+                        extent = text[2];
+                        *width = (s32)((u32)useFont + (u32)extent - 1);
+                        text = *fontAddress + index;
+                        useFont = text[3];
+                        extent = text[1];
+                        extent = useFont + extent;'''
+            parameter=branched.replace(font_expression,parameter_reads).replace('    u8 glyph;\n','').replace(
+                '    s32 index;', '    s32 index;\n    u8 *cursor;').replace('text[index]','*cursor').replace(
+                'index += 2;', 'cursor += 2;').replace('                    index++;','                    cursor++;').replace(
+                '        if (*cursor != 0) {', '        cursor = text + index;\n        if (*text != 0) {').replace(
+                'glyph = func_15042C40(*cursor);', 'text = (u8 *)(u32)(u8)func_15042C40(*cursor);')
+            for op in ('== 0x60','< 0xA1','>= 0xA8','< 0x100'):
+                parameter=parameter.replace('glyph '+op,'(s32)text '+op)
+            parameter=parameter.replace('func_150415E0(glyph,', 'func_150415E0((s32)text,')
+            yield 'flag-branches-font-reuse-parameter',parameter
+            yield 'flag-branches-no-impossible-zero',branched.replace(
+                '                        } else {\n                            useFont = 0;\n                        }\n                    } else {',
+                '                        }\n                    } else {')
+            for tag,source in (('capture',changed),('branches',branched)):
+                switched=source.replace('                    if (glyph == 0x60) {',
+                    '                    switch (glyph) {\n                    case 0x60:').replace(
+                    '                    } else if (glyph < 0xA1 || glyph >= 0xA8) {',
+                    '                        break;\n                    default:\n                    if (glyph < 0xA1 || glyph >= 0xA8) {').replace(
+                    '                    }\n                    index++;',
+                    '                    }\n                    break;\n                    }\n                    index++;')
+                yield 'flag-switch-'+tag,switched
+            aggregate=changed.replace('    s32 useFont;\n','').replace('    u8 **fontAddress = &D_80085994;',
+                '    u8 **fontAddress = &D_80085994;\n    struct { s32 value; } fontFlag;')
+            aggregate=aggregate.replace('width, useFont;', 'width, savedFlag;').replace(
+                'metrics.useFont','metrics.savedFlag').replace('useFont','fontFlag.value').replace(
+                'metrics.savedFlag','metrics.useFont').replace('width, savedFlag;', 'width, useFont;')
+            yield 'capture-aggregate-flag',aggregate
+            yield 'capture-array-flag',aggregate.replace('struct { s32 value; } fontFlag;',
+                's32 fontFlag[1];').replace('fontFlag.value','fontFlag[0]')
+            yield 'flag-branches-post-call-merge',branched.replace('    s32 useFont;',
+                '    s32 useFont;\n    s32 capturedFont;').replace('                            useFont = metrics.useFont;',
+                '                            capturedFont = metrics.useFont;').replace('                        } else if (glyph < 0xA1) {',
+                '                            useFont = capturedFont;\n                        } else if (glyph < 0xA1) {')
             yield 'flag-branches-captured-after-space',branched.replace(
                 '                        useFont = 0;\n                        *width', '                        *width').replace(
                 '                        }\n                    } else if (glyph',
