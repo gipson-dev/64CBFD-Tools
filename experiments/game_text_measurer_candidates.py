@@ -194,6 +194,74 @@ M2C_LIFETIMES = '''void func_150428D4(u8 *text, s32 *width, s32 *height, s32 *ba
 
 def candidates():
     yield 'selected',SELECTED
+    extended='(s32)((f32)(s32)((f32)glyphHeight * factor) - glyphBaseline) + 1'
+    ordinary='D_80085994[glyph * 4 + 3] + D_80085994[glyph * 4 + 1]'
+    inline=BASE.replace('    s32 extent;\n','').replace(
+        '                            extent = '+extended+';\n                            if (lineHeight < extent) {\n                                lineHeight = extent;',
+        '                            if (lineHeight < ('+extended+')) {\n                                lineHeight = '+extended+';').replace(
+        '                        extent = '+ordinary+';\n                        if (extent >= lineHeight) {\n                            lineHeight = extent;',
+        '                        if (('+ordinary+') >= lineHeight) {\n                            lineHeight = '+ordinary+';')
+    yield 'inline-extents',inline
+    yield 'split-extents',BASE.replace('    s32 extent;', '    s32 extendedHeight;\n    s32 ordinaryHeight;').replace(
+        'extent', 'extendedHeight').replace('extendedHeight = '+ordinary, 'ordinaryHeight = '+ordinary).replace(
+        'if (extendedHeight >= lineHeight)', 'if (ordinaryHeight >= lineHeight)').replace(
+        'lineHeight = extendedHeight;\n                        }', 'lineHeight = ordinaryHeight;\n                        }')
+    moved=BASE.replace('    s32 extent;\n','').replace('    s32 useFont;', '    s32 extent;\n    s32 useFont;')
+    yield 'extent-before-outputs',moved
+    yield 'unsigned-compound-font',BASE.replace('''                        *width = (s32)((u32)*width + D_80085994[glyph * 4] +
+                            D_80085994[glyph * 4 + 2] - 1);''','''                        *(u32 *)width += D_80085994[glyph * 4] + D_80085994[glyph * 4 + 2] - 1;''')
+    reused=BASE.replace('u8 *text,','u32 textAddress,').replace('    u8 glyph;\n','').replace(
+        'if (text != NULL)', 'if (textAddress != 0)').replace('*text', '*((u8 *)textAddress)').replace(
+        'cursor = text;', 'cursor = (u8 *)textAddress;').replace('glyph = func_15042C40(*cursor);',
+        'textAddress = (u8)func_15042C40(*cursor);').replace('glyph ==','textAddress ==').replace(
+        'glyph <','textAddress <').replace('glyph >=','textAddress >=').replace('func_150415E0(glyph,','func_150415E0(textAddress,').replace(
+        '[glyph *','[textAddress *')
+    yield 'reuse-address-parameter',reused
+    yield 'reuse-address-local',reused.replace('u32 textAddress,','u8 *text,').replace(
+        '    s32 lineHeight;', '    u32 textAddress = (u32)text;\n    s32 lineHeight;')
+    for name,choices in (
+            ('flag',('s32 useFont;',)),('glyph',('u8 glyph;',)),
+            ('cursor',('u8 *cursor;',)),('parameters',('u8 *text,','s32 *width,','s32 *height,','s32 *baseline)')),
+            ('locals',('s32 lineHeight;','s32 maximumWidth;','u8 *cursor;','u8 glyph;','s32 useFont;','s32 extent;')),
+            ('all',('u8 *text,','s32 *width,','s32 *height,','s32 *baseline)','s32 lineHeight;','s32 maximumWidth;',
+                'u8 *cursor;','u8 glyph;','s32 useFont;','s32 extent;'))):
+        body=BASE
+        for choice in choices:body=body.replace(choice,'register '+choice)
+        yield 'register-'+name,body
+    loop=BASE.replace('        if (*text != 0) {\n            do {','        while (*cursor != 0) {').replace(
+        '            } while (*cursor != 0);\n        }','        }')
+    yield 'while-cursor',loop
+    yield 'for-cursor',loop.replace('        cursor = text;\n        while (*cursor != 0) {',
+        '        for (cursor = text; *cursor != 0;) {')
+    yield 'while-cursor-early',loop.replace('        cursor = text;\n','').replace(
+        '    if (text != NULL) {', '    cursor = text;\n    if (text != NULL) {')
+    yield 'while-byte-cache',loop.replace('    s32 extent;', '    s32 extent;\n    u8 current;').replace(
+        '        while (*cursor != 0) {','        while ((current = *cursor) != 0) {').replace(
+        'if (*cursor == 0xBC)','if (current == 0xBC)').replace('func_15042C40(*cursor)','func_15042C40(current)')
+    escape='''                if (*cursor == 0xBC) {
+                    cursor += 2;
+                } else {'''
+    continued=loop.replace(escape,'''                if (*cursor == 0xBC) {
+                    cursor += 2;
+                    continue;
+                }
+                {''')
+    yield 'while-escape-continue',continued
+    yield 'while-escape-continue-block-flag',continued.replace('    s32 useFont;\n','').replace(
+        '                {\n                    glyph','                {\n                    s32 useFont;\n                    glyph')
+    last=BASE.replace('        cursor = text;\n        if (*text != 0) {\n            do {',
+        '        cursor = text;\n        while (1) {\n            if (*cursor == 0) break;').replace(
+        '            } while (*cursor != 0);\n        }','        }')
+    yield 'while-break',last
+    yield 'while-break-continue',last.replace(escape,'''                if (*cursor == 0xBC) {
+                    cursor += 2;
+                    continue;
+                }
+                {''')
+    head=BASE.replace('        cursor = text;\n        if (*text != 0) {\n            do {',
+        '        cursor = text;\n        goto check;\n        {\n            do {').replace(
+        '            } while (*cursor != 0);','check:\n                if (*cursor == 0) break;\n            } while (1);')
+    yield 'jump-to-check',head
     yield 'm2c-lifetimes',M2C_LIFETIMES
     yield 'signed-sums',BASE.replace('(s32)((u32)*height + 12)','*height + 12').replace(
         '(s32)((u32)*width + 4)','*width + 4').replace('(s32)((u32)*height + (u32)lineHeight)',
@@ -298,7 +366,7 @@ def main():
             meta,_=compile_candidate(root,out,name+'-'+profile,body,profile,declarations);records.append(meta)
             print(meta['name'],meta['body_words'],hex(meta['frame']),meta['differences'],meta['pool_bytes'],flush=True)
         if args.allocation:
-            for option in ('no_const_in_reg','do_opt_saved_regs','norlodrstropt','nordstore','noprecolor','noheurAB','nogenvreg','docopy'):
+            for option in ('no_const_in_reg','do_opt_saved_regs','norlodrstropt','nordstore','noprecolor','noheurAB','no_r23','nogenvreg','docopy'):
                 profile='allocation-'+option
                 with patch.dict(PROFILES,{profile:PROFILES['owner']+('-Wo,-'+option,)}):
                     meta,_=compile_candidate(root,out,name+'-'+profile,body,profile,declarations)

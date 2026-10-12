@@ -17,6 +17,8 @@ from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.tests.game_animation_timeline_oracle import bits,floating,signed
 from tools.tests.test_game_extended_character_metrics_match import CASES,DEFAULT,BITS,CONSTANTS
 from tools.check_game_data_layout import audit_layout
+from tools.experiments import game_text_measurer_native32 as native
+from tools.tests import test_game_actor_renderer_install_match as installed
 
 STACK,TEXT,FONT,OUTPUT=guest.STACK,0x22000,0x24000,0x26000
 
@@ -56,11 +58,14 @@ def fixture(text,table,alias=0,scales=(1.0,1.0)):
 
 
 class Reference:
-    def __init__(self,memory,args):
-        self.memory=memory.copy();self.args=args;self.calls=[]
-    def integer(self,address):return signed(read(self.memory,address))
-    def store(self,address,value):put(self.memory,address,value)
-    def fp(self,address):return floating(read(self.memory,address))
+    def __init__(self,memory,args,byteorder='big'):
+        self.memory=memory.copy();self.args=args;self.calls=[];self.byteorder=byteorder
+    def word(self,address):
+        return int.from_bytes(bytes(self.memory[address+i] for i in range(4)),self.byteorder)
+    def integer(self,address):return signed(self.word(address))
+    def store(self,address,value):
+        for i,v in enumerate((value&0xFFFFFFFF).to_bytes(4,self.byteorder)):self.memory[address+i]=v
+    def fp(self,address):return floating(self.word(address))
     def normalize(self,code):
         self.calls.append((lookup.ENTRY,code))
         if code==32:return 96
@@ -73,7 +78,7 @@ class Reference:
         values=dict(w=0,h=0,s=0,m=0,f=bits(1.0))
         operations=next((ops for codes,off,ops in CASES if code in codes),DEFAULT)
         for name,value in operations:
-            values[name]=read(self.memory,metrics.SYMBOLS[value]) if isinstance(value,str) else value
+            values[name]=self.word(metrics.SYMBOLS[value]) if isinstance(value,str) else value
         return signed(values['w']),signed(values['h']),floating(values['s']),floating(values['f'])
     @staticmethod
     def rounded(value):return floating(bits(value))
@@ -111,10 +116,10 @@ class Reference:
                         else:use_font=True
                     cursor+=1
                     if use_font:
-                        row=read(self.memory,screen.SYMBOLS['D_80085994'])+glyph*4
+                        row=self.word(screen.SYMBOLS['D_80085994'])+glyph*4
                         value=self.integer(width)+self.memory[row]+self.memory[row+2]-1
                         self.store(width,value)
-                        row=read(self.memory,screen.SYMBOLS['D_80085994'])+glyph*4
+                        row=self.word(screen.SYMBOLS['D_80085994'])+glyph*4
                         line_height=max(line_height,self.memory[row+3]+self.memory[row+1])
                 if self.memory[cursor]==0:break
             else:raise AssertionError('reference text bound exceeded')
@@ -145,6 +150,9 @@ class MeasurerOracle(guest.AttachmentOracle):
 
 
 class GameTextMeasurerRecoveryTests(unittest.TestCase):
+    maxDiff=None
+    run_native=installed.GameActorRendererInstallMatchTests.run_native
+
     @classmethod
     def setUpClass(cls):
         cls.root=Path(__file__).resolve().parents[2]
@@ -312,6 +320,84 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
         self.assertEqual(public(MeasurerOracle(words,memory,args,self.connected).run().memory),public(expected.memory));cases+=1
         self.receipt('closer-layout',cases=cases,body_words=217,frame128=True,differences185=True,
             complete_public_memory_and_calls_with_actual_helpers=True,not_installed_or_byte_exact=True)
+
+    def native_cases(self):
+        cases=[]
+        words=[screen.SYMBOLS['D_80085994'],screen.SYMBOLS['D_800380A0'],
+            screen.SYMBOLS['D_800380A4'],*[metrics.SYMBOLS[name] for name in CONSTANTS]]
+        def add(text,alias=0,scales=(1.0,1.0),null=False,factor=None):
+            memory,args=fixture(text,self.table,alias,scales)
+            for address in words:
+                value=read(memory,address)
+                for i,v in enumerate(value.to_bytes(4,'little')):memory[address+i]=v
+            if factor is not None:
+                for i,v in enumerate(bits(factor).to_bytes(4,'little')):
+                    memory[metrics.SYMBOLS['D_80098B00']+i]=v
+            if null:args=(0,*args[1:])
+            expected=Reference(memory,args,'little').run()
+            cases.append((memory,args,expected.memory))
+        for byte,scales in itertools.product(range(256),((1.0,1.0),(0.75,1.25))):
+            add(bytes((byte,0,0)) if byte!=0xBC else bytes((byte,7,65,0)),scales=scales)
+        for text,alias,scales in itertools.product((b'\0',b'A\0',b'hello\0',b'  \0',b'\n\0',b'A\nB\0',
+                b'AB\n\0',b'\n\n\0',bytes((0xBC,0,65,0)),bytes((0xA8,0xAA,0xBA,0xAE,65,0))),
+                range(10),((1.0,1.0),(0.75,1.25))):
+            add(text,alias,scales)
+        for alias,scales in itertools.product(range(10),((1.0,1.0),(0.75,1.25))):
+            add(b'A\0',alias,scales,null=True)
+        add(bytes((0xAA,0)),factor=1.0/18.0)
+        return cases
+
+    def native_source(self,body,cases):
+        regions=((TEXT,256,'nativeText'),(FONT,1024,'nativeFont'),(OUTPUT-16,64,'nativeOutputs'))
+        parameters=[screen.SYMBOLS['D_800380A0'],screen.SYMBOLS['D_800380A4'],
+            *[metrics.SYMBOLS[name] for name in CONSTANTS]]
+        return native.source(body,self.table,cases,regions,parameters)
+
+    def test_08_native32_complete_bodies_helpers_and_portable_aliases(self):
+        cases=self.native_cases()
+        self.assertEqual(len(cases),733)
+        for name,body in (('clear',screen.SELECTED),('closer',dict(screen.candidates())['initial-index-late'])):
+            source=self.native_source(body,cases)
+            for profile in ('-O2','-O0'):
+                self.assertEqual(self.run_native('native-'+name+'-'+profile[1:],source,profile),(0,''))
+        self.receipt('native',profiles=['O2','O0'],cases_per_body_profile=len(cases),bodies=['clear216','closer217'],
+            native_int_pointer_float_bytes4=True,complete_recovered_helpers_no_hooks=True,
+            all_bytes_empty_null_newlines_control_skip_and_nested_truncation=True,
+            host_endian_public_output_font_factor_scale_text_aliases=True,all_buffers_canaries=True,
+            synthetic_low_font_pointer_alias_private_homes_FCSR_hardware_gameplay_not_claimed=True)
+
+    def test_09_native32_effective_fresh_compiled_controls(self):
+        font='''                        *width = (s32)((u32)*width + D_80085994[glyph * 4] +
+                            D_80085994[glyph * 4 + 2] - 1);
+                        extent = D_80085994[glyph * 4 + 3] + D_80085994[glyph * 4 + 1];'''
+        controls=(('empty-height','(u32)*height + 12','(u32)*height + 13'),
+            ('skip-one','cursor += 2','cursor += 1'),('space-width','(u32)*width + 4','(u32)*width + 5'),
+            ('no-newline-clear','                                *width = 0;','                                *width = *width;'),
+            ('wrong-height-scale','(f32)*height * D_800380A4','(f32)*height * D_800380A0'),
+            ('one-truncation','(f32)(s32)((f32)glyphHeight * factor)','((f32)glyphHeight * factor)'),
+            ('early-font-height',font,'''                        extent = D_80085994[glyph * 4 + 3] + D_80085994[glyph * 4 + 1];
+                        *width = (s32)((u32)*width + D_80085994[glyph * 4] + D_80085994[glyph * 4 + 2] - 1);'''))
+        cases=self.native_cases();failures={}
+        for name,old,new in controls:
+            self.assertEqual(screen.SELECTED.count(old),1,name)
+            body=screen.SELECTED.replace(old,new)
+            code,detail=self.run_native('native-negative-'+name,self.native_source(body,cases))
+            self.assertIn(code,range(1,5),name);self.assertEqual(len(detail),3,name)
+            self.assertEqual(detail[0],code,name);failures[name]=detail
+        canaries={}
+        source=self.native_source(screen.SELECTED,cases)
+        for name,statement,expected_code in (('text','textStorage[0]=0;',6),
+                ('font','fontStorage[0]=0;',7),('outputs','outputsStorage[0]=0;',8),
+                ('lookup','normalizerStorage[0]=0;',9)):
+            marker='        D_80085994=nativeFont;'
+            self.assertEqual(source.count(marker),1)
+            corrupted=source.replace(marker,'        '+statement+'\n'+marker)
+            code,detail=self.run_native('native-canary-negative-'+name,corrupted)
+            self.assertEqual((code,detail),(expected_code,[expected_code,0,0]),name)
+            canaries[name]=detail
+        self.receipt('native-controls',seven_fresh_compiled_controls=True,all_effective_public_mismatches=True,
+            failure_receipts=failures,four_effective_compiled_buffer_table_canary_controls=canaries,
+            guest_only_low_pointer_cached_font_control_not_portable=True)
 
 
 if __name__=='__main__':
