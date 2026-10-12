@@ -622,6 +622,31 @@ glyph_done:
                 '                        }\n                    }\n                    index++;',
                 '                        } else {\n                            useFont = 0;\n                        }\n                    } else {\n                        useFont = 0;\n                    }\n                    index++;')
             yield 'flag-branches-captured',branched
+            for prefix,spill_body in (('capture',changed),('flag-branches',branched)):
+                volatile_spill=spill_body.replace('s32 height, width, useFont; } metrics;',
+                    's32 height, width; volatile s32 useFont; } metrics;')
+                yield prefix+'-volatile-spill',volatile_spill
+                parameter_glyph=spill_body.replace('    u8 glyph;\n', '').replace(
+                    '    s32 index;', '    s32 index;\n    u8 *cursor;').replace(
+                    '        if (text[index] != 0) {',
+                    '        cursor = text + index;\n        if (*text != 0) {').replace(
+                    'text[index]', '*cursor').replace('index += 2;', 'cursor += 2;').replace(
+                    'index++;', 'cursor++;').replace('glyph = func_15042C40(*cursor);',
+                    'text = (u8 *)(u32)(u8)func_15042C40(*cursor);')
+                for comparison in ('== 0x60', '< 0xA1', '>= 0xA8', '< 0x100'):
+                    parameter_glyph=parameter_glyph.replace('glyph '+comparison,
+                        '(s32)text '+comparison)
+                parameter_glyph=parameter_glyph.replace('func_150415E0(glyph,',
+                    'func_150415E0((s32)text,').replace('[glyph *', '[(s32)text *')
+                yield prefix+'-parameter-glyph',parameter_glyph
+                union_flag=spill_body.replace('    s32 useFont;\n',
+                    '    union { s32 prepared, restored; } fontFlag;\n').replace(
+                    'useFont = metrics.useFont;', 'fontFlag.restored = metrics.useFont;').replace(
+                    'metrics.useFont = useFont;', 'metrics.useFont = fontFlag.prepared;').replace(
+                    'if (useFont)', 'if (fontFlag.restored)').replace('useFont = 0;',
+                    'fontFlag.prepared = 0;').replace('useFont = 1;', 'fontFlag.prepared = 1;').replace(
+                    'metrics.fontFlag.prepared', 'metrics.useFont')
+                yield prefix+'-union-flag',union_flag
             font_record=branched.replace('    s32 lineHeight;',
                 '    typedef struct { u8 left, top, right, bottom; } FontGlyph;\n    s32 lineHeight;')
             for suffix,member in (('', 'left'),(' + 1','top'),(' + 2','right'),(' + 3','bottom')):

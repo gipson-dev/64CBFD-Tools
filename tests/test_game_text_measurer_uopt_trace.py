@@ -97,7 +97,7 @@ class GameTextMeasurerUoptTraceTests(unittest.TestCase):
 
     def test_05_owned_path_mode_and_recipe_boundaries(self):
         for out, name, mode in ((self.root / 'DOCS', 'invalid', 6),
-                                (self.out, '../invalid', 6), (self.out, 'invalid', 5)):
+                                (self.out, '../invalid', 6), (self.out, 'invalid', 3)):
             with self.subTest(name=name, mode=mode), self.assertRaisesRegex(ValueError, 'mode/name/output'):
                 trace.trace_uopt(self.root, out, name, self.body, mode)
         redirect = self.out / 'outside-redirect'
@@ -119,6 +119,56 @@ class GameTextMeasurerUoptTraceTests(unittest.TestCase):
         self.assertEqual(trace.compiler_fingerprints(self.root), trace.COMPILERS)
         self.assertEqual(self.before, {path: hashlib.sha256((self.root / path).read_bytes()).hexdigest()
                                       for path in self.paths})
+
+    def test_07_mode5_qualifies_distinct_flag_constraints_without_code_changes(self):
+        candidates = dict(trace.screen.candidates())
+        expected = {'early': (218, 0x80, 174, 48, 17, [1, 2, 3, 14, 15, 16]),
+                    'late': (222, 0x80, 146, 52, 2, [1])}
+        records = {}
+        for name, key in (('early', 'capture-declaration-after-record'),
+                          ('late', 'flag-branches-captured')):
+            record = trace.trace_uopt(self.root, self.out, 'mode5-' + name, candidates[key], 5)
+            meta = record['baseline']
+            self.assertEqual((meta['body_words'], meta['frame'], meta['differences']), expected[name][:3])
+            self.assertTrue(record['code_unchanged'])
+            self.assertEqual(record['mode'], 5)
+            text = (self.out / ('mode5-' + name) / 'uoptlist').read_text()
+            constraints = trace.allocation_constraints(text)
+            self.assertGreater(len(constraints), 20)
+            flag = next(item for item in constraints if item['identity'] == '923|0')
+            self.assertEqual((flag['expression'], flag['color'], flag['forbidden']), expected[name][3:])
+            self.assertIn(43, flag['interference'])
+            records[name] = dict(trace=record, flag=flag)
+        self.assertIn(2, records['early']['flag']['forbidden'])
+        self.assertNotIn(2, records['late']['flag']['forbidden'])
+        (self.out / 'mode5-flag-constraints.json').write_text(json.dumps(records, indent=2) + '\n')
+        self.test_06_production_and_prepared_compilers_unchanged()
+
+    def test_08_constraint_parser_and_six_source_shape_rejections(self):
+        valid = '>>>active<<<{923|0} 52 2\nadjsave, hasstore: true\nforbidden: [ 1]\n:::interfere with::: 43\n'
+        self.assertEqual(trace.allocation_constraints(valid)[0]['forbidden'], [1])
+        self.assertEqual(trace.allocation_constraints(''), [])
+        for bad in (valid.replace('52 2', 'bad'), valid.replace('forbidden: [ 1]', 'forbidden: [ x]'),
+                    valid.replace(':::interfere with::: 43', 'missing'), valid.splitlines()[0]):
+            with self.assertRaisesRegex(ValueError, 'Malformed mode5'):
+                trace.allocation_constraints(bad)
+        candidates = dict(trace.screen.candidates())
+        for prefix, reference, expected in (
+                ('capture', 'capture-declaration-after-record', (218, 0x80, 174)),
+                ('flag-branches', 'flag-branches-captured', (222, 0x80, 146))):
+            _, original = trace.screen.compile_candidate(self.root, self.out, prefix + '-reference', candidates[reference])
+            for suffix in ('volatile-spill', 'union-flag'):
+                name = prefix + '-' + suffix
+                meta, words = trace.screen.compile_candidate(self.root, self.out, name, candidates[name])
+                self.assertEqual((meta['body_words'], meta['frame'], meta['differences']), expected)
+                self.assertEqual(words, original)
+            name = prefix + '-parameter-glyph'
+            meta, words = trace.screen.compile_candidate(self.root, self.out, name, candidates[name])
+            self.assertEqual((meta['body_words'], meta['frame'], meta['differences']),
+                             (217, 0x80, 205) if prefix == 'capture' else (221, 0x80, 197))
+            self.assertEqual(words[1], 0xAFB70038 if prefix == 'capture' else 0xAFB60038)
+            if prefix == 'flag-branches':
+                self.assertEqual(words[:13], original[:13])
 
 
 if __name__ == '__main__':

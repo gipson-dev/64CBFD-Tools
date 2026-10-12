@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 
@@ -13,7 +14,7 @@ COMPILERS = {
     'cc': 'ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a',
     'uopt': '23c108b975e88034af4ccbd89bd054a1ff3ee4ea9de28f25d91d75a7800f527d',
 }
-MODES = (4, 6, 7)
+MODES = (4, 5, 6, 7)
 EXIT_MARKER = 'TRACE_EXIT inferior=1 code=0'
 CAVEAT = 'Debug real-number printing is suppressed; numeric timings are not valid.'
 
@@ -21,6 +22,24 @@ CAVEAT = 'Debug real-number printing is suppressed; numeric timings are not vali
 def compiler_fingerprints(root):
     return {name: hashlib.sha256((root / 'ido/ido5.3_recomp' / name).read_bytes()).hexdigest()
             for name in COMPILERS}
+
+
+def allocation_constraints(text):
+    """Read mode5 integer constraints; deliberately ignore suppressed real values."""
+    records = []
+    for block in re.split(r'(?m)(?=^>>>active<<<)', text):
+        if not block.startswith('>>>active<<<'):
+            continue
+        line = block.splitlines()[0]
+        active = re.fullmatch(r'>>>active<<<\{(\d+\|\d+)\}\s+(\d+)\s+(-?\d+)', line)
+        forbidden = re.search(r'^forbidden: \[([ 0-9]*)\]$', block, re.MULTILINE)
+        interference = re.search(r'^:::interfere with:::[ ]*([ 0-9]*)$', block, re.MULTILINE)
+        if active is None or forbidden is None or interference is None:
+            raise ValueError('Malformed mode5 allocation block')
+        records.append(dict(identity=active[1], expression=int(active[2]), color=int(active[3]),
+                            forbidden=[int(value) for value in forbidden[1].split()],
+                            interference=[int(value) for value in interference[1].split()]))
+    return records
 
 
 def debugger_script(root):
