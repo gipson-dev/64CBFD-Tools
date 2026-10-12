@@ -170,6 +170,67 @@ class GameTextMeasurerUoptTraceTests(unittest.TestCase):
             if prefix == 'flag-branches':
                 self.assertEqual(words[:13], original[:13])
 
+    def test_09_front_end_marker_and_memory_residence_are_distinct(self):
+        text = '{ 923|0} 48 isvar M 750 -48vreg\n'
+        self.assertTrue(trace.variable_expressions(text)[0]['virtual_register'])
+        self.assertFalse(trace.variable_expressions(text.replace('vreg', ''))[0]['virtual_register'])
+        self.assertEqual(trace.variable_expressions(''), [])
+        for bad in (text.replace('-48vreg', 'bad'), text.replace('750', 'bad'),
+                    text.replace('48 isvar', 'bad isvar')):
+            with self.assertRaisesRegex(ValueError, 'Malformed UOPT variable'):
+                trace.variable_expressions(bad)
+        candidates = dict(trace.screen.candidates())
+        early = trace.trace_uopt(self.root, self.out, 'eligibility-early',
+                                candidates['capture-declaration-after-record'], 5)
+        addressed = trace.trace_uopt(self.root, self.out, 'eligibility-addressed',
+                                    candidates['capture-inline-address-void-cast'], 5)
+        records = {}
+        for name, record in (('early', early), ('addressed', addressed)):
+            folder = self.out / ('eligibility-' + name)
+            text = (folder / 'uoptlist').read_text()
+            variable = next(item for item in trace.variable_expressions(text) if item['identity'] == '923|0')
+            color = next(item for item in trace.allocation_constraints(text) if item['identity'] == '923|0')
+            self.assertEqual((variable['expression'], variable['storage'], variable['offset']), (48, 'M', -48))
+            self.assertEqual(variable['virtual_register'], name == 'early')
+            self.assertEqual(color['color'], 17 if name == 'early' else -1)
+            self.assertTrue(record['code_unchanged'])
+            records[name] = dict(trace=record, variable=variable, allocation=color)
+        _, words = trace.screen.compile_candidate(self.root, self.out, 'addressed-memory-code',
+                                                  candidates['capture-inline-address-void-cast'])
+        call = words.index(0x0D410B10)
+        self.assertEqual(words[call + 6], 0xAFA00050)
+        self.assertNotIn(0x00004025, words)
+        (self.out / 'flag-eligibility.json').write_text(json.dumps(records, indent=2) + '\n')
+        self.test_06_production_and_prepared_compilers_unchanged()
+
+    def test_10_fifteen_additional_source_forms_fail_the_retail_shape(self):
+        candidates = dict(trace.screen.candidates())
+        _, original = trace.screen.compile_candidate(self.root, self.out, 'eligibility-reference',
+                                                     candidates['capture-declaration-after-record'])
+        identical = ('capture-bitfield-word-s32', 'capture-bitfield-word-u32',
+                     'capture-inline-address-direct', 'capture-reset-in-condition',
+                     'capture-reset-call-expression', 'capture-enum-flag')
+        shapes = {**{name: (218, 0x80, 174) for name in identical},
+                  'capture-addressed-flag-mutable': (223, 0x88, 174),
+                  'capture-addressed-flag-const': (223, 0x88, 174),
+                  'capture-inline-address-void-cast': (222, 0x80, 164),
+                  'capture-wide-flag-s64': (227, 0x88, 196),
+                  'capture-wide-flag-u64': (227, 0x88, 196),
+                  'capture-conditional-result': (228, 0x98, 155),
+                  'capture-conditional-effects': (228, 0x98, 155),
+                  'capture-direct-condition-result': (230, 0x98, 160),
+                  'capture-direct-condition-effects': (230, 0x98, 160)}
+        records = []
+        for name, expected in shapes.items():
+            meta, words = trace.screen.compile_candidate(self.root, self.out, name, candidates[name])
+            self.assertEqual((meta['body_words'], meta['frame'], meta['differences']), expected)
+            self.assertEqual(meta['pool_bytes'], 0)
+            if name in identical:
+                self.assertEqual(words, original)
+            self.assertNotEqual((meta['body_words'], meta['frame'], meta['differences']), (219, 0x80, 0))
+            records.append(meta)
+        (self.out / 'flag-source-shapes.json').write_text(json.dumps(records, indent=2) + '\n')
+
 
 if __name__ == '__main__':
     unittest.main()

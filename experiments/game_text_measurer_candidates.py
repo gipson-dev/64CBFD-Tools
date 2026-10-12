@@ -761,6 +761,80 @@ glyph_done:
             yield 'capture-aggregate-flag',aggregate
             yield 'capture-array-flag',aggregate.replace('struct { s32 value; } fontFlag;',
                 's32 fontFlag[1];').replace('fontFlag.value','fontFlag[0]')
+            for kind in ('s32','u32'):
+                yield 'capture-bitfield-word-'+kind,aggregate.replace(
+                    'struct { s32 value; } fontFlag;',
+                    'struct { '+kind+' value : 32; } fontFlag;')
+            for tag,declaration in (('mutable','s32 *flagAddress'),('const','s32 *const flagAddress')):
+                pointer_flag=aggregate.replace('struct { s32 value; } fontFlag;',
+                    's32 flagValue;\n    '+declaration+' = &flagValue;').replace(
+                    'fontFlag.value','(*flagAddress)')
+                yield 'capture-addressed-flag-'+tag,pointer_flag
+            inline_start=changed.index('    if (text != NULL) {')
+            inline_tail=changed[inline_start:].replace('metrics.useFont','metrics.savedFlag')
+            for tag,access in (('direct','(*(&useFont))'),
+                    ('void-cast','(*(s32 *)(void *)&useFont)')):
+                inline_flag=changed[:inline_start]+inline_tail.replace('useFont',access).replace(
+                    'metrics.savedFlag','metrics.useFont')
+                yield 'capture-inline-address-'+tag,inline_flag
+            yield 'capture-reset-in-condition',changed.replace('                    useFont = 0;\n','').replace(
+                'if (glyph == 0x60)', 'if ((useFont = 0, glyph) == 0x60)')
+            yield 'capture-reset-call-expression',changed.replace(
+                'glyph = func_15042C40(text[index]);\n                    useFont = 0;',
+                'glyph = func_15042C40(text[index]), useFont = 0;')
+            yield 'capture-enum-flag',changed.replace('    s32 useFont;\n',
+                '    enum { FONT_SKIP = 0, FONT_USE = 1 } useFont;\n')
+            for kind in ('s64','u64'):
+                wide_flag=changed.replace('    s32 useFont;\n', '    '+kind+' useFont;\n')
+                if kind=='u64':
+                    wide_flag=wide_flag.replace('useFont = metrics.useFont;',
+                        'useFont = (u32)metrics.useFont;')
+                yield 'capture-wide-flag-'+kind,wide_flag
+            expression_dispatch='''                    useFont = glyph == 0x60 ?
+                        (*width = (s32)((u32)*width + 4),
+                         lineHeight = lineHeight < 12 ? 12 : lineHeight, 0) :
+                        (glyph < 0xA1 || glyph >= 0xA8) ?
+                        ((glyph >= 0xA8 && glyph < 0x100) ?
+                            (metrics.useFont = 0,
+                             func_150415E0(glyph, &metrics.width, &metrics.height,
+                                 &metrics.baseline, &metrics.mode, &metrics.factor),
+                             capturedFont = metrics.useFont,
+                             *width = (s32)((f32)*width + (f32)metrics.width * metrics.factor),
+                             extent = (s32)((f32)(s32)((f32)metrics.height * metrics.factor) - metrics.baseline) + 1,
+                             lineHeight = lineHeight < extent ? extent : lineHeight,
+                             (f32)*baseline < metrics.baseline ?
+                                 (*baseline = (s32)metrics.baseline) : 0,
+                             capturedFont) :
+                         glyph < 0xA1 ?
+                            (text[index] == 0xA ?
+                                (maximumWidth = maximumWidth < *width ? *width : maximumWidth,
+                                 *width = 0,
+                                 lineHeight = lineHeight < 12 ? 12 : lineHeight,
+                                 *height = (s32)((u32)*height + (u32)lineHeight),
+                                 lineHeight = 0, 0) : 1) : 0) : 0;
+'''
+            expression_start=changed.index('                    useFont = 0;')
+            expression_end=changed.index('                    index++;',expression_start)
+            expression_body=changed[:expression_start]+expression_dispatch+changed[expression_end:]
+            expression_body=expression_body.replace('    s32 useFont;\n',
+                '    s32 useFont;\n    s32 capturedFont;\n')
+            yield 'capture-conditional-result',expression_body
+            effect_dispatch=expression_dispatch.replace(
+                'lineHeight = lineHeight < 12 ? 12 : lineHeight',
+                'lineHeight < 12 ? (lineHeight = 12) : 0').replace(
+                'lineHeight = lineHeight < extent ? extent : lineHeight',
+                'lineHeight < extent ? (lineHeight = extent) : 0').replace(
+                'maximumWidth = maximumWidth < *width ? *width : maximumWidth',
+                'maximumWidth < *width ? (maximumWidth = *width) : 0')
+            yield 'capture-conditional-effects',expression_body.replace(expression_dispatch,effect_dispatch)
+            for tag,dispatch in (('result',expression_dispatch),('effects',effect_dispatch)):
+                predicate=dispatch.removeprefix('                    useFont = ').rstrip().removesuffix(';')
+                direct_body=expression_body.replace('    s32 useFont;\n','').replace(
+                    expression_dispatch+'                    index++;\n                    if (useFont) {',
+                    '                    if ('+predicate+') {\n                        index++;').replace(
+                    '                    }\n                }\n            } while (text[index] != 0);',
+                    '                    } else {\n                        index++;\n                    }\n                }\n            } while (text[index] != 0);')
+                yield 'capture-direct-condition-'+tag,direct_body
             yield 'flag-branches-post-call-merge',branched.replace('    s32 useFont;',
                 '    s32 useFont;\n    s32 capturedFont;').replace('                            useFont = metrics.useFont;',
                 '                            capturedFont = metrics.useFont;').replace('                        } else if (glyph < 0xA1) {',

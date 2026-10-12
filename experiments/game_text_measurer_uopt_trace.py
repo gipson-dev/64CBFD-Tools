@@ -42,6 +42,22 @@ def allocation_constraints(text):
     return records
 
 
+def variable_expressions(text):
+    """Read the integer variable table and its front-end virtual-register marker."""
+    records = []
+    for line in text.splitlines():
+        if not line.startswith('{') or ' isvar ' not in line:
+            continue
+        match = re.fullmatch(r'\{\s*(\d+)\|(\d+)\}\s+(\d+)\s+isvar\s+([A-Z])\s+'
+                             r'(\d+)\s+(-?\d+)(vreg)?', line)
+        if match is None:
+            raise ValueError('Malformed UOPT variable expression')
+        records.append(dict(identity=match[1] + '|' + match[2], expression=int(match[3]),
+                            storage=match[4], procedure=int(match[5]), offset=int(match[6]),
+                            virtual_register=match[7] is not None))
+    return records
+
+
 def debugger_script(root):
     program = json.dumps(str((root / 'ido/ido5.3_recomp/uopt').resolve()))
     return '''set pagination off
