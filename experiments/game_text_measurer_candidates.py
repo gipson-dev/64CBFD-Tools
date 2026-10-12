@@ -1,0 +1,311 @@
+"""Recover the complete three-output text measure with live font metadata."""
+import argparse
+import json
+from pathlib import Path
+from unittest.mock import patch
+
+from tools.experiments import game_record_constructor_candidates as compiler
+
+ENTRY, ROM, WORDS = 0x150428D4, 0x6FD84, 219
+FUNCTION, SOURCE = 'func_150428D4', 'conker/src/game/generated_6E770.c'
+ORIGINAL = 's32 func_150428D4() {\n    return 0;\n}'
+DECLARATIONS = '''extern u8 *D_80085994;
+extern f32 D_800380A0;
+extern f32 D_800380A4;
+s32 func_15042C40(u8);
+void func_150415E0(s32, s32 *, s32 *, f32 *, s32 *, f32 *);
+'''
+SYMBOLS = dict(D_80085994=0x80085994,D_800380A0=0x800380A0,D_800380A4=0x800380A4,
+    func_15042C40=0x15042C40,func_150415E0=0x150415E0)
+PROFILES = dict(compiler.PROFILES,owner=('-O2','-g3','-Wo,-loopunroll,0'))
+BASE = '''void func_150428D4(u8 *text, s32 *width, s32 *height, s32 *baseline) {
+    s32 lineHeight;
+    s32 maximumWidth;
+    u8 *cursor;
+    u8 glyph;
+    s32 useFont;
+    s32 glyphWidth;
+    s32 glyphHeight;
+    f32 glyphBaseline;
+    s32 mode;
+    f32 factor;
+    s32 extent;
+
+    if (text != NULL) {
+        *width = 0;
+        *height = 0;
+        *baseline = 0;
+        maximumWidth = 0;
+        lineHeight = 0;
+        if (*text == 0) {
+            *height = (s32)((u32)*height + 12);
+        }
+        cursor = text;
+        if (*text != 0) {
+            do {
+                if (*cursor == 0xBC) {
+                    cursor += 2;
+                } else {
+                    glyph = func_15042C40(*cursor);
+                    useFont = 0;
+                    if (glyph == 0x60) {
+                        *width = (s32)((u32)*width + 4);
+                        if (lineHeight < 12) {
+                            lineHeight = 12;
+                        }
+                    } else if (glyph < 0xA1 || glyph >= 0xA8) {
+                        if (glyph >= 0xA8 && glyph < 0x100) {
+                            func_150415E0(glyph, &glyphWidth, &glyphHeight,
+                                &glyphBaseline, &mode, &factor);
+                            *width = (s32)((f32)*width + (f32)glyphWidth * factor);
+                            extent = (s32)((f32)(s32)((f32)glyphHeight * factor) - glyphBaseline) + 1;
+                            if (lineHeight < extent) {
+                                lineHeight = extent;
+                            }
+                            if ((f32)*baseline < glyphBaseline) {
+                                *baseline = (s32)glyphBaseline;
+                            }
+                        } else if (glyph < 0xA1) {
+                            if (*cursor == 0xA) {
+                                if (maximumWidth < *width) {
+                                    maximumWidth = *width;
+                                }
+                                *width = 0;
+                                if (lineHeight < 12) {
+                                    lineHeight = 12;
+                                }
+                                *height = (s32)((u32)*height + (u32)lineHeight);
+                                lineHeight = 0;
+                            } else {
+                                useFont = 1;
+                            }
+                        }
+                    }
+                    cursor++;
+                    if (useFont) {
+                        *width = (s32)((u32)*width + D_80085994[glyph * 4] +
+                            D_80085994[glyph * 4 + 2] - 1);
+                        extent = D_80085994[glyph * 4 + 3] + D_80085994[glyph * 4 + 1];
+                        if (extent >= lineHeight) {
+                            lineHeight = extent;
+                        }
+                    }
+                }
+            } while (*cursor != 0);
+        }
+        if (*width < maximumWidth) {
+            *width = maximumWidth;
+        }
+        *height = (s32)((u32)*height + (u32)lineHeight);
+        *width = (s32)((f32)*width * D_800380A0);
+        *height = (s32)((f32)*height * D_800380A4);
+        *baseline = (s32)((f32)*baseline * D_800380A0);
+    }
+}'''
+SELECTED=BASE
+
+M2C_LIFETIMES = '''void func_150428D4(u8 *text, s32 *width, s32 *height, s32 *baseline) {
+    s32 savedFont;
+    s32 glyphWidth;
+    s32 glyphHeight;
+    f32 glyphBaseline;
+    s32 mode;
+    f32 factor;
+    s32 fontHeight;
+    s32 glyph;
+    s32 result;
+    s32 extent;
+    s32 previousWidth;
+    s32 classification;
+    s32 offset;
+    s32 lineHeight;
+    s32 maximumWidth;
+    s32 useFont;
+    u8 *cursor;
+    u8 current;
+    u8 command;
+    u8 *row;
+    u8 *heightRow;
+
+    if (text != NULL) {
+        *width = 0;
+        *height = 0;
+        *baseline = 0;
+        maximumWidth = 0;
+        lineHeight = 0;
+        if (*text == 0) *height = (s32)((u32)*height + 12);
+        cursor = text;
+        if (*text != 0) {
+            current = *cursor;
+            command = current;
+            do {
+                if (command == 0xBC) {
+                    cursor += 2;
+                } else {
+                    result = func_15042C40(current);
+                    classification = result & 0xFF;
+                    glyph = result & 0xFF;
+                    useFont = 0;
+                    if (classification == 0x60) {
+                        *width = (s32)((u32)*width + 4);
+                        if (lineHeight < 12) lineHeight = 12;
+                    } else if (classification < 0xA1 || classification >= 0xA8) {
+                        if (classification >= 0xA8 && classification < 0x100) {
+                            savedFont = 0;
+                            func_150415E0(glyph, &glyphWidth, &glyphHeight, &glyphBaseline, &mode, &factor);
+                            useFont = savedFont;
+                            *width = (s32)((f32)*width + (f32)glyphWidth * factor);
+                            extent = (s32)((f32)(s32)((f32)glyphHeight * factor) - glyphBaseline) + 1;
+                            if (lineHeight < extent) lineHeight = extent;
+                            if ((f32)*baseline < glyphBaseline) *baseline = (s32)glyphBaseline;
+                        } else if (classification < 0xA1) {
+                            if (*cursor == 0xA) {
+                                previousWidth = *width;
+                                if (maximumWidth < previousWidth) maximumWidth = previousWidth;
+                                *width = 0;
+                                if (lineHeight < 12) lineHeight = 12;
+                                *height = (s32)((u32)*height + (u32)lineHeight);
+                                lineHeight = 0;
+                            } else useFont = 1;
+                        }
+                    }
+                    cursor++;
+                    if (useFont != 0) {
+                        offset = glyph * 4;
+                        row = D_80085994 + offset;
+                        *width = (s32)((u32)*width + row[0] + row[2] - 1);
+                        heightRow = D_80085994 + offset;
+                        fontHeight = heightRow[3] + heightRow[1];
+                        if (fontHeight >= lineHeight) lineHeight = fontHeight;
+                    }
+                }
+                current = *cursor;
+                command = current;
+            } while (current != 0);
+        }
+        if (*width < maximumWidth) *width = maximumWidth;
+        *height = (s32)((u32)*height + (u32)lineHeight);
+        *width = (s32)((f32)*width * D_800380A0);
+        *height = (s32)((f32)*height * D_800380A4);
+        *baseline = (s32)((f32)*baseline * D_800380A0);
+    }
+}'''
+
+
+def candidates():
+    yield 'selected',SELECTED
+    yield 'm2c-lifetimes',M2C_LIFETIMES
+    yield 'signed-sums',BASE.replace('(s32)((u32)*height + 12)','*height + 12').replace(
+        '(s32)((u32)*width + 4)','*width + 4').replace('(s32)((u32)*height + (u32)lineHeight)',
+        '*height + lineHeight').replace('(s32)((u32)*width + D_80085994[glyph * 4] +\n                            D_80085994[glyph * 4 + 2] - 1)',
+        '*width + D_80085994[glyph * 4] + D_80085994[glyph * 4 + 2] - 1')
+    yield 'integer-glyph',BASE.replace('u8 glyph;', 's32 glyph;').replace('glyph = func_', 'glyph = (u8)func_')
+    yield 'height-first',BASE.replace('    s32 lineHeight;\n    s32 maximumWidth;', '    s32 maximumWidth;\n    s32 lineHeight;')
+    start=BASE.replace('        cursor = text;', '        glyph = 0;\n        cursor = text + glyph;')
+    yield 'initial-index',start
+    yield 'initial-index-late',start.replace('        cursor = text + glyph;\n        if (*text != 0) {',
+        '        if (*text != 0) {\n            cursor = text + glyph;')
+    yield 'initial-index-late-integer',start.replace('        cursor = text + glyph;\n        if (*text != 0) {',
+        '        if (*text != 0) {\n            cursor = text + glyph;').replace('u8 glyph;', 's32 glyph;').replace('glyph = func_', 'glyph = (u8)func_')
+    yield 'array-pointer',BASE.replace('D_80085994[glyph * 4', 'D_80085994[0][glyph * 4')
+    yield 'integer-flag-first',BASE.replace('    s32 useFont;', '    s32 useFont;').replace(
+        '                    glyph = func_15042C40(*cursor);\n                    useFont = 0;',
+        '                    useFont = 0;\n                    glyph = func_15042C40(*cursor);')
+    yield 'volatile-flag',BASE.replace('s32 useFont;', 'volatile s32 useFont;')
+    yield 'table-row-local',BASE.replace('    s32 extent;', '    s32 extent;\n    u8 *row;').replace(
+        '                        *width = (s32)((u32)*width + D_80085994[glyph * 4] +\n                            D_80085994[glyph * 4 + 2] - 1);\n                        extent = D_80085994[glyph * 4 + 3] + D_80085994[glyph * 4 + 1];',
+        '                        row = D_80085994 + glyph * 4;\n                        *width = (s32)((u32)*width + row[0] + row[2] - 1);\n                        row = D_80085994 + glyph * 4;\n                        extent = row[3] + row[1];')
+    yield 'block-flag',BASE.replace('    s32 useFont;\n','').replace('                } else {\n                    glyph',
+        '                } else {\n                    s32 useFont;\n                    glyph')
+    phase=BASE.replace('    s32 useFont;\n','').replace(
+        '                    useFont = 0;', '                    {\n                    s32 useFont = 0;').replace(
+        '                }\n            } while (*cursor != 0);', '                    }\n                }\n            } while (*cursor != 0);')
+    yield 'post-call-flag-scope',phase
+    yield 'post-call-flag-scope-index',phase.replace('        cursor = text;\n        if (*text != 0) {',
+        '        glyph = 0;\n        if (*text != 0) {\n            cursor = text + glyph;')
+    state=BASE
+    for line in ('    s32 useFont;\n','    s32 glyphWidth;\n','    s32 glyphHeight;\n',
+            '    f32 glyphBaseline;\n','    s32 mode;\n','    f32 factor;\n'):
+        state=state.replace(line,'')
+    state=state.replace('    s32 extent;', '''    s32 extent;
+    struct { f32 factor; s32 mode; f32 baseline; s32 height, width, useFont; } metrics;''')
+    for old,new in (('glyphWidth','metrics.width'),('glyphHeight','metrics.height'),('glyphBaseline','metrics.baseline'),
+            ('useFont','metrics.useFont'),('&mode','&metrics.mode'),('&factor','&metrics.factor'),(' * factor',' * metrics.factor')):
+        state=state.replace(old,new)
+    state=state.replace('width, metrics.useFont;', 'width, useFont;')
+    yield 'metrics-state',state
+    yield 'metrics-state-initial-index',state.replace('        cursor = text;\n        if (*text != 0) {',
+        '        glyph = 0;\n        if (*text != 0) {\n            cursor = text + glyph;')
+    fields=BASE
+    for suffix,name in (('', 'left'),(' + 1','top'),(' + 2','right'),(' + 3','bottom')):
+        fields=fields.replace('D_80085994[glyph * 4'+suffix+']','D_80085994[glyph].'+name)
+    yield 'record-fields',fields
+    integer_address=BASE
+    for suffix,index in (('',0),(' + 1',1),(' + 2',2),(' + 3',3)):
+        integer_address=integer_address.replace('D_80085994[glyph * 4'+suffix+']',
+            '((u8 *)(D_80085994 + (u32)glyph * 4))['+str(index)+']')
+    yield 'integer-font-address',integer_address
+    yield 'volatile-text',BASE.replace('u8 *text','volatile u8 *text').replace('u8 *cursor;', 'volatile u8 *cursor;')
+    yield 'volatile-text-index',BASE.replace('u8 *text','volatile u8 *text').replace('u8 *cursor;', 'volatile u8 *cursor;').replace(
+        '        cursor = text;\n        if (*text != 0) {', '        glyph = 0;\n        if (*text != 0) {\n            cursor = text + glyph;')
+    for mask in range(16):
+        body=BASE
+        if mask&1:
+            body=body.replace('    s32 useFont;', '    s32 useFont;\n    s32 savedFont;').replace(
+                '                            func_150415E0(', '                            savedFont = useFont;\n                            func_150415E0(').replace(
+                '                            *width = (s32)((f32)*width', '                            useFont = savedFont;\n                            *width = (s32)((f32)*width')
+        if mask&2:
+            body=body.replace('    u8 glyph;', '    s32 glyph;\n    s32 result;\n    s32 classification;').replace(
+                '                    glyph = func_15042C40(*cursor);', '                    result = func_15042C40(*cursor);\n                    classification = result & 0xFF;\n                    glyph = result & 0xFF;')
+            for op in ('== 0x60','< 0xA1','>= 0xA8','< 0x100'):
+                body=body.replace('glyph '+op, 'classification '+op)
+        if mask&4:
+            body=body.replace('    s32 extent;', '    s32 extent;\n    s32 offset;\n    u8 *row;').replace(
+                '                        *width = (s32)((u32)*width + D_80085994[glyph * 4] +\n                            D_80085994[glyph * 4 + 2] - 1);\n                        extent = D_80085994[glyph * 4 + 3] + D_80085994[glyph * 4 + 1];',
+                '                        offset = glyph * 4;\n                        row = D_80085994 + offset;\n                        *width = (s32)((u32)*width + row[0] + row[2] - 1);\n                        row = D_80085994 + offset;\n                        extent = row[3] + row[1];')
+        if mask&8:
+            body=body.replace('    s32 extent;', '    s32 extent;\n    u8 current;\n    u8 command;').replace(
+                '        if (*text != 0) {\n            do {', '        if (*text != 0) {\n            current = *cursor;\n            command = current;\n            do {').replace(
+                'if (*cursor == 0xBC)', 'if (command == 0xBC)').replace('func_15042C40(*cursor)', 'func_15042C40(current)').replace(
+                '            } while (*cursor != 0);', '                current = *cursor;\n                command = current;\n            } while (current != 0);')
+        yield 'lifetimes-'+str(mask),body
+
+
+def compile_candidate(root,out,name,body=SELECTED,profile='owner',declarations=DECLARATIONS):
+    with patch.multiple(compiler,ENTRY=ENTRY,ROM=ROM,WORDS=WORDS,FUNCTION=FUNCTION,
+            RECORD='',DECLARATIONS=declarations,SYMBOLS=SYMBOLS,PROFILES=PROFILES):
+        meta,words=compiler.compile_candidate(root,out,name,body,profile)
+    frames=[(-w)&65535 for w in words if w&0xFFFF0000==0x27BD0000 and w&0x8000]
+    meta['frame']=frames[0] if frames else 0
+    return meta,words
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--filter',default='selected')
+    parser.add_argument('--profiles',action='store_true')
+    parser.add_argument('--allocation',action='store_true')
+    args=parser.parse_args();root=Path(__file__).resolve().parents[2]
+    out=root/'conker/build/game-text-measurer';records=[]
+    for name,body in candidates():
+        if args.filter and args.filter not in name:continue
+        for profile in (('owner','o2g3','o2','o1g3','o1') if args.profiles else ('owner',)):
+            declarations=DECLARATIONS.replace('extern u8 *D_80085994;', 'extern u8 *D_80085994[1];') if name=='array-pointer' else DECLARATIONS
+            if name=='record-fields':
+                declarations=declarations.replace('extern u8 *D_80085994;',
+                    'typedef struct { u8 left, top, right, bottom; } GlyphMetrics;\nextern GlyphMetrics *D_80085994;')
+            if name=='integer-font-address':declarations=declarations.replace('extern u8 *D_80085994;', 'extern u32 D_80085994;')
+            meta,_=compile_candidate(root,out,name+'-'+profile,body,profile,declarations);records.append(meta)
+            print(meta['name'],meta['body_words'],hex(meta['frame']),meta['differences'],meta['pool_bytes'],flush=True)
+        if args.allocation:
+            for option in ('no_const_in_reg','do_opt_saved_regs','norlodrstropt','nordstore','noprecolor','noheurAB','nogenvreg','docopy'):
+                profile='allocation-'+option
+                with patch.dict(PROFILES,{profile:PROFILES['owner']+('-Wo,-'+option,)}):
+                    meta,_=compile_candidate(root,out,name+'-'+profile,body,profile,declarations)
+                records.append(meta)
+                print(meta['name'],meta['body_words'],hex(meta['frame']),meta['differences'],meta['pool_bytes'],flush=True)
+    (out/'measurements.json').write_text(json.dumps(records,indent=2)+'\n')
+
+
+if __name__=='__main__':
+    main()
