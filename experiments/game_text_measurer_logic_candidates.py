@@ -114,16 +114,53 @@ def carrier_candidates():
             yield 'carrier-integer-assignments', assignments
 
 
+def layout_candidates():
+    simple = dict(carrier_candidates())['carrier-simple-named']
+    record = '    struct { f32 factor; s32 mode; f32 baseline; s32 height, width; } metrics;\n'
+    scalars = '    f32 factor;\n    s32 mode;\n    f32 glyphBaseline;\n    s32 glyphHeight;\n    s32 glyphWidth;\n'
+
+    def fields(body):
+        body = body.replace(record, scalars)
+        for field, name in (('factor', 'factor'), ('mode', 'mode'), ('baseline', 'glyphBaseline'),
+                            ('height', 'glyphHeight'), ('width', 'glyphWidth')):
+            body = body.replace('metrics.' + field, name)
+        return body
+
+    reference, start, end, space, metrics, newline = _inputs()
+    ordinary = '(glyph != 0x60 && glyph < 0xA1 && (text[index] != 0xA || ' + newline + '))'
+    effects = '(glyph == 0x60 ? ' + space + ' : (glyph >= 0xA8 && glyph < 0x100 ? ' + metrics + ' : 0))'
+    predicate = reference[:start] + '                    useFont = ' + ordinary + ' | ' + effects + ';\n' + reference[end:]
+    predicate = predicate.replace('width, useFont; } metrics;', 'width; } metrics;')
+    ternary = reference[:start] + '                    useFont = (glyph == 0x60 ? 0 : glyph < 0xA1 ? (text[index] != 0xA || ' + newline + ') : 0) | ' + effects + ';\n' + reference[end:]
+    ternary = ternary.replace('width, useFont; } metrics;', 'width; } metrics;')
+    def direct(body):
+        return body.replace('    u8 **fontAddress = &D_80085994;\n', '').replace('(*fontAddress)[', 'D_80085994[')
+    yield 'flag-before-record', simple.replace(record + '    s32 useFont;\n', '    s32 useFont;\n' + record)
+    yield 'scalar-metrics', fields(simple)
+    yield 'scalar-metrics-flag-first', fields(simple.replace(record + '    s32 useFont;\n', '    s32 useFont;\n' + record))
+    yield 'ordinary-before-effects', predicate
+    yield 'ordinary-before-effects-scalars', fields(predicate)
+    yield 'ordinary-before-effects-direct-font', direct(predicate)
+    yield 'ternary-before-effects', ternary
+    yield 'ternary-before-effects-direct-font', direct(ternary)
+    yield 'record-scope-text', simple.replace(record, '').replace('    if (text != NULL) {', '    if (text != NULL) {\n' + record)
+    yield 'record-scope-normalize', simple.replace(record, '').replace('                } else {\n                    glyph =',
+        '                } else {\n' + record + '                    glyph =', 1)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--filter', default='')
-    parser.add_argument('--carriers', action='store_true')
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument('--carriers', action='store_true')
+    modes.add_argument('--layouts', action='store_true')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     out = root / 'conker/build/game-text-measurer-logic'
     out.mkdir(exist_ok=True)
     records = []
-    for name, body in carrier_candidates() if args.carriers else candidates():
+    sources = layout_candidates() if args.layouts else carrier_candidates() if args.carriers else candidates()
+    for name, body in sources:
         if args.filter not in name:
             continue
         meta, words = screen.compile_candidate(root, out, name, body)
