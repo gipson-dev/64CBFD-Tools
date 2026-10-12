@@ -22,7 +22,7 @@ from tools.experiments import game_text_measurer_native32 as native
 from tools.tests import test_game_actor_renderer_install_match as installed
 from tools.experiments.game_context_classifier_candidates import compile_owner
 from tools.experiments.game_actor_classifier_candidates import sections
-from tools.pad_generated_object import parse_object
+from tools.pad_generated_object import parse_object,emit_padded_assembly
 from tools.tests.game_owner_pool import normalized_pools
 
 STACK,TEXT,FONT,OUTPUT=guest.STACK,0x22000,0x24000,0x26000
@@ -572,6 +572,123 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             call_only_capture_then_reload_before_width_store_restored=True,
             saved_register_set_S0_to_S7_instead_of_retail_S0_to_S6_still_unmatched=True,
             full_private_equivalence_fault_order_hardware_and_installation_not_claimed=True)
+
+    def test_14_independently_linked_original_candidate_helpers_and_real_pools(self):
+        asm=(self.out/'before-assembly').read_text()
+        def block(name,section):
+            body=asm.split('glabel '+name+'\n',1)[1].split('endlabel '+name,1)[0]
+            return '.section '+section+',"ax"\n.set noat\n.set noreorder\n.globl '+name+'\n.type '+name+',@function\n'+\
+                name+':\n'+body+'\n.size '+name+',.-'+name+'\n'
+        def assemble(name,source):
+            path=self.out/(name+'.s');obj=path.with_suffix('.o')
+            path.write_text('.include "'+str(self.root/'conker/include/asm_processor_prelude.inc')+'"\n'+source)
+            result=subprocess.run(['mips-linux-gnu-as','-EB','-march=vr4300','-o',str(obj),str(path)],capture_output=True,text=True)
+            self.assertEqual((result.returncode,result.stdout+result.stderr),(0,''))
+            return obj
+        original=assemble('chain-original',block(screen.FUNCTION,'.text.measurer'))
+        helpers=block(metrics.FUNCTION,'.text.metrics')+block(lookup.FUNCTION,'.text.lookup')+'.space 12,0\n'
+        offsets=[w-metrics.ENTRY for w in struct.unpack_from('>19I',self.rom,metrics.TABLE_ROM)]
+        helpers+='\n.section .rodata.metrics,"a"\n.globl jtbl_80098AB0\njtbl_80098AB0:\n'+\
+            '\n'.join('.word '+metrics.FUNCTION+'+0x%X'%o for o in offsets)+'\n'
+        for name,value in zip(CONSTANTS,BITS):
+            helpers+='.globl '+name+'\n'+name+':\n.word 0x%08X\n'%value
+        helpers+='\n.section .data.lookup,"aw"\n'
+        for i,value in enumerate(self.table):
+            if i<4:helpers+='.globl D_800859%02X\nD_800859%02X:\n'%(0x30+i,0x30+i)
+            helpers+='.byte %d\n'%value
+        helpers+='\n.section .data.font,"aw"\n.globl D_80085994\nD_80085994:\n.word 0x%X\n'%FONT
+        helpers+='\n.section .data.scales,"aw"\n.globl D_800380A0\nD_800380A0:\n.word 0x3F800000\n'+\
+            '.globl D_800380A4\nD_800380A4:\n.word 0x3F800000\n'
+        helper_obj=assemble('chain-original-helpers-data',helpers)
+        screen.compile_candidate(self.root,self.out,'chain-candidate',self.captured_lifetime_candidate())
+        slot=self.out/'chain-slot.s'
+        body=asm.split('glabel '+screen.FUNCTION+'\n',1)[1].split('endlabel '+screen.FUNCTION,1)[0]
+        slot.write_text('glabel '+screen.FUNCTION+'\n'+body+'endlabel '+screen.FUNCTION+'\n')
+        padded=emit_padded_assembly(self.out/'chain-candidate.o',slot,filename='generated_6E770')
+        self.assertEqual(padded.count('.section .text, "ax"'),1)
+        candidate=assemble('chain-padded-candidate',padded.replace('.section .text, "ax"','.section .text.measurer,"ax"',1))
+        links=((screen.ENTRY,lookup.TABLE,metrics.TABLE,screen.SYMBOLS['D_80085994'],screen.SYMBOLS['D_800380A0']),
+            (0x15287FFC,0x80107FFE,0x80327FFC,0x80407FFC,0x80507FFC),
+            (0x15318004,0x80218004,0x80318004,0x80418004,0x80518004))
+        records=[];cases=0
+        for number,(entry,table,pool,font,scales) in enumerate(links):
+            delta=entry-screen.ENTRY;normalizer=lookup.ENTRY+delta;metric=metrics.ENTRY+delta
+            images=[]
+            for stage,obj in (('original',original),('candidate',candidate)):
+                script=self.out/('chain-'+stage+'-'+str(number)+'.ld');elf=script.with_suffix('.elf')
+                script.write_text('SECTIONS { .metrics 0x%X : SUBALIGN(4) { *(.text.metrics) } '%metric+
+                    '.text 0x%X : SUBALIGN(4) { *(.text.measurer) } .lookup 0x%X : SUBALIGN(4) { *(.text.lookup) } '%(entry,normalizer)+
+                    '.lookup_data 0x%X : SUBALIGN(1) { *(.data.lookup) } '%table+
+                    '.metrics_data 0x%X : SUBALIGN(4) { *(.rodata.metrics) } '%pool+
+                    '.font 0x%X : SUBALIGN(4) { *(.data.font) } .scales 0x%X : SUBALIGN(4) { *(.data.scales) } }\n'%(font,scales))
+                result=subprocess.run(['mips-linux-gnu-ld','-m','elf32btsmip','-T',str(script),'-e',screen.FUNCTION,
+                    '-o',str(elf),str(obj),str(helper_obj)],capture_output=True,text=True)
+                self.assertEqual((result.returncode,result.stdout+result.stderr),(0,''))
+                images.append(elf.read_bytes())
+            def region(data,address,size):
+                offset=elf_slot_offset(data,address,size);return data[offset:offset+size]
+            for address,size in ((normalizer,272),(metric,460),(table,96),(pool,96),(font,4),(scales,8)):
+                self.assertEqual(region(images[0],address,size),region(images[1],address,size))
+            self.assertEqual(region(images[0],table,96),self.table)
+            expected_pool=struct.pack('>19I',*[metric+o for o in offsets])+struct.pack('>5I',*BITS)
+            self.assertEqual(region(images[0],pool,96),expected_pool)
+            forms=[list(struct.unpack('>219I',region(data,entry,876))) for data in images]
+            if number==0:
+                self.assertEqual(forms[0],self.retail)
+                self.assertEqual(region(images[0],normalizer,272),self.rom[lookup.ROM:lookup.ROM+272])
+                self.assertEqual(region(images[0],metric,460),self.rom[metrics.ROM:metrics.ROM+460])
+            connected={}
+            for address,size in ((normalizer,260),(metric,460)):
+                words=struct.unpack('>%dI'%(size//4),region(images[0],address,size))
+                connected.update({address+i*4:w for i,w in enumerate(words)})
+            symbols=dict(screen.SYMBOLS,D_80085994=font,D_800380A0=scales,D_800380A4=scales+4,
+                func_15042C40=normalizer,func_150415E0=metric)
+            floats={name:pool+76+i*4 for i,name in enumerate(CONSTANTS)}
+            with patch.object(screen,'ENTRY',entry),patch.dict(screen.SYMBOLS,symbols),\
+                    patch.object(lookup,'ENTRY',normalizer),patch.object(lookup,'TABLE',table),\
+                    patch.object(metrics,'ENTRY',metric),patch.object(metrics,'TABLE',pool),patch.dict(metrics.SYMBOLS,floats):
+                for byte,phase in itertools.product(range(256),(0,8)):
+                    text=bytes((byte,0,0)) if byte!=0xBC else bytes((byte,7,65,0))
+                    memory,args=fixture(text,self.table,scales=(0.75,1.25));expected=Reference(memory,args).run()
+                    for words in forms:
+                        model=MeasurerOracle(words,memory,args,connected,phase).run()
+                        self.assertEqual(public(model.memory),public(expected.memory));self.assertEqual(model.calls,expected.calls)
+                    cases+=1
+                for text,phase in itertools.product((b'A\0',bytes((0xA8,0)),bytes((65,0xA8,0))),(0,8)):
+                    memory,args=fixture(text,self.table);args=(args[0],STACK+phase-128+0x68,args[2],args[3])
+                    models=[MeasurerOracle(words,memory,args,connected,phase).run() for words in forms]
+                    self.assertEqual(tuple(read(models[0].memory,a) for a in args[1:]),
+                        tuple(read(models[1].memory,a) for a in args[1:]));cases+=1
+            records.append(dict(entry=entry,normalizer=normalizer,metrics=metric,table=table,pool=pool,font=font,scales=scales))
+        self.receipt('independent-links',links=records,cases=cases,default_original219_and_helpers_full_slots_byte_exact=True,
+            independent_original_candidate_assembly_linking_actual_helpers_real_tables_and_floats=True,
+            lookup_scalar4_byte_labels_and_scale_pairs_cross_HI_LO_carries=True,
+            public_memory_calls_and_bounded_private_flag_aliases_exact=True,
+            not_full_private_fault_hardware_or_word_match_claim=True)
+
+    def test_15_fired_frame_fault_rejects_extra_saved_register_lifetime(self):
+        _,words=screen.compile_candidate(self.root,self.out,'captured-frame-fault',self.captured_lifetime_candidate())
+        records=[]
+        for phase,fault in itertools.product((0,8),(0,1)):
+            memory,args=fixture(b'A\0',self.table)
+            models=[MeasurerOracle(code,memory,args,self.connected,phase) for code in (self.retail,words)]
+            for model in models:
+                model.fault=fault
+                with self.assertRaises(guest.AccessFault):model.run()
+                self.assertEqual(model.accesses,fault)
+            state=lambda m:(m.memory,m.events,m.r,m.f)
+            if fault==0:self.assertEqual(state(models[0]),state(models[1]))
+            else:
+                self.assertNotEqual(state(models[0]),state(models[1]))
+                address=STACK+phase-128+0x38
+                self.assertEqual(read(models[0].memory,address),models[0].before[22])
+                self.assertEqual(read(models[1].memory,address),models[1].before[23])
+                self.assertNotEqual(read(models[0].memory,address),read(models[1].memory,address))
+            records.append(dict(phase=phase,fault=fault,equal=fault==0))
+        self.receipt('frame-fault-rejection',four_fired_fault_pairs=records,
+            first_completed_frame_store_retail_S6_candidate_S7_discriminant=True,
+            current_candidate_rejected_for_full_partial_state_equivalence=True,
+            not_complete_fault_sweep_or_native_hardware_fault_claim=True)
 
 
 if __name__=='__main__':

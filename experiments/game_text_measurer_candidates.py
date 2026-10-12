@@ -238,6 +238,45 @@ def candidates():
         font_address=body.replace('    s32 extent;', '    s32 extent;\n    u8 **fontAddress = &D_80085994;').replace(
             'D_80085994[glyph *', '(*fontAddress)[glyph *')
         yield 'rematerialize-'+name+'-font-address',font_address
+        if name=='indexed':
+            local=font_address.replace('    s32 useFont;\n','').replace(
+                '                    useFont = 0;', '                    {\n                    s32 useFont = 0;').replace(
+                '                }\n            } while (text[index] != 0);',
+                '                    }\n                }\n            } while (text[index] != 0);')
+            yield 'plain-flag-scope-after-normalize',local
+            yield 'plain-flag-scope-before-normalize',local.replace(
+                '                    glyph = func_15042C40(text[index]);\n                    {\n                    s32 useFont = 0;',
+                '                    {\n                    s32 useFont = 0;\n                    glyph = func_15042C40(text[index]);')
+            for kind in ('u8','register s32'):
+                yield 'plain-flag-scope-'+kind.replace(' ','_'),local.replace('s32 useFont = 0;',kind+' useFont = 0;')
+            eligibility=font_address.replace('                    useFont = 0;',
+                '                    useFont = glyph != 0x60 && glyph < 0xA1 && text[index] != 0xA;').replace(
+                '                            } else {\n                                useFont = 1;\n                            }',
+                '                            }')
+            yield 'eligibility-logical',eligibility
+            yield 'eligibility-ternary',eligibility.replace(
+                'glyph != 0x60 && glyph < 0xA1 && text[index] != 0xA',
+                'glyph != 0x60 && glyph < 0xA1 ? text[index] != 0xA : 0')
+            yield 'eligibility-negated',eligibility.replace(
+                'glyph != 0x60 && glyph < 0xA1 && text[index] != 0xA',
+                '!(glyph == 0x60 || glyph >= 0xA1 || text[index] == 0xA)')
+            for mask in range(1,4):
+                temp=font_address
+                if mask&1:
+                    temp=temp.replace('    u8 glyph;', '    s32 result;\n    s32 classification;\n    s32 glyph;').replace(
+                        'glyph = func_15042C40(text[index]);',
+                        'result = func_15042C40(text[index]);\n                    classification = result & 0xFF;\n                    glyph = result & 0xFF;')
+                    for op in ('== 0x60','< 0xA1','>= 0xA8','< 0x100'):
+                        temp=temp.replace('glyph '+op,'classification '+op)
+                if mask&2:
+                    temp=temp.replace('    s32 extent;', '    s32 extent;\n    u8 current;\n    u8 command;').replace(
+                        '            do {', '            current = text[index];\n            command = current;\n            do {').replace(
+                        'text[index] == 0xBC', 'command == 0xBC').replace('func_15042C40(text[index])','func_15042C40(current)').replace(
+                        '            } while (text[index] != 0);',
+                        '                current = text[index];\n                command = current;\n            } while (current != 0);')
+                yield 'promotion-lifetimes-'+str(mask),temp
+        for kind in ('u8','s8','u16','s16'):
+            yield 'flag-width-'+name+'-'+kind,font_address.replace('s32 useFont;',kind+' useFont;')
         yield 'rematerialize-'+name+'-font-address-block',font_address.replace(
             '    u8 **fontAddress = &D_80085994;\n','').replace(
             '                    if (useFont) {', '                    if (useFont) {\n                        u8 **fontAddress = &D_80085994;')
@@ -411,6 +450,46 @@ def candidates():
             changed=changed.replace(marker,marker+declarations)
         yield 'capture-declaration-'+position,changed
         if position=='after-record':
+            for mask in range(1,4):
+                callbacks=changed
+                if mask&1:
+                    callbacks=callbacks.replace('    s32 extent;',
+                        '    s32 extent;\n    s32 (*normalize)(u8) = func_15042C40;').replace(
+                        'glyph = func_15042C40(', 'glyph = normalize(')
+                if mask&2:
+                    callbacks=callbacks.replace('    s32 extent;',
+                        '    s32 extent;\n    void (*measure)(s32,s32 *,s32 *,f32 *,s32 *,f32 *) = func_150415E0;').replace(
+                        '                            func_150415E0(', '                            measure(')
+                yield 'callback-lifetimes-'+str(mask),callbacks
+            branched=changed.replace('                    useFont = 0;\n','').replace(
+                '                    if (glyph == 0x60) {', '                    if (glyph == 0x60) {\n                        useFont = 0;').replace(
+                'metrics.useFont = useFont;', 'metrics.useFont = 0;').replace(
+                '                            if (text[index] == 0xA) {',
+                '                            if (text[index] == 0xA) {\n                                useFont = 0;').replace(
+                '                        }\n                    }\n                    index++;',
+                '                        } else {\n                            useFont = 0;\n                        }\n                    } else {\n                        useFont = 0;\n                    }\n                    index++;')
+            yield 'flag-branches-captured',branched
+            yield 'flag-branches-captured-after-space',branched.replace(
+                '                        useFont = 0;\n                        *width', '                        *width').replace(
+                '                        }\n                    } else if (glyph',
+                '                        }\n                        useFont = 0;\n                    } else if (glyph')
+            plain=branched.replace('                            metrics.useFont = 0;\n','').replace(
+                '                            useFont = metrics.useFont;', '                            useFont = 0;')
+            yield 'flag-branches-after-call',plain
+            yield 'flag-branches-before-call',plain.replace('                            useFont = 0;\n','',1).replace(
+                '                            func_150415E0(', '                            useFont = 0;\n                            func_150415E0(')
+            for kind in ('u32','register s32','register u32','register volatile s32'):
+                yield 'flag-scope-'+kind.replace(' ','_'),changed.replace('    s32 useFont;', '    '+kind+' useFont;')
+            yield 'flag-scope-explicit-condition',changed.replace('if (useFont)', 'if (useFont != 0)')
+            yield 'flag-scope-boolean-reload',changed.replace('useFont = metrics.useFont;',
+                'useFont = metrics.useFont != 0;')
+            scoped=changed.replace('    s32 useFont;\n','').replace(
+                '                    useFont = 0;', '                    {\n                    s32 useFont = 0;').replace(
+                '                }\n            } while (text[index] != 0);',
+                '                    }\n                }\n            } while (text[index] != 0);')
+            yield 'flag-scope-post-normalize',scoped
+            yield 'flag-scope-post-normalize-unsigned',scoped.replace('s32 useFont = 0;', 'u32 useFont = 0;')
+            yield 'flag-scope-post-normalize-register',scoped.replace('s32 useFont = 0;', 'register s32 useFont = 0;')
             reused=changed.replace('    u8 glyph;\n','').replace('    s32 extent;',
                 '    u8 *base = text;\n    s32 extent;').replace('text[index]','base[index]').replace(
                 'glyph = func_15042C40(base[index]);', 'text = (u8 *)(u32)(u8)func_15042C40(base[index]);')
