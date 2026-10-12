@@ -148,18 +148,38 @@ def layout_candidates():
         '                } else {\n' + record + '                    glyph =', 1)
 
 
+def compound_candidates():
+    reference, start, end, space, metrics, newline = _inputs()
+    ordinary = '(text[index] != 0xA || ' + newline + ')'
+    predicate = 'glyph == 0x60 ? ' + space + ' : (glyph < 0xA1 || glyph >= 0xA8) ? (glyph >= 0xA8 && glyph < 0x100 ? ' + metrics + ' : glyph < 0xA1 ? ' + ordinary + ' : 0) : 0'
+    body = reference[:start] + '                    useFont = 0;\n                    useFont |= (' + predicate + ');\n' + reference[end:]
+    body = body.replace('width, useFont; } metrics;', 'width; } metrics;')
+    yield 'compound-named', body
+    prefix, tail = body.split('    if (text != NULL) {', 1)
+    yield 'compound-inline-void-address', prefix + '    if (text != NULL) {' + tail.replace('useFont', '(*(s32 *)(void *)&useFont)')
+    record = '    struct { f32 factor; s32 mode; f32 baseline; s32 height, width; } metrics;\n'
+    scoped = body.replace('    s32 useFont;\n', '').replace(record, '')
+    scoped = scoped.replace('                    useFont = 0;',
+        '                    {\n                    s32 useFont = 0;\n' + record)
+    scoped = scoped.replace('                }\n            } while (text[index] != 0);',
+        '                    }\n                }\n            } while (text[index] != 0);')
+    yield 'compound-scoped-initializer', scoped
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--filter', default='')
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument('--carriers', action='store_true')
     modes.add_argument('--layouts', action='store_true')
+    modes.add_argument('--compound', action='store_true')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     out = root / 'conker/build/game-text-measurer-logic'
     out.mkdir(exist_ok=True)
     records = []
-    sources = layout_candidates() if args.layouts else carrier_candidates() if args.carriers else candidates()
+    sources = (compound_candidates() if args.compound else layout_candidates() if args.layouts
+               else carrier_candidates() if args.carriers else candidates())
     for name, body in sources:
         if args.filter not in name:
             continue

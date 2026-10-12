@@ -27,6 +27,13 @@ class GameTextMeasurerFrontendTests(unittest.TestCase):
         cls.table = json.loads((cls.valid / 'ucode-table.json').read_text())
         cls.types = json.loads((cls.valid / 'ucode-types.json').read_text())
         cls.payload = (cls.valid / 'frontend.ucode').read_bytes()
+        prior = dict(front.logic.screen.candidates())
+        cls.flag_captures = {name: front.capture_frontend(cls.root, cls.out, 'flag-' + name, prior[name])
+                             for name in ('capture-declaration-after-record', 'flag-branches-captured', 'capture-inline-address-void-cast')}
+        cls.compound_bodies = dict(front.logic.compound_candidates())
+        cls.compound = {name: front.logic.screen.compile_candidate(cls.root, cls.out, name, body)
+                        for name, body in cls.compound_bodies.items()}
+        cls.compound_capture = front.capture_frontend(cls.root, cls.out, 'compound-capture', cls.compound_bodies['compound-named'])
         recovery.GameTextMeasurerRecoveryTests.setUpClass()
         cls.oracle = recovery.GameTextMeasurerRecoveryTests('test_05_production_and_protected_data_unchanged')
         cls.semantic = semantics.GameTextMeasurerLogicTests('test_02_all_nine_distinct_bodies_preserve_complete_public_semantics')
@@ -174,6 +181,78 @@ class GameTextMeasurerFrontendTests(unittest.TestCase):
     def test_06_frozen_production_and_effective_corruption_controls(self):
         self.oracle.test_05_production_and_protected_data_unchanged()
         self.oracle.test_06_effective_immutable_production_controls()
+
+    def test_07_descriptor_operands_distinguish_metadata_from_typed_instructions(self):
+        location = next(item for item in self.record['records'] if item['name'] == 'loc')
+        payload = bytearray(self.payload)
+        payload[location['byte_offset'] + 1] = 255
+        decoded = front.decode_ucode(payload, self.table, self.types)
+        changed = next(item for item in decoded if item['byte_offset'] == location['byte_offset'])
+        self.assertEqual(changed['type_storage'], 255)
+        self.assertEqual(changed['operands'], [2, 14])
+        self.assertEqual((changed['dtype'], changed['storage'], changed['block'], changed['length'], changed['offset']),
+                         (None,) * 5)
+        self.assertEqual(changed['words'][0] >> 16 & 255, 255)
+        typed = next(item for item in self.record['records'] if item['name'] == 'ldc')
+        for dtype in (18, 31):
+            payload = bytearray(self.payload)
+            payload[typed['byte_offset'] + 1] = (payload[typed['byte_offset'] + 1] & 224) | dtype
+            with self.assertRaisesRegex(ValueError, 'data type'):
+                front.decode_ucode(payload, self.table, self.types)
+        for program, message in (([0] * 10, 'Unterminated'), ([255, 22] + [0] * 8, 'Unknown')):
+            table = copy.deepcopy(self.table)
+            table[0]['descriptor'][:10] = program
+            with self.assertRaisesRegex(ValueError, message):
+                front.decode_ucode(self.payload, table, self.types)
+        payload = bytearray(self.payload)
+        payload[0] = 34
+        with self.assertRaisesRegex(ValueError, 'Unsupported ucode operand descriptor'):
+            front.decode_ucode(payload, self.table, self.types)
+
+    def test_08_source_variable_marker_is_not_a_literal_cfe_vreg_record(self):
+        expected = {'capture-declaration-after-record': (18672, 859, 18304, 834),
+                    'flag-branches-captured': (18888, 874, 18528, 850),
+                    'capture-inline-address-void-cast': (18840, 867, 18256, 831)}
+        for name, capture in self.flag_captures.items():
+            self.assertTrue(capture['code_unchanged'])
+            self.assertFalse(capture['installable'])
+            self.assertEqual((capture['frontend']['bytes'], capture['record_count'],
+                              capture['optimizer']['bytes'], capture['optimizer_record_count']), expected[name])
+            self.assertFalse(any(item['name'] == 'vreg' for item in capture['records']))
+            self.assertFalse(any(item['name'] in ('rstr', 'rlod') for item in capture['optimizer_records']))
+            flag = [item for item in capture['records'] if item['storage'] == 'M' and item['offset'] == -48]
+            if name == 'capture-inline-address-void-cast':
+                self.assertEqual([item['name'] for item in flag], ['lda'] * 5)
+                self.assertEqual([item['name'] for item in capture['optimizer_records']
+                    if item['storage'] == 'M' and item['offset'] == -48], ['str', 'str', 'str', 'lod'])
+            else:
+                self.assertIn('str', [item['name'] for item in flag])
+                self.assertIn('lod', [item['name'] for item in flag])
+                self.assertFalse(any(item['storage'] == 'M' and item['offset'] == -48 for item in capture['optimizer_records']))
+
+    def test_09_default_zero_compound_forms_are_shape_only_and_rejected(self):
+        expected = {'compound-named': (226, 0x90, 197),
+                    'compound-inline-void-address': (230, 0x90, 222),
+                    'compound-scoped-initializer': (227, 0x90, 222)}
+        for name, (meta, words) in self.compound.items():
+            self.assertEqual((meta['body_words'], meta['frame'], meta['differences']), expected[name])
+            self.assertEqual(meta['pool_bytes'], 0)
+            self.assertNotIn(0x00004025, words)
+            self.assertNotEqual(words[0], self.oracle.retail[0])
+        self.assertTrue(self.compound_capture['code_unchanged'])
+        self.assertFalse(self.compound_capture['installable'])
+        capture = self.compound_capture
+        self.assertEqual((capture['frontend']['bytes'], capture['record_count'],
+                          capture['optimizer']['bytes'], capture['optimizer_record_count']), (18960, 861, 18456, 825))
+        self.assertEqual([(item['storage'], item['level'], item['length'], item['offset'])
+                         for item in capture['records'] if item['name'] == 'vreg'],
+                         [('M', 1, 4, offset) for offset in (-52, -56, -60, -64, -68)])
+        self.assertFalse(any(item['name'] in ('rstr', 'rlod') for item in capture['optimizer_records']))
+        call = next(item for item in capture['records'] if item['name'] == 'cup' and item['dtype'] == 'P')
+        flag = [item for item in capture['records'] if item['storage'] == 'M' and item['offset'] == -44]
+        self.assertEqual([item['name'] for item in flag], ['str', 'lod', 'str', 'lod'])
+        self.assertLess(flag[0]['byte_offset'], call['byte_offset'])
+        self.assertTrue(all(item['byte_offset'] > call['byte_offset'] for item in flag[1:]))
 
 
 if __name__ == '__main__':

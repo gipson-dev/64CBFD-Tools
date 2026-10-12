@@ -28,6 +28,7 @@ def decode_ucode(payload, table, types):
             or any(not isinstance(value, str) or not value.isascii() for value in types.values())
             or len(types['dtypes']) != 20 or len(types['mtypes']) != 8):
         raise ValueError('Invalid ucode payload or descriptor/type tables')
+    programs = []
     for opcode, entry in enumerate(table):
         if (not isinstance(entry, dict) or entry.get('opcode') != opcode or not isinstance(entry.get('name'), str)
                 or not entry['name'].isascii() or not 1 <= len(entry['name']) <= 4
@@ -36,6 +37,17 @@ def decode_ucode(payload, table, types):
                 or entry['descriptor'][15] not in (0, 1)
                 or entry['descriptor'][16] not in (2, 4, 6, 8)):
             raise ValueError('Invalid ucode descriptor')
+        fields = entry['descriptor'][:10]
+        if 22 not in fields:
+            # The prepared table has unused EOF/FOO slots, never valid stream records.
+            if not any(entry['descriptor'][:16]) and entry['name'] in ('eof', 'foo'):
+                programs.append(None)
+                continue
+            raise ValueError('Unterminated ucode operand descriptor')
+        program = fields[:fields.index(22)]
+        if any(value > 21 for value in program):
+            raise ValueError('Unknown ucode operand descriptor')
+        programs.append(program)
     records = []
     position = 0
     while position < len(payload):
@@ -44,6 +56,9 @@ def decode_ucode(payload, table, types):
         if opcode >= len(table):
             raise ValueError('Unknown ucode opcode')
         entry = table[opcode]
+        program = programs[opcode]
+        if program is None:
+            raise ValueError('Unsupported ucode operand descriptor')
         size = entry['descriptor'][16] * 4
         if start + size > len(payload):
             raise ValueError('Truncated ucode record')
@@ -62,13 +77,18 @@ def decode_ucode(payload, table, types):
                     raise ValueError('Truncated ucode constant payload')
                 position += padded
         dtype, storage = type_storage & 31, type_storage >> 5
-        if dtype >= len(types['dtypes']):
+        # LOC and other metadata records do not define every header operand.
+        if 0 in program and (dtype >= len(types['dtypes']) or types['dtypes'][dtype] == '\0'):
             raise ValueError('Unknown ucode data type')
         records.append(dict(byte_offset=start, name=entry['name'], opcode=opcode,
-                            dtype=types['dtypes'][dtype], storage=types['mtypes'][storage],
-                            level=words[0] & 65535, block=words[1], words=words, constants=constants,
-                            length=words[2] if len(words) > 2 else None,
-                            offset=((words[3] ^ 0x80000000) - 0x80000000) if len(words) > 3 else None))
+                            type_storage=type_storage, operands=program,
+                            dtype=types['dtypes'][dtype] if 0 in program else None,
+                            storage=types['mtypes'][storage] if 1 in program else None,
+                            level=words[0] & 65535 if 2 in program else None,
+                            block=words[1] if any(value in program for value in (3, 4, 5)) else None,
+                            words=words, constants=constants,
+                            length=words[2] if 10 in program and len(words) > 2 else None,
+                            offset=((words[3] ^ 0x80000000) - 0x80000000) if 13 in program and len(words) > 3 else None))
     if records[0]['name'] != 'bgn' or records[-1]['name'] != 'stp':
         raise ValueError('Incomplete ucode stream')
     return records
