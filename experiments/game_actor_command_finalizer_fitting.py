@@ -59,7 +59,7 @@ def command_view(body):
 
 def clamp_local(body):
     return body.replace('        value = value < 256 ? value : limit;',
-        '        current = value < 256 ? value : limit;\n        value = current;')
+        '        current = value < 256 ? value : limit;\n            value = current;')
 
 
 def parameter_homes(body,gate=True,tags=True):
