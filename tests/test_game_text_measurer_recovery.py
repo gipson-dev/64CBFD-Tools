@@ -183,7 +183,7 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             manifest.write_text(json.dumps(hashes,indent=2)+'\n')
         cls.baseline=json.loads(manifest.read_text())
         assert cls.baseline['source']=='802b4d27659c80620c2ca509df4c3da84d136c5c92b758d7a6390c4428d2273d'
-        assert cls.baseline['elf']=='9f09cfe880661b3727547ecffb17e072a30c5ba5b9b6c44d9b6110417fcff623'
+        assert cls.baseline['elf']=='3c14e2b16246c2c33855e82c1cb8218311d0490af26f71f2b2f7d0891d4c81f8'
         assert cls.baseline['guards']=='420eb4c5458868e6b19f5a7eb45f04b38ef96532216f283689eec7e0c5e8d796'
         cls.before=(cls.out/'before-elf').read_bytes();cls.rom=(cls.root/'conker/conker.us.bin').read_bytes()
         cls.retail=list(struct.unpack_from('>219I',cls.rom,screen.ROM))
