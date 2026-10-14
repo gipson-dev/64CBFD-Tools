@@ -36,7 +36,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root / path).read_bytes()
+        data = record_payload_constructor_checkpoint.previous_input((root / path).read_bytes(), path, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed frame-dispatch input: ' + key
         target = root / source.BUILD / ('after-' + key)
         if not target.exists():

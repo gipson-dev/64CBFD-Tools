@@ -250,6 +250,9 @@ void _start(void){int result=check();__asm__ volatile("int $0x80"::"a"(1),"b"(re
             native_indices=[0, 1, 2, 3], complete_storage_unchanged=True), indent=2) + '\n')
 
     def test_05_actual_owner_neighbors_pools_and_padders(self):
+        guards = self.out / 'before-guards'
+        self.assertEqual(hashlib.sha256(guards.read_bytes()).hexdigest(),
+            '3f12cf872b84100963934734de2e67f5f07073ce3112ccbd2e5c4cb8af84666e')
         objects = [compile_owner(self.root, self.out, source, name) for source, name in
                    ((self.owner_before, 'owner-before'), (self.owner_after, 'owner-after'))]
         self.assertEqual([warnings for _, warnings in objects], [[], []])
@@ -290,7 +293,7 @@ void _start(void){int result=check();__asm__ volatile("int $0x80"::"a"(1),"b"(re
             args = [str(objects[1][0]), str(self.root / 'conker/retail_layout.us.txt'), 'game_476D0', str(asm)] if script == 'pad_c_object.py' else [
                 str(objects[1][0]), str(reference_path), str(asm), '--filename', 'game_476D0']
             result = subprocess.run([sys.executable, str(self.root / 'tools' / script), *args,
-                '--word-patches', str(self.root / 'conker/retail_word_patches.us.csv')], capture_output=True, text=True)
+                '--word-patches', str(guards)], capture_output=True, text=True)
             self.assertEqual((result.returncode, result.stdout, result.stderr), (0, '', ''))
             obj = asm.with_suffix('.o')
             subprocess.run(['mips-linux-gnu-as', '-EB', '-march=vr4300', '-I', str(self.root / 'conker'),

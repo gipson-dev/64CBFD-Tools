@@ -3,12 +3,14 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_record_payload_constructor_candidates as source
+from tools.tests import view_frustum_plane_checkpoint
 
 AFTER = '005fd7682d37802a2b7591cfb023648b6a083c8df6b957bdfedd737222cad68e'
 PROGRESS = 'conker/progress.csv'
 
 
 def previous_input(current, path, root):
+    current = view_frustum_plane_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):

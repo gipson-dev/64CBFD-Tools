@@ -25,6 +25,7 @@ from tools.tests.test_game_point_transform_match import put, read
 from tools.tests.game_animation_timeline_oracle import signed
 from tools.check_game_data_layout import audit_layout
 from tools.tests import codec_frame_dispatch_checkpoint as checkpoint
+from tools.tests import view_frustum_plane_checkpoint
 
 ENTRY, CONTEXT, OUT = 0x151F86B0, 0x21000, 0x31000
 HEADER, DECODE, DECODE2, READ, READ2, NOTIFY, NOTIFY2, STRLEN = 0x151F8088, 0x18001000, 0x18002000, 0x18003000, 0x18004000, 0x18005000, 0x18006000, 0x10022EEC
@@ -446,10 +447,10 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
         source.freeze(self.root, self.out)
         self.assertEqual((self.root / 'conker/src/game_221290.c').read_text(), source.recover((self.out / 'before-owner').read_text()))
         self.assertEqual((self.root / 'conker/Makefile').read_text(), source.recover_makefile((self.out / 'before-makefile').read_text()))
-        self.assertEqual((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
+        self.assertEqual(view_frustum_plane_checkpoint.previous_input((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), 'conker/retail_word_patches.us.csv', self.root), (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
         self.assertEqual(checkpoint.previous_input((self.root / 'conker/progress.csv').read_bytes(), 'conker/progress.csv', self.root), (self.out / 'before-progress').read_bytes())
         before = (self.out / 'before-elf').read_bytes()
-        current = (self.root / 'conker/build/conker.us.elf').read_bytes()
+        current = view_frustum_plane_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root)
         expected = bytearray(before)
         at = image.elf_slot_offset(before, ENTRY, 448)
         expected[at:at + 448] = self.rom[0x225B60:0x225D20]

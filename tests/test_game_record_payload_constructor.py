@@ -24,6 +24,7 @@ from tools.tests.test_game_point_transform_match import put, read
 from tools.tests.game_animation_timeline_oracle import signed
 from tools.check_game_data_layout import audit_layout
 from tools.tests import record_payload_constructor_checkpoint as checkpoint
+from tools.tests import view_frustum_plane_checkpoint
 
 CREATED, DESCRIPTOR, PAYLOAD, TABLE = 0x20000, 0x21000, 0x22000, 0x23000
 ALLOC, COPY, VIEW, ATTR, RESOURCE, FOOTER = 0x15167A68, 0x10022EC0, 0x1513FFF4, 0x151400D0, 0x1515D480, 0x1515D440
@@ -390,10 +391,10 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
         source.freeze(self.root, self.out)
         self.assertEqual((self.root / source.PATHS['owner']).read_text(), source.recover((self.out / 'before-owner').read_text()))
         self.assertEqual(hashlib.sha256((self.root / source.PATHS['owner']).read_bytes()).hexdigest(), OWNER_AFTER)
-        self.assertEqual((self.root / source.PATHS['elf']).read_bytes(), (self.out / 'before-elf').read_bytes())
+        self.assertEqual(view_frustum_plane_checkpoint.previous_input((self.root / source.PATHS['elf']).read_bytes(), source.PATHS['elf'], self.root), (self.out / 'before-elf').read_bytes())
         self.assertEqual((self.root / source.PATHS['progress']).read_bytes(), source.expected_progress((self.out / 'before-progress').read_bytes()))
         for key in ('guards', 'makefile', 'functions', 'structs', 'variables', 'original'):
-            self.assertEqual((self.root / source.PATHS[key]).read_bytes(), (self.out / ('before-' + key)).read_bytes(), key)
+            self.assertEqual(view_frustum_plane_checkpoint.previous_input((self.root / source.PATHS[key]).read_bytes(), source.PATHS[key], self.root), (self.out / ('before-' + key)).read_bytes(), key)
         data = audit_layout(self.root / source.PATHS['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         self.receipt('image', ELF_sha256=source.BASELINE['elf'], identical_entire_ELF=True,
