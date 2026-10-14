@@ -331,7 +331,7 @@ class GameTrigMatchTests(unittest.TestCase):
                     self.assertEqual(machine.complete_state(models[0]), machine.complete_state(models[1]))
                     cases += 1
         self.receipt('sine-connected', cases=cases, real_sine_instructions=True, retail_cosine_instructions=True,
-                     production_cosine_still_stub=True, no_runtime_camera_or_culling_acceptance=True)
+                     cosine_fixture_uses_retained_retail_assembly=True, no_runtime_camera_or_culling_acceptance=True)
 
     def test_07_installed_closed_image_and_controls(self):
         source.freeze(self.root, self.out)
