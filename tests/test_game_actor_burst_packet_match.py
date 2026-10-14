@@ -426,6 +426,11 @@ class GameActorBurstPacketMatchTests(unittest.TestCase):
             from tools.tests.test_game_actor_burst_consumer_match import expected_consumer_image
             words = struct.unpack_from('>315I', self.rom, consumer.ROM)
             expected = bytearray(expected_consumer_image(bytes(expected), words))
+        from tools.experiments import game_actor_burst_contact_candidates as contact
+        if contact.SELECTED in (self.root / contact.SOURCE).read_text():
+            from tools.tests.test_game_actor_burst_contact_match import expected_contact_image
+            expected = bytearray(expected_contact_image(bytes(expected),
+                struct.unpack_from('>117I', self.rom, contact.ROM)))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertEqual(current, bytes(expected))
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))

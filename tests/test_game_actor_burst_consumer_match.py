@@ -379,10 +379,17 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
     def test_09_whole_image_source_guard_history_and_protected_data(self):
         before_source = (self.out / 'before-owner').read_text()
         current_source = (self.root / source.SOURCE).read_text()
-        installed = current_source == source.recovered_owner(before_source)
-        self.assertIn(current_source, (before_source, source.recovered_owner(before_source)))
+        from tools.experiments import game_actor_burst_contact_candidates as contact
+        installed_source = source.recovered_owner(before_source)
+        contact_source = contact.recovered_owner(installed_source)
+        installed = current_source in (installed_source, contact_source)
+        self.assertIn(current_source, (before_source, installed_source, contact_source))
         before = (self.out / 'before-elf').read_bytes()
         expected = expected_consumer_image(before, self.retail) if installed else before
+        if current_source == contact_source:
+            from tools.tests.test_game_actor_burst_contact_match import expected_contact_image
+            rom = (self.root / 'conker/conker.us.bin').read_bytes()
+            expected = expected_contact_image(expected, struct.unpack_from('>117I', rom, contact.ROM))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertTrue(current == expected, 'Whole ELF differs from the declared consumer slot/size changes')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
@@ -430,8 +437,7 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         before = (self.out / 'before-elf').read_bytes()
         path = self.root / self.paths['elf']
         current = path.read_bytes()
-        installed = (self.root / source.SOURCE).read_text() == source.recovered_owner(
-            (self.out / 'before-owner').read_text())
+        installed = source.SELECTED in (self.root / source.SOURCE).read_text()
         names = {name for group, _, _ in SERIALIZATION for name in group}
         rows = {name: (at, fields, string) for at, name, fields, string in symbol_rows(current) if name in names}
         old = {name: (at, fields, string) for at, name, fields, string in symbol_rows(before) if name in names}
