@@ -21,6 +21,7 @@ from tools.tests import test_game_trig_match as sine
 from tools.tests.game_owner_pool import normalized_pools
 from tools.check_game_data_layout import audit_layout
 from tools.tests import game_cosine_checkpoint as checkpoint
+from tools.tests import view_fov_transfer_checkpoint
 
 ENTRY, ROM, SLOT = source.ENTRY, source.ROM, 352
 INVERSES = (0x3EA2F984, 0xBEA2F984)
@@ -258,15 +259,19 @@ class GameCosineMatchTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256((self.root / source.PATHS['cosf']).read_bytes()).hexdigest(), checkpoint.AFTER['cosf'])
         for key, path in source.PATHS.items():
             if key not in ('elf', 'cosf'):
-                self.assertEqual((self.root / path).read_bytes(), (self.out / ('before-' + key)).read_bytes(), key)
+                current = view_fov_transfer_checkpoint.previous_input((self.root / path).read_bytes(), path, self.root)
+                self.assertEqual(current, (self.out / ('before-' + key)).read_bytes(), key)
         before = (self.out / 'before-elf').read_bytes()
         current = (self.root / source.PATHS['elf']).read_bytes()
+        raw_hash = hashlib.sha256(current).hexdigest()
+        current = view_fov_transfer_checkpoint.previous_input(current, source.PATHS['elf'], self.root)
         self.assertEqual(current, expected_image(before, self.rom[ROM:ROM + SLOT]),
                          'Only cosine slot, public extent and two closed symbol/string groups may change')
         data = audit_layout(self.root / source.PATHS['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         at = sine.image.elf_slot_offset(before, ENTRY, SLOT)
         self.receipt('image', ELF_sha256=hashlib.sha256(current).hexdigest(),
+                     raw_installed_ELF_sha256=raw_hash, pinned_later_view_transfer_projection=True,
                      changed_slot_bytes=sum(a != b for a, b in zip(before[at:at + SLOT], current[at:at + SLOT])),
                      extent_before=20, extent_after=340, exact_symbol_groups=2, non_target_symbol_definition_changes=0,
                      every_other_ELF_byte_fixed=True, protected_data=data)

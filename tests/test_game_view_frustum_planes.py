@@ -25,6 +25,7 @@ from tools.tests.game_animation_timeline_oracle import bits, floating
 from tools.check_game_data_layout import audit_layout
 from tools.tests import view_frustum_plane_checkpoint as checkpoint
 from tools.tests import game_sine_checkpoint
+from tools.tests import view_fov_transfer_checkpoint
 
 COS, SIN, BASE, SCALE_H, SCALE_V = 0x15047C00, 0x15047D60, 0x800BE628, 0x80096900, 0x80096904
 VIEWS, ALTERNATE = 0x24000, 0x28000
@@ -365,9 +366,14 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
 
     def test_07_installed_source_guards_progress_and_closed_image(self):
         source.freeze(self.root, self.out)
-        self.assertEqual((self.root / source.PATHS['owner']).read_text(), source.recover((self.out / 'before-owner').read_text()))
-        self.assertEqual(hashlib.sha256((self.root / source.PATHS['owner']).read_bytes()).hexdigest(), checkpoint.AFTER['owner'])
-        self.assertEqual((self.root / source.PATHS['guards']).read_bytes(), (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
+        owner_path = source.PATHS['owner']
+        text = (self.root / owner_path).read_text()
+        text = view_fov_transfer_checkpoint.previous_input(text.encode(), owner_path, self.root).decode()
+        self.assertEqual(text, source.recover((self.out / 'before-owner').read_text()))
+        owner = view_fov_transfer_checkpoint.previous_input((self.root / owner_path).read_bytes(), owner_path, self.root)
+        self.assertEqual(hashlib.sha256(owner).hexdigest(), checkpoint.AFTER['owner'])
+        guards = view_fov_transfer_checkpoint.previous_input((self.root / source.PATHS['guards']).read_bytes(), source.PATHS['guards'], self.root)
+        self.assertEqual(guards, (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
         for key in ('progress', 'makefile', 'functions', 'structs', 'variables', 'original'):
             self.assertEqual((self.root / source.PATHS[key]).read_bytes(), (self.out / ('before-' + key)).read_bytes(), key)
         before, current = (self.out / 'before-elf').read_bytes(), (self.root / source.PATHS['elf']).read_bytes()

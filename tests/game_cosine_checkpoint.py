@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_cosine_candidates as source
+from tools.tests import view_fov_transfer_checkpoint
 
 AFTER = {
     'elf': 'b87dd5bcf0d6549080560feb1122f90d7b57614bdd220c29eaa75e2d0fc0cf0b',
@@ -19,6 +20,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = view_fov_transfer_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):
@@ -31,7 +33,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root / path).read_bytes()
+        data = view_fov_transfer_checkpoint.previous_input((root / path).read_bytes(), path, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed Game cosine input: ' + key
         target = root / source.BUILD / ('after-' + key)
         if not target.exists():
