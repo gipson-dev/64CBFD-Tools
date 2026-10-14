@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_codec_input_refill_candidates as source
+from tools.tests import codec_frame_dispatch_checkpoint
 
 AFTER = {
     'elf': 'a89a94186b0a4d2c0eedf36f927980489aa4e13783a642baf221de4760d11f18',
@@ -23,6 +24,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = codec_frame_dispatch_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):
@@ -35,7 +37,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root / path).read_bytes()
+        data = codec_frame_dispatch_checkpoint.previous_input((root / path).read_bytes(), path, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed codec refill input: ' + key
         target = root / source.BUILD / ('after-' + ('final-owner' if key == 'owner' else key))
         if not target.exists():

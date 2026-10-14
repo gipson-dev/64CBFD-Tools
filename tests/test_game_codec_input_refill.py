@@ -25,6 +25,7 @@ from tools.tests.test_game_point_transform_match import put, read
 from tools.tests.game_animation_timeline_oracle import signed
 from tools.check_game_data_layout import audit_layout
 from tools.tests import codec_refill_checkpoint as checkpoint
+from tools.tests import codec_frame_dispatch_checkpoint
 
 ENTRY, DECODER, READ, READ2, COPY, ZERO = 0x151F7F60, 0x21000, 0x18001000, 0x18002000, 0x10023A10, 0x100226F0
 
@@ -375,13 +376,16 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
 
     def test_07_installed_source_profile_guards_progress_and_closed_image(self):
         source.freeze(self.root, self.out)
-        self.assertEqual((self.root / 'conker/src/game_221290.c').read_text(), source.recover((self.out / 'before-owner').read_text()))
-        self.assertEqual((self.root / 'conker/Makefile').read_text(), source.recover_makefile((self.out / 'before-makefile').read_text()))
-        self.assertEqual((self.root / 'conker/retail_word_patches.us.csv').read_bytes(),
+        for filename in ('conker/src/game_221290.c', 'conker/Makefile'):
+            raw = (self.root / filename).read_bytes()
+            self.assertEqual((self.root / filename).read_text(), raw.decode().replace('\r\n', '\n'))
+        self.assertEqual(codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/src/game_221290.c').read_bytes(), 'conker/src/game_221290.c', self.root).decode(), source.recover((self.out / 'before-owner').read_text()))
+        self.assertEqual(codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/Makefile').read_bytes(), 'conker/Makefile', self.root).decode(), source.recover_makefile((self.out / 'before-makefile').read_text()))
+        self.assertEqual(codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), 'conker/retail_word_patches.us.csv', self.root),
             (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
         self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), (self.out / 'before-progress').read_bytes())
         before = (self.out / 'before-elf').read_bytes()
-        current = (self.root / 'conker/build/conker.us.elf').read_bytes()
+        current = codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root)
         expected = bytearray(before)
         at = image.elf_slot_offset(before, ENTRY, 296)
         expected[at:at + 296] = self.rom[0x225410:0x225538]
