@@ -476,20 +476,29 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
     def test_07_closed_image_source_and_protected_history(self):
         before_owner = (self.out / 'before-owner').read_text()
         installed_owner = source.recovered_owner(before_owner)
+        from tools.experiments import game_actor_effect_packet_candidates as effect
+        effect_owner = effect.recovered_owner(installed_owner)
         current_owner = (self.root / source.SOURCE).read_text()
-        self.assertIn(current_owner, (before_owner, installed_owner))
+        self.assertIn(current_owner, (before_owner, installed_owner, effect_owner))
         before = (self.out / 'before-elf').read_bytes()
-        expected = expected_contact_image(before, self.retail) if current_owner == installed_owner else before
+        installed = current_owner in (installed_owner, effect_owner)
+        expected = expected_contact_image(before, self.retail) if installed else before
+        if current_owner == effect_owner:
+            from tools.tests.test_game_actor_effect_packet_match import expected_effect_image
+            expected = expected_effect_image(expected, struct.unpack_from('>108I', self.rom, effect.ROM))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertTrue(current == expected, 'Undeclared whole ELF change')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
         for name in set(self.paths) - {'owner', 'elf'}:
-            self.assertEqual((self.root / self.paths[name]).read_bytes(),
-                (self.out / ('before-' + name)).read_bytes(), name)
+            expected_input = (self.out / ('before-' + name)).read_bytes()
+            if name == 'guards' and current_owner == effect_owner:
+                from tools.tests.test_game_actor_effect_packet_match import installed_guards
+                expected_input = installed_guards(expected_input)
+            self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']),
             (True, 189088, 720, 0))
-        self.receipt('image', installed=current_owner == installed_owner,
+        self.receipt('image', installed=installed,
             changed_bytes=sum(a != b for a, b in zip(before, current)), protected_data=data,
             all_undeclared_ELF_source_guard_layout_caller_and_table_bytes_fixed=True)
 

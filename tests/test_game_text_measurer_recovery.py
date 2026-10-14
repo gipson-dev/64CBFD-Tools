@@ -288,14 +288,22 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             before=(self.out/('before-'+name)).read_bytes()
             self.assertEqual(hashlib.sha256(before).hexdigest(),self.baseline[name])
             expected=before
+            from tools.experiments import game_actor_effect_packet_candidates as effect
+            effect_installed=effect.SELECTED in (self.root/effect.SOURCE).read_text()
             if name=='elf':
                 from tools.experiments import game_actor_burst_contact_candidates as contact
                 if contact.SELECTED in (self.root/contact.SOURCE).read_text():
                     from tools.tests.test_game_actor_burst_contact_match import expected_contact_image
                     expected=expected_contact_image(before,struct.unpack_from('>117I',self.rom,contact.ROM))
+                if effect_installed:
+                    from tools.tests.test_game_actor_effect_packet_match import expected_effect_image
+                    expected=expected_effect_image(expected,struct.unpack_from('>108I',self.rom,effect.ROM))
+            if name=='guards' and effect_installed:
+                from tools.tests.test_game_actor_effect_packet_match import installed_guards
+                expected=installed_guards(before)
             self.assertEqual((self.root/path).read_bytes(),expected,name)
         data=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(data['exact'],data)
-        self.receipt('production',source_placeholder_retained=True,all9_inputs_exact_except_declared_contact_slot_and_size=True,
+        self.receipt('production',source_placeholder_retained=True,all9_inputs_exact_except_declared_contact_effect_slots_sizes_and_guard_suffix=True,
             no_installation_or_matching_credit=True,protected_data=data)
 
     def test_06_effective_immutable_production_controls(self):

@@ -382,14 +382,19 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         from tools.experiments import game_actor_burst_contact_candidates as contact
         installed_source = source.recovered_owner(before_source)
         contact_source = contact.recovered_owner(installed_source)
-        installed = current_source in (installed_source, contact_source)
-        self.assertIn(current_source, (before_source, installed_source, contact_source))
+        from tools.experiments import game_actor_effect_packet_candidates as effect
+        effect_source = effect.recovered_owner(contact_source)
+        installed = current_source in (installed_source, contact_source, effect_source)
+        self.assertIn(current_source, (before_source, installed_source, contact_source, effect_source))
         before = (self.out / 'before-elf').read_bytes()
         expected = expected_consumer_image(before, self.retail) if installed else before
-        if current_source == contact_source:
+        if current_source in (contact_source, effect_source):
             from tools.tests.test_game_actor_burst_contact_match import expected_contact_image
             rom = (self.root / 'conker/conker.us.bin').read_bytes()
             expected = expected_contact_image(expected, struct.unpack_from('>117I', rom, contact.ROM))
+        if current_source == effect_source:
+            from tools.tests.test_game_actor_effect_packet_match import expected_effect_image
+            expected = expected_effect_image(expected, struct.unpack_from('>108I', rom, effect.ROM))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertTrue(current == expected, 'Whole ELF differs from the declared consumer slot/size changes')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
@@ -397,10 +402,15 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         prior = (self.out / 'before-guards').read_text()
         stream = io.StringIO(newline='')
         csv.DictWriter(stream, fieldnames=self.fields, lineterminator='\n').writerows(self.rows)
-        self.assertEqual(guards, prior + stream.getvalue() if installed else prior)
+        expected_text = prior + stream.getvalue() if installed else prior
         prior_bytes = (self.out / 'before-guards').read_bytes()
-        self.assertEqual((self.root / self.paths['guards']).read_bytes(),
-            prior_bytes + stream.getvalue().encode('ascii') if installed else prior_bytes)
+        expected_bytes = prior_bytes + stream.getvalue().encode('ascii') if installed else prior_bytes
+        if current_source == effect_source:
+            from tools.tests.test_game_actor_effect_packet_match import installed_guards
+            expected_text += installed_guards(b'').decode('ascii')
+            expected_bytes = installed_guards(expected_bytes)
+        self.assertEqual(guards, expected_text)
+        self.assertEqual((self.root / self.paths['guards']).read_bytes(), expected_bytes)
         for name in set(self.paths) - {'owner', 'elf', 'guards'}:
             self.assertEqual((self.root / self.paths[name]).read_bytes(),
                 (self.out / ('before-' + name)).read_bytes(), name)
