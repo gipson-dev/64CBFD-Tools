@@ -454,6 +454,40 @@ def analyze_velocity_delay_schedule(words):
     return rewritten, sites
 
 
+def guard_rows(words, relocations):
+    rewritten, sites = analyze_velocity_delay_schedule(words)
+    if len(words) != 313 or sites != [176, 193]:
+        raise ValueError('Unexpected complete consumer shape or velocity delay sites')
+    rows = []
+    for index, word in enumerate(words):
+        shift = sum(site + 1 < index for site in sites)
+        inserted = ''
+        if index in sites:
+            replacement = words[index + 1]
+        elif index - 1 in sites:
+            replacement = rewritten[index + shift]
+            inserted = '0x00000000'
+        else:
+            replacement = rewritten[index + shift]
+        if word == replacement and not inserted:
+            continue
+        if relocations.get(index * 4):
+            raise ValueError('Scheduling guard unexpectedly owns a relocation')
+        rows.append(dict(filename='generated_1D43B0', function=FUNCTION,
+            offset='0x%03X' % (index * 4), expected='0x%08X' % word,
+            replacement='0x%08X' % replacement, expected_relocations='-',
+            replacement_relocations='-',
+            note='Restore two velocity-store delay schedules and internal branch distances',
+            insert_after=inserted, insert_after_relocations='-' if inserted else '', omit='false'))
+    return rows
+
+
+def recovered_owner(before):
+    if before.count(ORIGINAL) != 1 or before.count(MARKER) != 1:
+        raise ValueError('Expected exactly one consumer placeholder and declaration marker')
+    return before.replace(MARKER, RECORD + DECLARATIONS + '\n' + MARKER).replace(ORIGINAL, SELECTED)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--profiles', action='store_true')

@@ -421,12 +421,23 @@ class GameActorBurstPacketMatchTests(unittest.TestCase):
             self.assertEqual(struct.unpack_from('>I', expected, size)[0], 12)
             struct.pack_into('>I', expected, size, 268)
             apply_burst_symbol_serialization(expected)
+        from tools.experiments import game_actor_burst_consumer_candidates as consumer
+        if consumer.SELECTED in (self.root / consumer.SOURCE).read_text():
+            from tools.tests.test_game_actor_burst_consumer_match import expected_consumer_image
+            words = struct.unpack_from('>315I', self.rom, consumer.ROM)
+            expected = bytearray(expected_consumer_image(bytes(expected), words))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertEqual(current, bytes(expected))
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
         for name in set(self.paths) - {'source', 'elf'}:
             before = (self.out / ('before-' + name)).read_bytes()
             self.assertEqual(hashlib.sha256(before).hexdigest(), self.baseline[name])
+            if name == 'guards' and consumer.SELECTED in (self.root / consumer.SOURCE).read_text():
+                from tools.tests.test_game_actor_burst_consumer_match import GameActorBurstConsumerMatchTests
+                GameActorBurstConsumerMatchTests.setUpClass()
+                qualified = GameActorBurstConsumerMatchTests('test_09_whole_image_source_guard_history_and_protected_data')
+                qualified.test_09_whole_image_source_guard_history_and_protected_data()
+                continue
             self.assertEqual((self.root / self.paths[name]).read_bytes(), before, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
@@ -522,7 +533,7 @@ void _start(void){int r=run();__asm__ volatile("int $0x80"::"a"(1),"b"(r));__bui
         offset = image.elf_slot_offset(self.before, TABLE, 4)
         self.assertEqual(self.before[offset:offset + 4], struct.pack('>I', source.ENTRY))
         self.assertEqual(struct.unpack_from('>I', self.rom, 0x22ABD0)[0], source.ENTRY)
-        # The provider is still a production placeholder; execute frozen retail, not that stub.
+        # This frozen baseline predates provider recovery; connect original retail.
         functions, _, _ = image.load_elf_functions(str(self.out / 'before-elf'), 'mips-linux-gnu-objdump')
         self.assertEqual(functions['func_1506AC8C'], list(struct.unpack_from('>41I', self.rom, PARENT_ROM)))
         self.assertEqual(functions['memcpy'], memcpy)
@@ -561,7 +572,7 @@ void _start(void){int r=run();__asm__ volatile("int $0x80"::"a"(1),"b"(r));__bui
         self.receipt('connected', cases=cases, original_provider315_parent38_memcpy11_words=True,
             real_table0_mode1_three_iterations_and_all14_holes_unreadable=True,
             RNG_trig_random_factory_animation_are_bounded_hooks=True,
-            provider_production_stub_not_restored_or_claimed=True)
+            original_provider_fixture_is_separate_from_current_production_qualification=True)
 
     def test_13_independent_original_provider_and_bounded_extra_opcodes(self):
         block = (self.out / 'before-callee').read_text().split('glabel func_151A6F00\n', 1)[1].split(

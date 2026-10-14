@@ -1,4 +1,4 @@
-"""Bounded semantic and packet recovery; complete word/state matching is open."""
+"""Raw-C recovery; guarded installation and image gates live in the match suite."""
 import hashlib
 import itertools
 import json
@@ -79,11 +79,12 @@ class GuestBreak(Exception):
 
 class ConsumerOracle(producer.BurstOracle):
     def __init__(self, words, memory, kind=1, slot=255, context=1, phase=0, outcome=0,
-            mutation=0, limit=None):
+            mutation=0, limit=None, memcpy_words=None):
         super().__init__(words, memory, actor=PARAMS, phase=phase,
             symbols=dict(source.SYMBOLS, func_151A6F00=source.ENTRY), entry=source.ENTRY,
-            connected=dict(zip(range(MEMCPY, MEMCPY + 44, 4), struct.unpack_from('>11I',
-                (Path(__file__).resolve().parents[2] / 'conker/conker.us.bin').read_bytes(), 0x22EC0))),
+            connected=dict(zip(range(MEMCPY, MEMCPY + 44, 4), memcpy_words if memcpy_words is not None else
+                struct.unpack_from('>11I', (Path(__file__).resolve().parents[2] /
+                    'conker/conker.us.bin').read_bytes(), 0x22EC0))),
             arguments=(PARAMS, kind, slot, context), outcome=outcome)
         self.kind, self.mutation, self.limit = kind & 255, mutation, limit
         self.records, self.raw_packets, self.raw_animations, self.raw_copies, self.locations = [], [], [], [], {}
@@ -264,8 +265,9 @@ class GameActorBurstConsumerRecoveryTests(unittest.TestCase):
         self.assertEqual((self.meta['pool_bytes'], self.meta['diagnostics']), (0, ''))
         self.assertNotEqual(self.words, self.retail)
         self.assertFalse(any(w >> 26 == 17 and w >> 21 & 31 == 17 for w in self.words))
-        self.receipt('shape', words=313, frame=360, raw_differences=143, installed=False,
-            no_guards_or_padding=True, matching_credit=False)
+        self.receipt('shape', words=313, frame=360, raw_differences=143,
+            raw_C_without_guards_is_not_matching=True,
+            guarded_production_installed=source.SELECTED in (self.root / source.SOURCE).read_text())
 
     def test_02_all_kinds_counts_outcomes_and_callback_mutations(self):
         cases = 0
@@ -344,7 +346,7 @@ class GameActorBurstConsumerRecoveryTests(unittest.TestCase):
             raw_animation_packets_agree=models[0].raw_animations == models[1].raw_animations,
             raw_memcpy_data_agree=models[0].raw_copies == models[1].raw_copies,
             original_locations=models[0].locations, candidate_locations=models[1].locations,
-            production_promotion_rejected=True)
+            unguarded_raw_candidate_not_promoted=True)
 
     def test_06_matching_length_double_literals_are_not_retail_operations(self):
         body = dict(source.candidates())['literals-size30.0-rate15.0f']
@@ -356,6 +358,14 @@ class GameActorBurstConsumerRecoveryTests(unittest.TestCase):
             new_double_precision_instruction_domain_rejected=True)
 
     def test_07_production_and_protected_inputs_are_unchanged(self):
+        if source.SELECTED in (self.root / source.SOURCE).read_text():
+            from tools.tests.test_game_actor_burst_consumer_match import GameActorBurstConsumerMatchTests
+            GameActorBurstConsumerMatchTests.setUpClass()
+            qualified = GameActorBurstConsumerMatchTests('test_09_whole_image_source_guard_history_and_protected_data')
+            qualified.test_09_whole_image_source_guard_history_and_protected_data()
+            self.receipt('protected', installed_via_independent_whole_image_and_exact_guard_gate=True,
+                raw313_word_candidate_still_not_direct_matching=True)
+            return
         for name, path in self.paths.items():
             self.assertEqual((self.root / path).read_bytes(), (self.out / ('before-' + name)).read_bytes(), name)
         self.assertIn(source.ORIGINAL, (self.root / source.SOURCE).read_text())
@@ -537,7 +547,7 @@ void _start(void){finish(run());}
         self.receipt('branch-delay-boundary', measurements=measurements,
             two_real_idle_delay_words_absent_from_candidate=True,
             no_instruction_insertion_guards_or_fake_padding=True,
-            production_promotion_still_rejected=True)
+            unguarded_raw_candidate_not_promoted=True)
 
     def test_13_delay_schedule_diagnostic_compares_every_remaining_word(self):
         diagnostic, sites = source.analyze_velocity_delay_schedule(self.words)
