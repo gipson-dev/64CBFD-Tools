@@ -27,6 +27,7 @@ from tools.tests.test_game_point_transform_match import put, read
 from tools.check_game_data_layout import audit_layout
 from tools.tests.test_game_one_shot_timer_match import symbol_rows
 from tools.tests import game_sine_checkpoint as checkpoint
+from tools.tests import game_cosine_checkpoint
 
 ENTRY, ROM, CODE = source.TARGETS['sinf'][0], source.TARGETS['sinf'][1], 416
 GLOBALS = {0x80085EB0: 0x3EA2F984, 0x80085EB4: 0x40490FDC,
@@ -253,11 +254,13 @@ class GameTrigMatchTests(unittest.TestCase):
                     cases += 1
         self.receipt('sine-faults', fired_prefixes=cases, actual_pc_and_delay_identity=True)
 
-    def native(self, body, label, expected_status=0):
+    def native(self, body, label, expected_status=0, *, function='sinf', expected_fn=reference,
+               prelude='', initialize=''):
         values = inputs()
         # i386 returns floats through x87, which quiets the retail signaling NaN.
         # The independent return-only probe below must establish this ABI effect.
-        expected = [0x7FC10000 if reference(value) == 0x7F810000 else reference(value) for value in values]
+        answers = [expected_fn(value) for value in values]
+        expected = [0x7FC10000 if value == 0x7F810000 else value for value in answers]
         declarations = 'typedef unsigned int u32; typedef int s32; typedef float f32;\n'
         declarations += 'f32 D_80085EB0,D_80085EB4,D_80085EB8,D_80085EBC,D_8002C920,D_80098D90[5];\n'
         definitions = 'static u32 values[]={' + ','.join('0x%Xu' % v for v in values) + '};\n'
@@ -267,9 +270,9 @@ class GameTrigMatchTests(unittest.TestCase):
         assignments += [('D_80098D90[%d]' % i, v) for i, v in enumerate(COEFFICIENTS)]
         init = '\n'.join('u.u=0x%Xu; %s=u.f;' % (value, name) for name, value in assignments)
         probe = '__attribute__((noipa)) f32 abi_return(void) { return D_8002C920; }\n'
-        program = declarations + definitions + body + probe + '\nint main(void) { union {u32 u; f32 f;} u,r; u32 i;\n' + init
+        program = declarations + prelude + definitions + body + probe + '\nint main(void) { union {u32 u; f32 f;} u,r; u32 i;\n' + init + initialize
         program += '\nif(*(u32 *)&D_8002C920!=0x7F810000u){return 80;}\nr.f=abi_return();\nif(r.u!=0x7FC10000u){return 81;}\n'
-        program += '\nfor(i=0;i<sizeof(values)/sizeof(values[0]);i++){u.u=values[i];r.f=sinf(u.f);if(r.u!=expected[i]){u32 mismatch[3]={values[i],expected[i],r.u};__asm__ volatile("int $0x80"::"a"(4),"b"(1),"c"(mismatch),"d"(12):"memory");return 1;}}return 0;}\n'
+        program += '\nfor(i=0;i<sizeof(values)/sizeof(values[0]);i++){u.u=values[i];r.f=' + function + '(u.f);if(r.u!=expected[i]){u32 mismatch[3]={values[i],expected[i],r.u};__asm__ volatile("int $0x80"::"a"(4),"b"(1),"c"(mismatch),"d"(12):"memory");return 1;}}return 0;}\n'
         program += 'void _start(void) { int result=main(); __asm__ volatile("int $0x80" : : "a"(1), "b"(result)); __builtin_unreachable(); }\n'
         path = self.out / ('native-' + label + '.c')
         path.write_text(program)
@@ -336,15 +339,19 @@ class GameTrigMatchTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256((self.root / source.PATHS['sinf']).read_bytes()).hexdigest(), SINE_SOURCE_SHA)
         for key, path in source.PATHS.items():
             if key not in ('elf', 'sinf'):
-                self.assertEqual((self.root / path).read_bytes(), (self.out / ('before-' + key)).read_bytes(), key)
+                current = game_cosine_checkpoint.previous_input((self.root / path).read_bytes(), path, self.root)
+                self.assertEqual(current, (self.out / ('before-' + key)).read_bytes(), key)
         before = (self.out / 'before-elf').read_bytes()
         expected = expected_image(before, self.rom[ROM:ROM + CODE])
         at = image.elf_slot_offset(before, ENTRY, CODE)
         current = (self.root / source.PATHS['elf']).read_bytes()
+        raw_hash = hashlib.sha256(current).hexdigest()
+        current = game_cosine_checkpoint.previous_input(current, source.PATHS['elf'], self.root)
         self.assertEqual(current, expected, 'Only sine slot, extent, six type annotations and two closed symbol permutations may change')
         data = audit_layout(self.root / source.PATHS['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         self.receipt('sine-image', ELF_sha256=hashlib.sha256(current).hexdigest(),
+                     raw_installed_ELF_sha256=raw_hash, pinned_later_cosine_projection=True,
                      sine_sha256=hashlib.sha256((self.root / source.PATHS['sinf']).read_bytes()).hexdigest(),
                      changed_slot_bytes=sum(a != b for a, b in zip(before[at:at + CODE], current[at:at + CODE])),
                      symbol_extent_before=20, symbol_extent_after=416,
