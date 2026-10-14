@@ -239,7 +239,7 @@ class GameByteExactDonorTests(unittest.TestCase):
 
     def test_07_whole_elf_and_guards_unchanged_only_three_C_rows(self):
         self.assertEqual(donor_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root), (self.out / 'before-elf').read_bytes())
-        self.assertEqual((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), (self.out / 'before-guards').read_bytes())
+        self.assertEqual(donor_checkpoint.previous_input((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), 'conker/retail_word_patches.us.csv', self.root), (self.out / 'before-guards').read_bytes())
         installed = []
         for name, spec in source.TARGETS.items():
             before = (self.out / ('before-' + spec['owner'])).read_text()

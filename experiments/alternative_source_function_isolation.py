@@ -15,11 +15,11 @@ import re
 import subprocess
 import sys
 
-from tools.experiments.alternative_source_c_inventory import DEFINITIONS, definitions, masked_source
+from tools.experiments.alternative_source_c_inventory import FUNCTION_DECLARATOR, definitions, masked_source
 from tools.pad_generated_object import parse_object
 
 
-PROTOTYPES = re.compile(DEFINITIONS.pattern.removesuffix(r'\{') + r';')
+PROTOTYPES = re.compile(FUNCTION_DECLARATOR + r'\s*;')
 EXTERNS = re.compile(r'(?m)^[ \t]*extern\s+(?:[A-Za-z_]\w*\s+)+(?:\*\s*)*'
     r'([A-Za-z_]\w*)\s*(?:\[[^\];{}]*\]\s*)*;')
 
@@ -60,11 +60,26 @@ def isolate(source, name, drop_unused_interfaces=False):
             lo, hi = row['source_start'], row['source_end']
             edits.append((lo, hi, blanks(source[lo:hi])))
         else:
-            opening = masked.index('{', row['source_start'], row['source_end'])
-            edits.append((opening, row['source_end'], ';'))
+            if row['old_style']:
+                edits.append((row['source_start'], row['source_end'], row['declaration']))
+            else:
+                opening = masked.index('{', row['source_start'], row['source_end'])
+                edits.append((opening, row['source_end'], ';'))
     for lo, hi, replacement in sorted(edits, reverse=True):
         result = result[:lo] + replacement + result[hi:]
     return result
+
+
+def preprocessor_flags(source, flags, c_only=False):
+    if c_only:
+        masked = masked_source(source)
+        if re.search(r'\b(?:GLOBAL_ASM|INCLUDE_ASM|INCLUDE_RODATA|asmproc)\b', masked):
+            raise ValueError('C-only preprocessing cannot contain assembly wrappers')
+        # The assembly scheduler rejects -O1 -g3, but has no scheduling work
+        # in a C-only input. IDO still receives the complete compiler profile.
+        if '-g3' in flags and '-O2' not in flags:
+            return [flag for flag in flags if flag != '-g3']
+    return list(flags)
 
 
 def compile_one(root, snapshot, output, item):
@@ -81,9 +96,10 @@ def compile_one(root, snapshot, output, item):
     raw.write_text(selected)
     obj.unlink(missing_ok=True)
     flags = item['compiler_flags']
+    processor_flags = preprocessor_flags(selected, flags, item.get('c_only', False))
     extra_definitions = []
     processor = root / 'tools/asm-processor/asm_processor.py'
-    pre = subprocess.run([sys.executable, str(processor), *flags, str(raw)],
+    pre = subprocess.run([sys.executable, str(processor), *processor_flags, str(raw)],
         cwd=snapshot, capture_output=True, text=True)
     diagnostics = pre.stdout + pre.stderr if pre.returncode else pre.stderr
     if pre.returncode:
@@ -121,6 +137,7 @@ def compile_one(root, snapshot, output, item):
         unused_interfaces_omitted=item.get('drop_unused_interfaces', False),
         extra_definitions=extra_definitions,
         status=status, returncode=returncode, compiler_flags=flags,
+        preprocessor_flags=processor_flags, c_only=item.get('c_only', False),
         object=str(obj), diagnostics_file=str(log),
         object_sha256=hashlib.sha256(obj.read_bytes()).hexdigest() if status == 'object_compiled' else None,
         not_linked_or_active_ABI_owner_qualified=True)

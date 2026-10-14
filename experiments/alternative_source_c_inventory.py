@@ -19,9 +19,11 @@ import sys
 from tools.experiments.alternative_source_byte_match_audit import code_name
 from tools.match_progress import function_vram, load_symbol_addrs
 
-LEXEMES = re.compile(r'/\*[\s\S]*?\*/|//[^\n]*|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'')
-DEFINITIONS = re.compile(r'(?m)^[ \t]*(?:(?:[A-Za-z_]\w*\s+)|(?:[A-Za-z_]\w*\s*(?:\*\s*)+))+'
-    r'([A-Za-z_]\w*)\s*\([^;{}]*\)\s*\{')
+LEXEMES = re.compile(r'/\*[\s\S]*?\*/|//[^\n]*|"(?:\\(?:\r?\n|[^\r\n])|[^"\\\r\n])*"|'
+    r'\'(?:\\(?:\r?\n|[^\r\n])|[^\'\\\r\n])*\'')
+FUNCTION_DECLARATOR = (r'(?m)^[ \t]*(?:(?:[A-Za-z_]\w*\s+)|(?:[A-Za-z_]\w*\s*(?:\*\s*)+))+'
+    r'([A-Za-z_]\w*)\s*\([^;{}]*\)')
+DEFINITIONS = re.compile(FUNCTION_DECLARATOR + r'\s*(?:[A-Za-z_]\w*[\w\s*\[\],()]*;\s*)*\{')
 
 
 def masked_source(source):
@@ -43,6 +45,13 @@ def definitions(source):
         if name in ('if', 'while', 'for', 'switch'):
             continue
         opening = masked.index('{', match.start())
+        argument_start = masked.index('(', match.end(1))
+        argument_depth, argument_end = 0, None
+        for position in range(argument_start, opening):
+            argument_depth += (masked[position] == '(') - (masked[position] == ')')
+            if argument_depth == 0:
+                argument_end = position
+                break
         depth, end = 0, None
         for position in range(opening, len(masked)):
             if masked[position] == '{':
@@ -57,6 +66,8 @@ def definitions(source):
         contents = re.sub(r'\s+', '', masked[opening + 1:end - 1])
         records.append(dict(function=name, line=source.count('\n', 0, match.start()) + 1,
             source_start=match.start(), source_end=end,
+            old_style=bool(masked[argument_end + 1:opening].strip()),
+            declaration=source[match.start():match.end(1)] + '();',
             trivial_body=contents in ('', 'return;', 'return0;', 'returnNULL;'),
             conditional_region=depths[bisect_right(boundaries, match.start()) - 1] != 0))
     return records

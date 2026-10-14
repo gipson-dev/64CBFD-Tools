@@ -405,6 +405,10 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         self.assertTrue(current == expected, 'Whole ELF differs from the declared consumer slot/size changes')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
         guards = (self.root / self.paths['guards']).read_text()
+        guard_bytes = (self.root / self.paths['guards']).read_bytes()
+        # Keep independently corrupted text visible to the old text control.
+        if guards == guard_bytes.decode().replace('\r\n', '\n'):
+            guards = donor_checkpoint.previous_input(guard_bytes, self.paths['guards'], self.root).decode().replace('\r\n', '\n')
         prior = (self.out / 'before-guards').read_text()
         stream = io.StringIO(newline='')
         csv.DictWriter(stream, fieldnames=self.fields, lineterminator='\n').writerows(self.rows)

@@ -13,6 +13,42 @@ from tools.experiments.alternative_source_function_isolation import isolate
 
 
 class AlternativeSourceIsolationTests(unittest.TestCase):
+    def test_c_only_profile_preserves_ido_flags_and_rejects_asm_wrappers(self):
+        flags = ['-O1', '-g3']
+        text = 'int selected(void) { return 1; }\n'
+        self.assertEqual(source.preprocessor_flags(text, flags, True), ['-O1'])
+        self.assertEqual(source.preprocessor_flags(text, flags), flags)
+        self.assertEqual(flags, ['-O1', '-g3'])
+        for wrapper in ('#pragma GLOBAL_ASM("file.s")', 'INCLUDE_ASM("dir", helper);',
+                'INCLUDE_RODATA("dir", pool);', '#pragma asmproc recurse'):
+            with self.assertRaisesRegex(ValueError, 'assembly wrappers'):
+                source.preprocessor_flags(text + wrapper, flags, True)
+        self.assertEqual(source.preprocessor_flags(text + '// GLOBAL_ASM("file.s")', flags, True), ['-O1'])
+
+    def test_c_only_compile_uses_original_ido_profile(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / 'selected.c'
+            path.write_text('int selected(void) { return 1; }\n')
+            out = root / 'output'
+            out.mkdir()
+            item = dict(path=path.name, function='selected',
+                source_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                compiler_flags=['-O1', '-g3'], c_only=True)
+            calls = []
+            def command(args, **kwargs):
+                calls.append(args)
+                return SimpleNamespace(returncode=0, stdout='', stderr='')
+            with patch.object(source.subprocess, 'run', side_effect=command):
+                result = source.compile_one(root, root, out, item)
+            self.assertIn('-O1', calls[0])
+            self.assertNotIn('-g3', calls[0])
+            self.assertIn('-O1', calls[1])
+            self.assertIn('-g3', calls[1])
+            self.assertEqual(result['compiler_flags'], ['-O1', '-g3'])
+            self.assertEqual(result['preprocessor_flags'], ['-O1'])
+            self.assertTrue(result['c_only'])
+
     def test_only_unrelated_bodies_become_unchanged_declarations(self):
         source = '''#include "private.h"
 typedef struct { int x; } Record;
@@ -146,6 +182,17 @@ int selected(void) { return (int)used_global[0] + storage[1]; }
         result = isolate('int selected(void) { return 1; }\nvoid * *other(void) { return 0; }\n', 'selected')
         self.assertEqual([row['function'] for row in definitions(result)], ['selected'])
         self.assertIn('void * *other(void) ;', result)
+
+    def test_old_style_neighbor_keeps_nonprototype_call_interface(self):
+        text = '''float old(x)
+    float x;
+{ return x; }
+int selected(void) { return (int)old(3.0f); }
+'''
+        result = isolate(text, 'selected', True)
+        self.assertIn('float old();', result)
+        self.assertNotIn('float x;', result)
+        self.assertEqual([row['function'] for row in definitions(result)], ['selected'])
 
     def test_collected_records_keep_body_and_profile_pins(self):
         with tempfile.TemporaryDirectory() as directory:

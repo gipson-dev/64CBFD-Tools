@@ -29,6 +29,25 @@ const char * const * third(void) { return 0; }
 '''
         self.assertEqual([row['function'] for row in definitions(text)], ['first', 'second', 'third'])
 
+    def test_old_style_definitions_and_argument_declarations(self):
+        text = '''struct Record *old(a, b)
+    struct Record *a;
+    unsigned char b;
+{ return a; }
+int prototype(int);
+int modern(int x) { return x; }
+'''
+        rows = definitions(text)
+        self.assertEqual([row['function'] for row in rows], ['old', 'modern'])
+        self.assertEqual([row['old_style'] for row in rows], [True, False])
+        self.assertEqual(rows[0]['declaration'], 'struct Record *old();')
+
+    def test_literals_cannot_cross_unescaped_lines_but_continuations_can(self):
+        text = "target's prose\nvoid real(void) { return; }\nelsewhere's prose\n"
+        self.assertEqual([row['function'] for row in definitions(text)], ['real'])
+        text = 'const char *s = "before\\\nvoid fake(void) { } after";\nvoid real(void) { }\n'
+        self.assertEqual([row['function'] for row in definitions(text)], ['real'])
+
     def test_uncompiled_and_trivial_definitions_are_discovery_only(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

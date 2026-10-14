@@ -77,12 +77,12 @@ class IsolatedByteExactDonorTests(unittest.TestCase):
         for name in set(previous) - {'.game', '.symtab', '.strtab'}:
             self.assertEqual(previous[name], current[name], name)
         for key, path in (('guards', 'conker/retail_word_patches.us.csv'), ('makefile', 'conker/Makefile')):
-            self.assertEqual((self.root / path).read_bytes(), (self.out / ('before-' + key)).read_bytes())
+            self.assertEqual(checkpoint.previous_input((self.root / path).read_bytes(), path, self.root), (self.out / ('before-' + key)).read_bytes())
         progress = (self.out / 'before-progress').read_bytes()
         row = next(line for line in progress.splitlines(keepends=True) if b',func_150B003C,' in line)
         self.assertTrue(row.endswith(b',asm\n'))
         progress = progress.replace(row, row.replace(b',asm\n', b',c\n'))
-        self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), progress)
+        self.assertEqual(checkpoint.commented_notification_checkpoint.previous_input((self.root / 'conker/progress.csv').read_bytes(), 'conker/progress.csv', self.root), progress)
         data = audit_layout(after_path, self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         (self.out / 'image-transition.json').write_text(json.dumps(dict(

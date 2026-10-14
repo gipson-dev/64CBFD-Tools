@@ -34,7 +34,7 @@ class RemainingByteExactDonorTests(unittest.TestCase):
         for owner in sorted({value[0] for value in source.TARGETS.values()}):
             flags = ('-g',) if owner.startswith('libultra/audio') else ('-O2', '-g3')
             before = checkpoint.fixture(self.root, 'before', owner).decode()
-            current = (self.root / source.owner_path(owner)).read_text()
+            current = unlinked_donor_checkpoint.previous_input((self.root / source.owner_path(owner)).read_bytes(), source.owner_path(owner), self.root).decode()
             self.assertEqual(current.encode(), checkpoint.fixture(self.root, 'after', owner))
             old, w0 = source.compile_owner(self.root, self.out, before, 'audit-before-' + owner.replace('/', '_'), flags)
             new, w1 = source.compile_owner(self.root, self.out, current, 'audit-after-' + owner.replace('/', '_'), flags)

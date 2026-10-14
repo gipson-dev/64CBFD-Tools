@@ -141,7 +141,7 @@ class UnlinkedByteExactDonorTests(unittest.TestCase):
             'Only the nine complete retail slots may change')
         for name in set(old_sections) - {'.game', '.symtab', '.strtab'}:
             self.assertEqual(new_sections[name], old_sections[name], name)
-        guards = (self.root / 'conker/retail_word_patches.us.csv').read_bytes()
+        guards = isolated_donor_checkpoint.previous_input((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), 'conker/retail_word_patches.us.csv', self.root)
         self.assertEqual(guards, (self.out / 'before-guards').read_bytes())
         expected_progress = (self.out / 'before-progress').read_bytes()
         for name in ('func_150ED234', 'func_150FFBDC'):

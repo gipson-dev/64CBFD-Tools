@@ -37,6 +37,7 @@ def fixture(root, stage, key):
 
 
 def previous_owner(current, owner, root):
+    current = unlinked_donor_checkpoint.previous_input(current.encode(), 'conker/src/' + owner + '.c', root).decode()
     if hashlib.sha256(current.encode()).hexdigest() == AFTER[owner]:
         return fixture(root, 'before', owner).decode()
     return current

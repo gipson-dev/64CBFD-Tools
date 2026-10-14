@@ -80,6 +80,9 @@ def screen(reference, snapshot, receipt, output):
             record = dict(function=name, path=artifact['path'], current_language=row['language'],
                 section=row['section'], raw_words=info['size'] // 4, retail_words=count,
                 source_sha256=artifact['source_sha256'], object_sha256=artifact['object_sha256'])
+            for field in ('compiler_flags', 'variant', 'source_line', 'commented_body_sha256', 'generated_input_sha256'):
+                if field in artifact:
+                    record[field] = artifact[field]
             if unresolved:
                 record.update(status='needs_symbol_or_pool_binding', unresolved=unresolved)
                 results.append(record)
