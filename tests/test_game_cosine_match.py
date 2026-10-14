@@ -268,7 +268,7 @@ class GameCosineMatchTests(unittest.TestCase):
         at = sine.image.elf_slot_offset(before, ENTRY, SLOT)
         self.receipt('image', ELF_sha256=hashlib.sha256(current).hexdigest(),
                      changed_slot_bytes=sum(a != b for a, b in zip(before[at:at + SLOT], current[at:at + SLOT])),
-                     extent_before=20, extent_after=340, exact_symbol_groups=2, symbol_definition_changes=0,
+                     extent_before=20, extent_after=340, exact_symbol_groups=2, non_target_symbol_definition_changes=0,
                      every_other_ELF_byte_fixed=True, protected_data=data)
 
     def test_08_effective_current_and_immutable_input_controls(self):
