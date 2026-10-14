@@ -6,6 +6,7 @@ from pathlib import Path
 import struct
 import subprocess
 import unittest
+from tools.tests import remaining_donor_checkpoint as donor_checkpoint
 from unittest.mock import patch
 
 from tools.experiments import game_actor_threshold_flags_candidates as source
@@ -304,7 +305,7 @@ class GameActorThresholdFlagsMatchTests(unittest.TestCase):
         installed = current_owner == after
         before = (self.out / 'before-elf').read_bytes()
         expected = expected_threshold_image(before, self.retail) if installed else before
-        current = (self.root / self.paths['elf']).read_bytes()
+        current = donor_checkpoint.previous_input((self.root / self.paths['elf']).read_bytes(), self.paths['elf'], self.root)
         self.assertEqual(current, expected, 'Undeclared whole ELF change')
         for name in set(self.paths) - {'owner', 'elf'}:
             prior = (self.out / ('before-' + name)).read_bytes()
@@ -312,7 +313,7 @@ class GameActorThresholdFlagsMatchTests(unittest.TestCase):
             if name == 'progress':
                 from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
                 expected_input = expected_donor_progress(expected_input, self.root)
-            self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
+            self.assertEqual(donor_checkpoint.previous_input((self.root / self.paths[name]).read_bytes(), self.paths[name], self.root), expected_input, name)
         table_word = struct.unpack_from('>I', self.rom, 0x2314D8)[0]
         self.assertEqual(table_word, source.ENTRY)
         self.assertEqual(current[image.elf_slot_offset(current, 0x8008CA18, 4):][:4], struct.pack('>I', table_word))

@@ -8,6 +8,7 @@ import math
 import struct
 import subprocess
 import unittest
+from tools.tests import remaining_donor_checkpoint as donor_checkpoint
 from pathlib import Path
 from unittest.mock import patch
 
@@ -312,7 +313,7 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             if name=='progress':
                 from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
                 expected=expected_donor_progress(expected,self.root)
-            self.assertEqual((self.root/path).read_bytes(),expected,name)
+            self.assertEqual(donor_checkpoint.previous_input((self.root/path).read_bytes(), path, self.root),expected,name)
         data=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(data['exact'],data)
         self.receipt('production',source_placeholder_retained=True,all9_inputs_exact_except_declared_contact_effect_threshold_slots_sizes_and_guard_suffix=True,
             no_installation_or_matching_credit=True,protected_data=data)

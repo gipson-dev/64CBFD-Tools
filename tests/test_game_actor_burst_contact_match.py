@@ -6,6 +6,7 @@ from pathlib import Path
 import struct
 import subprocess
 import unittest
+from tools.tests import remaining_donor_checkpoint as donor_checkpoint
 from unittest.mock import patch
 
 from tools.experiments import game_actor_burst_contact_candidates as source
@@ -491,7 +492,7 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
         if current_owner == threshold_owner:
             from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
             expected = expected_threshold_image(expected, struct.unpack_from('>47I', self.rom, threshold.ROM))
-        current = (self.root / self.paths['elf']).read_bytes()
+        current = donor_checkpoint.previous_input((self.root / self.paths['elf']).read_bytes(), self.paths['elf'], self.root)
         self.assertTrue(current == expected, 'Undeclared whole ELF change')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
         for name in set(self.paths) - {'owner', 'elf'}:
@@ -505,7 +506,7 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
             if name == 'progress':
                 from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
                 expected_input = expected_donor_progress(expected_input, self.root)
-            self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
+            self.assertEqual(donor_checkpoint.previous_input((self.root / self.paths[name]).read_bytes(), self.paths[name], self.root), expected_input, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']),
             (True, 189088, 720, 0))

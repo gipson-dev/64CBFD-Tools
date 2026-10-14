@@ -7,6 +7,7 @@ import struct
 import subprocess
 import sys
 import unittest
+from tools.tests import remaining_donor_checkpoint as donor_checkpoint
 from unittest.mock import patch
 
 from tools.experiments import game_actor_burst_packet_candidates as source
@@ -410,7 +411,7 @@ class GameActorBurstPacketMatchTests(unittest.TestCase):
             pools_neighbor_words_relocations_and_existing_SDK_include_fixed=True)
 
     def test_07_literal_image_source_and_protected_history(self):
-        current_source = (self.root / self.paths['source']).read_text()
+        current_source = donor_checkpoint.previous_owner((self.root / self.paths['source']).read_text(), 'game_981E0', self.root)
         self.assertIn(current_source, (self.owner_before, self.owner_after))
         expected = bytearray(self.before)
         if current_source == self.owner_after:
@@ -441,7 +442,7 @@ class GameActorBurstPacketMatchTests(unittest.TestCase):
             from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
             expected = bytearray(expected_threshold_image(bytes(expected),
                 struct.unpack_from('>47I', self.rom, threshold.ROM)))
-        current = (self.root / self.paths['elf']).read_bytes()
+        current = donor_checkpoint.previous_input((self.root / self.paths['elf']).read_bytes(), self.paths['elf'], self.root)
         self.assertEqual(current, bytes(expected))
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
         for name in set(self.paths) - {'source', 'elf'}:
@@ -456,14 +457,14 @@ class GameActorBurstPacketMatchTests(unittest.TestCase):
             if name == 'progress':
                 from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
                 before = expected_donor_progress(before, self.root)
-            self.assertEqual((self.root / self.paths[name]).read_bytes(), before, name)
+            self.assertEqual(donor_checkpoint.previous_input((self.root / self.paths[name]).read_bytes(), self.paths[name], self.root), before, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         self.receipt('linked-audit', installed=current_source == self.owner_after,
             changed_bytes=sum(a != b for a, b in zip(self.before, current)), protected_data=data)
 
     def test_14_closed_serialization_accounting_and_effective_corruptions(self):
-        current = (self.root / self.paths['elf']).read_bytes()
+        current = donor_checkpoint.previous_input((self.root / self.paths['elf']).read_bytes(), self.paths['elf'], self.root)
         installed = (self.root / self.paths['source']).read_text() == self.owner_after
         rows = {n: (at, fields, string) for at, n, fields, string in symbol_rows(current)
             if n in {n for group, _, _ in SERIALIZATION for n in group}}

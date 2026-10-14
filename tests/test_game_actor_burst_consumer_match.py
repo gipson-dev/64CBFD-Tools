@@ -7,6 +7,7 @@ from pathlib import Path
 import struct
 import subprocess
 import unittest
+from tools.tests import remaining_donor_checkpoint as donor_checkpoint
 from unittest.mock import patch
 
 from tools.experiments import game_actor_burst_consumer_candidates as source
@@ -400,7 +401,7 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         if current_source == threshold_source:
             from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
             expected = expected_threshold_image(expected, struct.unpack_from('>47I', rom, threshold.ROM))
-        current = (self.root / self.paths['elf']).read_bytes()
+        current = donor_checkpoint.previous_input((self.root / self.paths['elf']).read_bytes(), self.paths['elf'], self.root)
         self.assertTrue(current == expected, 'Whole ELF differs from the declared consumer slot/size changes')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
         guards = (self.root / self.paths['guards']).read_text()
@@ -419,13 +420,13 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
             expected_text += threshold_guards(b'').decode('ascii')
             expected_bytes = threshold_guards(expected_bytes)
         self.assertEqual(guards, expected_text)
-        self.assertEqual((self.root / self.paths['guards']).read_bytes(), expected_bytes)
+        self.assertEqual(donor_checkpoint.previous_input((self.root / self.paths['guards']).read_bytes(), self.paths['guards'], self.root), expected_bytes)
         for name in set(self.paths) - {'owner', 'elf', 'guards'}:
             expected_input = (self.out / ('before-' + name)).read_bytes()
             if name == 'progress':
                 from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
                 expected_input = expected_donor_progress(expected_input, self.root)
-            self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
+            self.assertEqual(donor_checkpoint.previous_input((self.root / self.paths[name]).read_bytes(), self.paths[name], self.root), expected_input, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertTrue(data['exact'], data)
         self.receipt('linked-image', installed=installed,

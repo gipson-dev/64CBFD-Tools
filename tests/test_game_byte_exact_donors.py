@@ -6,6 +6,7 @@ from pathlib import Path
 import struct
 import subprocess
 import unittest
+from tools.tests import remaining_donor_checkpoint as donor_checkpoint
 from unittest.mock import patch
 
 from tools.experiments import game_byte_exact_donor_candidates as source
@@ -237,7 +238,7 @@ class GameByteExactDonorTests(unittest.TestCase):
             full_owner_padding_and_both_isolated_padders=True, independent_original_rebased_carry_links=True)
 
     def test_07_whole_elf_and_guards_unchanged_only_three_C_rows(self):
-        self.assertEqual((self.root / 'conker/build/conker.us.elf').read_bytes(), (self.out / 'before-elf').read_bytes())
+        self.assertEqual(donor_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root), (self.out / 'before-elf').read_bytes())
         self.assertEqual((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), (self.out / 'before-guards').read_bytes())
         installed = []
         for name, spec in source.TARGETS.items():

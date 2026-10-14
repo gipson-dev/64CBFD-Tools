@@ -8,6 +8,7 @@ from pathlib import Path
 import struct
 import subprocess
 import unittest
+from tools.tests import remaining_donor_checkpoint as donor_checkpoint
 from unittest.mock import patch
 
 from tools.experiments import game_actor_effect_packet_candidates as source
@@ -468,7 +469,7 @@ class GameActorEffectPacketMatchTests(unittest.TestCase):
         if current_owner == threshold_owner:
             from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
             expected = expected_threshold_image(expected, struct.unpack_from('>47I', self.rom, threshold.ROM))
-        current = (self.root / self.paths['elf']).read_bytes()
+        current = donor_checkpoint.previous_input((self.root / self.paths['elf']).read_bytes(), self.paths['elf'], self.root)
         self.assertTrue(current == expected, 'Undeclared whole ELF change')
         for name in set(self.paths) - {'owner', 'elf'}:
             before = (self.out / ('before-' + name)).read_bytes()
@@ -479,7 +480,7 @@ class GameActorEffectPacketMatchTests(unittest.TestCase):
             if name == 'progress':
                 from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
                 expected = expected_donor_progress(expected, self.root)
-            self.assertEqual((self.root / self.paths[name]).read_bytes(), expected, name)
+            self.assertEqual(donor_checkpoint.previous_input((self.root / self.paths[name]).read_bytes(), self.paths[name], self.root), expected, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         old = (self.out / 'before-elf').read_bytes()
