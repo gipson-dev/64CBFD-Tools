@@ -453,6 +453,9 @@ class GameActorBurstPacketMatchTests(unittest.TestCase):
                 qualified = GameActorBurstConsumerMatchTests('test_09_whole_image_source_guard_history_and_protected_data')
                 qualified.test_09_whole_image_source_guard_history_and_protected_data()
                 continue
+            if name == 'progress':
+                from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
+                before = expected_donor_progress(before, self.root)
             self.assertEqual((self.root / self.paths[name]).read_bytes(), before, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))

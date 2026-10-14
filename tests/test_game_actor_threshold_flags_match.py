@@ -308,7 +308,11 @@ class GameActorThresholdFlagsMatchTests(unittest.TestCase):
         self.assertEqual(current, expected, 'Undeclared whole ELF change')
         for name in set(self.paths) - {'owner', 'elf'}:
             prior = (self.out / ('before-' + name)).read_bytes()
-            self.assertEqual((self.root / self.paths[name]).read_bytes(), installed_guards(prior) if name == 'guards' and installed else prior, name)
+            expected_input = installed_guards(prior) if name == 'guards' and installed else prior
+            if name == 'progress':
+                from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
+                expected_input = expected_donor_progress(expected_input, self.root)
+            self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
         table_word = struct.unpack_from('>I', self.rom, 0x2314D8)[0]
         self.assertEqual(table_word, source.ENTRY)
         self.assertEqual(current[image.elf_slot_offset(current, 0x8008CA18, 4):][:4], struct.pack('>I', table_word))

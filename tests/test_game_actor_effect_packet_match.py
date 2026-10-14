@@ -476,6 +476,9 @@ class GameActorEffectPacketMatchTests(unittest.TestCase):
             if name == 'guards' and current_owner == threshold_owner:
                 from tools.tests.test_game_actor_threshold_flags_match import installed_guards as threshold_guards
                 expected = threshold_guards(expected)
+            if name == 'progress':
+                from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
+                expected = expected_donor_progress(expected, self.root)
             self.assertEqual((self.root / self.paths[name]).read_bytes(), expected, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))

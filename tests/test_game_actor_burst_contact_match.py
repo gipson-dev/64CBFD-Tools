@@ -502,6 +502,9 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
             if name == 'guards' and current_owner == threshold_owner:
                 from tools.tests.test_game_actor_threshold_flags_match import installed_guards as threshold_guards
                 expected_input = threshold_guards(expected_input)
+            if name == 'progress':
+                from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
+                expected_input = expected_donor_progress(expected_input, self.root)
             self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']),

@@ -309,6 +309,9 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             if name=='guards' and threshold_installed:
                 from tools.tests.test_game_actor_threshold_flags_match import installed_guards as threshold_guards
                 expected=threshold_guards(expected)
+            if name=='progress':
+                from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
+                expected=expected_donor_progress(expected,self.root)
             self.assertEqual((self.root/path).read_bytes(),expected,name)
         data=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(data['exact'],data)
         self.receipt('production',source_placeholder_retained=True,all9_inputs_exact_except_declared_contact_effect_threshold_slots_sizes_and_guard_suffix=True,

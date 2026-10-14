@@ -151,7 +151,7 @@ def audit(reference, candidate):
         text_sections_including_unconverted_assembly=text_sections,
         canonical_catalogue_by_section=dict(Counter(record['section'] for record in all_reference)),
         potential_function_donors=potential, candidate_functions=matched,
-        not_a_runnable_or_normally_linked_build=True, no_source_adoption=True)
+        not_a_runnable_or_normally_linked_build=True, this_audit_is_read_only=True)
 
 
 def main():
@@ -171,7 +171,7 @@ def main():
         print(group, json.dumps(result[group], sort_keys=True))
     print('Unanchored C rows:', len(result['unanchored_C_rows']))
     print('Potential individual function donors:', len(result['potential_function_donors']))
-    print('Diagnostic comparison only; no source adopted')
+    print('Diagnostic comparison only; this audit does not modify or adopt source')
 
 
 if __name__ == '__main__':

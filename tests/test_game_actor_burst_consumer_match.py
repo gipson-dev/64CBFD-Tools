@@ -421,8 +421,11 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         self.assertEqual(guards, expected_text)
         self.assertEqual((self.root / self.paths['guards']).read_bytes(), expected_bytes)
         for name in set(self.paths) - {'owner', 'elf', 'guards'}:
-            self.assertEqual((self.root / self.paths[name]).read_bytes(),
-                (self.out / ('before-' + name)).read_bytes(), name)
+            expected_input = (self.out / ('before-' + name)).read_bytes()
+            if name == 'progress':
+                from tools.experiments.game_byte_exact_donor_candidates import expected_donor_progress
+                expected_input = expected_donor_progress(expected_input, self.root)
+            self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertTrue(data['exact'], data)
         self.receipt('linked-image', installed=installed,

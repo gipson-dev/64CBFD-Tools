@@ -43,7 +43,7 @@ class AlternativeSourceByteMatchAuditTests(unittest.TestCase):
         baseline = source.audit(reference, candidate)
         self.assertFalse(baseline['unanchored_C_rows'])
         self.assertTrue(baseline['not_a_runnable_or_normally_linked_build'])
-        self.assertTrue(baseline['no_source_adoption'])
+        self.assertTrue(baseline['this_audit_is_read_only'])
         self.assertEqual(baseline['candidate']['total']['functions'], 1478)
         self.assertEqual(baseline['candidate']['total']['strict_full_slot'], 1478)
         load = source.matcher.load_elf_functions
