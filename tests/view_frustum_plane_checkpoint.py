@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_view_frustum_plane_candidates as source
+from tools.tests import game_sine_checkpoint
 
 AFTER = {
     'elf': '79eb4f3261dcc2cff366d6e1dcddef48cb1c6e6b923821272d3b56c709a82e10',
@@ -20,6 +21,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = game_sine_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):
@@ -32,7 +34,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root / path).read_bytes()
+        data = game_sine_checkpoint.previous_input((root / path).read_bytes(), path, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed view-plane input: ' + key
         target = root / source.BUILD / ('after-' + key)
         if not target.exists():

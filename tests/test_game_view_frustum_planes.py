@@ -24,6 +24,7 @@ from tools.tests.test_game_point_transform_match import put, read
 from tools.tests.game_animation_timeline_oracle import bits, floating
 from tools.check_game_data_layout import audit_layout
 from tools.tests import view_frustum_plane_checkpoint as checkpoint
+from tools.tests import game_sine_checkpoint
 
 COS, SIN, BASE, SCALE_H, SCALE_V = 0x15047C00, 0x15047D60, 0x800BE628, 0x80096900, 0x80096904
 VIEWS, ALTERNATE = 0x24000, 0x28000
@@ -370,6 +371,8 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
         for key in ('progress', 'makefile', 'functions', 'structs', 'variables', 'original'):
             self.assertEqual((self.root / source.PATHS[key]).read_bytes(), (self.out / ('before-' + key)).read_bytes(), key)
         before, current = (self.out / 'before-elf').read_bytes(), (self.root / source.PATHS['elf']).read_bytes()
+        installed_hash = hashlib.sha256(current).hexdigest()
+        current = game_sine_checkpoint.previous_input(current, source.PATHS['elf'], self.root)
         expected = bytearray(before)
         at = image.elf_slot_offset(before, source.ENTRY, 244)
         expected[at:at + 244] = self.rom[source.ROM:source.ROM + 244]
@@ -381,6 +384,7 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
         data = audit_layout(self.root / source.PATHS['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         self.receipt('image', ELF_sha256=hashlib.sha256(current).hexdigest(),
+            raw_installed_ELF_sha256=installed_hash, pinned_later_sine_projection=True,
             changed_slot_bytes=sum(a != b for a, b in zip(before[at:at + 244], expected[at:at + 244])),
             body_words=59, slot_words=61, alignment_nops=2, new_guards=4,
             every_other_ELF_byte_and_all_headers_progress_Makefile_fixed=True, protected_data=data)
