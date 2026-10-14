@@ -36,7 +36,8 @@ def controls():
             '    difference[0] = *(f32 *)(D_800D1560 + 0) - *(f32 *)(D_800D1570 + 0);'),
         'sum-not-difference': source.SELECTED.replace(' - *(f32 *)', ' + *(f32 *)'),
         'swapped-vectors': source.SELECTED.replace('func_151D3480(position, difference,', 'func_151D3480(difference, position,'),
-        'wrong-kind': source.SELECTED.replace('difference, NULL, 0,', 'difference, NULL, 1,'),
+        'wrong-kind': source.SELECTED.replace('difference, NULL, %d,' % source.MODE,
+            'difference, NULL, %d,' % (1 - source.MODE)),
         'wrong-slot': source.SELECTED.replace('0xFF, 1', '0xFE, 1'),
     }
 
@@ -59,7 +60,7 @@ def fixture(position=None, config=0, actor=ACTOR, symbols=None, phase=0):
     for i in range(3):
         put(memory, s['D_800D1560'] + i * 4, NUMERIC[(config + i) & 15])
         put(memory, s['D_800D1570'] + i * 4, NUMERIC[((config >> 4) + i * 3) & 15])
-    put(memory, TABLE + 4 * 4, source.ENTRY)
+    put(memory, TABLE + source.TABLE_INDEX * 4, source.ENTRY)
     return memory
 
 
@@ -97,7 +98,7 @@ def reference(memory, actor=ACTOR, mode=0, phase=0, symbols=None, argument=0x876
     put(result, frame + 0x28, difference(bz, az))
     position = tuple(read(result, frame + 0x2C + i * 4) for i in range(3))
     direction = tuple(read(result, frame + 0x20 + i * 4) for i in range(3))
-    args = (frame + 0x2C, frame + 0x20, 0, 0, 255, 1)
+    args = (frame + 0x2C, frame + 0x20, 0, source.MODE, 255, 1)
     calls = [(s['func_151D3480'], args, position, direction)]
     events.append(('CALL', s['func_151D3480'], args))
     for address, value, size in effects(mode, actor, s):
@@ -108,8 +109,9 @@ def reference(memory, actor=ACTOR, mode=0, phase=0, symbols=None, argument=0x876
 
 class VectorOracle(scan.MaskOracle):
     def __init__(self, words, memory, actor=ACTOR, phase=0, mode=0, symbols=None,
-            entry=source.ENTRY, arguments=None, connected=None, fault=None):
-        super().__init__(words, memory, phase, mode, symbols or source.SYMBOLS, entry,
+            entry=None, arguments=None, connected=None, fault=None):
+        super().__init__(words, memory, phase, mode, symbols or source.SYMBOLS,
+            source.ENTRY if entry is None else entry,
             arguments or (actor, 0x8765ABCD), connected, fault=fault)
         self.actor = actor
 
@@ -141,10 +143,14 @@ class VectorOracle(scan.MaskOracle):
 
 
 class GameActorVectorSnapshotMatchTests(unittest.TestCase):
+    BUILD_NAME = 'game-actor-vector-snapshot-match-test'
+    SOURCE_PIN = '026132cc793e9a4c00c612958f706583f14ef65fd8452481aee7dbfed0a66c68'
+    ELF_PIN = '79f140332385316ef3a26372c7d231a89bf02c37a398f151ac03ac79568949a0'
+
     @classmethod
     def setUpClass(cls):
         cls.root = Path(__file__).resolve().parents[2]
-        cls.out = cls.root / 'conker/build/game-actor-vector-snapshot-match-test'
+        cls.out = cls.root / 'conker/build' / cls.BUILD_NAME
         cls.out.mkdir(exist_ok=True)
         cls.paths = dict(source=source.SOURCE, elf='conker/build/conker.us.elf',
             guards='conker/retail_word_patches.us.csv', progress='conker/progress.csv',
@@ -159,8 +165,8 @@ class GameActorVectorSnapshotMatchTests(unittest.TestCase):
                 hashes[name] = hashlib.sha256(data).hexdigest()
             manifest.write_text(json.dumps(hashes, indent=2) + '\n')
         cls.baseline = json.loads(manifest.read_text())
-        assert cls.baseline['source'] == '026132cc793e9a4c00c612958f706583f14ef65fd8452481aee7dbfed0a66c68'
-        assert cls.baseline['elf'] == '79f140332385316ef3a26372c7d231a89bf02c37a398f151ac03ac79568949a0'
+        assert cls.baseline['source'] == cls.SOURCE_PIN
+        assert cls.baseline['elf'] == cls.ELF_PIN
         cls.before = (cls.out / 'before-elf').read_bytes()
         cls.owner_before = (cls.out / 'before-source').read_text()
         cls.owner_after = source.recovered_owner(cls.owner_before)
@@ -174,7 +180,7 @@ class GameActorVectorSnapshotMatchTests(unittest.TestCase):
     def receipt(self, name, **values):
         (self.out / (name + '.json')).write_text(json.dumps(values, indent=2) + '\n')
 
-    def compare(self, memory, actor=ACTOR, phase=0, mode=0, symbols=None, entry=source.ENTRY, bodies=None):
+    def compare(self, memory, actor=ACTOR, phase=0, mode=0, symbols=None, entry=None, bodies=None):
         expected = reference(memory, actor, mode, phase, symbols)
         models = [VectorOracle(w, memory, actor, phase, mode, symbols, entry).run()
             for w in (bodies or (self.retail, self.words))]
@@ -189,7 +195,7 @@ class GameActorVectorSnapshotMatchTests(unittest.TestCase):
             self.meta['pool_bytes'], self.meta['diagnostics']), (40, 56, 0, 0, ''))
         self.assertEqual(self.words, self.retail)
         self.assertEqual(self.meta['relocations'][0x88], [('R_MIPS_26', 'func_151D3480')])
-        measured = json.loads((self.root / 'conker/build/game-actor-vector-snapshot/measurements.json').read_text())
+        measured = json.loads((self.root / source.MEASUREMENTS).read_text())
         self.assertEqual(len(measured), 96)
         self.assertEqual([m['name'] for m in measured if m['differences'] == 0],
             ['order0-position-qualifier0-o2g3', 'order0-position-qualifier2-o2g3'])
@@ -351,13 +357,13 @@ static union {u32 align;u8 bytes[96];} actor,first,second;
 static u8 *input;static u32 wanted[6];static int mode,count,error;
 static const u32 raw[]={''' + raw + '''},numeric[]={''' + numeric + '''},delta[]={''' + deltas + '''};
 void func_151D3480(f32 *position,f32 *direction,void *optional,u8 kind,u8 slot,s32 context){
- int i;count++;if(optional||kind||slot!=255||context!=1)error=1;
+ int i;count++;if(optional||kind!=''' + str(source.MODE) + '''||slot!=255||context!=1)error=1;
  for(i=0;i<3;i++)if(((u32*)position)[i]!=wanted[i]||((u32*)direction)[i]!=wanted[i+3])error=2;
  if(mode==1){*(u32*)(input+0x14)=0x12345678u;*(u32*)D_800D1560=0x76543210u;*(u32*)(D_800D1570+8)=0xFEDCBA98u;}
  if(mode==2){for(i=0;i<3;i++){((u32*)position)[i]=((u32*)direction)[i]=0xC5000000u+(u32)i;}}
 }
 ''' + source.SELECTED + '''
-static void (*volatile invoke)(u8*,s32)=func_1506A79C;
+static void (*volatile invoke)(u8*,s32)=''' + source.FUNCTION + ''';
 int run(void){int p,g,m,alias,i;u8 expectedActor[96],expectedFirst[96],expectedSecond[96];
  if(sizeof(void*)!=4||sizeof(f32)!=4)return 10;
  for(p=0;p<1728;p++)for(m=0;m<3;m++)for(alias=0;alias<4;alias++){
@@ -391,15 +397,15 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
             precomputed_guest_checked_RNE_grid=True, raw_actor_payload_bits_and_all_input_canaries=True,
             six_native_compiled_controls_effective=True, bounded_32_bit_SSE_domain_only=True)
 
-    def test_09_original_dispatcher_vector_setup_and_table4(self):
+    def test_09_original_dispatcher_vector_setup_and_callback_table(self):
         parent = list(struct.unpack_from('>38I', self.rom, PARENT_ROM))
         functions, _, addresses = image.load_elf_functions(str(self.out / 'before-elf'), 'mips-linux-gnu-objdump')
         self.assertEqual(addresses['func_1506AC8C'], PARENT)
         self.assertEqual(functions['func_1506AC8C'], list(struct.unpack_from('>41I', self.rom, PARENT_ROM)))
         self.assertEqual(functions['func_1506AC8C'][38:], [0, 0, 0])
-        offset = image.elf_slot_offset(self.before, TABLE + 16, 4)
+        offset = image.elf_slot_offset(self.before, TABLE + source.TABLE_INDEX * 4, 4)
         self.assertEqual(self.before[offset:offset + 4], struct.pack('>I', source.ENTRY))
-        self.assertEqual(struct.unpack_from('>I', self.rom, 0x22ABE0)[0], source.ENTRY)
+        self.assertEqual(struct.unpack_from('>I', self.rom, source.TABLE_ROM)[0], source.ENTRY)
         cases, seen = 0, set()
         for config, mode, phase in itertools.product((0, 37, 128, 255), range(3), (0, 8)):
             memory = fixture(config=config)
@@ -416,7 +422,7 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
             for body in (self.retail, self.words):
                 connected = dict(zip(range(source.ENTRY, source.ENTRY + 160, 4), body))
                 model = VectorOracle(parent, memory, phase=phase, mode=mode, entry=PARENT,
-                    arguments=(ACTOR, 4, 0x8765ABCD), connected=connected).run()
+                    arguments=(ACTOR, source.TABLE_INDEX, 0x8765ABCD), connected=connected).run()
                 self.assertEqual(model.callbacks, [(ACTOR, 0x8765ABCD)])
                 self.assertEqual((external(model.memory), model.calls), (expected_storage, calls))
                 seen.update(model.visits)
@@ -425,7 +431,8 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
             cases += 1
         self.assertTrue(set(range(source.ENTRY, source.ENTRY + 160, 4)) <= seen)
         self.receipt('connected', cases=cases, original_dispatcher38_words_and_alignment_tail=True,
-            verified_table_index4_and_forwarded_arguments=True, real_parent_vector_setup=True,
+            verified_table_index=source.TABLE_INDEX, callback_kind=source.MODE,
+            forwarded_arguments=True, real_parent_vector_setup=True,
             downstream_564_word_provider_not_emulated_or_claimed=True)
 
     def rebased_original(self, entry, symbols, name):

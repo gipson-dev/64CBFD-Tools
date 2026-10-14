@@ -9,6 +9,8 @@ from tools.experiments import game_record_constructor_candidates as compiler
 
 ENTRY, ROM, WORDS = 0x1506A79C, 0x97C4C, 40
 FUNCTION = 'func_1506A79C'
+MODE, TABLE_INDEX, TABLE_ROM = 0, 4, 0x22ABE0
+MEASUREMENTS = 'conker/build/game-actor-vector-snapshot/measurements.json'
 SOURCE = 'conker/src/game/generated_97AA0.c'
 ORIGINAL = 's32 func_1506A79C() {\n    return 0;\n}'
 MARKER = 'extern u8 D_800D1560[];'
