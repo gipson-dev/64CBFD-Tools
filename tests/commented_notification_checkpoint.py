@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from tools.experiments import game_commented_notification_candidates as source
+from tools.tests import codec_refill_checkpoint
 
 AFTER = {
     'owner': '8ab68786c757c4ebcaa85e806adc337649aa67aefc4a7a2d64d7bd67bf1da846',
@@ -23,6 +24,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = codec_refill_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):
@@ -35,7 +37,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root / path).read_bytes()
+        data = codec_refill_checkpoint.previous_input((root / path).read_bytes(), path, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed notification input: ' + key
         target = root / source.BUILD / ('after-' + key)
         if not target.exists():

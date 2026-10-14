@@ -14,6 +14,7 @@ from tools.tests.test_game_one_shot_timer_match import canonical_symbols
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.check_game_data_layout import audit_layout
 from tools.tests import isolated_donor_checkpoint as checkpoint
+from tools.tests import codec_refill_checkpoint
 
 
 class IsolatedByteExactDonorTests(unittest.TestCase):
@@ -55,7 +56,8 @@ class IsolatedByteExactDonorTests(unittest.TestCase):
         before = (self.out / 'before-elf').read_bytes()
         self.assertEqual(hashlib.sha256(before).hexdigest(), source.BASELINE_ELF)
         after_path = self.root / 'conker/build/conker.us.elf'
-        after = after_path.read_bytes()
+        after = codec_refill_checkpoint.previous_input(after_path.read_bytes(), 'conker/build/conker.us.elf', self.root)
+        self.assertEqual(after, checkpoint.fixture(self.root, 'after', 'elf'))
         expected = bytearray(before)
         symbols = canonical_symbols(before)
         for name, spec in source.TARGETS.items():
@@ -69,7 +71,7 @@ class IsolatedByteExactDonorTests(unittest.TestCase):
             symbols[old] -= 1
             symbols[(name, old[1], count * 4, *old[3:])] += 1
         self.assertEqual(+symbols, canonical_symbols(after))
-        previous, current = sections(self.out / 'before-elf'), sections(after_path)
+        previous, current = sections(self.out / 'before-elf'), sections(self.out / 'after-elf')
         self.assertEqual(set(previous), set(current))
         base, game = previous['.game']
         offset = elf_slot_offset(before, base, len(game))

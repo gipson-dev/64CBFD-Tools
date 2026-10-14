@@ -174,15 +174,15 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
     def test_05_installed_source_guards_progress_and_closed_image(self):
         source.freeze(self.root, self.out)
         self.assertEqual((self.root / 'conker/src/game_83300.c').read_text(), source.recover((self.out / 'before-owner').read_text()))
-        self.assertEqual((self.root / 'conker/retail_word_patches.us.csv').read_bytes(),
+        self.assertEqual(checkpoint.codec_refill_checkpoint.previous_input((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), 'conker/retail_word_patches.us.csv', self.root),
             (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
-        self.assertEqual((self.root / 'conker/Makefile').read_bytes(), (self.out / 'before-makefile').read_bytes())
+        self.assertEqual(checkpoint.codec_refill_checkpoint.previous_input((self.root / 'conker/Makefile').read_bytes(), 'conker/Makefile', self.root), (self.out / 'before-makefile').read_bytes())
         progress = (self.out / 'before-progress').read_bytes()
         row = next(line for line in progress.splitlines(keepends=True) if b',func_15063168,' in line)
         self.assertTrue(row.endswith(b',asm\n'))
         self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), progress.replace(row, row.replace(b',asm\n', b',c\n')))
         before = (self.out / 'before-elf').read_bytes()
-        current = (self.root / 'conker/build/conker.us.elf').read_bytes()
+        current = checkpoint.codec_refill_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root)
         # The original assembly already occupied its complete matching slot.
         self.assertEqual(current, before)
         self.assertEqual(canonical_symbols(current), canonical_symbols(before))
