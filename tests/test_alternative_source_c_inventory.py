@@ -22,6 +22,13 @@ void *pointer(s32 arg) { return (void *)arg; }
         self.assertEqual([row['conditional_region'] for row in rows], [True, False])
         self.assertTrue(all(row['trivial_body'] for row in rows))
 
+    def test_multiple_pointer_stars_with_independent_whitespace(self):
+        text = '''void * *first(void) { return 0; }
+void **second(void) { return 0; }
+const char * const * third(void) { return 0; }
+'''
+        self.assertEqual([row['function'] for row in definitions(text)], ['first', 'second', 'third'])
+
     def test_uncompiled_and_trivial_definitions_are_discovery_only(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

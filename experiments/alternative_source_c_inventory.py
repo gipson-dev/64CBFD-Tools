@@ -20,7 +20,7 @@ from tools.experiments.alternative_source_byte_match_audit import code_name
 from tools.match_progress import function_vram, load_symbol_addrs
 
 LEXEMES = re.compile(r'/\*[\s\S]*?\*/|//[^\n]*|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'')
-DEFINITIONS = re.compile(r'(?m)^[ \t]*(?:(?:[A-Za-z_]\w*\s+)|(?:[A-Za-z_]\w*\s*\*+\s*))+'
+DEFINITIONS = re.compile(r'(?m)^[ \t]*(?:(?:[A-Za-z_]\w*\s+)|(?:[A-Za-z_]\w*\s*(?:\*\s*)+))+'
     r'([A-Za-z_]\w*)\s*\([^;{}]*\)\s*\{')
 
 

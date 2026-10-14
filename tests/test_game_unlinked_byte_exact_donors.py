@@ -20,6 +20,7 @@ from tools.tests.test_game_one_shot_timer_match import canonical_symbols, symbol
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.check_game_data_layout import audit_layout
 from tools.tests import unlinked_donor_checkpoint as checkpoint
+from tools.tests import isolated_donor_checkpoint
 from tools.match_progress import load_symbol_addrs
 
 
@@ -115,7 +116,7 @@ class UnlinkedByteExactDonorTests(unittest.TestCase):
         self.assertEqual((self.root / 'conker/src/game/translation_units/10EF60_wrappers.c').read_text(), source.emission_source())
         before = (self.out / 'before-elf').read_bytes()
         after_path = self.root / 'conker/build/conker.us.elf'
-        after = after_path.read_bytes()
+        after = isolated_donor_checkpoint.previous_input(after_path.read_bytes(), 'conker/build/conker.us.elf', self.root)
         expected = bytearray(before)
         expected_symbols = canonical_symbols(before)
         raw_counts = {name: spec['words'] - {'func_150BEEB0': 1, 'func_150C7770': 3, 'func_150CCD90': 1}.get(name, 0)
@@ -131,7 +132,8 @@ class UnlinkedByteExactDonorTests(unittest.TestCase):
             expected_symbols[old] -= 1
             expected_symbols[(name, old[1], raw_counts[name] * 4, *old[3:])] += 1
         self.assertEqual(+expected_symbols, canonical_symbols(after))
-        old_sections, new_sections = sections(self.out / 'before-elf'), sections(after_path)
+        self.assertEqual(after, checkpoint.fixture(self.root, 'after', 'elf'))
+        old_sections, new_sections = sections(self.out / 'before-elf'), sections(self.out / 'after-elf')
         self.assertEqual(set(old_sections), set(new_sections))
         game = old_sections['.game']
         at = elf_slot_offset(before, game[0], len(game[1]))
@@ -147,7 +149,7 @@ class UnlinkedByteExactDonorTests(unittest.TestCase):
             self.assertEqual(len(matching), 1)
             self.assertTrue(matching[0].endswith(b',asm\n'))
             expected_progress = expected_progress.replace(matching[0], matching[0].replace(b',asm\n', b',c\n'))
-        self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), expected_progress)
+        self.assertEqual(isolated_donor_checkpoint.previous_input((self.root / 'conker/progress.csv').read_bytes(), 'conker/progress.csv', self.root), expected_progress)
         data = audit_layout(after_path, self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
         (self.out / 'image-transition.json').write_text(json.dumps(dict(
@@ -234,9 +236,9 @@ class UnlinkedByteExactDonorTests(unittest.TestCase):
                     self.assertEqual(spans[0], spans[1], name)
                     self.assertEqual(spans[0], spans[2], name)
                     comparisons += 2
-        self.assertEqual(comparisons, 36)
+        self.assertEqual(comparisons, len(source.TARGETS) * 4)
         (self.out / 'independent-rebases.json').write_text(json.dumps(dict(
-            comparisons=comparisons, target_functions=9, padders=2, link_profiles=2,
+            comparisons=comparisons, target_functions=len(source.TARGETS), padders=2, link_profiles=2,
             independently_assembled_original_owners=True, external_HI_LO_carry_addresses=True), indent=2) + '\n')
 
 
