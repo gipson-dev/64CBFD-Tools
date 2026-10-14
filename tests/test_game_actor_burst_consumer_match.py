@@ -384,17 +384,22 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         contact_source = contact.recovered_owner(installed_source)
         from tools.experiments import game_actor_effect_packet_candidates as effect
         effect_source = effect.recovered_owner(contact_source)
-        installed = current_source in (installed_source, contact_source, effect_source)
-        self.assertIn(current_source, (before_source, installed_source, contact_source, effect_source))
+        from tools.experiments import game_actor_threshold_flags_candidates as threshold
+        threshold_source = threshold.recovered_owner(effect_source)
+        installed = current_source in (installed_source, contact_source, effect_source, threshold_source)
+        self.assertIn(current_source, (before_source, installed_source, contact_source, effect_source, threshold_source))
         before = (self.out / 'before-elf').read_bytes()
         expected = expected_consumer_image(before, self.retail) if installed else before
-        if current_source in (contact_source, effect_source):
+        if current_source in (contact_source, effect_source, threshold_source):
             from tools.tests.test_game_actor_burst_contact_match import expected_contact_image
             rom = (self.root / 'conker/conker.us.bin').read_bytes()
             expected = expected_contact_image(expected, struct.unpack_from('>117I', rom, contact.ROM))
-        if current_source == effect_source:
+        if current_source in (effect_source, threshold_source):
             from tools.tests.test_game_actor_effect_packet_match import expected_effect_image
             expected = expected_effect_image(expected, struct.unpack_from('>108I', rom, effect.ROM))
+        if current_source == threshold_source:
+            from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
+            expected = expected_threshold_image(expected, struct.unpack_from('>47I', rom, threshold.ROM))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertTrue(current == expected, 'Whole ELF differs from the declared consumer slot/size changes')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
@@ -405,10 +410,14 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
         expected_text = prior + stream.getvalue() if installed else prior
         prior_bytes = (self.out / 'before-guards').read_bytes()
         expected_bytes = prior_bytes + stream.getvalue().encode('ascii') if installed else prior_bytes
-        if current_source == effect_source:
+        if current_source in (effect_source, threshold_source):
             from tools.tests.test_game_actor_effect_packet_match import installed_guards
             expected_text += installed_guards(b'').decode('ascii')
             expected_bytes = installed_guards(expected_bytes)
+        if current_source == threshold_source:
+            from tools.tests.test_game_actor_threshold_flags_match import installed_guards as threshold_guards
+            expected_text += threshold_guards(b'').decode('ascii')
+            expected_bytes = threshold_guards(expected_bytes)
         self.assertEqual(guards, expected_text)
         self.assertEqual((self.root / self.paths['guards']).read_bytes(), expected_bytes)
         for name in set(self.paths) - {'owner', 'elf', 'guards'}:

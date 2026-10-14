@@ -478,22 +478,30 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
         installed_owner = source.recovered_owner(before_owner)
         from tools.experiments import game_actor_effect_packet_candidates as effect
         effect_owner = effect.recovered_owner(installed_owner)
+        from tools.experiments import game_actor_threshold_flags_candidates as threshold
+        threshold_owner = threshold.recovered_owner(effect_owner)
         current_owner = (self.root / source.SOURCE).read_text()
-        self.assertIn(current_owner, (before_owner, installed_owner, effect_owner))
+        self.assertIn(current_owner, (before_owner, installed_owner, effect_owner, threshold_owner))
         before = (self.out / 'before-elf').read_bytes()
-        installed = current_owner in (installed_owner, effect_owner)
+        installed = current_owner in (installed_owner, effect_owner, threshold_owner)
         expected = expected_contact_image(before, self.retail) if installed else before
-        if current_owner == effect_owner:
+        if current_owner in (effect_owner, threshold_owner):
             from tools.tests.test_game_actor_effect_packet_match import expected_effect_image
             expected = expected_effect_image(expected, struct.unpack_from('>108I', self.rom, effect.ROM))
+        if current_owner == threshold_owner:
+            from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
+            expected = expected_threshold_image(expected, struct.unpack_from('>47I', self.rom, threshold.ROM))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertTrue(current == expected, 'Undeclared whole ELF change')
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
         for name in set(self.paths) - {'owner', 'elf'}:
             expected_input = (self.out / ('before-' + name)).read_bytes()
-            if name == 'guards' and current_owner == effect_owner:
+            if name == 'guards' and current_owner in (effect_owner, threshold_owner):
                 from tools.tests.test_game_actor_effect_packet_match import installed_guards
                 expected_input = installed_guards(expected_input)
+            if name == 'guards' and current_owner == threshold_owner:
+                from tools.tests.test_game_actor_threshold_flags_match import installed_guards as threshold_guards
+                expected_input = threshold_guards(expected_input)
             self.assertEqual((self.root / self.paths[name]).read_bytes(), expected_input, name)
         data = audit_layout(self.root / self.paths['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']),

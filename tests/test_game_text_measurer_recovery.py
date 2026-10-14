@@ -290,6 +290,8 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
             expected=before
             from tools.experiments import game_actor_effect_packet_candidates as effect
             effect_installed=effect.SELECTED in (self.root/effect.SOURCE).read_text()
+            from tools.experiments import game_actor_threshold_flags_candidates as threshold
+            threshold_installed=threshold.SELECTED in (self.root/threshold.SOURCE).read_text()
             if name=='elf':
                 from tools.experiments import game_actor_burst_contact_candidates as contact
                 if contact.SELECTED in (self.root/contact.SOURCE).read_text():
@@ -298,12 +300,18 @@ class GameTextMeasurerRecoveryTests(unittest.TestCase):
                 if effect_installed:
                     from tools.tests.test_game_actor_effect_packet_match import expected_effect_image
                     expected=expected_effect_image(expected,struct.unpack_from('>108I',self.rom,effect.ROM))
+                if threshold_installed:
+                    from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
+                    expected=expected_threshold_image(expected,struct.unpack_from('>47I',self.rom,threshold.ROM))
             if name=='guards' and effect_installed:
                 from tools.tests.test_game_actor_effect_packet_match import installed_guards
                 expected=installed_guards(before)
+            if name=='guards' and threshold_installed:
+                from tools.tests.test_game_actor_threshold_flags_match import installed_guards as threshold_guards
+                expected=threshold_guards(expected)
             self.assertEqual((self.root/path).read_bytes(),expected,name)
         data=audit_layout(self.root/self.paths['elf'],self.root/'conker');self.assertTrue(data['exact'],data)
-        self.receipt('production',source_placeholder_retained=True,all9_inputs_exact_except_declared_contact_effect_slots_sizes_and_guard_suffix=True,
+        self.receipt('production',source_placeholder_retained=True,all9_inputs_exact_except_declared_contact_effect_threshold_slots_sizes_and_guard_suffix=True,
             no_installation_or_matching_credit=True,protected_data=data)
 
     def test_06_effective_immutable_production_controls(self):

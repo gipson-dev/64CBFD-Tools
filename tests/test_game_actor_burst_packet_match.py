@@ -436,6 +436,11 @@ class GameActorBurstPacketMatchTests(unittest.TestCase):
             from tools.tests.test_game_actor_effect_packet_match import expected_effect_image
             expected = bytearray(expected_effect_image(bytes(expected),
                 struct.unpack_from('>108I', self.rom, effect.ROM)))
+        from tools.experiments import game_actor_threshold_flags_candidates as threshold
+        if threshold.SELECTED in (self.root / threshold.SOURCE).read_text():
+            from tools.tests.test_game_actor_threshold_flags_match import expected_threshold_image
+            expected = bytearray(expected_threshold_image(bytes(expected),
+                struct.unpack_from('>47I', self.rom, threshold.ROM)))
         current = (self.root / self.paths['elf']).read_bytes()
         self.assertEqual(current, bytes(expected))
         self.assertEqual(canonical_symbols(current), canonical_symbols(expected))
