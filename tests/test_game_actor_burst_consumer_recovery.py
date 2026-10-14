@@ -87,6 +87,7 @@ class ConsumerOracle(producer.BurstOracle):
             arguments=(PARAMS, kind, slot, context), outcome=outcome)
         self.kind, self.mutation, self.limit = kind & 255, mutation, limit
         self.records, self.raw_packets, self.raw_animations, self.raw_copies, self.locations = [], [], [], [], {}
+        self.saved_fp_calls = []
         self.factory_count = self.integer_count = self.random_count = 0
 
     def execute(self, word):
@@ -98,6 +99,7 @@ class ConsumerOracle(producer.BurstOracle):
             super().execute(word)
 
     def record_call(self, target):
+        self.saved_fp_calls.append((target, tuple(self.f[20:])))
         if target == RNG:
             self.records.append((1,))
         elif target == RANDOM:
@@ -258,11 +260,11 @@ class GameActorBurstConsumerRecoveryTests(unittest.TestCase):
         (self.out / (name + '.json')).write_text(json.dumps(values, indent=2) + '\n')
 
     def test_01_complete_single_precision_candidate_is_explicitly_nonmatching(self):
-        self.assertEqual((self.meta['body_words'], self.meta['frame'], self.meta['differences']), (311, 0x168, 274))
+        self.assertEqual((self.meta['body_words'], self.meta['frame'], self.meta['differences']), (313, 0x168, 143))
         self.assertEqual((self.meta['pool_bytes'], self.meta['diagnostics']), (0, ''))
         self.assertNotEqual(self.words, self.retail)
         self.assertFalse(any(w >> 26 == 17 and w >> 21 & 31 == 17 for w in self.words))
-        self.receipt('shape', words=311, frame=360, raw_differences=274, installed=False,
+        self.receipt('shape', words=313, frame=360, raw_differences=143, installed=False,
             no_guards_or_padding=True, matching_credit=False)
 
     def test_02_all_kinds_counts_outcomes_and_callback_mutations(self):
@@ -282,12 +284,15 @@ class GameActorBurstConsumerRecoveryTests(unittest.TestCase):
             self.assertEqual(candidate.raw_animations, original.raw_animations, ('animation', domain))
             self.assertEqual(candidate.raw_copies, original.raw_copies, ('memcpy', domain))
             self.assertEqual(candidate.locations, original.locations, ('private homes', domain))
+            self.assertTrue(producer.complete_state(candidate) == producer.complete_state(original),
+                ('complete modeled return state', domain))
             cases += 1
         self.receipt('guest', cases=cases, full0_1_2_3_default_and_masked_kind_semantics=True,
             counts0_through4_all_three_allocation_outcomes=True,
             input_count_snapshot_live_geometry_and_post_factory_rate_feedback=True,
             seeded_guest_creation_animation_and_memcpy_bytes_and_homes_agree=True,
-            complete_machine_state_and_word_identity_not_qualified=True,
+            all_modeled_return_registers_memory_HI_LO_condition_and_access_traces_agree=True,
+            instruction_PC_BD_FCSR_and_word_identity_not_qualified=True,
             native_indeterminate_bytes_not_qualified=True)
 
     def test_03_signed_counts_stop_at_effective_factory_boundaries(self):
@@ -331,10 +336,11 @@ class GameActorBurstConsumerRecoveryTests(unittest.TestCase):
         models = [ConsumerOracle(body, fixture(seed=1), outcome=2).run() for body in (self.retail, self.words)]
         self.assertEqual(models[0].records, models[1].records)
         self.assertEqual(models[0].raw_packets, models[1].raw_packets)
-        self.assertNotEqual(producer.complete_state(models[0]), producer.complete_state(models[1]))
+        self.assertTrue(producer.complete_state(models[0]) == producer.complete_state(models[1]),
+            'Recovered modeled return states differ')
         self.receipt('promotion-gate', effective_m2c_count3_yields2_negative=True,
             initialized_semantics_and_complete_raw_creation_packets_agree=True,
-            complete_machine_states_still_differ=True,
+            complete_modeled_return_states_agree_but_word_identity_still_fails=True,
             raw_animation_packets_agree=models[0].raw_animations == models[1].raw_animations,
             raw_memcpy_data_agree=models[0].raw_copies == models[1].raw_copies,
             original_locations=models[0].locations, candidate_locations=models[1].locations,
@@ -484,6 +490,79 @@ void _start(void){finish(run());}
         self.receipt('raw-direction', guest_raw_copy_cases=cases,
             raw_nan_infinity_signed_zero_words_copied_not_arithmetically_transformed=True,
             scalar_copy_shape_control_effective_but_not_a_semantic_rejection=True)
+
+    def test_11_saved_float_roles_and_cached_constants_match_at_real_calls(self):
+        cases = 0
+        for kind, count, phase, outcome, mutation, seed in itertools.product((0, 1, 2, 3, 4, 255),
+                (1, 3), (0, 8), range(3), (0, 1), (0, 1)):
+            memory = fixture(count, seed)
+            models = [ConsumerOracle(body, dict(memory), kind, phase=phase,
+                outcome=outcome, mutation=mutation).run() for body in (self.retail, self.words)]
+            self.assertEqual(models[0].saved_fp_calls, models[1].saved_fp_calls,
+                (kind, count, phase, outcome, mutation, seed))
+            first_target, first_values = models[1].saved_fp_calls[0]
+            self.assertEqual(first_target, RNG)
+            self.assertEqual((first_values[10], first_values[8]), (bits(15.0), bits(30.0)))
+            cases += 1
+        _, old = source.compile_candidate(self.root, self.out, 'prior-shared-speed-control', source.PRIVATE_SELECTED)
+        original = ConsumerOracle(self.retail, fixture(3), outcome=2).run()
+        prior = ConsumerOracle(old, fixture(3), outcome=2).run()
+        self.assertEqual(prior.records, original.records)
+        self.assertNotEqual(prior.saved_fp_calls, original.saved_fp_calls)
+        self.assertEqual(prior.saved_fp_calls[0][1][10], bits(30.0))
+        self.receipt('saved-float-roles', real_call_boundary_domains=cases,
+            all_F20_through_F31_saved_roles_and_lifetimes_agree=True,
+            F30_15_F28_30_cached_before_first_RNG=True,
+            prior_shared_speed_control_has_same_public_semantics_but_wrong_saved_roles=True,
+            not_a_complete_machine_state_matching_claim=True)
+
+    def test_12_two_missing_words_are_the_actual_velocity_branch_delay_slots(self):
+        measurements = []
+        for kind, store in ((0, 0xE7A60124), (1, 0xE7A80124)):
+            self.assertEqual(self.retail.count(store), 1)
+            self.assertEqual(self.words.count(store), 1)
+            retail_index, candidate_index = self.retail.index(store), self.words.index(store)
+            self.assertEqual(self.retail[retail_index + 1] >> 16, 0x1000)
+            self.assertEqual(self.retail[retail_index + 2], 0)
+            self.assertEqual(self.words[candidate_index - 1] >> 16, 0x1000)
+            original = ConsumerOracle(self.retail, fixture(1), kind=kind, outcome=2).run()
+            candidate = ConsumerOracle(self.words, fixture(1), kind=kind, outcome=2).run()
+            self.assertEqual(candidate.records, original.records)
+            self.assertEqual(candidate.raw_packets, original.raw_packets)
+            self.assertTrue(producer.complete_state(candidate) == producer.complete_state(original),
+                ('Modeled return state differs', kind))
+            measurements.append(dict(kind=kind, retail_store_word=retail_index,
+                candidate_delay_store_word=candidate_index,
+                retail_branch_delay_word=retail_index + 2))
+        self.receipt('branch-delay-boundary', measurements=measurements,
+            two_real_idle_delay_words_absent_from_candidate=True,
+            no_instruction_insertion_guards_or_fake_padding=True,
+            production_promotion_still_rejected=True)
+
+    def test_13_delay_schedule_diagnostic_compares_every_remaining_word(self):
+        diagnostic, sites = source.analyze_velocity_delay_schedule(self.words)
+        differences = [index for index, (ours, retail) in enumerate(zip(diagnostic, self.retail))
+            if ours != retail]
+        self.assertEqual(len(diagnostic), 315)
+        self.assertEqual(len(sites), 2)
+        self.assertEqual(diagnostic, self.retail, 'Differences after diagnostic: %r' % differences)
+        corrupted = list(self.words)
+        corrupted[0] ^= 8
+        changed, _ = source.analyze_velocity_delay_schedule(corrupted)
+        self.assertNotEqual(changed, self.retail)
+        corrupted = list(self.words)
+        corrupted[self.words.index(0xE7A60124)] ^= 4
+        with self.assertRaises(ValueError):
+            source.analyze_velocity_delay_schedule(corrupted)
+        meta, words = source.compile_candidate(self.root, self.out, 'existing-no-unroll-profile',
+            profile='retail_no_unroll')
+        self.assertEqual(words, self.words)
+        self.assertEqual((meta['body_words'], meta['frame']), (313, 0x168))
+        self.receipt('schedule-diagnostic', real_branch_sites=sites,
+            inverse_two_filled_delay_pairs_and_internal_branch_rebases_match_all315_words=True,
+            unrelated_instruction_and_wrong_store_controls_effective=True,
+            existing_no_unroll_profile_does_not_recover_idle_slots=True,
+            diagnostic_only_not_a_build_transform_or_matching_credit=True)
 
 
 if __name__ == '__main__':

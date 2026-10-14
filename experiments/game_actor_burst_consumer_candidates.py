@@ -8,6 +8,8 @@ from unittest.mock import patch
 from tools.experiments import game_actor_burst_packet_candidates as packet
 from tools.experiments import game_record_constructor_candidates as compiler
 
+PROFILES = dict(compiler.PROFILES, retail_no_unroll=('-O2', '-g3', '-Wo,-loopunroll,0'))
+
 ENTRY, ROM, WORDS = 0x151A6F00, 0x1D43B0, 315
 FUNCTION = 'func_151A6F00'
 SOURCE = 'conker/src/game/generated_1D43B0.c'
@@ -248,15 +250,127 @@ def private_layout_forms():
         yield 'private-float%d-pointers%d' % (float_first, pointers_first), body
 
 
-SELECTED = dict(private_layout_forms())['private-float1-pointers1']
+PRIVATE_SELECTED = dict(private_layout_forms())['private-float1-pointers1']
+
+
+def branch_scratch_forms():
+    for planar, radial, horizontal in itertools.product((False, True), repeat=3):
+        if not (planar or radial or horizontal):
+            continue
+        body = PRIVATE_SELECTED
+        for kind in (0, 1, 3):
+            if not (planar if kind == 0 else radial):
+                continue
+            marker = '            case %d:\n' % kind
+            start, tail = body.split(marker, 1)
+            branch, tail = tail.split('                break;', 1)
+            scratch = 'sine1' if kind == 0 else 'radius'
+            branch = branch.replace('                speed = ', '                %s = ' % scratch)
+            branch = branch.replace('= speed *', '= %s *' % scratch).replace(
+                '= -speed *', '= -%s *' % scratch).replace('* speed;', '* %s;' % scratch)
+            body = start + marker + branch + '                break;' + tail
+        if planar and radial:
+            body = body.replace('    f32 speed;\n', '')
+        if horizontal:
+            body = body.replace('    f32 horizontalSpeed;\n', '').replace('horizontalSpeed', 'horizontal')
+            body = body.replace('    f32 radius, horizontal;', '    f32 horizontal;').replace(
+                '    BurstExtra1D43B0 payload;', '    f32 radius;\n    BurstExtra1D43B0 payload;')
+        yield 'branch-scratch-planar%d-radial%d-horizontal%d' % (planar, radial, horizontal), body
+
+
+BRANCH_SELECTED = dict(branch_scratch_forms())['branch-scratch-planar0-radial1-horizontal0']
+
+
+def branch_angle_forms():
+    expressions = ('(angle%d - 64) & 255', 'angle%d - 64', '(u8)(angle%d - 64)')
+    for first, third in itertools.product(range(3), repeat=2):
+        body = BRANCH_SELECTED
+        for axis, choice in ((0, first), (1, third)):
+            body = body.replace('func_151423D8((angle%d - 64) & 255)' % axis,
+                'func_151423D8(%s)' % (expressions[choice] % axis))
+        yield 'branch-angle-first%d-third%d' % (first, third), body
+
+
+LIFETIME_SELECTED = dict(branch_angle_forms())['branch-angle-first1-third1']
+
+
+def branch_flow_forms():
+    for goto, braces, all_cases in itertools.product((False, True), repeat=3):
+        if not (goto or braces):
+            continue
+        body = LIFETIME_SELECTED
+        for kind in range(4) if all_cases else (0, 1):
+            marker = '            case %d:\n' % kind
+            start, tail = body.split(marker, 1)
+            branch, tail = tail.split('                break;', 1)
+            exit_statement = 'goto velocityReady;' if goto else 'break;'
+            if braces:
+                branch = '                {\n' + branch + '                }\n'
+            body = start + marker + branch + '                ' + exit_statement + tail
+        if goto:
+            body = body.replace('        retainedScale =', 'velocityReady:\n        retainedScale =')
+        yield 'branch-flow-goto%d-braces%d-all%d' % (goto, braces, all_cases), body
+    start, tail = LIFETIME_SELECTED.split('        switch (kind) {\n', 1)
+    switch, tail = tail.split('        retainedScale =', 1)
+    branches = []
+    for kind in range(4):
+        branch = switch.split('            case %d:\n' % kind, 1)[1].split('                break;', 1)[0]
+        branches.append('        %sif (kind == %d) {\n' % ('else ' if kind else '', kind) + branch + '        }\n')
+    yield 'branch-flow-if-chain', start + ''.join(branches) + '        retainedScale =' + tail
+
+
+def initialization_forms():
+    for duration_first, payload_early in itertools.product((False, True), repeat=2):
+        body = LIFETIME_SELECTED
+        if duration_first:
+            body = body.replace('    descriptor.duration = params->duration;\n', '').replace(
+                '    descriptor.id =', '    descriptor.duration = params->duration;\n    descriptor.id =')
+        if payload_early:
+            body = body.replace('    payload.field0C = params->unk58;\n', '').replace(
+                '    descriptor.field5C =', '    payload.field0C = params->unk58;\n    descriptor.field5C =')
+        yield 'initialization-duration%d-payload%d' % (duration_first, payload_early), body
+
+
+INITIALIZATION_SELECTED = dict(initialization_forms())['initialization-duration1-payload1']
+SELECTED = INITIALIZATION_SELECTED
+
+
+def velocity_store_forms():
+    for comma, scalar_pointer, all_cases in itertools.product((False, True), repeat=3):
+        if not (comma or scalar_pointer):
+            continue
+        body = INITIALIZATION_SELECTED
+        for kind in (0, 1, 3) if all_cases else (0, 1):
+            marker = '            case %d:\n' % kind
+            start, tail = body.split(marker, 1)
+            branch, tail = tail.split('                break;', 1)
+            if scalar_pointer:
+                for axis, component in enumerate(('x', 'y', 'z')):
+                    branch = branch.replace('descriptor.velocity.%s' % component,
+                        '((f32 *)&descriptor.velocity)[%d]' % axis)
+            if comma:
+                lines = branch.splitlines(keepends=True)
+                stores = [i for i, line in enumerate(lines) if ('descriptor.velocity.' in line or
+                    '((f32 *)&descriptor.velocity)' in line)]
+                assert len(stores) == 3
+                for index in stores[:2]:
+                    lines[index] = lines[index].replace(';\n', ',\n')
+                branch = ''.join(lines)
+            body = start + marker + branch + '                break;' + tail
+        yield 'velocity-stores-comma%d-pointer%d-all%d' % (comma, scalar_pointer, all_cases), body
 
 
 def candidates():
     yield 'base', BASE
+    yield from branch_scratch_forms()
+    yield from branch_angle_forms()
+    yield from branch_flow_forms()
+    yield from initialization_forms()
+    yield from velocity_store_forms()
     for rate, size in itertools.product((False, True), repeat=2):
         if not (rate or size):
             continue
-        body = SELECTED
+        body = PRIVATE_SELECTED
         if rate:
             body = body.replace('    while (remaining--) {',
                 '    while (remaining--) {\n        f32 rateMultiplier = 15.0f;').replace(
@@ -294,7 +408,7 @@ def candidates():
 
 
 def compile_candidate(root, out, name, body=SELECTED, profile='o2g3'):
-    with patch.multiple(compiler, ENTRY=ENTRY, ROM=ROM, WORDS=WORDS, FUNCTION=FUNCTION,
+    with patch.dict(compiler.PROFILES, PROFILES), patch.multiple(compiler, ENTRY=ENTRY, ROM=ROM, WORDS=WORDS, FUNCTION=FUNCTION,
             RECORD=RECORD, DECLARATIONS=DECLARATIONS, SYMBOLS=SYMBOLS):
         record, words = compiler.compile_candidate(root, out, name, body, profile)
     adjustments = [(i, (-(w & 65535)) & 65535) for i, w in enumerate(words) if w >> 16 == 0x27BD and w & 32768]
@@ -302,6 +416,42 @@ def compile_candidate(root, out, name, body=SELECTED, profile='o2g3'):
         raise ValueError('Expected one actual SP adjustment: %r' % adjustments)
     record['prologue_word'], record['frame'] = adjustments[0]
     return record, words
+
+
+def analyze_velocity_delay_schedule(words):
+    """Diagnostic inverse of two filled delay slots, not a build normalizer."""
+    sites = []
+    for store in (0xE7A60124, 0xE7A80124):
+        if words.count(store) != 1:
+            raise ValueError('Expected one specific velocity-Z store')
+        index = words.index(store) - 1
+        if index < 0 or words[index] >> 16 != 0x1000:
+            raise ValueError('Velocity-Z store is not an unconditional branch delay')
+        sites.append(index)
+    rewritten, positions = [], {}
+    index = 0
+    while index < len(words):
+        if index in sites:
+            positions[index], positions[index + 1] = len(rewritten) + 1, len(rewritten)
+            rewritten.extend((words[index + 1], words[index], 0))
+            index += 2
+        else:
+            positions[index] = len(rewritten)
+            rewritten.append(words[index])
+            index += 1
+    positions[len(words)] = len(rewritten)
+    for index, word in enumerate(words):
+        if word >> 26 not in (4, 5):
+            continue
+        immediate = word & 65535
+        target = index + 1 + (immediate if immediate < 32768 else immediate - 65536)
+        if target not in positions or target in (site + 1 for site in sites):
+            raise ValueError('Branch targets an external index or a moved delay store')
+        delta = positions[target] - positions[index] - 1
+        if not -32768 <= delta < 32768:
+            raise ValueError('Rebased branch exceeds its signed immediate')
+        rewritten[positions[index]] = (word & 0xFFFF0000) | (delta & 65535)
+    return rewritten, sites
 
 
 def main():
@@ -315,7 +465,7 @@ def main():
     for name, body in candidates():
         if args.filter not in name:
             continue
-        for profile in compiler.PROFILES if args.profiles else ('o2g3',):
+        for profile in PROFILES if args.profiles else ('o2g3',):
             record, _ = compile_candidate(root, out, name + '-' + profile, body, profile)
             records.append(record)
             print(record['name'], record['body_words'], hex(record['frame']), record['differences'], flush=True)
