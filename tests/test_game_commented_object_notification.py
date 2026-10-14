@@ -180,7 +180,7 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
         progress = (self.out / 'before-progress').read_bytes()
         row = next(line for line in progress.splitlines(keepends=True) if b',func_15063168,' in line)
         self.assertTrue(row.endswith(b',asm\n'))
-        self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), progress.replace(row, row.replace(b',asm\n', b',c\n')))
+        self.assertEqual(checkpoint.codec_refill_checkpoint.previous_input((self.root / 'conker/progress.csv').read_bytes(), 'conker/progress.csv', self.root), progress.replace(row, row.replace(b',asm\n', b',c\n')))
         before = (self.out / 'before-elf').read_bytes()
         current = checkpoint.codec_refill_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root)
         # The original assembly already occupied its complete matching slot.

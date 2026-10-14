@@ -383,7 +383,7 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
         self.assertEqual(codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/Makefile').read_bytes(), 'conker/Makefile', self.root).decode(), source.recover_makefile((self.out / 'before-makefile').read_text()))
         self.assertEqual(codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), 'conker/retail_word_patches.us.csv', self.root),
             (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
-        self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), (self.out / 'before-progress').read_bytes())
+        self.assertEqual(codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/progress.csv').read_bytes(), 'conker/progress.csv', self.root), (self.out / 'before-progress').read_bytes())
         before = (self.out / 'before-elf').read_bytes()
         current = codec_frame_dispatch_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root)
         expected = bytearray(before)

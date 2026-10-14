@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_codec_frame_dispatch_candidates as source
+from tools.tests import record_payload_constructor_checkpoint
 
 AFTER = {
     'elf': 'c9ff4e7ec28882546f87fb159a96b0c0e1c2b8fac6de4eb58725d91eef78a3bd',
@@ -22,6 +23,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = record_payload_constructor_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):

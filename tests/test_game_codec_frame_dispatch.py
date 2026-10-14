@@ -447,7 +447,7 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
         self.assertEqual((self.root / 'conker/src/game_221290.c').read_text(), source.recover((self.out / 'before-owner').read_text()))
         self.assertEqual((self.root / 'conker/Makefile').read_text(), source.recover_makefile((self.out / 'before-makefile').read_text()))
         self.assertEqual((self.root / 'conker/retail_word_patches.us.csv').read_bytes(), (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
-        self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), (self.out / 'before-progress').read_bytes())
+        self.assertEqual(checkpoint.previous_input((self.root / 'conker/progress.csv').read_bytes(), 'conker/progress.csv', self.root), (self.out / 'before-progress').read_bytes())
         before = (self.out / 'before-elf').read_bytes()
         current = (self.root / 'conker/build/conker.us.elf').read_bytes()
         expected = bytearray(before)
