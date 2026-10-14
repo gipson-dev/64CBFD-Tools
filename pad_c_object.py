@@ -130,20 +130,21 @@ def emit_padded_assembly(
         name: (text, symbol, relocations)
         for name, symbol in compiled.items()
     }
+    retail = load_layout(layout_path, filename)
+    declared_names = {row["name"] for row in retail}
     for name, override_path in (function_objects or {}).items():
         override_text, override_functions, override_relocations = parse_object(
             override_path
         )
         if name not in override_functions:
             raise ValueError(f"{name} not found in override object {override_path}")
-        if name not in compiled:
-            raise ValueError(f"{name} not found in primary object {object_path}")
+        if name not in compiled and name not in declared_names:
+            raise ValueError(f"{name} absent from primary object and retail layout")
         function_sources[name] = (
             override_text,
             override_functions[name],
             override_relocations,
         )
-    retail = load_layout(layout_path, filename)
     word_patches = load_word_patches(word_patches_path, filename)
     applied_patches = set()
     retail_names = {row["name"] for row in retail}
@@ -163,7 +164,7 @@ def emit_padded_assembly(
     for row, next_row in zip(retail, retail[1:]):
         row["end"] = min(row["end"], next_row["address"])
     retail_names = {row["name"] for row in retail}
-    compiled_names = set(compiled)
+    compiled_names = set(function_sources)
     if retail_names != compiled_names:
         raise ValueError(
             f"function mismatch for {filename}: "

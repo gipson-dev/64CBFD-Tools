@@ -254,7 +254,7 @@ class GameByteExactDonorTests(unittest.TestCase):
             self.assertEqual(len(matching), 1)
             self.assertTrue(matching[0].endswith(b',asm\n'))
             expected = expected.replace(matching[0], matching[0].replace(b',asm\n', b',c\n'))
-        self.assertEqual((self.root / 'conker/progress.csv').read_bytes(), expected)
+        self.assertEqual(donor_checkpoint.previous_input((self.root / 'conker/progress.csv').read_bytes(), 'conker/progress.csv', self.root), expected)
         data = audit_layout(self.root / 'conker/build/conker.us.elf', self.root / 'conker')
         self.assertTrue(data['exact'])
         self.assertEqual((data['bytes'], data['owner_count']), (189088, 720))

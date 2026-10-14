@@ -15,6 +15,38 @@ from pad_generated_object import parse_object
 
 
 class WordPatchRelocationTests(unittest.TestCase):
+    def test_missing_primary_definition_requires_an_explicit_retail_slot(self):
+        if not shutil.which("mips-linux-gnu-as"):
+            self.skipTest("mips-linux-gnu-as required")
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            for name, value in (("primary", 1), ("provided", 2)):
+                source = work / (name + ".s")
+                source.write_text('.section .text,"ax"\n.set noreorder\n.globl ' + name + '\n.type ' + name +
+                    ',@function\n' + name + ':\naddiu $v0,$zero,%d\njr $ra\nnop\n.size ' % value + name + ',.-' + name + '\n')
+                subprocess.run(["mips-linux-gnu-as", "-EB", "-march=vr4300", "-o", str(source.with_suffix('.o')), str(source)],
+                    capture_output=True, text=True, check=True)
+            layout = work / "layout.csv"
+            header = "section,filename,function,address,end\n"
+            primary = "game,fixture,primary,0x15000000,0x1500000C\n"
+            provided = "game,fixture,provided,0x1500000C,0x15000018\n"
+            layout.write_text(header + primary + provided)
+            with self.assertRaisesRegex(ValueError, "function mismatch"):
+                emit_padded_assembly(work / "primary.o", layout, "fixture")
+            assembly = emit_padded_assembly(work / "primary.o", layout, "fixture",
+                function_objects={"provided": work / "provided.o"})
+            source = work / "merged.s"
+            source.write_text(assembly)
+            subprocess.run(["mips-linux-gnu-as", "-EB", "-march=vr4300", "-o", str(work / "merged.o"), str(source)],
+                capture_output=True, text=True, check=True)
+            words, functions, _ = parse_object(work / "merged.o")
+            self.assertEqual(set(functions), {"primary", "provided"})
+            self.assertEqual(struct.unpack_from('>6I', words), (0x24020001, 0x03E00008, 0, 0x24020002, 0x03E00008, 0))
+            layout.write_text(header + primary)
+            with self.assertRaisesRegex(ValueError, "absent from primary object and retail layout"):
+                emit_padded_assembly(work / "primary.o", layout, "fixture",
+                    function_objects={"provided": work / "provided.o"})
+
     def test_function_can_come_from_override_object(self):
         if not shutil.which("mips-linux-gnu-as"):
             self.skipTest("mips-linux-gnu-as required")

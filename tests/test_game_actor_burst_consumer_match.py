@@ -459,7 +459,7 @@ class GameActorBurstConsumerMatchTests(unittest.TestCase):
     def test_11_exact_serialization_accounting_and_effective_metadata_controls(self):
         before = (self.out / 'before-elf').read_bytes()
         path = self.root / self.paths['elf']
-        current = path.read_bytes()
+        current = donor_checkpoint.previous_input(path.read_bytes(), self.paths['elf'], self.root)
         installed = source.SELECTED in (self.root / source.SOURCE).read_text()
         names = {name for group, _, _ in SERIALIZATION for name in group}
         rows = {name: (at, fields, string) for at, name, fields, string in symbol_rows(current) if name in names}

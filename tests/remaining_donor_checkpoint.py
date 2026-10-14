@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 from tools.experiments import game_remaining_donor_candidates as source
+from tools.tests import unlinked_donor_checkpoint
 
 AFTER = {
     'elf': '65a9c8e783574fbff76c11d3ab000af8015c604a17061f138f5d354e2a2e3968',
@@ -42,6 +43,7 @@ def previous_owner(current, owner, root):
 
 
 def previous_input(current, path, root):
+    current = unlinked_donor_checkpoint.previous_input(current, path, root)
     relative = str(path).replace('\\', '/')
     if relative.startswith(str(root).replace('\\', '/') + '/'):
         relative = relative[len(str(root)) + 1:]

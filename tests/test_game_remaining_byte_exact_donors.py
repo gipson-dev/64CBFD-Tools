@@ -13,6 +13,7 @@ from tools.tests.test_game_one_shot_timer_match import canonical_symbols, symbol
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.check_game_data_layout import audit_layout
 from tools.tests import remaining_donor_checkpoint as checkpoint
+from tools.tests import unlinked_donor_checkpoint
 
 REMOVED = ('func_15042D94', 'func_15079228', 'func_151F2E88')
 
@@ -68,7 +69,7 @@ class RemainingByteExactDonorTests(unittest.TestCase):
 
     def test_02_all_linked_slots_protected_data_and_closed_overflow_repacking(self):
         before = checkpoint.fixture(self.root, 'before', 'elf')
-        after = (self.root / 'conker/build/conker.us.elf').read_bytes()
+        after = unlinked_donor_checkpoint.previous_input((self.root / 'conker/build/conker.us.elf').read_bytes(), 'conker/build/conker.us.elf', self.root)
         self.assertEqual(after, checkpoint.fixture(self.root, 'after', 'elf'))
         expected = bytearray(before)
         for name, (_, words, _) in source.TARGETS.items():
@@ -94,7 +95,7 @@ class RemainingByteExactDonorTests(unittest.TestCase):
             if struct.unpack_from('>I', before, at)[0] == jump:
                 struct.pack_into('>I', expected, at, 0x08000000 | (new[1] >> 2 & 0x3FFFFFF))
         old_sections = sections(self.out / 'before-elf')
-        new_sections = sections(self.root / 'conker/build/conker.us.elf')
+        new_sections = sections(self.out / 'after-elf')
         game0 = old_sections['.game']
         offset = elf_slot_offset(before, game0[0], len(game0[1]))
         self.assertEqual(new_sections['.game'][1], expected[offset:offset + len(game0[1])])
@@ -135,8 +136,8 @@ class RemainingByteExactDonorTests(unittest.TestCase):
 
     def test_03_progress_guards_and_retained_input_history(self):
         for key, path in (('progress', 'conker/progress.csv'), ('guards', 'conker/retail_word_patches.us.csv')):
-            self.assertEqual((self.root / path).read_bytes(), checkpoint.fixture(self.root, 'before', key))
-        self.assertEqual((self.root / 'conker/Makefile').read_bytes(), checkpoint.fixture(self.root, 'after', 'makefile'))
+            self.assertEqual(unlinked_donor_checkpoint.previous_input((self.root / path).read_bytes(), path, self.root), checkpoint.fixture(self.root, 'before', key))
+        self.assertEqual(unlinked_donor_checkpoint.previous_input((self.root / 'conker/Makefile').read_bytes(), 'conker/Makefile', self.root), checkpoint.fixture(self.root, 'after', 'makefile'))
         self.receipt('history', all_old_guard_bytes_fixed=True, all_progress_rows_fixed=True)
 
     def test_04_effective_word_and_immutable_input_controls(self):
