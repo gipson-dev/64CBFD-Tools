@@ -57,6 +57,19 @@ class ModeOracle(machine.MaskOracle):
         self.code=faults.TrackedCode(self.code,self)
 
 
+class CallerOracle(machine.MaskOracle):
+    def __init__(self,words,child,memory,mode,gate,phase):
+        connected={source.ENTRY+i*4:word for i,word in enumerate(child)}
+        super().__init__(words,memory,phase=phase,entry=0x15081E0C,
+            arguments=(ACTOR,mode&0xFFFFFFFF,gate),connected=connected)
+        self.current_pc=self.delay_of=None
+        self.code=faults.TrackedCode(self.code,self)
+
+    def record_call(self,target):
+        assert target==source.ENTRY
+        self.calls.append((target,self.r[4],self.r[5]))
+
+
 def state(instance):
     return (tuple(instance.r),tuple(instance.f),dict(instance.memory),list(instance.events),
         instance.current_pc,instance.delay_of,instance.accesses,tuple(instance.calls))
@@ -285,6 +298,38 @@ class ActorModeFlagTests(unittest.TestCase):
                 source.qualify(self.root,self.out)
         self.receipt('binding-controls',effective=3,actual_original_and_pool_bindings_proven=True,
             no_unknown_symbol_assigned_a_fake_address=True)
+
+    def test_09_actual_retail_caller_gates_and_unsigned16_argument(self):
+        caller=list(struct.unpack_from('>27I',self.rom,0xAF2BC))
+        self.assertEqual(caller[-6:-4],[0x0D41F7C4,0x00E02825])
+        from tools.tests.test_game_record_constructor_match import elf_slot_offset
+        before=(self.out/'before-elf').read_bytes()
+        at=elf_slot_offset(before,0x15081E0C,108)
+        self.assertEqual(before[at:at+108],struct.pack('>27I',*caller))
+        cases=0
+        for mode,global_byte,gate,actor_byte,phase in itertools.product(MODES,(0,1),(0,1,0x80000000,0x100,0x101),(0,1),(0,8)):
+            memory=fixture(0xFFFFFFFF,0xAAAAAAAA)
+            put(memory,0x800BE616,global_byte,1)
+            put(memory,ACTOR+0x1CA,actor_byte,1)
+            expected=dict(memory)
+            calls=[]
+            if not global_byte:
+                if actor_byte:
+                    put(expected,ACTOR+0x1CA,7,1)
+                if not (gate&255) or (mode&65535)!=10:
+                    expected=reference(expected,mode&65535)
+                    calls=[(source.ENTRY,ACTOR,mode&65535)]
+            instances=[CallerOracle(caller,child,memory,mode,gate,phase).run() for child in (self.retail,self.words)]
+            self.assertEqual(state(instances[0]),state(instances[1]))
+            self.assertEqual(instances[1].calls,calls)
+            # The original caller owns its stack frame; compare all external bytes.
+            for address,value in expected.items():
+                if not STACK-0x100<=address<STACK+0x140:
+                    self.assertEqual(instances[1].memory[address],value)
+            cases+=1
+        self.receipt('caller',connections=cases,actual_original_27_word_caller=True,
+            byte_gate_unsigned8_argument_actor_byte_update_and_unsigned16_mode=True,
+            existing_production_caller_already_byte_exact=True,not_full_gameplay_acceptance=True)
 
 
 if __name__=='__main__':
