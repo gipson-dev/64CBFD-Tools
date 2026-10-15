@@ -80,13 +80,13 @@ def effects(role, number, incoming, args, mode):
     return ()
 
 
-def packet(position, color, fixed, mode, extent, delay, lifetime, flags, context):
+def packet(position, color, fixed, preset, extent, delay, lifetime, flags, context):
     p = [0] * 31
     for i, value in enumerate(position):
         p[i] = short(trunc(value)) & 0xFFFFFFFF
     for i, value in ((3, 13), (5, color[0]), (6, color[1]), (7, color[2]),
             (12, 2), (13, fixed[0] >> 8 & 255), (14, fixed[0] & 255),
-            (15, fixed[1] >> 8 & 255), (16, fixed[1] & 255), (19, mode),
+            (15, fixed[1] >> 8 & 255), (16, fixed[1] & 255), (19, preset),
             (23, short(extent)), (24, short(extent)), (25, delay),
             (26, lifetime), (29, flags & 255), (30, context)):
         p[i] = value & 0xFFFFFFFF
@@ -127,7 +127,7 @@ def reference(memory, args, randoms=SAMPLES[0], phase=0, mode=0):
             delta = rounded(middle - floating(origin))
             fixed.append(trunc(rounded(delta + delta)))
         if count > 0:
-            color_mode = homes[3] & 255
+            preset = homes[3] & 255
             base = trunc(rounded(floating(read(memory, source.SCALE)) * scale))
             width = trunc(rounded(836.0 * scale))
             lifetime = trunc(rounded(143.0 * scale))
@@ -148,7 +148,7 @@ def reference(memory, args, randoms=SAMPLES[0], phase=0, mode=0):
                 if not limit:
                     return memory, calls, packets, True
                 duration = (value % limit + lifetime) & 0xFFFFFFFF
-                p = packet(position, color, fixed, color_mode, extent, delay, duration, homes[8], homes[9])
+                p = packet(position, color, fixed, preset, extent, delay, duration, homes[8], homes[9])
                 packets.append(p)
                 calls.append((source.FACTORY, *p))
                 factory_count += 1

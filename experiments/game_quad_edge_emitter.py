@@ -43,7 +43,7 @@ extern f32 D_800A6E84;
 
 '''
 SELECTED = '''/* Emit packed particles along each edge of a four-vertex perimeter. */
-void func_151700D8(f32 *vertices, f32 originX, f32 originZ, u8 colorMode,
+void func_151700D8(f32 *vertices, f32 originX, f32 originZ, u8 preset,
                   f32 scale, s32 kind, s32 xCount, s32 zCount, u8 flags,
                   s32 context) {
     s32 edge;
@@ -53,7 +53,7 @@ void func_151700D8(f32 *vertices, f32 originX, f32 originZ, u8 colorMode,
     FloatTable3_19A8B0 ranges = D_8008CC00;
     ByteTable9_19A8B0 colors = D_8008CC0C;
     s32 nextEdge;
-    s32 mode;
+    s32 presetByte;
     s32 xHigh;
     s32 xLow;
     s32 zHigh;
@@ -101,7 +101,7 @@ void func_151700D8(f32 *vertices, f32 originX, f32 originZ, u8 colorMode,
         xFixed = (s32)(2.0f * ((next[0] + current[0]) * 0.5f - originX));
         zFixed = (s32)(2.0f * ((next[2] + current[2]) * 0.5f - originZ));
         if ((&count)[0] > 0) {
-            mode = colorMode;
+            presetByte = preset;
             base = (s32)(D_800A6E84 * scale);
             width = (s32)(836.0f * scale);
             lifetime = (s32)(143.0f * scale);
@@ -122,7 +122,7 @@ void func_151700D8(f32 *vertices, f32 originX, f32 originZ, u8 colorMode,
                 extent = (u32)func_150ADA20() % (u32)width + base;
                 func_1516D4E8((s16)(s32)x, (s16)(s32)y, (s16)(s32)z,
                     13, 0, color[0], color[1], color[2], 0, 0, 0, 0, 2,
-                    xHigh, xLow, zHigh, zLow, 0, 0, mode, 0, 0, 0,
+                    xHigh, xLow, zHigh, zLow, 0, 0, presetByte, 0, 0, 0,
                     (s16)extent, (s16)extent,
                     delay, (u32)func_150ADA20() % (u32)limit + lifetime,
                     0, 0, flags, context);
