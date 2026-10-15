@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_view_pending_queue as source
+from tools.tests import view_clipping_checkpoint
 
 AFTER = {
     'elf': '307dae852b172a633730646ad73f4b406274b853a1ca86a7487b2ccfdc1721b7',
@@ -20,6 +21,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = view_clipping_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix()+'/'
     if relative.startswith(prefix):
@@ -32,7 +34,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root/path).read_bytes()
+        data = view_clipping_checkpoint.previous_input((root/path).read_bytes(),path,root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed pending queue input: '+key
         target = root/source.BUILD/('after-'+key)
         if not target.exists():
