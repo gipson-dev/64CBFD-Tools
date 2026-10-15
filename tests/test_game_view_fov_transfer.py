@@ -29,6 +29,7 @@ from tools.tests.game_animation_timeline_oracle import bits, floating, signed
 from tools.tests.test_game_point_transform_match import put, read
 from tools.check_game_data_layout import audit_layout
 from tools.tests import view_fov_transfer_checkpoint as checkpoint
+from tools.tests import view_projection_family_checkpoint as family_checkpoint
 
 ENTRY, ATAN, COMMAND, BASE = source.ENTRY, 0x150484A0, 0x1510B128, 0x800BE628
 WIDTHS, HEIGHTS, DEG_HALF, DEG_X, DEG_Y = 0x800BE638, 0x800BE650, 0x800968F4, 0x800968F8, 0x800968FC
@@ -425,14 +426,15 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
 
     def test_08_installed_source_guards_and_closed_image(self):
         source.freeze(self.root, self.out)
-        self.assertEqual((self.root / source.PATHS['owner']).read_text(), source.recover((self.out / 'before-owner').read_text()))
-        self.assertEqual((self.root / source.PATHS['owner']).read_bytes(), source.recover((self.out / 'before-owner').read_text()).encode())
-        self.assertEqual((self.root / source.PATHS['guards']).read_bytes(), (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
+        old = lambda data, key: family_checkpoint.previous_input(data, source.PATHS[key], self.root)
+        self.assertEqual(old((self.root / source.PATHS['owner']).read_text().encode(), 'owner').decode(), source.recover((self.out / 'before-owner').read_text()))
+        self.assertEqual(old((self.root / source.PATHS['owner']).read_bytes(), 'owner'), source.recover((self.out / 'before-owner').read_text()).encode())
+        self.assertEqual(old((self.root / source.PATHS['guards']).read_bytes(), 'guards'), (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
         for key, path in source.PATHS.items():
             if key not in ('owner', 'guards', 'elf'):
-                self.assertEqual((self.root / path).read_bytes(), (self.out / ('before-' + key)).read_bytes(), key)
+                self.assertEqual(old((self.root / path).read_bytes(), key), (self.out / ('before-' + key)).read_bytes(), key)
         before = (self.out / 'before-elf').read_bytes()
-        current = (self.root / source.PATHS['elf']).read_bytes()
+        current = old((self.root / source.PATHS['elf']).read_bytes(), 'elf')
         expected = bytearray(before)
         at = trig.image.elf_slot_offset(before, ENTRY, 396)
         expected[at:at + 396] = self.rom[source.ROM:source.ROM + 396]
