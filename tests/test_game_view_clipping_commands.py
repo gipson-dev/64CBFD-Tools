@@ -24,6 +24,7 @@ from tools.tests.game_owner_pool import normalized_pools
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.check_game_data_layout import audit_layout
 from tools.tests import view_clipping_checkpoint as checkpoint
+from tools.tests import view_matrix_pass_checkpoint as later
 
 SERIALIZATION=()
 
@@ -287,12 +288,14 @@ class ViewClippingCommandsTests(unittest.TestCase):
         expected=dict(owner=source.recover(self.before).encode(),guards=self.guard_bytes,
             elf=expected_image((self.out/'before-elf').read_bytes(),self.rom))
         for key,path in source.PATHS.items():
-            self.assertEqual((self.root/path).read_bytes(),expected.get(key,(self.out/('before-'+key)).read_bytes()),key)
-        self.assertEqual((self.root/source.PATHS['owner']).read_text(),expected['owner'].decode())
+            current=later.previous_input((self.root/path).read_bytes(),path,self.root)
+            self.assertEqual(current,expected.get(key,(self.out/('before-'+key)).read_bytes()),key)
+        self.assertEqual(later.previous_input((self.root/source.PATHS['owner']).read_text().encode(),source.PATHS['owner'],self.root).decode(),expected['owner'].decode())
         self.assertEqual(hashlib.sha256(expected['elf']).hexdigest(),checkpoint.AFTER['elf'])
         data=audit_layout(self.root/source.PATHS['elf'],self.root/'conker')
         self.assertEqual((data['exact'],data['bytes'],data['owner_count'],data['different_bytes']),(True,189088,720,0))
-        self.receipt('image',ELF_sha256=hashlib.sha256(expected['elf']).hexdigest(),
+        self.receipt('image',ELF_sha256=hashlib.sha256((self.root/source.PATHS['elf']).read_bytes()).hexdigest(),
+            historical_checkpoint_ELF_sha256=hashlib.sha256(expected['elf']).hexdigest(),
             changed_bytes=sum(a!=b for a,b in zip((self.out/'before-elf').read_bytes(),expected['elf'])),
             code_extents=[[12,196],[12,220]],exact_symbol_string_groups=len(SERIALIZATION),
             non_target_definition_changes=0,every_other_ELF_byte_fixed=True,protected_data=data,

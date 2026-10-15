@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_view_clipping_commands as source
+from tools.tests import view_matrix_pass_checkpoint as later
 
 AFTER={
     'elf':'6c21a585574499c927f22707b735110ff34323dfb3bba084e75ba3bc66f1e340',
@@ -20,6 +21,7 @@ def fixture(root,stage,key):
 
 
 def previous_input(current,path,root):
+    current=later.previous_input(current,path,root)
     relative=Path(path).as_posix()
     prefix=Path(root).as_posix()+'/'
     if relative.startswith(prefix):
@@ -32,7 +34,7 @@ def previous_input(current,path,root):
 
 def freeze_after(root):
     for path,key in PATHS.items():
-        data=(root/path).read_bytes()
+        data=later.previous_input((root/path).read_bytes(),path,root)
         assert hashlib.sha256(data).hexdigest()==AFTER[key],'Unexpected installed clipping command input: '+key
         target=root/source.BUILD/('after-'+key)
         if not target.exists():
