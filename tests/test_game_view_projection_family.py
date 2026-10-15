@@ -26,6 +26,7 @@ from tools.tests import test_game_actor_burst_packet_match as machine
 from tools.tests import test_game_actor_burst_consumer_match as faults
 from tools.tests.game_owner_pool import normalized_pools
 from tools.tests import view_projection_family_checkpoint as checkpoint
+from tools.tests import fixed_matrix_checkpoint
 from tools.check_game_data_layout import audit_layout
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 
@@ -320,7 +321,7 @@ class ViewProjectionFamilyTests(unittest.TestCase):
             'elf': expected_image((self.out / 'before-elf').read_bytes(), self.rom),
         }
         for key, path in family.PATHS.items():
-            current = (self.root / path).read_bytes()
+            current = fixed_matrix_checkpoint.previous_input((self.root / path).read_bytes(), path, self.root)
             self.assertEqual(current, expected[key] if key in expected else (self.out / ('before-' + key)).read_bytes(), key)
         for key in ('owner', 'parent'):
             self.assertEqual((self.root / family.PATHS[key]).read_text(), expected[key].decode())
@@ -329,9 +330,10 @@ class ViewProjectionFamilyTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(current).hexdigest(), checkpoint.AFTER['elf'])
         data = audit_layout(self.root / family.PATHS['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
-        self.receipt('image', ELF_sha256=checkpoint.AFTER['elf'], complete_changed_bytes=sum(a != b for a, b in zip(before, current)),
+        self.receipt('image', ELF_sha256=hashlib.sha256((self.root / family.PATHS['elf']).read_bytes()).hexdigest(),
+            projection_checkpoint_ELF_sha256=checkpoint.AFTER['elf'], historical_family_changed_bytes=sum(a != b for a, b in zip(before, current)),
             parent_extent=[12, 516], child_extent=[12, 152], exact_adjacent_symbol_string_groups=4,
-            no_non_target_definition_changes=True, every_other_ELF_byte_fixed=True, protected_data=data)
+            no_non_target_definition_changes=True, every_other_historical_ELF_byte_fixed=True, protected_data=data)
 
     def test_10_effective_current_and_immutable_input_controls(self):
         rb, rt = Path.read_bytes, Path.read_text

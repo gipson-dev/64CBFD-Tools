@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_view_projection_family as source
+from tools.tests import fixed_matrix_checkpoint
 
 AFTER = {
     'elf': '03db1e761d60ffc85ded9fb702ea53720b7c1bdeec97cbf00f34eae3dc7677d7',
@@ -21,6 +22,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = fixed_matrix_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):
@@ -33,7 +35,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root / path).read_bytes()
+        data = fixed_matrix_checkpoint.previous_input((root / path).read_bytes(), path, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed projection family input: ' + key
         target = root / source.BUILD / ('after-' + key)
         if not target.exists():

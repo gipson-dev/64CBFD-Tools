@@ -392,7 +392,8 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
         self.assertEqual((self.root / source.PATHS['owner']).read_text(), source.recover((self.out / 'before-owner').read_text()))
         self.assertEqual(hashlib.sha256((self.root / source.PATHS['owner']).read_bytes()).hexdigest(), OWNER_AFTER)
         self.assertEqual(view_frustum_plane_checkpoint.previous_input((self.root / source.PATHS['elf']).read_bytes(), source.PATHS['elf'], self.root), (self.out / 'before-elf').read_bytes())
-        self.assertEqual((self.root / source.PATHS['progress']).read_bytes(), source.expected_progress((self.out / 'before-progress').read_bytes()))
+        progress = view_frustum_plane_checkpoint.previous_input((self.root / source.PATHS['progress']).read_bytes(), source.PATHS['progress'], self.root)
+        self.assertEqual(progress, source.expected_progress((self.out / 'before-progress').read_bytes()))
         for key in ('guards', 'makefile', 'functions', 'structs', 'variables', 'original'):
             self.assertEqual(view_frustum_plane_checkpoint.previous_input((self.root / source.PATHS[key]).read_bytes(), source.PATHS[key], self.root), (self.out / ('before-' + key)).read_bytes(), key)
         data = audit_layout(self.root / source.PATHS['elf'], self.root / 'conker')

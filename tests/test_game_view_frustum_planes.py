@@ -375,7 +375,8 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
         guards = view_fov_transfer_checkpoint.previous_input((self.root / source.PATHS['guards']).read_bytes(), source.PATHS['guards'], self.root)
         self.assertEqual(guards, (self.out / 'before-guards').read_bytes() + source.GUARD_ROWS.encode())
         for key in ('progress', 'makefile', 'functions', 'structs', 'variables', 'original'):
-            self.assertEqual((self.root / source.PATHS[key]).read_bytes(), (self.out / ('before-' + key)).read_bytes(), key)
+            current = view_fov_transfer_checkpoint.previous_input((self.root / source.PATHS[key]).read_bytes(), source.PATHS[key], self.root)
+            self.assertEqual(current, (self.out / ('before-' + key)).read_bytes(), key)
         before, current = (self.out / 'before-elf').read_bytes(), (self.root / source.PATHS['elf']).read_bytes()
         installed_hash = hashlib.sha256(current).hexdigest()
         current = game_sine_checkpoint.previous_input(current, source.PATHS['elf'], self.root)

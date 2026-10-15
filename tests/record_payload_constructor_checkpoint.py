@@ -22,7 +22,7 @@ def previous_input(current, path, root):
 
 
 def freeze_after(root):
-    current = (root / PROGRESS).read_bytes()
+    current = view_frustum_plane_checkpoint.previous_input((root / PROGRESS).read_bytes(), PROGRESS, root)
     assert hashlib.sha256(current).hexdigest() == AFTER, 'Unexpected constructor progress'
     source.freeze(root, root / source.BUILD)
     before = (root / source.BUILD / 'before-progress').read_bytes()
