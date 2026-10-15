@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 
 from tools.experiments import game_fixed_matrix_restoration as source
+from tools.tests import view_orthographic_setup_checkpoint
 
 AFTER = {
     'elf': '7328baa3d6e02c46ba323034c3400d9644ff798d76a55cf062fff676155dacde',
@@ -21,6 +22,7 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    current = view_orthographic_setup_checkpoint.previous_input(current, path, root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix):
@@ -33,7 +35,7 @@ def previous_input(current, path, root):
 
 def freeze_after(root):
     for path, key in PATHS.items():
-        data = (root / path).read_bytes()
+        data = view_orthographic_setup_checkpoint.previous_input((root / path).read_bytes(), path, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected installed fixed-matrix input: ' + key
         target = root / source.BUILD / ('after-' + key)
         if not target.exists():

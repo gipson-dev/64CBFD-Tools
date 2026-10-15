@@ -19,6 +19,7 @@ from tools.tests import game_fixed_matrix_oracle as model
 from tools.tests import test_game_actor_burst_packet_match as machine
 from tools.tests import test_game_actor_burst_consumer_match as faults
 from tools.tests import fixed_matrix_checkpoint as checkpoint
+from tools.tests import view_orthographic_setup_checkpoint
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.check_game_data_layout import audit_layout
 
@@ -299,16 +300,18 @@ void _start(void){int result=run();__asm__ volatile("int $0x80"::"a"(1),"b"(resu
             'progress': source.expected_progress((self.out / 'before-progress').read_bytes()),
         }
         for key, path in source.PATHS.items():
-            self.assertEqual((self.root / path).read_bytes(), expected[key] if key in expected else (self.out / ('before-' + key)).read_bytes(), key)
+            current = view_orthographic_setup_checkpoint.previous_input((self.root / path).read_bytes(), path, self.root)
+            self.assertEqual(current, expected[key] if key in expected else (self.out / ('before-' + key)).read_bytes(), key)
         for key in ('owner', 'assembly'):
             self.assertEqual((self.root / source.PATHS[key]).read_text(), expected[key].decode())
         current = expected['elf']
         self.assertEqual(hashlib.sha256(current).hexdigest(), checkpoint.AFTER['elf'])
         data = audit_layout(self.root / source.PATHS['elf'], self.root / 'conker')
         self.assertEqual((data['exact'], data['bytes'], data['owner_count'], data['different_bytes']), (True, 189088, 720, 0))
-        self.receipt('image', ELF_sha256=checkpoint.AFTER['elf'], changed_bytes=sum(a != b for a, b in zip(before, current)),
+        self.receipt('image', ELF_sha256=hashlib.sha256((self.root / source.PATHS['elf']).read_bytes()).hexdigest(),
+            restoration_checkpoint_ELF_sha256=checkpoint.AFTER['elf'], historical_restoration_changed_bytes=sum(a != b for a, b in zip(before, current)),
             code_slot_bytes=464, extent=[256, 464], no_symbol_reordering_or_non_target_definition_changes=True,
-            every_other_ELF_byte_fixed=True, unchanged_guards_profiles_headers_and_callers=True,
+            every_other_historical_ELF_byte_fixed=True, unchanged_guards_profiles_headers_and_callers=True,
             only_progress_change='guMtxF2L c -> asm', no_new_C_match_credit=True, protected_data=data)
 
     def test_09_effective_installed_source_image_and_progress_controls(self):

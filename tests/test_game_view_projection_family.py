@@ -324,7 +324,8 @@ class ViewProjectionFamilyTests(unittest.TestCase):
             current = fixed_matrix_checkpoint.previous_input((self.root / path).read_bytes(), path, self.root)
             self.assertEqual(current, expected[key] if key in expected else (self.out / ('before-' + key)).read_bytes(), key)
         for key in ('owner', 'parent'):
-            self.assertEqual((self.root / family.PATHS[key]).read_text(), expected[key].decode())
+            current = fixed_matrix_checkpoint.previous_input((self.root / family.PATHS[key]).read_text().encode(), family.PATHS[key], self.root)
+            self.assertEqual(current.decode(), expected[key].decode())
         current = expected['elf']
         before = (self.out / 'before-elf').read_bytes()
         self.assertEqual(hashlib.sha256(current).hexdigest(), checkpoint.AFTER['elf'])
