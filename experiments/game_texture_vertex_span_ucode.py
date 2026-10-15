@@ -16,11 +16,14 @@ from tools.pad_generated_object import parse_object
 BUILD=flow.BUILD+'/ucode'
 
 
-def phase_summary(record,text):
+def phase_summary(record,text,initializations=None):
     if record.get('code_unchanged') is not True:
         raise ValueError('Scanner compiler capture not qualified')
-    statements={'stage = 0;':'stage','maximum = 0;':'maximum',
-        'nested = 0;':'nested','trimFirst = 0;':'trimFirst','count = 3;':'count'}
+    statements=initializations if initializations is not None else {
+        'stage = 0;':'stage','maximum = 0;':'maximum','nested = 0;':'nested',
+        'trimFirst = 0;':'trimFirst','count = 3;':'count'}
+    if not statements or 'count' not in statements.values() or len(set(statements.values()))!=len(statements):
+        raise ValueError('Scanner source roles must be distinct and include count')
     lines=text.splitlines()
     positions={}
     for statement,name in statements.items():
@@ -71,7 +74,7 @@ def compile_target(root,out,name,body):
         diagnostics=diagnostics,profile=['-O2','-g3']),words
 
 
-def trace_target(root,out,label,body):
+def trace_target(root,out,label,body,initializations=None):
     source.freeze(root,root/source.BUILD)
     with patch.object(capture.trace.screen,'compile_candidate',side_effect=compile_target),\
             patch.dict(capture.trace.screen.PROFILES,owner=('-O2','-g3')):
@@ -91,7 +94,7 @@ def trace_target(root,out,label,body):
         raise ValueError('Standalone scanner trace differs from the complete owner')
     record['standalone_matches_complete_owner_target']=True
     (work/'frontend.json').write_text(json.dumps(record,indent=2)+'\n')
-    summary=phase_summary(record,(work/'baseline.c').read_text())
+    summary=phase_summary(record,(work/'baseline.c').read_text(),initializations)
     (work/'phase-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
     return record
 
