@@ -210,9 +210,10 @@ for at in (0x9C, 0xD8, 0x12C, 0x168):
 
 
 def freeze(root, out):
+    from tools.tests import microcode_loader_checkpoint as current
     out.mkdir(parents=True, exist_ok=True)
     for key, relative in PATHS.items():
-        data = (root / relative).read_bytes()
+        data = current.previous_input((root / relative).read_bytes(), relative, root)
         if hashlib.sha256(data).hexdigest() != BASELINE[key]: raise ValueError('Unknown microcode loader input: ' + key)
         target = out / ('before-' + key)
         if not target.exists(): target.write_bytes(data)

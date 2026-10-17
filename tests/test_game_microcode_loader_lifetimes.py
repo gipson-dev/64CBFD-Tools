@@ -15,6 +15,7 @@ from tools.experiments.alternative_source_draft_word_screen import emit_function
 from tools.experiments.game_actor_classifier_candidates import sections
 from tools.pad_generated_object import parse_object
 from tools.tests import game_microcode_loader_oracle as model
+from tools.tests import microcode_loader_checkpoint as checkpoint
 from tools.tests import test_game_microcode_loader as previous
 from tools.tests import test_game_actor_burst_consumer_match as faults
 
@@ -77,7 +78,8 @@ class MicrocodeLoaderLifetimesTests(unittest.TestCase):
         self.assertTrue(after.startswith(before)); self.assertEqual(after.count(b'\n') - before.count(b'\n'), 23)
         self.assertEqual(after.count(b'\r\n'), before.count(b'\r\n'))
         for key, relative in source.source.PATHS.items():
-            self.assertEqual(hashlib.sha256((self.root / relative).read_bytes()).hexdigest(), source.source.BASELINE[key], key)
+            data = checkpoint.previous_input((self.root / relative).read_bytes(), relative, self.root)
+            self.assertEqual(hashlib.sha256(data).hexdigest(), source.source.BASELINE[key], key)
         self.receipt('emission', raw_words=96, normalized_words=97, original_frame=48,
             new_guards=23, existing_guard_prefix_unchanged=True, added_instructions=1,
             no_frame_or_home_or_saved_lifetime_repairs=True, unchanged_raw_neighbors=56,

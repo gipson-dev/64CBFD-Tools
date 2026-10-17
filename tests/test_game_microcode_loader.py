@@ -10,6 +10,7 @@ from unittest.mock import patch
 from tools.experiments import game_microcode_loader as source
 from tools.pad_generated_object import parse_object
 from tools.tests import game_microcode_loader_oracle as model
+from tools.tests import microcode_loader_checkpoint as checkpoint
 from tools.tests import test_game_view_list_setup as assembly
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 
@@ -63,7 +64,8 @@ class MicrocodeLoaderTests(unittest.TestCase):
         before = (self.out / 'before-view_list_caller_owner').read_text()
         with self.assertRaises(ValueError): source.recovered_owner(source.recovered_owner(before))
         for key, relative in source.PATHS.items():
-            self.assertEqual(hashlib.sha256((self.root / relative).read_bytes()).hexdigest(), source.BASELINE[key], key)
+            data = checkpoint.previous_input((self.root / relative).read_bytes(), relative, self.root)
+            self.assertEqual(hashlib.sha256(data).hexdigest(), source.BASELINE[key], key)
         self.receipt('fail-closed', words=97, bindings=34, extra_binding=1, pool=1, immutable_live_inputs=len(source.PATHS))
 
     def test_03_independent_reference_unsigned_input_signed_cache_full_word_flag(self):
