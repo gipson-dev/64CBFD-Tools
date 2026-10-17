@@ -366,7 +366,9 @@ class TextRevealTests(unittest.TestCase):
         new_symbols=[(n,f[1:]) for _,n,f,_ in symbol_rows(expected['elf'])]
         self.assertEqual(sorted(old_symbols),sorted(new_symbols))
         for key in source.PATHS:
-            if key not in expected:self.assertEqual((self.root/source.PATHS[key]).read_bytes(),(out/('before-'+key)).read_bytes())
+            if key not in expected:
+                from tools.tests import sine_phase_update_checkpoint as latest
+                self.assertEqual(latest.previous_input((self.root/source.PATHS[key]).read_bytes(),source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
         self.receipt('installation',installed=True,entire_first_image_exact=True,metadata_exclusions=0,
             checkpoint_controls=count,metadata_controls=metadata_controls,game_data=report,all_other_protected_inputs_unchanged=True,
             compared_function_bodies=len(old_functions),target_only_changed=True,all_function_addresses_unchanged=True,

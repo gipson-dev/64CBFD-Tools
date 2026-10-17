@@ -272,7 +272,8 @@ class ActorCounterMotionTests(unittest.TestCase):
             self.receipt('installation',installed=False,first_image_qualified=True,metadata_controls=metadata_controls);return
         original=Path.read_bytes;count=0
         for key,data in expected.items():
-            self.assertEqual((self.root/source.PATHS[key]).read_bytes(),data)
+            from tools.tests import sine_phase_update_checkpoint as latest
+            self.assertEqual(latest.previous_input((self.root/source.PATHS[key]).read_bytes(),source.PATHS[key],self.root),data)
             self.assertEqual(hashlib.sha256(data).hexdigest(),checkpoint.AFTER[key])
             self.assertEqual(checkpoint.previous_input(data,source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
             for stage in ('before','after'):
@@ -288,13 +289,15 @@ class ActorCounterMotionTests(unittest.TestCase):
         self.assertEqual((report['exact'],report['bytes'],report['owner_count'],report['different_bytes']),(True,189088,720,0))
         from tools.match_progress import load_elf_functions
         old_functions,_,old_addresses=load_elf_functions(str(out/'before-elf'),'mips-linux-gnu-objdump')
-        new_functions,_,new_addresses=load_elf_functions(str(self.root/source.PATHS['elf']),'mips-linux-gnu-objdump')
+        new_functions,_,new_addresses=load_elf_functions(str(out/'after-elf'),'mips-linux-gnu-objdump')
         self.assertEqual(old_addresses,new_addresses);self.assertEqual(set(old_functions),set(new_functions))
         self.assertEqual([n for n in old_functions if old_functions[n]!=new_functions[n]],[source.FUNCTION])
         old_symbols=[(n,(f[1],source.SIZE if n==source.FUNCTION else f[2],*f[3:])) for _,n,f,_ in symbol_rows(baseline)]
         self.assertEqual(sorted(old_symbols),sorted((n,f[1:]) for _,n,f,_ in symbol_rows(expected['elf'])))
         for key,path in source.PATHS.items():
-            if key not in expected:self.assertEqual((self.root/path).read_bytes(),(out/('before-'+key)).read_bytes())
+            if key not in expected:
+                from tools.tests import sine_phase_update_checkpoint as latest
+                self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(out/('before-'+key)).read_bytes())
         self.receipt('installation',installed=True,entire_first_image_exact=True,metadata_exclusions=0,
             checkpoint_controls=count,metadata_controls=metadata_controls,game_data=report,
             compared_function_bodies=len(old_functions),only_target_changed=True,all_function_addresses_unchanged=True,
