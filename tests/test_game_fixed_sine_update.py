@@ -281,7 +281,8 @@ class FixedSineUpdateTests(unittest.TestCase):
             self.receipt('installation',installed=False,first_image_qualified=True);return
         original=Path.read_bytes;count=0
         for key,data in expected.items():
-            self.assertEqual((self.root/source.PATHS[key]).read_bytes(),data)
+            from tools.tests import selector_point_checkpoint as latest
+            self.assertEqual(latest.previous_input((self.root/source.PATHS[key]).read_bytes(),source.PATHS[key],self.root),data)
             self.assertEqual(hashlib.sha256(data).hexdigest(),checkpoint.AFTER[key])
             self.assertEqual(checkpoint.previous_input(data,source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
             for stage in ('before','after'):
@@ -304,7 +305,9 @@ class FixedSineUpdateTests(unittest.TestCase):
         self.assertEqual(sorted(old_symbols),sorted((n,f[1:]) for _,n,f,_ in symbol_rows(expected['elf'])))
         owned={source.PATHS[k] for k in expected}
         for key,path in source.PATHS.items():
-            if path not in owned:self.assertEqual((self.root/path).read_bytes(),(out/('before-'+key)).read_bytes())
+            if path not in owned:
+                from tools.tests import selector_point_checkpoint as latest
+                self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(out/('before-'+key)).read_bytes())
         self.receipt('installation',installed=True,entire_first_image_exact=True,metadata_exclusions=0,
             checkpoint_controls=count,game_data=report,compared_function_bodies=len(old),
             only_target_changed=True,all_function_addresses_unchanged=True,

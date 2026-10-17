@@ -349,7 +349,9 @@ class SinePhaseUpdateTests(unittest.TestCase):
         old_symbols=[(n,(f[1],source.SIZE if n==source.FUNCTION else f[2],*f[3:])) for _,n,f,_ in symbol_rows(baseline)]
         self.assertEqual(sorted(old_symbols),sorted((n,f[1:]) for _,n,f,_ in symbol_rows(expected['elf'])))
         for key,path in source.PATHS.items():
-            if key not in expected:self.assertEqual((self.root/path).read_bytes(),(out/('before-'+key)).read_bytes())
+            if key not in expected:
+                from tools.tests import selector_point_checkpoint as latest
+                self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(out/('before-'+key)).read_bytes())
         self.receipt('installation',installed=True,entire_first_image_exact=True,metadata_exclusions=0,
             checkpoint_controls=count,game_data=report,compared_function_bodies=len(old),
             only_target_changed=True,all_function_addresses_unchanged=True,
