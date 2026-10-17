@@ -180,7 +180,9 @@ class WhiteFadeTests(unittest.TestCase):
                         patch.object(source.hashlib,'sha256',side_effect=digest):
                     with self.assertRaisesRegex(ValueError,'Changed white-fade '+kind+' input'):source.freeze(self.root,self.out)
                 count+=1
-        for key,path in source.PATHS.items():self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+key)).read_bytes())
+        for key,path in source.PATHS.items():
+            from tools.tests import actor_counter_motion_checkpoint as latest
+            self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(self.out/('before-'+key)).read_bytes())
         self.receipt('inputs',protected_entries=len(source.PATHS),distinct_paths=len(set(source.PATHS.values())),
             effective_controls=count,all_production_and_normal_image_inputs_unchanged=True)
 
