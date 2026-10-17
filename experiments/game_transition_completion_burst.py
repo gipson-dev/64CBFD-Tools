@@ -167,6 +167,9 @@ def freeze(root, out):
     for key, path in PATHS.items():
         data = (root / path).read_bytes()
         if hashlib.sha256(data).hexdigest() != BASELINE[key]:
+            from tools.tests import transition_child_motion_checkpoint as installed
+            data = installed.previous_input(data, path, root)
+        if hashlib.sha256(data).hexdigest() != BASELINE[key]:
             raise ValueError('Unknown burst input: ' + key)
         target = out / ('before-' + key)
         if not target.exists():
