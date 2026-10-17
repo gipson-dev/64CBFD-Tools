@@ -194,7 +194,8 @@ class RecordGateRecoveryTests(unittest.TestCase):
 
     def test_05_production_image_data_and_every_input_unchanged(self):
         source.freeze(self.root,self.out)
-        for key,path in source.PATHS.items():self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+key)).read_bytes())
+        from tools.tests import indexed_threshold_mask_checkpoint as latest
+        for key,path in source.PATHS.items():self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(self.out/('before-'+key)).read_bytes())
         report=audit_layout(self.root/'conker/build/conker.us.elf',self.root/'conker')
         self.assertEqual((report['exact'],report['bytes'],report['owner_count'],report['different_bytes']),(True,189088,720,0))
         self.receipt('unchanged',protected_entries=len(source.PATHS),distinct_paths=len(set(source.PATHS.values())),

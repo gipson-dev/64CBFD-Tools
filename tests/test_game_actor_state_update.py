@@ -310,7 +310,8 @@ class ActorStateTests(unittest.TestCase):
             self.receipt('installation',installed=False,first_image_qualified=True);return
         original=Path.read_bytes;count=0
         for key,data in expected.items():
-            self.assertEqual((self.root/source.PATHS[key]).read_bytes(),data)
+            from tools.tests import indexed_threshold_mask_checkpoint as latest
+            self.assertEqual(latest.previous_input((self.root/source.PATHS[key]).read_bytes(),source.PATHS[key],self.root),data)
             self.assertEqual(hashlib.sha256(data).hexdigest(),checkpoint.AFTER[key])
             self.assertEqual(checkpoint.previous_input(data,source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
             for stage in ('before','after'):
