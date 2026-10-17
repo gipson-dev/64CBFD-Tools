@@ -126,7 +126,9 @@ class ThresholdMaskTests(unittest.TestCase):
     def test_04_independent_symbol_rebases(self):
         count=0
         for group,entry in enumerate((0x15207ff0,0x15610000,0x15228000)):
-            symbols={name:((value^((0x00210000,0x00110000,0x00320000)[group]))&0xffffffff) for name,value in source.SYMBOLS.items()}
+            addresses=((0x80317ffc,0x80328000,0x80337ff0),
+                (0x80418004,0x80427ffc,0x80438000),(0x80517ff0,0x80528004,0x80537ffc))[group]
+            symbols=dict(zip(source.SYMBOLS,addresses))
             raw=source.raw_object(self.root,self.out,self.obj,'rebase-'+str(group),symbols)
             asm=raw.with_suffix('.ld');elf=raw.with_suffix('.elf')
             asm.write_text('SECTIONS { .text 0x%X : SUBALIGN(4) { *(.text) } }\n'%entry)
