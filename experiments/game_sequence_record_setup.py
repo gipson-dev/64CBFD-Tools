@@ -283,6 +283,9 @@ def freeze(root, out):
     out.mkdir(parents=True, exist_ok=True)
     for key, relative in PATHS.items():
         data = (root / relative).read_bytes()
+        if hashlib.sha256(data).hexdigest() != BASELINE[key]:
+            from tools.tests import sequence_record_setup_checkpoint as installed
+            data = installed.previous_input(data, relative, root)
         if hashlib.sha256(data).hexdigest() != BASELINE[key]: raise ValueError('Unknown record setup input: ' + key)
         target = out / ('before-' + key)
         if not target.exists(): target.write_bytes(data)
