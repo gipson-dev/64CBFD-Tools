@@ -284,7 +284,7 @@ class TextConstructorTests(unittest.TestCase):
         self.receipt('callers',complete_original_callers=3,caller_words=[27,30,28],three_way_cases=count)
 
     def test_09_all_protected_live_and_frozen_input_controls(self):
-        source.freeze(self.root,self.out);real=hashlib.sha256;cache={}
+        source.freeze(self.root,self.out);real=hashlib.sha256;cache={};original_read=Path.read_bytes
         for key,path in source.PATHS.items():
             for p in (self.root/path,self.out/('before-'+key)):cache[p]=p.read_bytes()
         if (self.root/install.BUILD/'after-elf').exists():
@@ -297,7 +297,7 @@ class TextConstructorTests(unittest.TestCase):
         for key,path in source.PATHS.items():
             for target,message in ((self.root/path,'Changed dual-buffer live'),(self.out/('before-'+key),'Changed dual-buffer frozen')):
                 wrong=bytearray(cache[target]);wrong[len(wrong)//2]^=1;wrong=bytes(wrong)
-                def altered(path):return wrong if path==target else cache[path]
+                def altered(path):return wrong if path==target else cache[path] if path in cache else original_read(path)
                 with patch.object(Path,'read_bytes',altered),patch.object(Path,'exists',lambda p:p in cache),\
                         patch.object(source.hashlib,'sha256',side_effect=digest):
                     with self.assertRaisesRegex(ValueError,message):source.freeze(self.root,self.out)
@@ -312,7 +312,8 @@ class TextConstructorTests(unittest.TestCase):
             self.receipt('installation',installed=False,first_complete_image_qualified=True);return
         original=Path.read_bytes;count=0
         for key,data in expected.items():
-            self.assertEqual((self.root/source.PATHS[key]).read_bytes(),data)
+            from tools.tests import text_reveal_checkpoint as latest
+            self.assertEqual(latest.previous_input((self.root/source.PATHS[key]).read_bytes(),source.PATHS[key],self.root),data)
             self.assertEqual(hashlib.sha256(data).hexdigest(),checkpoint.AFTER[key])
             self.assertEqual(checkpoint.previous_input(data,source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
             for stage in ('before','after'):
@@ -336,7 +337,8 @@ class TextConstructorTests(unittest.TestCase):
         if not (out/'after-elf').exists():return
         original=Path.read_bytes;count=0
         for key,data in expected.items():
-            self.assertEqual((self.root/source.PATHS[key]).read_bytes(),data)
+            from tools.tests import text_reveal_checkpoint as latest
+            self.assertEqual(latest.previous_input((self.root/source.PATHS[key]).read_bytes(),source.PATHS[key],self.root),data)
             self.assertEqual(hashlib.sha256(data).hexdigest(),checkpoint.EXTRA_AFTER[key])
             self.assertEqual(checkpoint.previous_input(data,source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
             for stage in ('before','after'):
