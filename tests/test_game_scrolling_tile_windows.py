@@ -181,12 +181,15 @@ class ScrollingTileTests(unittest.TestCase):
             actual38_word_body=True,not_full_dispatchers=True)
 
     def test_08_first_complete_installed_image_and_exact_successor_controls(self):
+        from tools.tests import fixed_transition_checkpoint as installed
         out=self.root/install.BUILD; expected=install.expected_inputs(self.root,out)
         self.assertEqual(json.loads((out/'initial-prediction.json').read_text()),checkpoint.AFTER)
-        before=(out/'before-elf').read_bytes(); actual=(self.root/source.PATHS['elf']).read_bytes()
+        before=(out/'before-elf').read_bytes()
+        actual=installed.previous_input((self.root/source.PATHS['elf']).read_bytes(),source.PATHS['elf'],self.root)
         self.assertEqual((out/'prelink-prediction.elf').read_bytes(),actual)
         for key,path in source.PATHS.items():
-            self.assertEqual((self.root/path).read_bytes(),expected.get(key,(out/('before-'+key)).read_bytes()),key)
+            current=installed.previous_input((self.root/path).read_bytes(),path,self.root)
+            self.assertEqual(current,expected.get(key,(out/('before-'+key)).read_bytes()),key)
         self.assertEqual(len(before),len(actual))
         self.assertEqual(sum(a!=b for a,b in zip(before,actual)),128)
         wanted=canonical_symbols(before); row=next(k for k in wanted if k[0]==source.FUNCTION)
