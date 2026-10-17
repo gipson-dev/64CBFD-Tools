@@ -54,6 +54,9 @@ def freeze(root,out):
     out.mkdir(parents=True,exist_ok=True)
     for key,path in PATHS.items():
         data=(root/path).read_bytes()
+        if hashlib.sha256(data).hexdigest()!=BASELINE[key]:
+            from tools.tests import overlay_projection_checkpoint as successor
+            data=successor.previous_input(data,path,root)
         if hashlib.sha256(data).hexdigest()!=BASELINE[key]:raise ValueError('Unknown pulse audit input: '+key)
         target=out/('before-'+key)
         if not target.exists():target.write_bytes(data)

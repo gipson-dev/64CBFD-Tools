@@ -7,6 +7,7 @@ from unittest.mock import patch
 from tools.experiments import game_color_overlay_draw as source
 from tools.experiments import game_color_overlay_draw_installation as installation
 from tools.tests import color_overlay_draw_checkpoint as checkpoint
+from tools.tests import overlay_projection_checkpoint as successor
 from tools.tests import test_game_view_overlay_installed as inverse
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.tests.test_game_one_shot_timer_match import canonical_symbols,symbol_rows
@@ -23,7 +24,8 @@ class ColorOverlayDrawInstalledTests(unittest.TestCase):
     def check_live(self):
         self.assertEqual(json.loads((self.out/'initial-prediction.json').read_text()),checkpoint.AFTER)
         self.assertEqual(len(source.PATHS),152)
-        for key,path in source.PATHS.items():self.assertTrue((self.root/path).read_bytes()==self.wanted[key],key)
+        for key,path in source.PATHS.items():
+            self.assertTrue(successor.previous_input((self.root/path).read_bytes(),path,self.root)==self.wanted[key],key)
 
     def test_01_complete_first_prediction_197_words_three_owners_and_exact_data(self):
         self.check_live()
