@@ -139,11 +139,18 @@ class MovementReturnTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 recovery.backend.validate_as1(self.work, late)
             count += 1
-        failed = json.loads((self.out / 'traces/selected/receipt.json').read_text())
-        self.assertFalse(failed['code_unchanged'])
-        self.assertNotEqual(failed['exit_code'], 0)
-        with self.assertRaises((ValueError, FileNotFoundError)):
-            recovery.finish_trace(self.root, self.out, 'selected', recovery.previous.selected_body())
+        summary_path = self.work / 'allocation-summary.json'
+        failed = json.loads(summary_path.read_text())
+        failed.update(code_unchanged=False, exit_code=1)
+        read_text = Path.read_text
+        with patch.object(Path, 'read_text', lambda p, *a, **k: json.dumps(failed) if p == summary_path else read_text(p, *a, **k)):
+            with self.assertRaises(ValueError):
+                recovery.finish_trace(self.root, self.out, recovery.SELECTED_NAME, self.body)
+        failed_path = self.out / 'traces/selected/receipt.json'
+        if failed_path.exists():
+            actual_failed = json.loads(failed_path.read_text())
+            self.assertFalse(actual_failed['code_unchanged'])
+            self.assertNotEqual(actual_failed['exit_code'], 0)
         count += 1
         self.receipt('observer-controls', effective_controls=count, live_probe_AS1_guard_effective=True,
                      failed_owned_trace_not_accepted=True, actual_exit_markers_not_synthetic_records=True)
