@@ -22,6 +22,8 @@ def fixture(root,stage,key):
 
 
 def previous_input(current,path,root):
+    from tools.tests import link_event_checkpoint as latest
+    current=latest.previous_input(current,path,root)
     relative=Path(path).as_posix();prefix=Path(root).as_posix()+'/'
     if relative.startswith(prefix):relative=relative[len(prefix):]
     key=PATHS.get(relative)
