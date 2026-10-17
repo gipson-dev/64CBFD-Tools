@@ -18,6 +18,8 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    from tools.tests import sequence_state_reset_checkpoint as successor
+    current = successor.previous_input(current, path, root)
     relative = Path(path).as_posix(); prefix = Path(root).as_posix() + '/'
     if relative.startswith(prefix): relative = relative[len(prefix):]
     key = PATHS.get(relative)
@@ -26,8 +28,9 @@ def previous_input(current, path, root):
 
 
 def freeze_after(root):
+    from tools.tests import sequence_state_reset_checkpoint as successor
     for relative, key in PATHS.items():
-        data = (root / relative).read_bytes()
+        data = successor.previous_input((root / relative).read_bytes(), relative, root)
         assert hashlib.sha256(data).hexdigest() == AFTER[key], 'Unexpected record maximum successor: ' + key
         target = root / source.BUILD / ('after-' + key)
         if not target.exists(): target.write_bytes(data)

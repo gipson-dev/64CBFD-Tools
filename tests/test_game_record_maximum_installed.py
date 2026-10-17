@@ -8,6 +8,7 @@ from unittest.mock import patch
 from tools.experiments import game_record_maximum_installation as installation
 from tools.experiments import game_record_maximum_scan as source
 from tools.tests import record_maximum_checkpoint as checkpoint
+from tools.tests import sequence_state_reset_checkpoint as successor
 from tools.tests import test_game_view_overlay_installed as inverse
 from tools.tests.test_game_record_constructor_match import elf_slot_offset
 from tools.tests.test_game_one_shot_timer_match import canonical_symbols, symbol_rows
@@ -24,7 +25,8 @@ class RecordMaximumInstalledTests(unittest.TestCase):
     def check_live(self):
         self.assertEqual(json.loads((self.out / 'initial-prediction.json').read_text()), checkpoint.AFTER)
         self.assertEqual(len(source.PATHS), 136)
-        for key, path in source.PATHS.items(): self.assertTrue((self.root / path).read_bytes() == self.wanted[key], key)
+        for key, path in source.PATHS.items():
+            self.assertTrue(successor.previous_input((self.root / path).read_bytes(), path, self.root) == self.wanted[key], key)
 
     def test_01_whole371_byte_prediction_body_extent_serialization_and_protected_data(self):
         self.check_live()
