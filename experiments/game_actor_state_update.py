@@ -189,4 +189,3 @@ def qualify(root,out):
 if __name__=='__main__':
     root=Path(__file__).resolve().parents[2]
     print(json.dumps(qualify(root,root/BUILD)[-1],indent=2),flush=True)
-
