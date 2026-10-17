@@ -11,6 +11,7 @@ from unittest.mock import patch
 from tools.experiments import game_mirrored_texture_rectangles as source
 from tools.tests import game_mirrored_texture_oracle as model
 from tools.tests import game_mirrored_texture_native as native
+from tools.tests import overlay_defaults_checkpoint as successor
 from tools.tests import test_game_actor_burst_consumer_match as faults
 from tools.tests import test_game_view_list_setup as assembly
 from tools.tests.test_game_projected_packet_draw import native_command
@@ -43,7 +44,8 @@ class MirroredTextureTests(unittest.TestCase):
         self.assertEqual(self.row['new_guards'],0);self.assertNotEqual(self.words,self.truth)
         before=(self.out/'before-color_owner').read_text();lo,hi=source.build.function_span(before,source.FUNCTION)
         self.assertEqual(before[lo:hi],'s32 func_1517FB9C() {\n    return 0;\n}')
-        self.assertEqual((self.root/source.PATHS['color_owner']).read_bytes(),(self.out/'before-color_owner').read_bytes())
+        self.assertEqual(successor.previous_input((self.root/source.PATHS['color_owner']).read_bytes(),
+            source.PATHS['color_owner'],self.root),(self.out/'before-color_owner').read_bytes())
         source.checked_parts(*source.parts(self.obj),source.projection.sections(self.obj)['.rodata'][1])
         self.receipt('status',candidate_words=626,original_words=633,frame=216,ordinal_differences=604,
             installed=False,byte_exact=False,matching_credit=False,guards=0,unchanged_raw_padded_neighbors=27,
@@ -163,7 +165,8 @@ class MirroredTextureTests(unittest.TestCase):
             with patch.object(Path,'read_bytes',lambda p:read(p)+b'\n' if p==target else read(p)):
                 with self.assertRaises(ValueError):source.freeze(self.root,self.out)
         source.freeze(self.root,self.out)
-        self.assertEqual(hashlib.sha256((self.root/source.PATHS['elf']).read_bytes()).hexdigest(),source.BASELINE['elf'])
+        self.assertEqual(hashlib.sha256(successor.previous_input((self.root/source.PATHS['elf']).read_bytes(),
+            source.PATHS['elf'],self.root)).hexdigest(),source.BASELINE['elf'])
         layout=audit_layout(self.root/source.PATHS['elf'],self.root/'conker')
         self.assertEqual((layout['exact'],layout['bytes'],layout['owner_count'],layout['different_bytes']),(True,189088,720,0))
         self.receipt('inputs',word_controls=626,binding_controls=5,pool_byte_controls=16,protected_input_entries=156,

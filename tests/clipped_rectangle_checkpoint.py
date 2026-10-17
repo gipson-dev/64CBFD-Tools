@@ -16,6 +16,8 @@ def fixture(root,stage,key):
 
 
 def previous_input(current,path,root):
+    from tools.tests import overlay_defaults_checkpoint as successor
+    current=successor.previous_input(current,path,root)
     relative=Path(path).as_posix();prefix=Path(root).as_posix()+'/'
     if relative.startswith(prefix):relative=relative[len(prefix):]
     key=PATHS.get(relative)
