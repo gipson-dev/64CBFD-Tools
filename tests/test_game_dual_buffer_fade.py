@@ -244,7 +244,7 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
             guest_not_native_qualifies_aliases_full_byte_indices_and_actual_variadic_reads=True)
 
     def test_06_every_protected_live_and_frozen_input(self):
-        source.freeze(self.root,self.out);real=hashlib.sha256;cache={}
+        source.freeze(self.root,self.out);real=hashlib.sha256;cache={};original_read=Path.read_bytes
         for key,path in source.PATHS.items():
             for p in (self.root/path,self.out/('before-'+key)):cache[p]=p.read_bytes()
         @lru_cache(None)
@@ -253,7 +253,7 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
         for key,path in source.PATHS.items():
             for target,message in ((self.root/path,'Changed dual-buffer live'),(self.out/('before-'+key),'Changed dual-buffer frozen')):
                 wrong=bytearray(cache[target]);wrong[len(wrong)//2]^=1;wrong=bytes(wrong)
-                def read_bytes(path):return wrong if path==target else cache[path]
+                def read_bytes(path):return wrong if path==target else cache[path] if path in cache else original_read(path)
                 with patch.object(Path,'read_bytes',read_bytes),patch.object(Path,'exists',lambda p:p in cache),\
                         patch.object(source.hashlib,'sha256',side_effect=digest):
                     with self.assertRaisesRegex(ValueError,message):source.freeze(self.root,self.out)

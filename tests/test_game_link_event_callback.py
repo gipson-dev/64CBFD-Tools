@@ -250,7 +250,7 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
             freestanding_UBSan=True,alias_and_big_endian_order_qualified_by_guest_not_native=True)
 
     def test_07_protected_live_and_frozen_inputs(self):
-        source.freeze(self.root,self.out);real=hashlib.sha256;cache={}
+        source.freeze(self.root,self.out);real=hashlib.sha256;cache={};original_read=Path.read_bytes
         for key,path in source.PATHS.items():
             current=self.root/path;frozen=self.out/('before-'+key)
             cache[current]=current.read_bytes();cache[frozen]=frozen.read_bytes()
@@ -264,7 +264,7 @@ void _start(void){int status=run();__asm__ volatile("int $0x80"::"a"(1),"b"(stat
         for key,path in source.PATHS.items():
             for target,message in ((self.root/path,'Unknown link-event input'),(self.out/('before-'+key),'Changed link-event fixture')):
                 wrong=bytearray(cache[target]);wrong[len(wrong)//2]^=1;wrong=bytes(wrong)
-                def read_bytes(path):return wrong if path==target else cache[path]
+                def read_bytes(path):return wrong if path==target else cache[path] if path in cache else original_read(path)
                 with patch.object(Path,'read_bytes',read_bytes),patch.object(Path,'exists',lambda path:path in cache),\
                         patch.object(source.hashlib,'sha256',side_effect=digest):
                     with self.assertRaisesRegex(ValueError,message):source.freeze(self.root,self.out)
