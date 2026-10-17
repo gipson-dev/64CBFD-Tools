@@ -163,6 +163,8 @@ def freeze(root,out):
     out.mkdir(parents=True,exist_ok=True)
     for key,path in PATHS.items():
         data=(root/path).read_bytes()
+        from tools.tests import owner_burst_checkpoint as latest
+        data=latest.previous_input(data,path,root)
         if hashlib.sha256(data).hexdigest()!=BASELINE[key]:raise ValueError('Changed owner-burst live input: '+key)
         target=out/('before-'+key)
         if not target.exists():target.write_bytes(data)

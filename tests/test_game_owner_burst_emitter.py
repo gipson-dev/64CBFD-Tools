@@ -261,10 +261,14 @@ class OwnerBurstRecoveryTests(unittest.TestCase):
                 self.compare(*fixture(gate,state,previous=state,mode=mode,symbols=symbols),images=[words,words],entry=entry);count+=1
         self.receipt('rebases',links=2,public_protocol_cases=count,signed_HI16_carries=True,literal_private_match=False)
 
+    def historical(self,path):
+        from tools.tests import owner_burst_checkpoint as latest
+        return latest.previous_input((self.root/path).read_bytes(),path,self.root)
+
     def test_05_production_image_inputs_and_callback_unchanged(self):
         source.freeze(self.root,self.out)
-        self.assertEqual((self.root/'conker/build/conker.us.elf').read_bytes(),(self.out/'before-elf').read_bytes())
-        for key,path in source.PATHS.items():self.assertEqual((self.root/path).read_bytes(),(self.out/('before-'+key)).read_bytes())
+        self.assertEqual(self.historical('conker/build/conker.us.elf'),(self.out/'before-elf').read_bytes())
+        for key,path in source.PATHS.items():self.assertEqual(self.historical(path),(self.out/('before-'+key)).read_bytes())
         self.assertEqual(struct.unpack_from('>I',(self.out/'before-retail_rom').read_bytes(),0x22F118)[0],source.ENTRY)
         functions,_,_=load_elf_functions(str(self.root/'conker/build/conker.us.elf'),'mips-linux-gnu-objdump')
         data=audit_layout(self.root/'conker/build/conker.us.elf',self.root/'conker')

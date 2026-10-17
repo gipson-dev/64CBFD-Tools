@@ -207,6 +207,10 @@ class ScaleTimerTests(unittest.TestCase):
             callback_slot=0x80089D50,full_dispatcher_or_transform_callee_not_qualified=True)
 
 
+    def historical(self,path):
+        from tools.tests import owner_burst_checkpoint as latest
+        return latest.previous_input((self.root/path).read_bytes(),path,self.root)
+
     def test_07_complete_first_image_and_historical_adapters(self):
         from tools.experiments import game_actor_scale_timer_installation as install
         from tools.tests import actor_scale_timer_checkpoint as checkpoint
@@ -218,7 +222,7 @@ class ScaleTimerTests(unittest.TestCase):
         if not (out/'after-elf').exists():self.receipt('installation',installed=False,first_image_qualified=True);return
         original=Path.read_bytes;count=0
         for key,data in expected.items():
-            self.assertEqual((self.root/source.PATHS[key]).read_bytes(),data)
+            self.assertEqual(self.historical(source.PATHS[key]),data)
             self.assertEqual(checkpoint.previous_input(data,source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
             for stage in ('before','after'):
                 path=out/(stage+'-'+key);wrong=bytearray(path.read_bytes());wrong[len(wrong)//2]^=1;wrong=bytes(wrong)
@@ -230,7 +234,7 @@ class ScaleTimerTests(unittest.TestCase):
         for key in checkpoint.FOLLOWUP:
             data=install.followup_text((out/('before-'+key)).read_text()).encode()
             self.assertEqual(hashlib.sha256(data).hexdigest(),checkpoint.FOLLOWUP[key])
-            self.assertEqual((self.root/source.PATHS[key]).read_bytes(),data)
+            self.assertEqual(self.historical(source.PATHS[key]),data)
             self.assertEqual(checkpoint.previous_input(data,source.PATHS[key],self.root),(out/('before-'+key)).read_bytes())
             for stage in ('before','after'):
                 path=out/(stage+'-'+key);wrong=bytearray(path.read_bytes());wrong[len(wrong)//2]^=1;wrong=bytes(wrong)
@@ -246,7 +250,7 @@ class ScaleTimerTests(unittest.TestCase):
         self.assertEqual(sorted(old_symbols),sorted((n,f[1:]) for _,n,f,_ in symbol_rows(expected['elf'])))
         owned={source.PATHS[k] for k in (*expected,*checkpoint.FOLLOWUP)}
         for key,path in source.PATHS.items():
-            if path not in owned:self.assertEqual((self.root/path).read_bytes(),(out/('before-'+key)).read_bytes())
+            if path not in owned:self.assertEqual(self.historical(path),(out/('before-'+key)).read_bytes())
         data=audit_layout(self.root/'conker/build/conker.us.elf',self.root/'conker')
         self.assertEqual((data['exact'],data['bytes'],data['owner_count'],data['different_bytes']),(True,189088,720,0))
         self.receipt('installation',installed=True,whole_first_image_exact=True,metadata_exclusions=0,

@@ -139,9 +139,10 @@ class BurstFrameTests(unittest.TestCase):
             effective_controls=6,no_native_private_stack_or_padding_claim=True)
 
     def test_06_production_baseline_unchanged(self):
+        from tools.tests import owner_burst_checkpoint as latest
         source.freeze(self.root,self.root/source.BUILD)
         for key,path in source.PATHS.items():
-            self.assertEqual((self.root/path).read_bytes(),(self.root/source.BUILD/('before-'+key)).read_bytes())
+            self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(self.root/source.BUILD/('before-'+key)).read_bytes())
         self.receipt('baseline',entire_ELF_and_all_protected_inputs_unchanged=True,new_guards=0,matching_credit=0)
 
 

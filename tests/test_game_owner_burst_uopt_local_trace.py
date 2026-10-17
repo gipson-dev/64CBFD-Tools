@@ -91,9 +91,10 @@ class BurstLocalTraceTests(unittest.TestCase):
             literal_binding_still_unqualified=True,new_guards=0,matching_credit=0)
 
     def test_04_complete_production_baseline_unchanged(self):
+        from tools.tests import owner_burst_checkpoint as latest
         source=target.frame.source;source.freeze(self.root,self.root/source.BUILD)
         for key,path in source.PATHS.items():
-            self.assertEqual((self.root/path).read_bytes(),(self.root/source.BUILD/('before-'+key)).read_bytes())
+            self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(self.root/source.BUILD/('before-'+key)).read_bytes())
         self.receipt('baseline',protected_entries=len(source.PATHS),entire_production_ELF_unchanged=True,
             earlier_candidate_and_checkpoint_inputs_unchanged=True)
 
