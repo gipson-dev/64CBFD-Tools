@@ -24,6 +24,8 @@ def fixture(root,stage,key):
 
 
 def previous_input(current,path,root):
+    from tools.tests import actor_scale_timer_checkpoint as latest
+    current=latest.previous_input(current,path,root)
     relative=Path(path).as_posix();prefix=Path(root).as_posix()+'/'
     if relative.startswith(prefix):relative=relative[len(prefix):]
     key=PATHS.get(relative)
@@ -38,6 +40,8 @@ def freeze_after(root):
         raise ValueError('Unknown first threshold-mask prediction')
     for path,key in PATHS.items():
         data=(root/path).read_bytes()
+        from tools.tests import actor_scale_timer_checkpoint as latest
+        data=latest.previous_input(data,path,root)
         if hashlib.sha256(data).hexdigest()!=AFTER[key]:raise ValueError('Unexpected threshold-mask successor: '+key)
         target=root/BUILD/('after-'+key)
         if not target.exists():target.write_bytes(data)

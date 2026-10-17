@@ -333,7 +333,7 @@ class ActorStateTests(unittest.TestCase):
         self.assertEqual(sorted(old_symbols),sorted((n,f[1:]) for _,n,f,_ in symbol_rows(expected['elf'])))
         owned={source.PATHS[k] for k in expected}
         for key,path in source.PATHS.items():
-            if path not in owned:self.assertEqual((self.root/path).read_bytes(),(out/('before-'+key)).read_bytes())
+            if path not in owned:self.assertEqual(latest.previous_input((self.root/path).read_bytes(),path,self.root),(out/('before-'+key)).read_bytes())
         self.receipt('installation',installed=True,entire_first_image_exact=True,metadata_exclusions=0,
             checkpoint_controls=count,game_data=report,compared_function_bodies=len(old),only_target_pair_changed=True,
             all_function_addresses_unchanged=True,symbol_definitions_unchanged_except_two_extents=True,
