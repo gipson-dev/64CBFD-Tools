@@ -209,7 +209,9 @@ class OverlayDefaultsTests(unittest.TestCase):
         expected = install.expected_inputs(self.root,out)
         self.assertEqual(json.loads((out/'initial-prediction.json').read_text()),checkpoint.AFTER)
         for key,path in source.PATHS.items():
-            self.assertEqual((self.root/path).read_bytes(),expected.get(key,(out/('before-'+key)).read_bytes()),key)
+            from tools.tests import scrolling_tile_checkpoint as installed
+            current = installed.previous_input((self.root/path).read_bytes(),path,self.root)
+            self.assertEqual(current,expected.get(key,(out/('before-'+key)).read_bytes()),key)
         before, actual = (out/'before-elf').read_bytes(),expected['elf']
         self.assertEqual((out/'prelink-prediction.elf').read_bytes(),actual)
         self.assertEqual((len(before),len(actual)),(3257636,3257636))

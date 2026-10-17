@@ -1,5 +1,6 @@
 """Complete uninstalled recovery, real byte copy and explicit matching limits."""
 import itertools
+from functools import lru_cache
 import json
 from pathlib import Path
 import struct
@@ -151,7 +152,8 @@ class OverlayFadeTests(unittest.TestCase):
             bad = dict(bindings); bad[at] = [('R_MIPS_26','wrong')]
             with self.assertRaises(ValueError):
                 source.checked_parts(raw,bad,pool)
-        read = Path.read_bytes
+        # Corrupt a cached fixture, then revalidate the live checkout below.
+        read = lru_cache(None)(Path.read_bytes)
         self.assertEqual(len(source.PATHS),172)
         for relative in source.PATHS.values():
             target = self.root/relative

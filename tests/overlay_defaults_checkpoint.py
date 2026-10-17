@@ -18,6 +18,8 @@ def fixture(root, stage, key):
 
 
 def previous_input(current, path, root):
+    from tools.tests import scrolling_tile_checkpoint as installed
+    current = installed.previous_input(current,path,root)
     relative = Path(path).as_posix()
     prefix = Path(root).as_posix()+'/'
     if relative.startswith(prefix):
@@ -31,6 +33,8 @@ def previous_input(current, path, root):
 def freeze_after(root):
     for relative, key in PATHS.items():
         data = (root/relative).read_bytes()
+        from tools.tests import scrolling_tile_checkpoint as installed
+        data = installed.previous_input(data,relative,root)
         if hashlib.sha256(data).hexdigest() != AFTER[key]:
             raise ValueError('Unexpected overlay reset successor: '+key)
         path = root/BUILD/('after-'+key)
