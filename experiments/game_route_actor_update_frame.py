@@ -39,16 +39,16 @@ def capture(root, out):
     root, out = root.resolve(), out.resolve()
     if not out.is_relative_to(root / 'conker/build'):
         raise ValueError('Compiler diagnostics must remain inside the consumer build directory')
+    work = out / 'selected'
+    if work.exists():
+        raise ValueError('Capture directory already exists: inspect its handle/artifacts; no automatic restart')
     if frame.fingerprints(root) != frame.COMPILERS:
         raise ValueError('Prepared compiler fingerprints changed')
     debugger = shutil.which('gdb')
     if debugger is None:
         raise FileNotFoundError('Existing GDB required; no installation')
+    work.mkdir(parents=True, exist_ok=False)
     baseline, qualified = qualify(root, out)
-    work = out / 'selected'
-    if (work / 'debugger.txt').exists():
-        raise ValueError('Capture already exists: audit the same completed/live evidence, do not restart')
-    work.mkdir(exist_ok=True)
     script = work / 'ugen-frame.gdb'
     script.write_text(frame.debugger_script(root, work))
     argv = json.loads((out / 'isolated-command.json').read_text())

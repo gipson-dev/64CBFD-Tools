@@ -286,6 +286,17 @@ class RouteActorUpdateFrameTests(unittest.TestCase):
             primary_and_normal_profiles_keep_their_existing_flags=True,
             production_Make_padder_or_installation_not_claimed=True)
 
+    def test_18_existing_capture_is_rejected_before_baseline_rewrite(self):
+        paths = [self.capture_out / n for n in ('isolated.c', 'isolated.o', 'isolated.json')]
+        before = [p.read_bytes() for p in paths]
+        with patch.object(capture, 'qualify', side_effect=AssertionError('Baseline rewrite')), \
+                patch.object(capture.frame, 'fingerprints', side_effect=AssertionError('Capture setup')):
+            with self.assertRaisesRegex(ValueError, 'Capture directory already exists'):
+                capture.capture(self.root, self.capture_out)
+        self.assertEqual([p.read_bytes() for p in paths], before)
+        self.receipt('recapture-guard', existing_capture_rejected_before_any_setup_or_rewrite=True,
+            evidence_source_object_and_metadata_preserved=True, new_debugger_launches=0)
+
 
 if __name__ == '__main__':
     unittest.main()
