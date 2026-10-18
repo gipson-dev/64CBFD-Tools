@@ -222,7 +222,7 @@ class YxzMatrixComposeTests(unittest.TestCase):
         caller=struct.unpack_from('>26I',self.rom,0x13D810)
         connected=dict(zip(range(source.ENTRY,source.ENTRY+148,4),self.words))
         for slot,alias,phase in itertools.product((0,1,7),(0,1),(0,8)):
-            angles=ANGLES[37];memory,args=fixture(angles)
+            angles=tuple(base.bits(a) for a in (1.25,-2.5,7.0));memory,args=fixture(angles)
             memory.update({RECORDS+i:(i*19+0xA5)&255 for i in range(8*0x180)})
             base.put(memory,TABLE,RECORDS)
             output=RECORDS+slot*0x180+0xBC if alias else OUTPUT
