@@ -93,6 +93,27 @@ def allocation_forms():
         yield 'allocation-table-'+position,c
 
 
+def loop_forms():
+    body=dict(home_forms())['homes-ordinary'].replace('    u8 *cursor;','    s32 j;')
+    lo=body.index('                    candidate = node[9];')
+    hi=body.index('                    i = D_80087290;',lo)
+    first=lifetime.SELECTED.index('                    for (j = 0; j < 5; j++) {')
+    last=lifetime.SELECTED.index('                    i = D_80087290;',first)
+    loop=lifetime.SELECTED[first:last]
+    for name,block in (
+        ('assigned',loop.replace('                        candidate = node[j + 9];\n                        if (candidate != 0xFF)',
+            '                        if ((candidate = node[j + 9]) != 0xFF)')),
+        ('global-mode',loop.replace('                            i = D_800D23A8;\n','').replace('i == 0','D_800D23A8 == 0').replace('i != 0','D_800D23A8 != 0')),
+        ('word-assigned',loop.replace('                        candidate = node[j + 9];\n                        if (candidate != 0xFF)',
+            '                        if ((candidate = node[j + 9]) != 0xFF)')),
+        ('address',loop.replace('                            i = D_800D23A8;',
+            '                            i = D_800D23A8;\n                            currentNode = D_800D2350 + candidate * 0x10;').replace(
+            'D_800D2350[candidate * 0x10 + 0xF]','currentNode[0xF]'))):
+        b=body[:lo]+block+body[hi:]
+        if name=='word-assigned':b=b.replace('    u8 candidate;','    s32 candidate;')
+        yield 'loop-'+name,b
+
+
 SELECTED=dict(home_forms())['homes-ordinary']
 RAW_SHA='2eee0341eb75fa11db9eefb78183ed892110ba1287b1ab35e17083e263dc36b7'
 BINDINGS={
@@ -143,12 +164,12 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--normal',action='store_true');parser.add_argument('--snapshots',action='store_true')
     parser.add_argument('--homes',action='store_true');parser.add_argument('--allocation',action='store_true')
-    parser.add_argument('--qualify',action='store_true');args=parser.parse_args()
+    parser.add_argument('--qualify',action='store_true');parser.add_argument('--loops',action='store_true');args=parser.parse_args()
     root=Path(__file__).resolve().parents[2];out=root/BUILD;rows=[]
     if args.qualify:
         print(json.dumps(qualify(root,out)[2],indent=2));raise SystemExit(0)
-    for name,body in (allocation_forms() if args.allocation else home_forms() if args.homes else snapshot_forms() if args.snapshots else forms()):
+    for name,body in (loop_forms() if args.loops else allocation_forms() if args.allocation else home_forms() if args.homes else snapshot_forms() if args.snapshots else forms()):
         _,_,row=measure(root,out,('normal-' if args.normal else 'owner-')+name,body,args.normal)
         rows.append(row)
         print(json.dumps({k:row[k] for k in ('name','words','frame','differences','saved','diagnostics')}),flush=True)
-    (out/('screens-'+('allocation-' if args.allocation else 'homes-' if args.homes else 'snapshot-' if args.snapshots else '')+('normal' if args.normal else 'owner')+'.json')).write_text(json.dumps(rows,indent=2)+'\n')
+    (out/('screens-'+('loop-' if args.loops else 'allocation-' if args.allocation else 'homes-' if args.homes else 'snapshot-' if args.snapshots else '')+('normal' if args.normal else 'owner')+'.json')).write_text(json.dumps(rows,indent=2)+'\n')
