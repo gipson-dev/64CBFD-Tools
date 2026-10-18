@@ -43,6 +43,7 @@ class LayoutTests(unittest.TestCase):
         result=proof.prove(layout.relocate(self.raw,self.bindings,proof.ANCHORS),
             layout.relocate(self.normalized,self.moved,proof.ANCHORS),self.helpers)
         self.assertEqual((result['cycle_paths'],result['loop_paths'],result['common_paths']),(1,10242,6832))
+        self.assertEqual(result['exit_paths'],1)
         (self.out/'normalizer-proof.json').write_text(json.dumps(result,indent=2)+'\n')
 
     def test_03_independent_complete_data_and_call_rebases(self):
@@ -64,8 +65,9 @@ class LayoutTests(unittest.TestCase):
             self.assertEqual(actual,independent)
             result=proof.prove(layout.relocate(self.raw,self.bindings,anchors),actual,self.helpers,anchors)
             self.assertEqual((result['cycle_paths'],result['loop_paths'],result['common_paths']),(1,10242,6832))
+            self.assertEqual(result['exit_paths'],1)
             results.append(dict(anchors={k:'%08X'%v for k,v in anchors.items()},prefix=result['prefix'],
-                cycle_paths=result['cycle_paths'],loop_paths=result['loop_paths'],common_paths=result['common_paths']))
+                cycle_paths=result['cycle_paths'],loop_paths=result['loop_paths'],common_paths=result['common_paths'],exit_paths=result['exit_paths']))
         (self.out/'normalizer-full-rebases.json').write_text(json.dumps(dict(independent_complete_maps=2,
             root_and_both_actual_helpers_rebased=True,results=results),indent=2)+'\n')
 

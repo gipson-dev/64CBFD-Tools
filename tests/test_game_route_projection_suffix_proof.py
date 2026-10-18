@@ -31,6 +31,7 @@ class SuffixProofTests(unittest.TestCase):
         result=proof.prove(self.words,self.truth,self.helpers)
         self.assertEqual((result['prefix']['entry_paths'],result['prefix']['iteration_paths']),(7,2734))
         self.assertEqual(tuple(result[k+'_paths'] for k in ('cycle','loop','common')),(1,10242,6832))
+        self.assertEqual(result['exit_paths'],1)
         self.assertTrue(result['helpers_inlined']);self.assertFalse(result['normalization_emitted'])
         (self.out/'whole-observational-proof.json').write_text(json.dumps(result,indent=2)+'\n')
 

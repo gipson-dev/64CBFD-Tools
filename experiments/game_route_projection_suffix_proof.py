@@ -77,6 +77,7 @@ class Suffix:
             regs[9 if self.retail else 3]=a.node('first-id')
             regs[15 if self.retail else 25]=a.node('cached-cycle-table')
             floats[14]=a.node('best-distance')
+        if mode=='exit':regs[31]=a.node('exit-ra')
         return regs,floats
 
     def execute(self,word,regs,floats,memory,events,fp):
@@ -176,7 +177,7 @@ class Suffix:
         self.paths[key]=self.projection(name,regs,floats,memory,events,fp)
 
     def run(self,mode):
-        regs,floats=self.initial(mode);pc={'cycle':self.cycle,'loop':self.loop,'common':self.common}[mode]
+        regs,floats=self.initial(mode);pc={'cycle':self.cycle,'loop':self.loop,'common':self.common,'exit':self.gp.exit}[mode]
         self.walk(ENTRY+pc*4,regs,floats,self.a.node('suffix-memory'),[],[],{})
         return self.paths
 
@@ -193,7 +194,7 @@ def prove(words,truth,helpers,anchors=None):
     calls={anchors['func_1508907C']:4,anchors['func_1512D560']:3}
     result={'prefix':prefix.prove(words,truth,pa,calls)};a=prefix.Expressions()
     helpers=rebased_helpers(helpers,anchors)
-    for mode in ('cycle','loop','common'):
+    for mode in ('cycle','loop','common','exit'):
         left=Suffix(words,helpers,a,anchors=anchors).run(mode);right=Suffix(truth,helpers,a,True,anchors=anchors).run(mode)
         if left!=right:
             shared=set(left)&set(right);different=[k for k in shared if left[k]!=right[k]]
