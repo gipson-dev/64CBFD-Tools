@@ -147,8 +147,10 @@ class Prefix:
         return self.paths
 
 
-def gp_liveins(words):
+def gp_liveins(words,calls=None):
     """Delay-slot-aware whole-body GP liveness checks the prefix's cut interface."""
+    calls={0x1508907C:4,0x1512D560:3} if calls is None else calls
+    if len(calls)!=2 or set(calls.values())!={3,4}:raise ValueError('Unknown projection liveness call map')
     preserved=set((*range(16,24),28,29,30,31));scratch=set((*range(1,16),24,25))
     graph={('exit',):(preserved,set(),())}
     def uses_defs(word):
@@ -194,8 +196,8 @@ def gp_liveins(words):
             delay=('delay',pc,True);du,dd=uses_defs(words[pc+1])
             if op==3:
                 target=((word&0x3FFFFFF)<<2)|((source.source.ENTRY+pc*4+4)&0xF0000000)
-                if target not in (0x1508907C,0x1512D560):raise ValueError('Unknown projection liveness call')
-                call=('call',pc);arguments=set(range(4,8 if target==0x1508907C else 7))
+                if target not in calls:raise ValueError('Unknown projection liveness call')
+                call=('call',pc);arguments=set(range(4,4+calls[target]))
                 graph[call]=(arguments|preserved,scratch,(normal(pc+2),));destination=call
             else:destination=('exit',) if op==0 else normal((((word&0x3FFFFFF)<<2)|0x10000000)-source.source.ENTRY>>2)
             graph[delay]=(du,dd,(destination,));graph[key]=(u,d,(delay,))
@@ -210,7 +212,7 @@ def gp_liveins(words):
     return {pc:live[('pc',pc)] for pc in range(len(words))}
 
 
-def prove(words,truth,anchors=None):
+def prove(words,truth,anchors=None,calls=None):
     result={};a=Expressions()
     for loop in (False,True):
         left=Prefix(words,a,anchors=anchors).run(loop);right=Prefix(truth,a,True,anchors).run(loop)
@@ -221,7 +223,7 @@ def prove(words,truth,anchors=None):
             raise ValueError('Prefix %s disagreement: raw=%d retail=%d missing=%d extra=%d different=%d'%
                 (key,len(left),len(right),len(missing),len(extra),len(different)))
         result[key+'_paths']=len(left)
-    lives=[gp_liveins(w) for w in (words,truth)];interfaces=[]
+    lives=[gp_liveins(w,calls) for w in (words,truth)];interfaces=[]
     allowed=set((*range(16,24),28,29,30,31))
     for body,live in zip((Prefix(words,a,anchors=anchors),Prefix(truth,a,True,anchors)),lives):
         constants={2,3,6,7,8,9,10,11,13} if body.retail else {2,6,7,8,9,10,11,12,13}
