@@ -304,11 +304,15 @@ def translation_unit(root, body=None, rows=None):
 
 def controls():
     body = source.selected()
+    rank = next((name for name in ('valueX', 'inverse')
+        if body.count(name + ' < *(f32 *)(cursor + 4)') == 1), None)
+    if rank is None:
+        raise ValueError('Unknown native source ranking comparison')
     return dict(half_lookahead=body.replace('lookAhead + lookAhead', 'lookAhead'),
         unsigned_tick=body.replace('(f32)(s8)record[0x32]', '(f32)record[0x32]'),
         byte_active=body.replace('if (active == 0)', 'if ((u8)active == 0)'),
         unsigned_lap=body.replace('(f32)(s8)cursor[0x2A]', '(f32)cursor[0x2A]'),
-        ascending=body.replace('valueX < *(f32 *)(cursor + 4)', 'valueX > *(f32 *)(cursor + 4)'))
+        ascending=body.replace(rank + ' < *(f32 *)(cursor + 4)', rank + ' > *(f32 *)(cursor + 4)'))
 
 
 def qualify(root, out, smoke=False):
@@ -370,6 +374,10 @@ def qualify(root, out, smoke=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--smoke', action='store_true')
+    parser.add_argument('--local-homes', action='store_true', help='Use the separately qualified local-home source point')
     args = parser.parse_args()
+    if args.local_homes:
+        from tools.experiments import game_route_actor_update_storage as source
+        BUILD = source.BUILD + '/native'
     root = Path(__file__).resolve().parents[2]
     print(json.dumps(qualify(root, root / BUILD, args.smoke), indent=2))

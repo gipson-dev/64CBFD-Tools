@@ -113,7 +113,7 @@ class RouteActorUpdateNativeTests(unittest.TestCase):
         self.receipt('wire-controls', overlapping_schema_rejected=True, unmapped_public_byte_rejected=True,
             unmapped_pointer_rejected=True, helper_source_mutation_rejected=True)
 
-    def test_05_ten_storage_screens_keep_ordinary_semantics_only(self):
+    def test_05_storage_screens_keep_ordinary_semantics_only(self):
         out = self.root / storage.BUILD
         count = cases = 0
         for group, factory in storage.GROUPS.items():
@@ -137,9 +137,9 @@ class RouteActorUpdateNativeTests(unittest.TestCase):
                     self.compare(memory, args, phase, bodies=(self.retail, words))
                     cases += 1
                 count += 1
-        self.assertEqual((count, cases), (10, 120))
-        self.receipt('storage', screens=count, additional_guest_cases=cases, new_selected_points=0,
-            no_qualifier_or_narrowed_input_domain_invented=True, full_private_or_argument_home_proof_not_claimed=True)
+        self.assertEqual((count, cases), (41, 492))
+        self.receipt('storage', screens=count, additional_guest_cases=cases, production_installable_screens=0,
+            no_volatile_or_narrowed_external_input_domain_invented=True, full_private_or_argument_home_proof_not_claimed=True)
 
     def test_06_production_inputs_remain_frozen(self):
         native.source.source.freeze(self.root, self.out)
