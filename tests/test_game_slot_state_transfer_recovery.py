@@ -112,18 +112,21 @@ class GameSlotStateTransferRecoveryTests(unittest.TestCase):
             model.execute((9<<21)|(10<<16)|(11<<11)|39);self.assertEqual((model.r[11],model.r[0]),(want,0))
 
     def test_02_independent_public_algorithm_and_provider_mutations(self):
-        visits=set();pairs=0
+        visits=[set(),set()];pairs=0
         for case in self.cases:
             for phase in (0,8):
                 memory,args=oracle.fixture(case,phase);wanted,calls,captures=oracle.reference(memory,args,case)
-                for words in (self.retail,self.words):
+                for index,words in enumerate((self.retail,self.words)):
                     model=self.model(words,case,phase).run();self.assertEqual(model.r[2],0)
                     self.assertEqual((oracle.public(model.memory),model.calls,model.captures),
                         (oracle.public(wanted),calls,captures),case)
-                    visits.update(model.visits)
+                    visits[index].update(model.visits)
                 pairs+=1
+        target=set(range(source.ENTRY,source.ENTRY+756,4))
+        coverage=[len(target&seen) for seen in visits]
+        self.assertEqual(coverage,[185,185])
         (self.out/'public-cases.json').write_text(json.dumps(dict(cases=len(self.cases),phases=2,paired_runs=pairs,
-            retail_visited_words=len(set(range(source.ENTRY,source.ENTRY+756,4))&visits),
+            retail_visited_words=coverage[0],candidate_visited_words=coverage[1],
             independent_reference=True,bounded_providers_only=True))+'\n')
 
     def test_03_guest_only_modular_slots_and_computed_null_guards(self):
