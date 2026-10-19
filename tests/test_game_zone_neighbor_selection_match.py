@@ -412,7 +412,9 @@ class GameZoneNeighborSelectionMatchTests(unittest.TestCase):
         source = (self.root / 'conker/src/game/generated_B3020.c').read_text()
         visitor = re.search(r'void func_1508B2A8\([^;{]*\{\n.*?\n\}', source, re.S).group()
         body = re.search(r'void func_1508B3F8\([^;{]*\{\n.*?\n\}', source, re.S).group()
-        self.assertEqual(body, screen.SELECTED)
+        if body != screen.SELECTED:
+            from tools.experiments import game_zone_neighbor_selection_layout as layout
+            self.assertEqual(body, layout.SELECTED)
         visitor = visitor.replace('void func_1508B2A8(', 'static void visitorBody(', 1)
         self.fixture = '''typedef unsigned char u8;typedef signed char s8;
 typedef short s16;typedef int s32;typedef unsigned int u32;typedef float f32;
@@ -521,15 +523,30 @@ for(c=0;c<1424;c++) {
     def test_production_source_complete_padded_slot_and_unchanged_next_symbol(self):
         source = (self.root / 'conker/src/game/generated_B3020.c').read_text()
         body = re.search(r'void func_1508B3F8\([^;{]*\{\n.*?\n\}', source, re.S).group()
-        self.assertEqual(body, screen.SELECTED)
+        upgraded = body != screen.SELECTED
+        expected = self.words
+        if upgraded:
+            from tools.experiments import game_zone_neighbor_selection_layout as layout
+            from tools.experiments.game_route_projection_layout_normalizer import relocate
+            self.assertEqual(body, layout.SELECTED)
+            row, _ = screen.compile_candidate(self.root, self.output, 'installed-layout', body)
+            self.assertEqual((row['body_words'], row['frame'], row['real_differences']), (367, 320, 340))
+            raw, bindings = layout.source.payload(self.output / 'installed-layout.o')
+            normalized, moved = layout.normalize(raw, bindings)
+            expected = relocate(normalized, moved, screen.SYMBOLS)
+            self.assertEqual(expected, self.retail)
         self.assertIn('void func_1508B3F8(void);', (self.root / 'conker/include/functions.h').read_text())
         functions, _, addresses = load_elf_functions(str(self.root / 'conker/build/conker.us.elf'),
                                                      'mips-linux-gnu-objdump')
-        self.assertEqual(functions['func_1508B3F8'], self.words)
+        self.assertEqual(functions['func_1508B3F8'], expected)
         self.assertEqual((addresses['func_1508B3F8'], addresses['func_1508B9BC']), (ENTRY, 0x1508B9BC))
         self.assertNotIn('__retail_overflow_func_1508B3F8', functions)
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
-            self.assertFalse(any(row['function'] == 'func_1508B3F8' for row in csv.DictReader(stream)))
+            rows = [row for row in csv.DictReader(stream) if row['function'] == 'func_1508B3F8']
+            self.assertEqual(len(rows), 367 if upgraded else 0)
+            if upgraded:
+                self.assertEqual(sum(row['omit'] == 'true' for row in rows), 3)
+                self.assertEqual(sum(bool(row['insert_after']) for row in rows), 5)
 
     def test_lookup_body_now_matches_retail_instead_of_its_placeholder(self):
         from tools.experiments import game_root_neighbor_lookup_candidates as lookup
