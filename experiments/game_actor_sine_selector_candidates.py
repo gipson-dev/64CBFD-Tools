@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import struct
+from textwrap import indent
 from unittest.mock import patch
 
 from tools.experiments import game_actor_target_timer_matching as previous
@@ -216,6 +217,9 @@ def advisory_candidates():
 
 
 SELECTED=dict(shape_candidates())['block-do-loop']
+_begin=SELECTED.index('    phase = D_8009DA54;')
+_end=SELECTED.index('    }\n    return selected;',_begin)
+SELECTED=SELECTED[:_begin]+indent(SELECTED[_begin:_end],'    ')+SELECTED[_end:]
 
 
 if __name__=='__main__':
