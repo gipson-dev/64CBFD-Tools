@@ -227,5 +227,8 @@ class SlotTransferLayoutTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'Slot-transfer image differs'):integration.check_image(before,bytes(bad),truth)
         if (self.root/source.SOURCE).read_bytes()!=self.inputs[source.SOURCE]:integration.audit(self.root,out)
 
+    def test_11_actual_caller_window_with_normalized_complete_body(self):
+        recovery.GameSlotStateTransferRecoveryTests.test_07_actual_three_word_caller_window(self)
+
 
 if __name__=='__main__':unittest.main()
