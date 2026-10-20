@@ -36,6 +36,7 @@ class RouteNodeSearchCaptureTests(previous.RouteNodeSearchLoopTests):
         cls.completed, cls.native_count, cls.alias_pairs, cls.alias_negatives = 0, 0, 0, 0
         cls.footprints, cls.native_loop_negatives, cls.coverage = 0, 0, set()
         cls.closed_captures, cls.capture_negatives, cls.word_negatives, cls.binding_negatives = 0, 0, 0, 0
+        cls.selected_cost_aliases, cls.open_start_aliases = 0, 0
 
     @classmethod
     def tearDownClass(cls):
@@ -44,6 +45,7 @@ class RouteNodeSearchCaptureTests(previous.RouteNodeSearchLoopTests):
             existing_live_home_aliases=cls.alias_pairs, old_save_negatives=cls.alias_negatives,
             capture_aliases_closed=cls.closed_captures, effective_old_capture_negatives=cls.capture_negatives,
             native_loop_negatives=cls.native_loop_negatives, stale_word_negatives=cls.word_negatives,
+            selected_cost_aliases_closed=cls.selected_cost_aliases, demonstrated_open_start_aliases=cls.open_start_aliases,
             stale_binding_negatives=cls.binding_negatives, retail_words_visited=len(cls.coverage),
             unvisited_retail_offsets=[hex(i * 4) for i in sorted(set(range(539)) - cls.coverage)],
             ordered_reads_exact=False, literal_private_state_exact=False)
@@ -188,6 +190,52 @@ class RouteNodeSearchCaptureTests(previous.RouteNodeSearchLoopTests):
         self.assertEqual(len(original), len(changed))
         self.assertTrue(all(x == y or i in allowed for i, (x, y) in enumerate(zip(original, changed))))
         self.assertEqual(parse_object(self.raw_obj)[1:], parse_object(self.normalized_obj)[1:])
+
+    def test_selected_cost_closes_but_start_argument_home_remains_open(self):
+        reports = []
+        signature = lambda m: (m.r[2], m.calls,
+            [x for x in m.stores if not guest.private(x[0])], guest.public(m.memory))
+        for phase in (0, 8):
+            for kind, offset, value in (('start-home', 0x600, 1), ('selected-cost', 0x290, 1000000)):
+                case = guest.Case()
+                memory = guest.fixture(case)
+                home = guest.STACK + phase - 1536 + offset
+
+                class ReadAlias(guest.SearchOracle):
+                    def __init__(self, *args, **kwargs):
+                        self.armed, self.fired, self.seen = False, False, 0
+                        super().__init__(*args, **kwargs)
+                        self.armed = True
+
+                    def get(self, address, size):
+                        result = super().get(address, size)
+                        if self.armed and (address, size) == (guest.GOALS, 1):
+                            self.seen += 1
+                            if self.seen == 2:
+                                self.put(home, value, 4)
+                                self.fired = True
+                        return result
+
+                baseline = guest.SearchOracle(self.retail, memory, case, phase).run()
+                a = ReadAlias(self.retail, memory, case, phase).run()
+                b = ReadAlias(self.code[True], memory, case, phase, 0x18000000).run()
+                for model in (a, b):
+                    self.assertTrue(model.fired, 'Follow-up home mutation did not fire')
+                    self.assertIn((home, 4, value), model.stores)
+                self.assertNotEqual(signature(a), signature(baseline), 'Retail home alias has no effect')
+                if kind == 'selected-cost':
+                    self.assertEqual((a.r[2], b.r[2]), (2, 2))
+                    self.assertEqual(signature(a), signature(b))
+                    type(self).selected_cost_aliases += 1
+                else:
+                    self.assertEqual((a.r[2], b.r[2]), (3, 1))
+                    self.assertEqual(signature(b), signature(baseline))
+                    self.assertNotEqual(signature(a), signature(b))
+                    type(self).open_start_aliases += 1
+                reports.append(dict(kind=kind, phase=phase, home=hex(home), value=value, fired=True,
+                    closed=(kind == 'selected-cost'), retail_result=a.r[2], source_result=b.r[2],
+                    retail_calls=a.calls, source_calls=b.calls))
+        (self.output / 'start-and-cost-home-probes.json').write_text(json.dumps(reports, indent=2) + '\n')
 
 
 if __name__ == '__main__':
