@@ -261,7 +261,10 @@ class FrameLayerDispatchTests(unittest.TestCase):
     def test_04_independent_GNU_rebases_and_every_target_access_prefix(self):
         count=cuts=0
         for i,entry in enumerate((source.ENTRY,0x18017FFC,0x1A028000)):
-            s=SYMBOLS if not i else {n:(0x17010000+0x1000*j+4*i if n in CALLEES else 0x80308000+0x100*j+0x100000*i)for j,n in enumerate(SYMBOLS)}
+            s=SYMBOLS if not i else {n:(0x17010000+0x1000*j+4*i if n in CALLEES else 0x80308000+0x2000*j+0x100000*i)for j,n in enumerate(SYMBOLS)}
+            table=s['D_8008CD04']
+            for name,size in(('D_800B0E00',8),('D_800B0DF0',4),('D_800BE616',1),('D_800CBD4E',2),('D_800BE9E4',4)):
+                self.assertTrue(s[name]+size<=table or s[name]>=table+1024,(name,s[name],table))
             images=[self.linked(obj,s,entry,'rebase-%d-%d'%(i,j))for j,obj in enumerate((source.original(ROOT,self.out),self.obj,self.out/'qualified-padded.o'))]
             self.assertEqual(images[0],images[1]);self.assertEqual(images[0],images[2])
             for selector,gate,mode,phase in itertools.product((0,255),(0,1),(0,15),(0,8)):
