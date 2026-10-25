@@ -194,6 +194,8 @@ class FourRecordMaskDispatchTests(unittest.TestCase):
         self.assertEqual(self.rom[source.ROM+176:source.ROM+180],bytes(4))
         q=json.loads((self.output/'qualification.json').read_text())
         self.assertEqual((q['words'],q['frame'],q['preserved_neighbors'],q['new_guards']),(44,48,7,0))
+        self.assertEqual((q['typed_caller_ABI'],q['caller_functions_preserved']),('void(s16)',16))
+        self.assertEqual((self.output/'proposed-caller.c').read_bytes(),source.typed_caller(self.values[source.CALLER_SOURCE].decode()).encode())
         self.assertEqual(json.loads((self.output/'make-shadow.json').read_text())['actual_Make_commands'],3)
         for i in range(44):
             wrong=bytearray(raw);wrong[4*i]^=1
@@ -202,7 +204,7 @@ class FourRecordMaskDispatchTests(unittest.TestCase):
             wrong=dict(bindings);wrong[at]=[('R_MIPS_26','unknown')]
             with self.assertRaises(ValueError):source.checked_payload(raw,wrong)
         self.receipt.update(words=44,frame=48,bindings=5,new_guards=0,preserved_neighbors=7,
-                            alignment_words=1,word_and_binding_negatives=49)
+                            alignment_words=1,word_and_binding_negatives=49,typed_caller_functions_preserved=16)
 
     def test_02_guest_live_health_byte_masks_and_full_register_lifetime(self):
         visits=set();count=0
@@ -363,15 +365,16 @@ class FourRecordMaskDispatchTests(unittest.TestCase):
         else:source.freeze(ROOT,self.output)
         self.receipt.update(strict_image_negatives=7,input_history=len(source.INPUTS),zero_metadata_exclusions=True)
 
-    def test_09_installed_map_rejects_stale_object_and_twelve_input_mutations(self):
+    def test_09_installed_map_rejects_stale_object_and_fourteen_input_mutations(self):
         original=Path.read_bytes;actual={ROOT/name:data for name,data in self.values.items()}
         actual[ROOT/source.SOURCE]=source.recovered_owner(self.values[source.SOURCE].decode()).encode()
+        actual[ROOT/source.CALLER_SOURCE]=source.typed_caller(self.values[source.CALLER_SOURCE].decode()).encode()
         actual[ROOT/source.OBJECT]=original(self.output/'qualified-padded.o')
         actual[ROOT/'conker/build/conker.us.elf']=source.predicted_image(self.values['conker/build/conker.us.elf'],self.rom[source.ROM:source.ROM+176])
         def read_input(path):return actual[path]if path in actual else original(path)
         with patch.object(Path,'read_bytes',read_input):source.audit_inputs(ROOT,self.output)
         names=(source.SOURCE,source.OBJECT,'conker/build/conker.us.elf','conker/retail_word_patches.us.csv',
-               'conker/build/src/game_45B80.c.o','conker/include/structs.h')
+               source.CALLER_SOURCE,source.CALLER_OBJECT,'conker/include/structs.h')
         count=0
         for name in names:
             for path in(ROOT/name,self.output/('before-'+name.replace('/','_'))):

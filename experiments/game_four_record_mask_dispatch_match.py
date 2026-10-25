@@ -18,6 +18,9 @@ FUNCTION, ENTRY, ROM, SIZE = 'func_15085ABC', 0x15085ABC, 0xB2F6C, 176
 SOURCE, OWNER, ASM = 'conker/src/game/generated_B21B0.c', 'generated_B21B0', 'conker/asm/B21B0.s'
 BUILD = 'conker/build/game-four-record-mask-dispatch-match'
 OBJECT = 'conker/build/src/game/generated_B21B0.c.o'
+CALLER_SOURCE = 'conker/src/game_45B80.c'
+CALLER_OBJECT = 'conker/build/src/game_45B80.c.o'
+PROTOTYPE = 'void func_15085ABC(s16);\n'
 BEFORE_OBJECT_SHA = '021d86cd3b9d65d13b10934738354f17cda60e46669c8cc1eb0e4a21bb4fb91f'
 INPUTS = {
     "conker/Makefile": "54e393ef0f6c028cbfde10444ffff3581907a0647b0c3b16931ac93c8f3c85cf",
@@ -143,6 +146,13 @@ def payload(obj):
     return raw[:end * 4], relative
 
 
+def typed_caller(before):
+    marker = '#include "functions.h"\n'
+    if before.count(marker) != 1 or PROTOTYPE in before:
+        raise ValueError('Unknown health-dispatch caller declaration predecessor')
+    return before.replace(marker, marker + PROTOTYPE, 1)
+
+
 def original(root, output):
     from tools.tests.test_game_view_list_setup import ViewListSetupTests
     context = type('MotionOriginal', (), dict(root=root, out=output))
@@ -193,12 +203,22 @@ def qualify(root, output):
         raise ValueError('Four-record health dispatch padding changed another body/address/extent')
     if same_functions(old, obj, (FUNCTION,)) != neighbors or normalized_pools(old) != normalized_pools(obj):
         raise ValueError('Four-record health dispatch padded neighbors/pools changed')
+    caller_before, da = compile_owner(root, output, values[CALLER_SOURCE].decode(), 'caller-before')
+    caller_after, db = compile_owner(root, output, typed_caller(values[CALLER_SOURCE].decode()), 'caller-typed')
+    caller_functions = same_functions(caller_before, caller_after, ())
+    if (caller_functions != 16 or diagnostics(da) != diagnostics(db) or
+            normalized_pools(caller_before) != normalized_pools(caller_after) or
+            link_owner(root, output, caller_before, 'game_45B80') != link_owner(root, output, caller_after, 'game_45B80')):
+        raise ValueError('Typed health-dispatch caller changed code, bindings, pools or diagnostics')
+    (output / 'proposed-caller.c').write_text(typed_caller(values[CALLER_SOURCE].decode()))
     (output / 'proposed-owner.c').write_text(wanted)
     report = dict(words=44, frame=48, differences=0, relocations=5, new_guards=0,
         slot_words=45, alignment_words=1, alignment_bytes_preserved=True,
         owner_diagnostics_unchanged=True, isolated_diagnostics_empty=True,
         compiler_only=True, raw_SHA256=digest(raw), preserved_neighbors=neighbors,
-        all_owner_addresses_fixed=True, target_size_before=12, target_size_after=SIZE)
+        all_owner_addresses_fixed=True, target_size_before=12, target_size_after=SIZE,
+        typed_caller_ABI='void(s16)', caller_functions_preserved=caller_functions,
+        caller_diagnostics_unchanged=True)
     (output / 'qualification.json').write_text(json.dumps(report, indent=2) + '\n')
     return report
 
@@ -299,6 +319,7 @@ def audit_inputs(root, output):
     wanted = predicted_image(values['conker/build/conker.us.elf'], values['conker/conker.us.bin'][ROM:ROM + SIZE])
     for name, old in values.items():
         expected = (recovered_owner(old.decode()).encode() if name == SOURCE else
+                    typed_caller(old.decode()).encode() if name == CALLER_SOURCE else
                     (output / 'qualified-padded.o').read_bytes() if name == OBJECT else
                     wanted if name == 'conker/build/conker.us.elf' else old)
         if (root / name).read_bytes() != expected:
