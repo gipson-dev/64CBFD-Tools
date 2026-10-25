@@ -157,6 +157,7 @@ def check_inputs(root,output,installed=False):
     values=snapshot(output)
     for name,before in values.items():
         expected=(recovered_owner(before.decode()).encode()if installed and name==SOURCE else
+            (output/'qualified-padded.o').read_bytes()if installed and name==OBJECT else
             predicted_image(before,values['conker/conker.us.bin'][ROM:ROM+SIZE])if installed and name=='conker/build/conker.us.elf'else
             guard_bytes(before,*payload(output/'after-owner.o',FUNCTION))if installed and name=='conker/retail_word_patches.us.csv'else before)
         if(root/name).read_bytes()!=expected:raise ValueError('Global identity-event current input differs: '+name)

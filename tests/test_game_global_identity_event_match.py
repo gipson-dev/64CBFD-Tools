@@ -446,6 +446,25 @@ class GlobalIdentityEventTests(unittest.TestCase):
             bad=bytearray(pred);bad[at]^=1
             with self.assertRaises(ValueError):source.check_image(before,bytes(bad),truth)
         source.check_inputs(ROOT,self.out,(ROOT/source.SOURCE).read_bytes()!=self.values[source.SOURCE])
-        self.receipt['strict']=dict(changed_bytes=code+1,code_bytes=code,metadata_bytes=1,exclusions=0,corruptions=7,focused_inputs=len(self.values))
+        installed=dict(self.values)
+        installed[source.SOURCE]=source.recovered_owner(self.values[source.SOURCE].decode()).encode()
+        installed[source.OBJECT]=(self.out/'qualified-padded.o').read_bytes()
+        installed['conker/build/conker.us.elf']=pred
+        installed['conker/retail_word_patches.us.csv']=source.guard_bytes(self.values['conker/retail_word_patches.us.csv'],
+            *source.payload(self.out/'after-owner.o',source.FUNCTION))
+        class InputFile:
+            def __init__(self,name):self.name=name
+            def read_bytes(self):return installed[self.name]
+        class InputRoot:
+            def __truediv__(self,name):return InputFile(name)
+        source.check_inputs(InputRoot(),self.out,True)
+        mutations=(source.SOURCE,source.OBJECT,'conker/build/conker.us.elf','conker/retail_word_patches.us.csv',
+            'conker/build/src/game/done/game_1765E0.c.o','conker/include/structs.h')
+        for name in mutations:
+            before_input=installed[name];bad=bytearray(before_input);bad[0]^=1;installed[name]=bytes(bad)
+            with self.assertRaises(ValueError):source.check_inputs(InputRoot(),self.out,True)
+            installed[name]=before_input
+        self.receipt['strict']=dict(changed_bytes=code+1,code_bytes=code,metadata_bytes=1,exclusions=0,corruptions=7,
+            focused_inputs=len(self.values),installed_input_acceptance=True,installed_input_corruptions=len(mutations))
 
 if __name__=='__main__':unittest.main()
