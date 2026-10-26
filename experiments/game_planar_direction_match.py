@@ -128,12 +128,20 @@ def check_image(before,actual,truth,inventory_only=False):
     if actual!=predicted_image(before,truth,inventory_only):raise ValueError('Plane-component strict full image differs')
 
 
+def recovered_symbols(before):
+    marker=b'func_1510F8CC = 0x1510F8CC; // type:func defined:true\n'
+    if b'func_1510F8CC' in before:raise ValueError('Low-bit accessor symbol annotation already present')
+    if not before.endswith(b'\n'):raise ValueError('Low-bit accessor symbol manifest termination changed')
+    return before+marker
+
+
 def check_inputs(root,output,installed=False):
     values=snapshot(output);truth=values['conker/conker.us.bin'][ROM:ROM+SIZE]
     replacements={SOURCE:(output/'proposed-owner.c').read_bytes(),'conker/retail_word_patches.us.csv':(output/'qualified-guards.csv').read_bytes(),
         'conker/retail_layout.us.txt':(output/'qualified-layout.txt').read_bytes(),'conker/undefined_funcs_auto.txt':(output/'qualified-undefined-functions.txt').read_bytes(),
         OBJECT:(output/'qualified-padded.o').read_bytes(),'conker/build/conker.us.elf':predicted_image(values['conker/build/conker.us.elf'],truth),
-        'conker/progress.csv':(output/'projected-progress.csv').read_bytes()}
+        'conker/progress.csv':(output/'projected-progress.csv').read_bytes(),
+        'conker/symbol_addrs.us.txt':recovered_symbols(values['conker/symbol_addrs.us.txt'])}
     for name,before in values.items():
         expected=replacements.get(name,before)if installed else before
         if(root/name).read_bytes()!=expected:raise ValueError('Plane-component current input differs: '+name)

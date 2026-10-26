@@ -385,4 +385,45 @@ class PlanarDirectionTests(unittest.TestCase):
         self.receipt['strict']=dict(changed_bytes=150,code_bytes=127,metadata_bytes=23,exclusions=0,inventory_only_delta=2,corruptions=7,denominator=5506,leaf_separate=True)
 
 
+    def test_09_durable_symbol_annotation_and_actual_Splat_writer(self):
+        before=self.values['conker/symbol_addrs.us.txt'];after=source.recovered_symbols(before)
+        marker=b'func_1510F8CC = 0x1510F8CC; // type:func defined:true\n'
+        self.assertEqual(after,before+marker)
+        with self.assertRaises(ValueError):source.recovered_symbols(after)
+        with self.assertRaises(ValueError):source.recovered_symbols(before.rstrip(b'\n'))
+        script=r'''
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+from intervaltree import IntervalTree
+root,out=map(Path,sys.argv[1:])
+sys.path.insert(0,str(root/'tools/n64splat/src'))
+from splat.util import symbols,options
+from splat.scripts import split
+source=root/'conker/symbol_addrs.us.txt';text=source.read_text()
+line='func_1510F8CC = 0x1510F8CC; // type:func defined:true'
+assert text.count(line)==1
+for defined in (True,False):
+    symbols.all_symbols=[];symbols.all_symbols_dict={};symbols.all_symbols_ranges=IntervalTree()
+    lines=text.splitlines() if defined else text.replace(line,line.replace('defined:true','defined:false')).splitlines()
+    symbols.handle_sym_addrs(source,lines,[])
+    matches=[s for s in symbols.all_symbols if s.name=='func_1510F8CC'];assert len(matches)==1
+    target=matches[0];target.referenced=True
+    assert (target.vram_start,target.type,target.defined)==(0x1510F8CC,'func',defined)
+    symbols.add_symbol(symbols.Symbol(0x15500000,given_name='unresolved_canary',type='func',referenced=True))
+    dest=out/('Splat-leaf-defined-%s.txt'%defined)
+    options.opts=SimpleNamespace(create_undefined_funcs_auto=True,undefined_funcs_auto_path=dest)
+    split.write_undefined_funcs_auto()
+    expected=('' if defined else 'func_1510F8CC = 0x1510F8CC;\n')+'unresolved_canary = 0x15500000;\n'
+    assert dest.read_text()==expected
+print('actual parser/writer and missing-defined negative passed')
+'''
+        result=subprocess.run(['python3','-c',script,str(ROOT),str(self.out)],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertIn('missing-defined negative passed',result.stdout)
+        self.receipt['durability']=dict(tracked_defined_symbol=True,actual_Splat_parser_writer=True,
+            unresolved_canary_retained=True,missing_defined_negative_effective=True,no_full_extraction=True)
+
+
+
 if __name__=='__main__':unittest.main()
