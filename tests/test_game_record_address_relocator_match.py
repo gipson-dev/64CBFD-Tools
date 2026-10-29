@@ -55,6 +55,16 @@ class RecordAddressRelocatorTests(unittest.TestCase):
    a=o/('header-before-shadow/'+name.removeprefix('conker/build/'));b=o/row['shadow']
    assert parse_object(a)==parse_object(b)and source.normalized_pools(a)==source.normalized_pools(b)
   assert(o/'header-linked.elf').read_bytes()==(o/'first-linked.elf').read_bytes()
+  debug_controls=0
+  for name,row in source.HEADER_DEPENDENTS.items():
+   a=(o/row['shadow']).read_bytes();b=(o/'production-diagnostic'/name).read_bytes();assert source.check_dependent(a,b)
+   positions=[source.dependent_sections(b)[sec][0][4]for sec in('.text','.strtab','.symtab','.reginfo')]
+   sh,raw=source.dependent_sections(b)['.mdebug'];h=struct.unpack_from('>HH23I',raw);positions.extend((h[14],h[10]+4,h[20]+16,h[16]+10))
+   for at in positions:
+    bad=bytearray(b);bad[at]^=1
+    with self.assertRaises((ValueError,AssertionError,UnicodeError,struct.error)):source.check_dependent(a,bytes(bad))
+    debug_controls+=1
+  assert debug_controls==56
   if self.installed:source.audit(ROOT,o)
   self.receipt['owner']=dict(body_words=51,slot_words=51,alignment_words=0,compiler_words=51,frame=0,bindings=4,guards=0,neighbors=8,compact_functions=9,Make_commands=3,original_direct_caller=True,pointer_cell_header_types=True)
 

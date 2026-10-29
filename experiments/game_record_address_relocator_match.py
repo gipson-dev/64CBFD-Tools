@@ -58,6 +58,39 @@ def compile_frozen_owner(root,out,text,header,label):
     return compile_owner(root,out,text.replace('#include "variables.h"','#include "'+str(path)+'"'),label)
 
 
+def dependent_sections(data):
+    h=struct.unpack_from('>16sHHIIIIIHHHHHH',data);rows=[struct.unpack_from('>10I',data,h[6]+h[11]*i)for i in range(h[12])];name=rows[h[13]];names=data[name[4]:name[4]+name[5]]
+    return {names[x[0]:].split(b'\0',1)[0].decode():(x,data[x[4]:x[4]+x[5]]if x[1]!=8 else b'')for x in rows}
+
+def dependent_debug(data):
+    sh,raw=dependent_sections(data)['.mdebug'];h=struct.unpack_from('>HH23I',raw);assert h[0]==0x7009
+    def table(count,offset,size):return data[h[offset]:h[offset]+h[count]*size]
+    strings=table(15,16,1);extstrings=table(17,18,1)
+    def clean(s):
+        s=s.replace(b'build/game-record-address-relocator-match/header-shadow/',b'build/')
+        if re.fullmatch(rb'1[0-9]{9}',s):return b'<compiler-build-time>'
+        return s
+    def name(at):return clean(strings[at:].split(b'\0',1)[0])
+    fdr=table(19,20,72);syms=table(9,10,12);files=[];symbols=[];seen=set()
+    for i in range(h[19]):
+        f=struct.unpack_from('>10I2H7I',fdr,i*72);files.append((f[0],name(f[2]+f[1]),*f[4:]))
+        for j in range(f[4],f[4]+f[5]):
+            assert j not in seen;seen.add(j);a,b,c=struct.unpack_from('>3I',syms,j*12);symbols.append((j,name(f[2]+a),b,c))
+    assert seen==set(range(h[9]))
+    fixed=tuple(h[i]for i in(0,1,2,3,5,7,9,11,13,17,19,21,23))
+    return(fixed,tuple(clean(s)for s in strings.rstrip(b'\0').split(b'\0')),extstrings,files,sorted(symbols),*[table(a,b,n)for a,b,n in((3,4,1),(5,6,8),(7,8,52),(11,12,12),(13,14,4),(21,22,4),(23,24,16))])
+
+def check_dependent(expected,actual):
+    a=dependent_sections(expected);b=dependent_sections(actual)
+    if a.keys()!=b.keys():raise ValueError('Dependent section names differ')
+    for name,(h,data)in a.items():
+        hh,dd=b[name]
+        indexes=(0,1,2,3,6,7,8,9)if name=='.mdebug'else(0,1,2,3,5,6,7,8,9)
+        if tuple(h[i]for i in indexes)!=tuple(hh[i]for i in indexes):raise ValueError('Dependent section geometry differs: '+name)
+        if name!='.mdebug'and data!=dd:raise ValueError('Dependent section bytes differ: '+name)
+    if dependent_debug(expected)!=dependent_debug(actual):raise ValueError('Dependent debug records differ beyond output path and build time')
+    return True
+
 def snapshot(output):
     data=(output/'input-snapshot.json').read_bytes()
     if sha(data)!=SNAPSHOT_SHA:raise ValueError('Record address relocator snapshot changed')
@@ -72,7 +105,9 @@ def snapshot(output):
 def check_inputs(root,output,installed=False):
     values=snapshot(output);changes={}
     if installed:changes={HEADER:recovered_header(values[HEADER].decode()).encode(),'conker/retail_word_patches.us.csv':guard_manifest(values['conker/retail_word_patches.us.csv']),SOURCE:recovered_owner(values[SOURCE].decode()).encode(),OBJECT:(output/'qualified-padded.o').read_bytes(),'conker/build/conker.us.elf':predicted_image(values['conker/build/conker.us.elf'],values['conker/conker.us.bin'][ROM:ROM+SIZE])}
-    if installed:changes.update({n:(output/row['shadow']).read_bytes()for n,row in HEADER_DEPENDENTS.items()})
+    if installed:
+        for name,row in HEADER_DEPENDENTS.items():
+            actual=(root/name).read_bytes();check_dependent((output/row['shadow']).read_bytes(),actual);changes[name]=actual
     for name,b in values.items():
         if(root/name).read_bytes()!=changes.get(name,b):raise ValueError('Record address relocator live input differs: '+name)
     return values
@@ -104,6 +139,8 @@ ARTIFACTS=('before-padded.o','qualified-padded.o','proposed-owner.c','selected.o
 EVIDENCE=("proposed-guards.csv","before-owner.c","before-owner-processed.c","before-owner.o","before-owner-diagnostics.txt","after-owner.c","after-owner-processed.c","after-owner.o","after-owner-diagnostics.txt","selected.c","selected-processed.c","selected.o","selected-diagnostics.txt","selected-input.c","make-shadow/src/game_305D0.c.o.compact","actual-Make-plan.txt","Make-commands.json","actual-Make-diagnostics.txt","make-shadow/src/game_305D0.c.o","make-shadow/src/game_305D0.c.o.padded.s","proposed-variables.h",)
 
 EVIDENCE += ('header-owner-audit.json', 'header-section-audit.json', 'header-linked.elf', 'header-shadow-build.json', 'header-shadow-build.log', 'header-before-build.log', 'header-shadow/src/debugger_258ED0.c.o', 'header-shadow/src/game/done/game_75810.c.o', 'header-shadow/src/game/done/game_75950.c.o', 'header-shadow/src/libultra/audio/init_128D0.c.o', 'header-shadow/src/libultra/gu/guPerspectiveF.c.o', 'header-shadow/src/libultra/gu/guRotateF.c.o', 'header-shadow/src/libultra/gu/sinf.c.o', 'header-before-shadow/src/debugger_258ED0.c.o', 'header-before-shadow/src/game/done/game_75810.c.o', 'header-before-shadow/src/game/done/game_75950.c.o', 'header-before-shadow/src/libultra/audio/init_128D0.c.o', 'header-before-shadow/src/libultra/gu/guPerspectiveF.c.o', 'header-before-shadow/src/libultra/gu/guRotateF.c.o', 'header-before-shadow/src/libultra/gu/sinf.c.o')
+
+EVIDENCE += ('production-dependent-audit.json', 'production-diagnostic/conker/build/src/debugger_258ED0.c.o', 'production-diagnostic/conker/build/src/game/done/game_75810.c.o', 'production-diagnostic/conker/build/src/game/done/game_75950.c.o', 'production-diagnostic/conker/build/src/libultra/audio/init_128D0.c.o', 'production-diagnostic/conker/build/src/libultra/gu/guPerspectiveF.c.o', 'production-diagnostic/conker/build/src/libultra/gu/guRotateF.c.o', 'production-diagnostic/conker/build/src/libultra/gu/sinf.c.o')
 
 def verify_prepared(output):
     rows=json.loads((output/'artifact-fingerprint.json').read_text())
