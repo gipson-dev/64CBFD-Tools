@@ -103,7 +103,7 @@ def run_suite():
    c=Case(word,alias=alias);initial=fixture(c,s);ms=[]
    for words in programs:m=Oracle(words,initial,c,s,entry);m.run();verify(m,initial,c,s);ms.append(m)
    compare(ms);rebased+=1
- rom=(r/'conker/conker.us.bin').read_bytes();assert struct.unpack_from('>I',rom,0x22B0E4)[0]==ENTRY;index=(0x80086734-TABLE)//4;assert index==206
+ rom=(r/'conker/conker.us.bin').read_bytes();assert struct.unpack_from('>I',rom,0x22B0E4)[0]==ENTRY;from tools.patch_generated_slice_ld import load_game_data_layout;rom_start,vram,rom_end,owners=load_game_data_layout(r/'conker');assert(rom_start,vram)==(0x2275E0,0x80082B20);pointer_VA=vram+0x22B0E4-rom_start;assert pointer_VA==0x80086624;index=(pointer_VA-TABLE)//4;assert index==138
  window=list(struct.unpack_from('>6I',rom,0x98360));assert window==[0x10800009,0x0004C080,0x03D8C821,0x8F390000,0x0320F809,0]
  caller_cases=0
  for word,alias,fcsr in itertools.product((0,1,0xFFFF,0x80FF1234,0xFFFFFFFF),(0,1,2),(0,3)):
@@ -115,7 +115,7 @@ def run_suite():
    else:raise AssertionError('Missing callback window boundary')
    assert m.memory==reference(initial,c) and m.calls==[(ENTRY,())] and m.fcsr==fcsr;ms.append(m)
   compare(ms);caller_cases+=1
- result=dict(private_only=True,installed=False,matching_credit=0,cases=count,executions=count*3,body_words=60,covered_words=len(visited&set(range(ENTRY,ENTRY+BODY,4))),unreachable_word_indices=[i for i in range(60)if ENTRY+4*i not in visited],frame=0,guards=4,access_prefix_pairs=prefixes,delay_slot_memory_cuts=delays,rebase_layouts=2,rebase_cases=rebased,guest_alias_cases=aliases,caller_window_words=6,caller_cases=caller_cases,callback_table='D_800863FC',callback_index=206,callback_pointer_ROM='0x22B0E4',callback_window_ROM='0x98360',bounded_FP_values_are_exact=True,FCSR_restored=True,void_result_not_interpreted=True,original_and_padded_literal_full_state_equal=True,raw_differs_only_closed_caller_clobbered_GP_cycle=True,full_parent_or_gameplay_claimed=False)
+ result=dict(private_only=True,installed=False,matching_credit=0,cases=count,executions=count*3,body_words=60,covered_words=len(visited&set(range(ENTRY,ENTRY+BODY,4))),unreachable_word_indices=[i for i in range(60)if ENTRY+4*i not in visited],frame=0,guards=4,access_prefix_pairs=prefixes,delay_slot_memory_cuts=delays,rebase_layouts=2,rebase_cases=rebased,guest_alias_cases=aliases,caller_window_words=6,caller_cases=caller_cases,callback_table='D_800863FC',callback_index=138,callback_pointer_VA=hex(pointer_VA),game_data_ROM_start=hex(rom_start),callback_pointer_ROM='0x22B0E4',callback_window_ROM='0x98360',bounded_FP_values_are_exact=True,FCSR_restored=True,void_result_not_interpreted=True,original_and_padded_literal_full_state_equal=True,raw_differs_only_closed_caller_clobbered_GP_cycle=True,full_parent_or_gameplay_claimed=False)
  return result
 
 def controls(body):

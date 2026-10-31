@@ -13,7 +13,7 @@ from tools.experiments.game_actor_classifier_candidates import sections
 from tools.pad_generated_object import parse_object
 r=Path.cwd();o=r/'conker/build/game-sampled-record-byte-151638E0-match';F='func_151638E0';ENTRY=0x151638E0;BODY=240
 STATE,OTHER,THIRD,TARGET,ALTERNATE=0x30000,0x32000,0x34000,0x60000,0x61000
-VECTOR,SCALAR,PRE,PARENT,TABLE=0x15187FC0,0x15188010,0x1515F10C,0x15161804,0x8008B208
+VECTOR,SCALAR,FREE,PARENT,TABLE=0x15187FC0,0x15188010,0x1516972C,0x151603FC,0x8008B0F0
 SYMS=dict(func_15187FC0=VECTOR,func_15188010=SCALAR,D_800DF7B4=0x800DF7B4,D_800DF700=0x800DF700,D_800DF70C=0x800DF70C)
 u32=lambda n:n&0xFFFFFFFF;signed=lambda n:((n&0xFFFFFFFF)^0x80000000)-0x80000000
 def rounded(v):
@@ -43,11 +43,11 @@ def fixture(c,s=SYMS,home=None):
  for base,n in ((STATE,128),(OTHER,128),(THIRD,128),(TARGET,80),(ALTERNATE,80),(s['D_800DF700']-16,36*8+32),(s['D_800DF70C']-16,36*8+32),(s['D_800DF7B4']-4,12)):
   for i in range(n):m[u32(base+i)]=(i*29+c.seed*11+0x59)&255
  for p in(STATE,OTHER,THIRD):
-  put(m,p+0x14,TARGET);put(m,p+0x18,c.index);put(m,p+0x1C,c.base);put(m,p+0x20,c.scale);m[p+0x12]=14;m[p+0xE]=c.flags
+  put(m,p+0x14,TARGET);put(m,p+0x18,c.index);put(m,p+0x1C,c.base);put(m,p+0x20,c.scale);m[p+0x12]=14;m[p+0xE]=c.flags;m[p+0xF]=16;put(m,p+0x10,10,2)
  for i in range(8):
   for j in range(3):m[s['D_800DF700']+36*i+6+j]=(i*17+j*31+5)&255
   put(m,s['D_800DF70C']+36*i,c.factor)
- put(m,s['D_800DF7B4'],c.count);put(m,home-20,c.spill);put(m,TABLE+14*4,ENTRY);return m
+ put(m,s['D_800DF7B4'],c.count);put(m,home-20,c.spill);put(m,TABLE+16*4,ENTRY);put(m,0x800BE9E4,1);return m
 def public(m):return{a:b for a,b in m.items()if not STACK-1024<=a<STACK+512}
 def effect(m,c,number,home):
  if number==1:
@@ -62,7 +62,11 @@ def effect(m,c,number,home):
 def reference(initial,c,s=SYMS,home=None,parent=False):
  home=STACK+c.phase if home is None else home;m=dict(initial);calls=[];owner=STATE
  if parent:
-  if c.flags&2:put(m,STATE+0x10,0xA55A,2);calls.append((PRE,(read(m,STATE+0x14),STATE)))
+  expired=False
+  if c.flags&1:
+   timer=((read(m,STATE+0x10,2)^32768)-32768)-signed(read(m,0x800BE9E4));put(m,STATE+0x10,timer,2);expired=((timer&65535)^32768)-32768<0
+  if expired:
+   calls.append((FREE,(STATE,)));put(m,STATE+0x30,0xFEE1DEAD);return m,calls
   calls.append((ENTRY,(STATE,)))
  put(m,home,owner);index=read(m,owner+0x18);vector,scalar=home-16,home-20;calls.append((s['func_15187FC0'],(index,vector)))
  if not c.connected:
@@ -86,10 +90,10 @@ class Oracle(FactoryOracle):
    a,b=floating(self.f[word>>11&31]),floating(self.f[word>>16&31]);v=a+b if fn==0 else a-b if fn==1 else a*b;self.f[word>>6&31]=bits(rounded(v));self.r[0]=0
   else:super().execute(word)
  def record_call(self,t):
-  assert t in(self.syms['func_15187FC0'],self.syms['func_15188010'],PRE,ENTRY);a=tuple(self.arguments(1 if t==ENTRY else 2));self.calls.append((t,a));self.events.append(('CALL',t,a))
+  assert t in(self.syms['func_15187FC0'],self.syms['func_15188010'],FREE,ENTRY);a=tuple(self.arguments(1 if t in(ENTRY,FREE)else 2));self.calls.append((t,a));self.events.append(('CALL',t,a))
  def hook(self,t):
   c=self.case;args=self.calls[-1][1]
-  if t==PRE:put(self.memory,STATE+0x10,0xA55A,2)
+  if t==FREE:put(self.memory,STATE+0x30,0xFEE1DEAD)
   else:
    assert not c.connected,'Connected getters must execute retail instructions'
    if t==self.syms['func_15187FC0']:
@@ -110,7 +114,7 @@ def helpers(s=SYMS,key='helpers'):
 def state(m):return(m.r,m.f,m.memory,m.calls,m.events,m.trace,m.hi,m.lo,m.condition,m.fcsr)
 def verify(m,initial,c,s=SYMS,home=None,parent=False):
  want,calls=reference(initial,c,s,home,parent);assert(public(m.memory),m.calls)==(public(want),calls),c
- assert m.r[2]==1 and m.r[29]==m.before[29]and m.r[16:24]==m.before[16:24]and m.f[20:]==m.before_f[20:]and m.fcsr==c.fcsr
+ assert (m.r[2]==1 or(parent and not any(t==ENTRY for t,_ in m.calls))) and m.r[29]==m.before[29]and m.r[16:24]==m.before[16:24]and m.f[20:]==m.before_f[20:]and m.fcsr==c.fcsr
 def cases():
  values=(0,0x80000000,1,0x3E800000,0x3F000000,0x3F800000,0x3F800001,0x437F0000,0x43800000,0x4F000000,0x4F7FFFFF,0x4F800000,0xBF000000,0xBF800000,0x7F7FFFFF,0x7F800000,0xFF800000,0x7FC12345)
  for factor,base,scale,mode in itertools.product(values,(0,0x3F800000,0xBF800000,0x437F0000),(0,0x3F000000,0x3F800000,0xBF800000),(0,1,2,3,4,8,12)):
@@ -152,15 +156,30 @@ def run_suite():
   s=dict(SYMS,D_800DF700=base,D_800DF70C=base+delta);hc=helpers(s,'helpers-alias-'+str(aliases));c=Case(index=0,factor=factor,connected=True);initial=fixture(c,s);ms=[]
   for words in ps:m=Oracle(words,initial,c,s,connected=hc);m.run();verify(m,initial,c,s);ms.append(m)
   assert state(ms[0])==state(ms[1])==state(ms[2]);aliases+=1
- parent=struct.unpack_from('>23I',(r/'conker/conker.us.bin').read_bytes(),0x18ECB4);caller_cases=0
- for flags,mode,factor,connected in itertools.product((0,2),(0,1,2,12),(0,0x3F800000,0x7FC12345),(False,True)):
-  c=Case(index=0,flags=flags,mode=0 if connected else mode,factor=factor,connected=connected);home=STACK-24;initial=fixture(c,home=home);ms=[]
+ from tools.patch_generated_slice_ld import load_game_data_layout
+ rom=(r/'conker/conker.us.bin').read_bytes();rom_start,vram,rom_end,owners=load_game_data_layout(r/'conker');assert(rom_start,vram)==(0x2275E0,0x80082B20)
+ pointer_VA=vram+0x22FBF0-rom_start;assert pointer_VA==0x8008B130==TABLE+16*4 and int.from_bytes(rom[0x22FBF0:0x22FBF4],'big')==ENTRY
+ parent=struct.unpack_from('>41I',rom,0x18D8AC);caller_cases=0;parent_visits=set()
+ for flags,mode,factor,connected in itertools.product((0,1),(0,1,2,12),(0,0x3F800000,0x7FC12345),(False,True)):
+  c=Case(index=0,flags=flags,mode=0 if connected else mode,factor=factor,connected=connected);home=STACK-32;initial=fixture(c,home=home);ms=[]
   for program in ps:
    owned=dict(zip(range(ENTRY,ENTRY+BODY,4),program))
    if c.connected:owned.update(code)
    m=Oracle(parent,initial,c,entry=PARENT,connected=owned,home=home);m.run();verify(m,initial,c,home=home,parent=True);ms.append(m)
-  assert state(ms[0])==state(ms[1])==state(ms[2]);caller_cases+=1
- return dict(private_only=True,installed=False,matching_credit=0,cases=count,executions=count*3,body_words=60,covered_words=59,unreachable_word_indices=[48],unreachable_duplicate_preserved=True,frame=48,guards=0,access_prefix_pairs=prefixes,delay_slot_cuts=delay,rebase_layouts=2,rebase_cases=rebased,guest_alias_cases=aliases,connected_cases=connected_count,original_helper_words=35,helper_coverage=[20,15],invalid_indices_preserve_unwritten_scalar=True,incoming_home_mutations_guest_only=True,live_record_and_target_after_helpers=True,return_value=1,original_caller_words=23,caller_cases=caller_cases,callback_table='D_8008B208',callback_index=14,callback_pointer_ROM='0x22FBF0',optional_parent_helper_is_ABI_hook=True,literal_full_state_equal=True,FP_model='bounded nontrapping RNE; arithmetic exception flags and full FCSR not modeled',native_unwritten_or_out_of_range_or_full_FCSR_claimed=False)
+  assert state(ms[0])==state(ms[1])==state(ms[2]);parent_visits.update(ms[0].visits);caller_cases+=1
+ expiry_cases=0
+ for connected in (False,True):
+  c=Case(flags=1,connected=connected);home=STACK-32;initial=fixture(c,home=home);put(initial,STATE+0x10,0,2);ms=[]
+  for program in ps:
+   owned=dict(zip(range(ENTRY,ENTRY+BODY,4),program))
+   if connected:owned.update(code)
+   m=Oracle(parent,initial,c,entry=PARENT,connected=owned,home=home);m.run();verify(m,initial,c,home=home,parent=True);ms.append(m)
+  assert state(ms[0])==state(ms[1])==state(ms[2]);parent_visits.update(ms[0].visits);expiry_cases+=1
+ assert parent_visits&set(range(PARENT,PARENT+164,4))==set(range(PARENT,PARENT+164,4))-{PARENT+128}
+ # The actual dispatcher consumes the result: zero frees the owner.
+ wrong=list(ps[0]);assert wrong[54]==0x24020001;wrong[54]=0x24020000;c=Case(connected=True);home=STACK-32;initial=fixture(c,home=home);owned=dict(zip(range(ENTRY,ENTRY+BODY,4),wrong));owned.update(code);bad=Oracle(parent,initial,c,entry=PARENT,connected=owned,home=home);bad.run();assert bad.calls[-1]==(FREE,(STATE,)) and read(bad.memory,STATE+0x30)==0xFEE1DEAD
+
+ return dict(private_only=True,installed=False,matching_credit=0,cases=count,executions=count*3,body_words=60,covered_words=59,unreachable_word_indices=[48],unreachable_duplicate_preserved=True,frame=48,guards=0,access_prefix_pairs=prefixes,delay_slot_cuts=delay,rebase_layouts=2,rebase_cases=rebased,guest_alias_cases=aliases,connected_cases=connected_count,original_helper_words=35,helper_coverage=[20,15],invalid_indices_preserve_unwritten_scalar=True,incoming_home_mutations_guest_only=True,live_record_and_target_after_helpers=True,return_value=1,original_caller_words=41,caller_cases=caller_cases,caller_expiry_cases=expiry_cases,caller_reachable_words=40,caller_unreachable_with_return_one=[32],callback_table='D_8008B0F0',callback_index=16,callback_pointer_VA=hex(pointer_VA),caller='func_151603FC',caller_return_zero_triggers_free=True,game_data_ROM_start=hex(rom_start),callback_pointer_ROM='0x22FBF0',parent_free_helper_is_ABI_hook=True,literal_full_state_equal=True,FP_model='bounded nontrapping RNE; arithmetic exception flags and full FCSR not modeled',native_unwritten_or_out_of_range_or_full_FCSR_claimed=False)
 
 def controls(body):
  def cached(name,type_,expr):

@@ -21,7 +21,7 @@ class SampledRecordByteTests(unittest.TestCase):
    with self.assertRaises(ValueError):source.normalized_payload(data,bindings,**kw)
   self.assertEqual(source.guard_manifest(self.values['conker/retail_word_patches.us.csv']),(self.out/'proposed-guards.csv').read_bytes());self.receipt['fresh_C']=dict(words=60,retail_words=60,guards=0,insertions=0,omissions=0,raw_C_exact=True,normalization_rejections=245)
  def test_02_guest_original_callers_and_retail_data(self):
-  oracle.o=self.out;result=oracle.run_suite();self.assertEqual(result,json.loads((self.out/'private-semantics-v9.json').read_text()));self.receipt['guest_suite']=result
+  oracle.o=self.out;result=oracle.run_suite();self.assertEqual(result,json.loads((self.out/'corrected-semantics-v25.json').read_text()));self.receipt['guest_suite']=result
   controls=oracle.compiled_controls(source.HEADERS+source.SELECTED);self.assertEqual(controls,json.loads((self.out/'private-controls-v11.json').read_text()));self.receipt['compiled_controls']=controls
  def test_03_native32_UBSan_and_thirteen_controls(self):
   oracle.o=self.fresh
