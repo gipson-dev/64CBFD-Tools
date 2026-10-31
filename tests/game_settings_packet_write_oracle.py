@@ -25,7 +25,7 @@ class Case:
  ignored:int=0xFFFFFFFF
 def fixture(c,s=SYMS):
  m={STACK+i:(i*17+0xA5)&255 for i in range(-512,128)}
- for base,size in((s['D_800BE358']-16,64),(s['D_800BE35A']-16,64),
+ for base,size in((s['D_800BE358']-16,160),(s['D_800BE35A']-16,64),
                   (s['D_800E0BE0']-16,64),(s['D_8002AC5C']-4,12),(s['D_800BE900']-16,48)):
   m.update({base+i:(i*13+0x59)&255 for i in range(size)})
  for i in range(28):
@@ -171,7 +171,7 @@ def guest_suite():
  return dict(cases=count,normalized_executions=count*4,raw_C_executions=count,retail_words=59,reachable_words=59,
              independent_rebases=3,aliases=aliases,access_prefix_cases=cuts,branch_delay_cuts=delays,
              raw_final_architectural_state_and_access_order_equal=True,normalized_prefix_state_equal=True,
-             raw_prefix_memory_and_access_order_equal=True,copy_bytes=28,record_bytes=32,tail_bytes_preserved=2,
+             raw_prefix_memory_and_access_order_equal=True,copy_bytes=28,record_bytes=32,tail_bytes_preserved=2,shared_scratch_bytes=128,
              checksum_range=[204,26979],volatile_status_stack_offset=24,frame=32,
              helper_or_EEPROM_hardware_claim=False)
 def caller_suite():
@@ -213,9 +213,9 @@ def caller_suite():
 from tools.tests.test_game_projected_packet_draw import native_command
 from tools.tests.test_game_row_destination_fill import START
 PREAMBLE=r'''
-typedef union {u16 checksum; u8 bytes[32];} NativeRecord;
+typedef union {u16 checksum; u8 bytes[128];} NativeRecord;
 NativeRecord nativeRecord;
-extern u8 D_800BE358[32] __attribute__((alias("nativeRecord")));
+extern u8 D_800BE358[128] __attribute__((alias("nativeRecord")));
 s8 D_800E0BE0[28];
 __asm__(".globl D_800BE35A\n.set D_800BE35A, nativeRecord+2\n"
         ".globl D_800E0BFC\n.set D_800E0BFC, D_800E0BE0+28\n");
@@ -241,7 +241,7 @@ static int checkCase(unsigned pattern,unsigned position,unsigned value,u8 flag,u
  NativeRecord wanted,submitted;
  u8 source[28];u32 sum=204;unsigned i;
  calls=0;failed=0;mode=effects;statusValue=result;D_8002AC5C=flag;
- for(i=0;i<32;i++)wanted.bytes[i]=nativeRecord.bytes[i]=(u8)(i*13+0x59);
+ for(i=0;i<128;i++)wanted.bytes[i]=nativeRecord.bytes[i]=(u8)(i*13+0x59);
  for(i=0;i<28;i++) {
   u8 b=pattern==0?0:pattern==1?255:pattern==2?128:(u8)(i*17+0x71);
   if(i==position)b=(u8)value;
@@ -258,7 +258,7 @@ static int checkCase(unsigned pattern,unsigned position,unsigned value,u8 flag,u
   if(effects&4)for(i=0;i<28;i++)source[i]=(u8)(i*29+0x85);
  }
  if(D_8002AC5C!=flag)return 1;
- for(i=0;i<32;i++)if(nativeRecord.bytes[i]!=wanted.bytes[i])return 1;
+ for(i=0;i<128;i++)if(nativeRecord.bytes[i]!=wanted.bytes[i])return 1;
  for(i=0;i<28;i++)if((u8)D_800E0BE0[i]!=source[i])return 1;
  return 0;
 }
@@ -284,6 +284,7 @@ def native_suite():
   'wrong-shift-phase':body.replace('(index++ & 3)','((index++ - 1) & 3)'),
   'wrong-request-length':body.replace('D_800BE358, 32','D_800BE358, 31'),
   'inverted-gate':body.replace('D_8002AC5C == 0','D_8002AC5C != 0'),
+  'clobber-outside-record':body.replace('    if (D_8002AC5C','    D_800BE358[127] = 0;\n    if (D_8002AC5C'),
   'clobber-tail-padding':body.replace('    if (D_8002AC5C','    D_800BE358[30] = D_800BE358[31] = 0;\n    if (D_8002AC5C'),
  }
  assert all(text!=body for text in controls.values());results=[]
@@ -296,10 +297,10 @@ def native_suite():
   q=subprocess.run([str(p)],capture_output=True)
   assert q.returncode==(1 if control else 0),(name,q.returncode,q.stderr)
   results.append(dict(name=name,optimization=opt,control=control,exit=q.returncode))
- return dict(positive_cases_each=688128,profiles=['O0','O2','O3'],effective_controls=8,controls_exit_by_semantic_mismatch=True,
+ return dict(positive_cases_each=688128,profiles=['O0','O2','O3'],effective_controls=9,controls_exit_by_semantic_mismatch=True,
              UBSan_trapping=True,all28_payload_positions_each256_byte_values=True,backgrounds=4,gate_values=3,
              return_patterns=4,callback_mutations=True,record_storage_union_backed=True,
-             interior_and_one_past_labels=True,tail_padding_preserved=True,host_byte_order_not_guest_serialization=True,
+             interior_and_one_past_labels=True,tail_padding_preserved=True,shared_scratch_bytes=128,outside_record_bytes_preserved=96,host_byte_order_not_guest_serialization=True,
              EEPROM_hardware_claim=False,results=results)
 
 def dependency_native_suite():
@@ -308,8 +309,8 @@ def dependency_native_suite():
  before=(r/source.BUILD/'before-conker_src_game_33990.c').read_text()
  if previous.source.SELECTED.strip()not in before or previous.source.SELECTED.strip()not in source.recovered_owner(before):raise ValueError('Prior erase body changed')
  folder=o/'affected-erase-native';folder.mkdir(exist_ok=True)
- preamble=previous.PREAMBLE.replace('u8 D_800BE358[8];','u8 D_800BE358[32];')
+ preamble=previous.PREAMBLE.replace('u8 D_800BE358[8];','u8 D_800BE358[128];')
  if preamble==previous.PREAMBLE:raise ValueError('Prior erase backing extent changed')
  with source.candidate_header(r,r/source.BUILD),patch.object(previous,'o',folder),patch.object(previous,'PREAMBLE',preamble):
   result=previous.native_suite()
- return dict(result,storage_bytes=32,prior_erase_body_identical=True,header_change_freshly_qualified=True)
+ return dict(result,storage_bytes=128,prior_erase_body_identical=True,header_change_freshly_qualified=True)

@@ -24,7 +24,7 @@ class SettingsPacketWriteTests(unittest.TestCase):
   oracle.o=self.out;expected=json.loads((self.out/'private-semantics-v13.json').read_text())
   for name in('caller_suite','guest_suite'):
    result=getattr(oracle,name)();self.assertEqual(result,expected[name]);self.receipt[name]=result
- def test_03_native32_UBSan_and_seven_controls(self):
+ def test_03_native32_UBSan_and_controls(self):
   oracle.o=self.fresh
   try:result=oracle.native_suite()
   finally:oracle.o=self.out
@@ -37,7 +37,7 @@ class SettingsPacketWriteTests(unittest.TestCase):
   raw,bindings=source.payload(self.out/'selected-final.o');self.assertEqual(len(raw),236);self.assertEqual(bindings,source.BINDINGS);w=struct.unpack('>59I',raw)
   self.assertEqual(w[0],0x27BDFFE0);self.assertEqual(w[-4:],(0x8FBF0014,0x27BD0020,0x03E00008,0))
   self.assertIn(0xAFA20018,w);self.assertIn('void func_15007558(void)',source.SELECTED)
-  self.receipt['frame']=dict(bytes=32,compiler_words=59,body_words=59,reachable_words=59,alignment_words=0,return_type='void',volatile_status_stack_offset=24,raw_bindings=15,normalized_bindings=15,record_bytes=32,payload_bytes=28)
+  self.receipt['frame']=dict(bytes=32,compiler_words=59,body_words=59,reachable_words=59,alignment_words=0,return_type='void',volatile_status_stack_offset=24,raw_bindings=15,normalized_bindings=15,record_bytes=32,payload_bytes=28,shared_scratch_bytes=128)
  def test_05_actual_guard_preimages_and_closed_schedule(self):
   import csv,io,itertools
   manifest=(self.out/'proposed-guards.csv').read_bytes();self.assertEqual(manifest,source.guard_manifest(self.values['conker/retail_word_patches.us.csv']));self.assertTrue(manifest.startswith(self.values['conker/retail_word_patches.us.csv']))

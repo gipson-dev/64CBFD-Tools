@@ -32,7 +32,7 @@ BEFORE_ELF_SHA='d4a370151ebe4e7d4b1037e84479848fd95b4398ab7018c29ec07dfb462720ac
 TRUTH_SHA='f089f90c443471a35e83de645b6c32de47a6e787e13c47822932856cb09a6587'
 BINDINGS={8: [('R_MIPS_HI16', 'D_800BE358')], 20: [('R_MIPS_LO16', 'D_800BE358')], 12: [('R_MIPS_HI16', 'D_800E0BE0')], 24: [('R_MIPS_LO16', 'D_800E0BE0')], 16: [('R_MIPS_HI16', 'D_800E0BFC')], 28: [('R_MIPS_LO16', 'D_800E0BFC')], 56: [('R_MIPS_HI16', 'D_800BE35A')], 64: [('R_MIPS_LO16', 'D_800BE35A')], 172: [('R_MIPS_HI16', 'D_800BE358')], 176: [('R_MIPS_LO16', 'D_800BE358')], 184: [('R_MIPS_HI16', 'D_8002AC5C')], 188: [('R_MIPS_LO16', 'D_8002AC5C')], 192: [('R_MIPS_HI16', 'D_800BE900')], 196: [('R_MIPS_LO16', 'D_800BE900')], 208: [('R_MIPS_26', 'func_151DCEF0')]}
 ORIGINAL_BINDINGS={16: [('R_MIPS_HI16', 'D_800E0BFC')], 20: [('R_MIPS_LO16', 'D_800E0BFC')], 12: [('R_MIPS_HI16', 'D_800E0BE0')], 24: [('R_MIPS_LO16', 'D_800E0BE0')], 8: [('R_MIPS_HI16', 'D_800BE358')], 28: [('R_MIPS_LO16', 'D_800BE358')], 56: [('R_MIPS_HI16', 'D_800BE35A')], 64: [('R_MIPS_LO16', 'D_800BE35A')], 172: [('R_MIPS_HI16', 'D_800BE358')], 176: [('R_MIPS_LO16', 'D_800BE358')], 184: [('R_MIPS_HI16', 'D_8002AC5C')], 188: [('R_MIPS_LO16', 'D_8002AC5C')], 192: [('R_MIPS_HI16', 'D_800BE900')], 196: [('R_MIPS_LO16', 'D_800BE900')], 208: [('R_MIPS_26', 'func_151DCEF0')]}
-HEADERS='#include <ultra64.h>\nextern u8 D_800BE358[32];\nextern u8 D_800BE35A[28];\nextern s8 D_800E0BE0[28];\nextern s8 D_800E0BFC[];\nextern u8 D_8002AC5C;\nextern OSMesgQueue D_800BE900;\ns32 func_151DCEF0(OSMesgQueue *, s32, void *, s32);\n\n'
+HEADERS='#include <ultra64.h>\nextern u8 D_800BE358[128];\nextern u8 D_800BE35A[28];\nextern s8 D_800E0BE0[28];\nextern s8 D_800E0BFC[];\nextern u8 D_8002AC5C;\nextern OSMesgQueue D_800BE900;\ns32 func_151DCEF0(OSMesgQueue *, s32, void *, s32);\n\n'
 DECLARATIONS=''
 SELECTED='/* Copy the settings payload, checksum it, and queue the 32-byte EEPROM record. */\nvoid func_15007558(void) {\n    u16 checksum;\n    volatile s32 result;\n    s32 index;\n    s8 *settings;\n    u8 *record;\n\n    record = D_800BE358 + 2;\n    settings = D_800E0BE0;\n    do {\n        *record++ = *settings++;\n    } while ((u32)settings < (u32)D_800E0BFC);\n    checksum = 0xCC;\n    record = D_800BE35A;\n    index = 2;\n    do {\n        checksum += *record++ << (index++ & 3);\n    } while (index < 30);\n    *(u16 *)D_800BE358 = checksum;\n    if (D_8002AC5C == 0) {\n        result = func_151DCEF0(&D_800BE900, 0, D_800BE358, 32);\n    }\n}\n'
 
@@ -178,7 +178,7 @@ DEPENDENCY_OBJECT='conker/build/src/game/generated_20AE20.c.o'
 def recovered_header(before):
     old=b'extern u8   D_800BE358[8];'
     if before.count(old)!=1:raise ValueError('Settings record declaration changed')
-    return before.replace(old,b'extern u8   D_800BE358[32]; // EEPROM record; erase uses its first eight bytes.')
+    return before.replace(old,b'extern u8   D_800BE358[128]; // Shared EEPROM scratch; settings use 32 bytes, erase uses eight.')
 def recovered_settings_owner(before):
     before=before.replace('\r\n','\n');old='s8 D_800E0BE0[23];'
     if before.count(old)!=1:raise ValueError('Settings region declaration changed')
