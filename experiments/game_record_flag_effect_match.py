@@ -6,7 +6,7 @@ from tools.experiments.game_four_head_lookup_match import payload as function_pa
 from tools.experiments.game_actor_state_tick_integration import same_functions
 from tools.tests.game_owner_pool import normalized_pools
 FUNCTION,OWNER='func_15014144','game_40490'
-ENTRY,ROM,BODY,SIZE=0x15014094,0x415F4,220,220
+ENTRY,ROM,BODY,SIZE=0x15014144,0x415F4,220,220
 SOURCE='conker/src/game_40490.c'
 OBJECT='conker/build/src/game_40490.c.o'
 BUILD='conker/build/game-record-flag-effect-15014144-match'

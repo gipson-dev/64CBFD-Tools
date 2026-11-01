@@ -14,6 +14,7 @@ class RecordFlagEffectTests(unittest.TestCase):
   cls.raw,cls.bindings=source.checked_payload(*source.payload(obj));assert (cls.raw,cls.bindings)==source.payload(cls.output/'selected-final.o')
   cls.guest,cls.census=oracle.qualify(ROOT,cls.output);cls.dispatch=oracle.dispatch(ROOT,cls.output);cls.helper=oracle.helper(ROOT,cls.output);cls.native=native.qualify(ROOT,cls.output)
  def test_all_55_direct_words_and_binding_controls(self):
+  self.assertEqual(source.ENTRY,oracle.ENTRY)
   self.assertEqual((len(self.raw),len(self.bindings)),(220,3));self.assertFalse(source.NEW_GUARDS)
   self.assertEqual((self.raw,self.bindings),source.payload(self.output/'original-func_15014144.o'))
   for at in(0,20,24,40,100,132,192,216):
