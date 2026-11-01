@@ -1,4 +1,4 @@
-"""Private immutable-table equivalence and three original caller windows."""
+"""Immutable-table byte-ID semantics and three original caller windows."""
 from pathlib import Path
 from dataclasses import dataclass
 import itertools,json,struct,subprocess

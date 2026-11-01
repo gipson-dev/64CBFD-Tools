@@ -1,4 +1,4 @@
-"""Lifetime/callback/fade dispatcher: complete C and a closed private byte/register normalization."""
+"""Record byte-ID search: complete direct C, exact bindings and whole-image qualification."""
 from pathlib import Path
 from collections import Counter
 import csv,hashlib,io,json,struct
@@ -35,7 +35,7 @@ NEW_GUARDS=[]
 def payload(obj):return function_payload(obj,FUNCTION)
 
 def checked_payload(raw,bindings):
- if len(raw)!=BODY or sha(raw)!=RAW_SHA or bindings!=BINDINGS:raise ValueError('Lifetime dispatcher compiler payload or ABI bindings changed')
+ if len(raw)!=BODY or sha(raw)!=RAW_SHA or bindings!=BINDINGS:raise ValueError('Byte-ID search compiler payload or ABI bindings changed')
  return raw,bindings
 
 def normalized_payload(raw,bindings,owner=OWNER,function=FUNCTION):
@@ -59,34 +59,34 @@ LAYOUT='conker/retail_layout.us.txt'
 
 def snapshot(output):
  data=(output/'input-snapshot.json').read_bytes()
- if sha(data)!=SNAPSHOT_SHA:raise ValueError('Lifetime dispatcher snapshot changed')
+ if sha(data)!=SNAPSHOT_SHA:raise ValueError('Byte-ID search snapshot changed')
  values={}
  for n,h in json.loads(data)['INPUTS'].items():
   value=(output/('before-'+n.replace('/','_'))).read_bytes()
-  if sha(value)!=h:raise ValueError('Lifetime dispatcher frozen input changed: '+n)
+  if sha(value)!=h:raise ValueError('Byte-ID search frozen input changed: '+n)
   values[n]=value
- if sha(values['conker/build/conker.us.elf'])!=BEFORE_ELF_SHA:raise ValueError('Lifetime dispatcher predecessor image changed')
+ if sha(values['conker/build/conker.us.elf'])!=BEFORE_ELF_SHA:raise ValueError('Byte-ID search predecessor image changed')
  return values
 
 def predicted_image(before,truth):
- if sha(before)!=BEFORE_ELF_SHA or len(truth)!=SIZE or sha(truth)!=TRUTH_SHA:raise ValueError('Lifetime dispatcher predictor inputs changed')
+ if sha(before)!=BEFORE_ELF_SHA or len(truth)!=SIZE or sha(truth)!=TRUTH_SHA:raise ValueError('Byte-ID search predictor inputs changed')
  result=bytearray(before);at=elf_slot_offset(before,ENTRY,SIZE);result[at:at+SIZE]=truth
  matches=[row for row in symbol_rows(before)if row[1]==FUNCTION]
- if len(matches)!=1 or matches[0][2][1:3]!=(ENTRY,12):raise ValueError('Lifetime dispatcher predecessor symbol changed')
+ if len(matches)!=1 or matches[0][2][1:3]!=(ENTRY,12):raise ValueError('Byte-ID search predecessor symbol changed')
  struct.pack_into('>I',result,matches[0][0]+8,BODY)
  return bytes(result)
 
 def check_image(before,actual,truth):
  expected=predicted_image(before,truth)
- if expected!=actual:raise ValueError('Lifetime dispatcher strict whole-image prediction differs')
+ if expected!=actual:raise ValueError('Byte-ID search strict whole-image prediction differs')
  definitions=Counter((name,f[1],BODY if name==FUNCTION else f[2],*f[3:])for _,name,f,_ in symbol_rows(before))
- if definitions!=Counter((name,*f[1:])for _,name,f,_ in symbol_rows(actual)):raise ValueError('Lifetime dispatcher named definitions changed')
+ if definitions!=Counter((name,*f[1:])for _,name,f,_ in symbol_rows(actual)):raise ValueError('Byte-ID search named definitions changed')
 
 def check_inputs(root,output,installed=False):
  values=snapshot(output);changes={}
  if installed:changes={SOURCE:recovered_owner(values[SOURCE].decode()).encode(),'conker/retail_word_patches.us.csv':guard_manifest(values['conker/retail_word_patches.us.csv']),OBJECT:(output/'qualified-padded.o').read_bytes(),'conker/build/conker.us.elf':predicted_image(values['conker/build/conker.us.elf'],values['conker/conker.us.bin'][ROM:ROM+SIZE])}
  for name,data in values.items():
-  if(root/name).read_bytes()!=changes.get(name,data):raise ValueError('Lifetime dispatcher live input changed: '+name)
+  if(root/name).read_bytes()!=changes.get(name,data):raise ValueError('Byte-ID search live input changed: '+name)
  return values
 
 
@@ -108,16 +108,16 @@ EVIDENCE=('before-padded.o','qualified-padded.o','qualified-padded.s',
 
 def verify_prepared(output):
  data=(output/'canonical-prepared-fingerprint.json').read_bytes()
- if sha(data)!=PREPARED_SHA:raise ValueError('Lifetime dispatcher prepared evidence index changed')
+ if sha(data)!=PREPARED_SHA:raise ValueError('Byte-ID search prepared evidence index changed')
  rows=json.loads(data)
- if set(rows)!=set(EVIDENCE):raise ValueError('Lifetime dispatcher prepared evidence set changed')
+ if set(rows)!=set(EVIDENCE):raise ValueError('Byte-ID search prepared evidence set changed')
  for name,wanted in rows.items():
-  if sha((output/name).read_bytes())!=wanted:raise ValueError('Lifetime dispatcher prepared evidence changed: '+name)
+  if sha((output/name).read_bytes())!=wanted:raise ValueError('Byte-ID search prepared evidence changed: '+name)
  for name in ('selected-final','before-owner','after-owner','actual-Make'):
-  if (output/(name+'-diagnostics.txt')).read_bytes():raise ValueError('Lifetime dispatcher owner diagnostics changed')
- if (output/'make-shadow/src/game_30E90.c.o').read_bytes()!=(output/'qualified-padded.o').read_bytes():raise ValueError('Lifetime dispatcher actual Make object changed')
+  if (output/(name+'-diagnostics.txt')).read_bytes():raise ValueError('Byte-ID search owner diagnostics changed')
+ if (output/'make-shadow/src/game_30E90.c.o').read_bytes()!=(output/'qualified-padded.o').read_bytes():raise ValueError('Byte-ID search actual Make object changed')
  q=json.loads((output/'preparation.json').read_text())
- if not all(q[k] for k in ('complete','normal_O2_g3','owner_diagnostics_empty','actual_Make_object_equals_qualified','strict_whole_image_prediction','all_function_addresses_fixed')) or q['guards']!=0 or q['guard_preimage_controls']!=0 or q['exclusions']!=0:raise ValueError('Lifetime dispatcher private preparation failed')
+ if not all(q[k] for k in ('complete','normal_O2_g3','owner_diagnostics_empty','actual_Make_object_equals_qualified','strict_whole_image_prediction','all_function_addresses_fixed')) or q['guards']!=0 or q['guard_preimage_controls']!=0 or q['exclusions']!=0:raise ValueError('Byte-ID search private preparation failed')
  return rows
 
 def audit(root,output):
@@ -126,9 +126,9 @@ def audit(root,output):
  check_image(before,actual,values['conker/conker.us.bin'][ROM:ROM+SIZE])
  a,_,aa=load_elf_functions(str(output/'before-conker_build_conker.us.elf'),'mips-linux-gnu-objdump')
  b,_,bb=load_elf_functions(str(root/'conker/build/conker.us.elf'),'mips-linux-gnu-objdump')
- if a.keys()!=b.keys() or aa!=bb or [n for n in a if a[n]!=b[n]]!=[FUNCTION]:raise ValueError('Lifetime dispatcher changed another linked body or address')
+ if a.keys()!=b.keys() or aa!=bb or [n for n in a if a[n]!=b[n]]!=[FUNCTION]:raise ValueError('Byte-ID search changed another linked body or address')
  data=audit_layout(root/'conker/build/conker.us.elf',root/'conker')
- if (data['exact'],data['bytes'],data['owner_count'],data['different_bytes'])!=(True,189088,720,0):raise ValueError('Lifetime dispatcher protected data changed')
+ if (data['exact'],data['bytes'],data['owner_count'],data['different_bytes'])!=(True,189088,720,0):raise ValueError('Byte-ID search protected data changed')
  result=dict(functions=len(a),other_bodies_fixed=len(a)-1,all_addresses_fixed=True,
   target_words=60,reachable_words=60,frame=0,alignment_words=0,slot_words=60,
   strict_first_link_reproduced=True,guards=0,direct_C_match=True,game_data=data)
