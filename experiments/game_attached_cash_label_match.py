@@ -104,9 +104,39 @@ def check_image(before,actual,truth):
 def check_inputs(root,output,installed=False):
  values=snapshot(output);changes={}
  if installed:changes={SOURCE:recovered_owner(values[SOURCE].decode()).encode(),'conker/retail_word_patches.us.csv':guard_manifest(values['conker/retail_word_patches.us.csv']),OBJECT:(output/'qualified-padded.o').read_bytes(),'conker/build/conker.us.elf':predicted_image(values['conker/build/conker.us.elf'],values['conker/conker.us.bin'][ROM:ROM+SIZE])}
+ if installed:changes[DEPENDENT_OBJECT]=predicted_sinf_metadata(values[DEPENDENT_OBJECT])
  for name,data in values.items():
   if(root/name).read_bytes()!=changes.get(name,data):raise ValueError('Cash label live input changed: '+name)
  return values
+
+DEPENDENT_OBJECT='conker/build/src/libultra/gu/sinf.c.o'
+
+def predicted_sinf_metadata(before):
+ """Account for stale EEPROM extern metadata; no runtime sections are changed."""
+ from tools.pad_generated_object import ELF_HEADER,SECTION_HEADER,read_c_string
+ if sha(before)!='fa8882a16d94a04f6504dccc22103ee139f947aab57afc4cc270752103f8076a':raise ValueError('Cash label predecessor sinf object changed')
+ header=ELF_HEADER.unpack_from(before)
+ headers=[SECTION_HEADER.unpack_from(before,header[6]+i*header[11]) for i in range(header[12])]
+ strings=headers[header[13]];names=before[strings[4]:strings[4]+strings[5]]
+ sections={read_c_string(names,row[0]):row for row in headers}
+ row=sections['.mdebug'];start,size=row[4:6];debug=before[start:start+size]
+ # IDO's auxiliary array upper bound and external size follow the existing
+ # variables.h declaration D_800BE358[128], previously recorded as eight bytes.
+ for offset,old,new in ((0x1E5C3,7,127),(0x31A5F,8,128)):
+  if debug[offset]!=old:raise ValueError('Cash label sinf debug array metadata changed')
+  debug=debug[:offset]+bytes([new])+debug[offset+1:]
+ old_time=b'\x001793255521\x00';new_time=b'\x001793496481\x00'
+ debug=debug.replace(old_time,new_time)
+ old_file=b'conker/include/variables.h\x001793496481\x0037705\x00'
+ new_file=b'conker/include/variables.h\x001793496481\x0037774\x00'
+ if debug.count(old_file)!=1:raise ValueError('Cash label sinf recorded header file changed')
+ debug=debug.replace(old_file,new_file)
+ rows=[row for row in symbol_rows(before) if row[1]=='D_800BE358']
+ if len(rows)!=1 or rows[0][2][1:]!=(0,8,16,0,0):raise ValueError('Cash label sinf extern symbol changed')
+ result=bytearray(before);result[start:start+size]=debug;struct.pack_into('>I',result,rows[0][0]+8,128)
+ result=bytes(result)
+ if len(result)!=len(before) or sha(result)!='e292903cb2ffff3e0c04c3e8d2c10f83bb42dfd1789714b6561f599dbdb3cfe6':raise ValueError('Cash label sinf exact metadata prediction failed')
+ return result
 
 PREPARED_SHA='bfd54ea110fc6c18883bff34a65768ab9e448e9457994b5f23cf3d0f51e2387a'
 EVIDENCE=('before-padded.o','qualified-padded.o','qualified-padded.s',

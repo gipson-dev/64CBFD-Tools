@@ -84,3 +84,19 @@ class AttachedCashLabelTests(unittest.TestCase):
   self.assertEqual((data['exact'],data['bytes'],data['owner_count']),(True,189088,720))
   self.receipt['image']=dict(strict=True,exclusions=0,changed_bytes=sum(a!=b for a,b in zip(before,actual)),
    named_BFD_symbol_string_pair_swaps=1,corruption_controls=len(offsets)+4,protected_Game_bytes=189088,protected_owners=720)
+ def test_08_dependent_sinf_exact_metadata_and_section_audit(self):
+  from tools.experiments.game_actor_classifier_candidates import sections
+  before=self.values[source.DEPENDENT_OBJECT];expected=source.predicted_sinf_metadata(before)
+  p=self.fresh/'predicted-sinf.o';p.write_bytes(expected)
+  original=self.out/('before-'+source.DEPENDENT_OBJECT.replace('/','_'))
+  a,b=sections(original),sections(p);self.assertEqual(a.keys(),b.keys())
+  self.assertEqual([k for k in a if a[k]!=b[k]],['.symtab','.mdebug'])
+  self.assertEqual(source.same_functions(original,p),1)
+  if self.installed:self.assertEqual((ROOT/source.DEPENDENT_OBJECT).read_bytes(),expected)
+  changed=[i for i,(x,y) in enumerate(zip(before,expected)) if x!=y];self.assertEqual(len(changed),210)
+  for offset in (0,4,*changed[::25]):
+   bad=bytearray(before);bad[offset]^=1
+   with self.assertRaises(ValueError):source.predicted_sinf_metadata(bytes(bad))
+  self.receipt['dependent_sinf']=dict(exact_entire_object_prediction=True,changed_bytes=210,
+   changed_sections=['.symtab','.mdebug'],all_other_sections_and_function_bindings_unchanged=True,
+   current_EEPROM_extern_bytes=128,ELF_prediction_has_no_exclusions=True)
