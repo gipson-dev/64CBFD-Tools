@@ -42,5 +42,7 @@ def main():
  if args.qualify_semantics:
   from tools.tests.game_scalar_velocity_smoothing_oracle import qualify
   report['semantics']=qualify(root,output)
+  from tools.tests.game_scalar_velocity_smoothing_callers import qualify as qualify_callers
+  report['callers']=qualify_callers(root,output)
  print(json.dumps(report,indent=2))
 if __name__=='__main__':main()
