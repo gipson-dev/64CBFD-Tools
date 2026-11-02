@@ -320,7 +320,16 @@ if(error || creatorCalls!=1 || floatCalls!=3 || pointCalls!=2 || selected[0]!=0 
         self.assertEqual(calls,[0x15144B34,0x150ADA68,0x150ADA68,0x1514470C,
                                0x150ADA20,0x15149130,0x10022EC0])
         with (self.root/'conker/retail_word_patches.us.csv').open(newline='') as source:
-            self.assertFalse(any(r['function']=='func_150E8B1C' for r in csv.DictReader(source)))
+            rows=[r for r in csv.DictReader(source) if r['function']=='func_150E8B1C']
+        self.assertIn(len(rows),(0,44))
+        if rows:
+            self.assertEqual([int(row['offset'],0) for row in rows],
+                             [
+                0x004,0x008,0x01C,0x04C,0x050,0x054,0x058,0x05C,0x060,0x064,
+                0x068,0x06C,0x070,0x074,0x078,0x07C,0x080,0x084,0x088,0x08C,
+                0x090,0x098,0x0A4,0x0A8,0x0BC,0x0D0,0x0E4,0x124,0x128,0x12C,
+                0x130,0x138,0x13C,0x15C,0x168,0x16C,0x170,0x178,0x194,0x1A4,
+                0x1D8,0x1E4,0x1EC,0x1F0])
 
     def test_ido_complete_slot_footprint(self):
         compiler=self.root/'ido/ido5.3_recomp/cc'
