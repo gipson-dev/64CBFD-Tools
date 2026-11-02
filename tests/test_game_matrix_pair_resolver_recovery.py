@@ -475,7 +475,9 @@ if(func_15031070(nodes[0].bytes,actor.bytes,0,0)||calls!=1||error)return 5;
                 {o-previous['value']: r for o, r in old_rel.items()
                 if previous['value'] <= o < previous['value']+previous['size']}, name)
         self.assertEqual(normalized_pools(objects[0]), normalized_pools(objects[1]))
-        standalone, isolated_functions, isolated_rel = parse_object(self.out / 'selected.o')
+        screen.compile_candidate(self.root, self.out, 'owner-isolated-current', candidate)
+        standalone, isolated_functions, isolated_rel = parse_object(
+            self.out / 'owner-isolated-current.o')
         target, size = functions[screen.FUNCTION], isolated_functions[screen.FUNCTION]['size']
         self.assertEqual(target['size'], size)
         self.assertEqual(text[target['value']:target['value']+size], standalone[:size])
@@ -491,13 +493,16 @@ if(func_15031070(nodes[0].bytes,actor.bytes,0,0)||calls!=1||error)return 5;
 
     def test_real_padder_preserves_complete_body_and_self_call_symbol_relocations(self):
         from tools.experiments import game_matrix_pair_resolver_guard_match as guarded
-        owner = self.qualify_owner()
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
             guarded_rows = [row for row in csv.DictReader(stream)
                 if row['function'] == screen.FUNCTION]
         guarded_installed = bool(guarded_rows)
         if guarded_installed:
             self.assertEqual(guarded_rows, guarded.guard_rows())
+            from tools.experiments import game_matrix_pair_resolver_key_candidates as key
+            owner = self.qualify_owner(key.SELECTED)
+        else:
+            owner = self.qualify_owner()
         assembly = emit_padded_assembly(owner, self.root / 'conker/asm/5D2C0.s',
             word_patches_path=self.root / 'conker/retail_word_patches.us.csv', filename='generated_5D2C0')
         start = assembly.index('.type %s, @function' % screen.FUNCTION)
