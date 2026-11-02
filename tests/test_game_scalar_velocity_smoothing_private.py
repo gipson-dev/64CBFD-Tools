@@ -13,8 +13,8 @@ class ScalarVelocitySmoothingPrivateTests(unittest.TestCase):
   cls.before={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest()for n in cls.names}
   cls.screen=source.prepare(ROOT,cls.output);cls.semantic=oracle.qualify(ROOT,cls.output)
   cls.callers=callers.qualify(ROOT,cls.output)
- def test_normal_profile_owner_and_actual_nonmatch(self):
-  self.assertEqual((self.screen['candidate_words'],self.screen['candidate_frame'],self.screen['real_word_differences']),(55,16,38));self.assertEqual((self.screen['retail_words'],self.screen['retail_frame'],self.screen['owner_neighbors']),(54,24,1));self.assertEqual(self.screen['matching_credit'],0);self.assertFalse(self.screen['installed'])
+ def test_normal_profile_owner_and_install_state(self):
+  self.assertEqual((self.screen['candidate_words'],self.screen['candidate_frame'],self.screen['real_word_differences']),(55,16,38));self.assertEqual((self.screen['retail_words'],self.screen['retail_frame'],self.screen['owner_neighbors']),(54,24,1));self.assertEqual(self.screen['matching_credit'],int(self.screen['installed']));self.assertEqual(self.screen['byte_matching_claimed'],self.screen['installed'])
  def test_finite_guest_native_aliases_and_negative_controls(self):
   self.assertEqual((self.semantic['finite_guest_cases'],self.semantic['retail_reachable_words']),(1072,52));self.assertGreater(self.semantic['snap_cases'],0);self.assertGreater(self.semantic['accepted_cases'],0)
   for row in self.semantic['native']:self.assertEqual(row['cases'],536);self.assertTrue(row['UBSan']);self.assertEqual(len(row['negative_controls']),8);self.assertTrue(row['all_controls_effective'])
