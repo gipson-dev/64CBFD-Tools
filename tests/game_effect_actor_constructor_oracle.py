@@ -211,4 +211,3 @@ if __name__=='__main__':
     root=Path.cwd()
     print(json.dumps(qualify(root,root/'conker/build/game-effect-actor-constructor-15154884-match'),indent=2))
 
-

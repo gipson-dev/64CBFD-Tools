@@ -58,9 +58,6 @@ def qualify(root,out):
   whole_position_fences=True,UBSan_clean=True,independent_native_control=True)
  (out/'private-native-v1.json').write_text(json.dumps(report,indent=2)+'\n')
  return report
- 
- 
 
 if __name__=='__main__':
  root=Path.cwd();print(json.dumps(qualify(root,root/source.BUILD),indent=2))
-
