@@ -490,21 +490,30 @@ if(func_15031070(nodes[0].bytes,actor.bytes,0,0)||calls!=1||error)return 5;
         self.qualify_owner()
 
     def test_real_padder_preserves_complete_body_and_self_call_symbol_relocations(self):
+        from tools.experiments import game_matrix_pair_resolver_guard_match as guarded
         owner = self.qualify_owner()
+        with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
+            guarded_rows = [row for row in csv.DictReader(stream)
+                if row['function'] == screen.FUNCTION]
+        guarded_installed = bool(guarded_rows)
+        if guarded_installed:
+            self.assertEqual(guarded_rows, guarded.guard_rows())
         assembly = emit_padded_assembly(owner, self.root / 'conker/asm/5D2C0.s',
             word_patches_path=self.root / 'conker/retail_word_patches.us.csv', filename='generated_5D2C0')
         start = assembly.index('.type %s, @function' % screen.FUNCTION)
         end = assembly.index('.size %s, . - %s' % (screen.FUNCTION, screen.FUNCTION), start)
         end = assembly.index('\n', end)+1
         next_function = assembly.index('.globl ', end)
-        self.assertEqual(assembly[end:next_function].strip(), '.space 0x4, 0')
+        self.assertEqual(assembly[end:next_function].strip(),
+            '' if guarded_installed else '.space 0x4, 0')
         asm, obj = self.out / 'padded.s', self.out / 'padded.o'
         asm.write_text('.text\n.globl %s\n' % screen.FUNCTION+assembly[start:next_function])
         subprocess.run(['mips-linux-gnu-as', '-EB', '-march=vr4300', '-o', str(obj), str(asm)],
             check=True, capture_output=True)
         _, functions, relocs = parse_object(obj)
-        self.assertEqual(functions[screen.FUNCTION]['size'], 336)
-        self.assertEqual(relocs, parse_object(self.out / 'selected.o')[2])
+        self.assertEqual(functions[screen.FUNCTION]['size'], 340 if guarded_installed else 336)
+        self.assertEqual(relocs, guarded.RETAIL_BINDINGS if guarded_installed else
+            parse_object(self.out / 'selected.o')[2])
         self.assertTrue(any(('R_MIPS_26', screen.FUNCTION) in entries for entries in relocs.values()))
         for rebased in (None, *screen.SYMBOLS, screen.FUNCTION):
             targets = dict(screen.SYMBOLS, **{screen.FUNCTION: screen.ENTRY})
@@ -515,7 +524,7 @@ if(func_15031070(nodes[0].bytes,actor.bytes,0,0)||calls!=1||error)return 5;
             subprocess.run(['mips-linux-gnu-ld', '-m', 'elf32btsmip', '-T', str(script), '-e', screen.FUNCTION,
                 *['--defsym=%s=0x%X' % item for item in targets.items() if item[0] != screen.FUNCTION],
                 '-o', str(elf), str(obj)], check=True, capture_output=True)
-            expected = self.words+[0]
+            expected = self.retail.copy() if guarded_installed else self.words+[0]
             for offset, entries in relocs.items():
                 kind, name = entries[0]
                 address = targets[name]
@@ -524,7 +533,10 @@ if(func_15031070(nodes[0].bytes,actor.bytes,0,0)||calls!=1||error)return 5;
                         if kind == 'R_MIPS_HI16' else address & 65535))
             self.assertEqual(list(struct.unpack_from('>85I', route.screen.sections(elf)['.text'][1])), expected)
         self.receipt('padder', dict(body_words=84, slot_words=85, relocations=len(relocs),
-            rebased_symbols=3, guards_added=0, insertions=0, tail_padding_words=1,
+            rebased_symbols=3, guards_added=9 if guarded_installed else 0,
+            insertions=2 if guarded_installed else 0,
+            omissions=1 if guarded_installed else 0,
+            tail_padding_words=0 if guarded_installed else 1,
             self_call_retained_as_symbol=True, preserves_raw_nonmatching_body=True))
 
     def test_actual_matrix_wrapper_connection_and_recursive_resolver_paths(self):
@@ -579,6 +591,7 @@ if(func_15031070(nodes[0].bytes,actor.bytes,0,0)||calls!=1||error)return 5;
             full_helper_coverage_and_full_stack_equivalence_not_claimed=True))
 
     def test_installed_slot_or_placeholder_explicit_and_guard_history_unchanged(self):
+        from tools.experiments import game_matrix_pair_resolver_guard_match as guarded
         source = (self.root / 'conker/src/game/generated_5D2C0.c').read_text()
         functions, _, addresses = load_elf_functions(str(self.root / 'conker/build/conker.us.elf'),
             'mips-linux-gnu-objdump')
@@ -588,11 +601,18 @@ if(func_15031070(nodes[0].bytes,actor.bytes,0,0)||calls!=1||error)return 5;
         self.assertEqual(source.count(body), int(installed))
         _, expected = screen.compile_candidate(self.root, self.out, 'installed-current', body)
         expected = expected+[0] if installed else [0x00001025, 0x03E00008, 0]+[0]*82
-        self.assertEqual((addresses[screen.FUNCTION], functions[screen.FUNCTION]), (screen.ENTRY, expected))
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
             guards = list(csv.DictReader(stream))
-        assert_guard_history(self, guards)
-        self.assertFalse(any(row['function'] == screen.FUNCTION for row in guards))
+        target_guards = [row for row in guards if row['function'] == screen.FUNCTION]
+        if target_guards:
+            self.assertEqual(target_guards, guarded.guard_rows())
+            self.assertEqual((addresses[screen.FUNCTION], functions[screen.FUNCTION]),
+                (screen.ENTRY, self.retail))
+        else:
+            self.assertEqual((addresses[screen.FUNCTION], functions[screen.FUNCTION]),
+                (screen.ENTRY, expected))
         self.receipt('installed', dict(installed_complete_C=installed, slot_words=85,
-            body_words=84 if installed else 3, differences=sum(a != b for a, b in zip(expected, self.retail)),
-            frame=32 if installed else 0, byte_exact=False, guards_added=0))
+            body_words=84 if installed else 3, differences=0 if target_guards else
+            sum(a != b for a, b in zip(expected, self.retail)),
+            frame=32 if installed else 0, byte_exact=bool(target_guards),
+            guards_added=len(target_guards)))

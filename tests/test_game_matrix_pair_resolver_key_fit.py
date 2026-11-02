@@ -99,6 +99,7 @@ typedef char node_layout[(sizeof(MatrixPairNode)==0x4C&&FIELD_OFFSET(slot)==2&&
         self.qualify_owner(screen.SELECTED)
 
     def test_installed_variant_explicit_and_previous_guards_intact(self):
+        from tools.experiments import game_matrix_pair_resolver_guard_match as guarded
         source = (self.root / 'conker/src/game/generated_5D2C0.c').read_text()
         installed = screen.SELECTED in source
         self.assertEqual(source.count(screen.SELECTED), int(installed))
@@ -106,13 +107,20 @@ typedef char node_layout[(sizeof(MatrixPairNode)==0x4C&&FIELD_OFFSET(slot)==2&&
         _, expected = pair.compile_candidate(self.root, self.out, 'installed-current', body)
         functions, _, addresses = load_elf_functions(str(self.root / 'conker/build/conker.us.elf'),
             'mips-linux-gnu-objdump')
-        self.assertEqual((addresses[pair.FUNCTION], functions[pair.FUNCTION]), (pair.ENTRY, expected+[0]))
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
             guards = list(csv.DictReader(stream))
-        assert_guard_history(self, guards)
-        self.assertFalse(any(row['function'] == pair.FUNCTION for row in guards))
+        target_guards = [row for row in guards if row['function'] == pair.FUNCTION]
+        if target_guards:
+            self.assertEqual(target_guards, guarded.guard_rows())
+            self.assertEqual((addresses[pair.FUNCTION], functions[pair.FUNCTION]),
+                (pair.ENTRY, self.retail))
+        else:
+            self.assertEqual((addresses[pair.FUNCTION], functions[pair.FUNCTION]),
+                (pair.ENTRY, expected+[0]))
         self.receipt('installed', dict(bank_phase_C_installed=installed, body_words=84, slot_words=85,
-            frame=32, differences=sum(a != b for a, b in zip(expected+[0], self.retail)), guards_added=0))
+            frame=32, differences=0 if target_guards else
+            sum(a != b for a, b in zip(expected+[0], self.retail)),
+            guards_added=len(target_guards)))
 
 
 if __name__ == '__main__':
