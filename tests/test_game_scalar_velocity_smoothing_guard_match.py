@@ -98,7 +98,8 @@ class GameScalarVelocitySmoothingGuardMatchTests(unittest.TestCase):
             self.assertEqual(self.function_blob(current_owner, name),
                              self.function_blob(expected_owner, name), name)
         current_elf = (self.root / match.PATHS["elf"]).read_bytes()
-        expected_elf = self.qualified_elf if source_installed else self.predecessor_elf
+        expected_elf = (self.qualified_elf if self.report["image_installed"]
+                        else self.predecessor_elf)
         self.assertEqual(current_elf, expected_elf.read_bytes())
 
 

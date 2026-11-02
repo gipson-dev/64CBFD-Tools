@@ -257,12 +257,16 @@ def prepare(root, output=None):
         raise ValueError("Scalar smoother private link differs from independent prediction")
     closure = closure_audit(predecessor_elf, qualified_elf)
     current = (root / PATHS["elf"]).read_bytes()
-    expected_live = qualified_elf.read_bytes() if installed else predecessor_elf.read_bytes()
-    if current != expected_live:
+    if current == qualified_elf.read_bytes():
+        image_installed = True
+    elif current == predecessor_elf.read_bytes():
+        image_installed = False
+    else:
         raise ValueError("Scalar smoother live image differs from qualified state")
     report = {
         "function": FUNCTION,
         "installed": installed,
+        "image_installed": image_installed,
         "candidate_words": CANDIDATE_WORDS,
         "retail_words": RETAIL_WORDS,
         "candidate_frame": CANDIDATE_FRAME,

@@ -13,12 +13,13 @@ ENTRY,ROM,RETAIL_WORDS=0x150495B0,0x76A60,54
 RETAIL_SHA256='fd407656aa97f156766f9272be44befed09a21737c2595cc9edb107a19735a80'
 PLACEHOLDER='s32 func_150495B0() {\n    return 0;\n}'
 SELECTED='#include <ultra64.h>\n\n/* Smooth one position and velocity toward a target, clamping overshoot. */\nvoid func_150495B0(f32 *position, f32 target, f32 *velocity, f32 strength,\n                   f32 damping, f32 deltaTime) {\n    f32 difference;\n    f32 direction;\n    f32 next;\n    f32 nextDirection;\n    difference = target - *position;\n    direction = difference < 0.0f ? -1.0f : 1.0f;\n    difference *= strength;\n    *velocity += (difference - *velocity) * damping * deltaTime;\n    next = *velocity * deltaTime + *position;\n    nextDirection = target < next ? -1.0f : 1.0f;\n    if (nextDirection == direction) {\n        *position = next;\n    } else {\n        *position = target;\n        *velocity = 0.0f;\n    }\n}\n'
-SELECTED_BODY=SELECTED[SELECTED.index('/* Smooth'):].rstrip()
+SELECTED_INSTALL=SELECTED[SELECTED.index('/* Smooth'):].rstrip()
+SELECTED_BODY=SELECTED[SELECTED.index('void '+FUNCTION):].rstrip()
 sha=lambda data:hashlib.sha256(data).hexdigest()
 
 def production_source(before):
  start,end=function_span(before,FUNCTION);current=before[start:end]
- if current==PLACEHOLDER:return before[:start]+SELECTED_BODY+before[end:],False
+ if current==PLACEHOLDER:return before[:start]+SELECTED_INSTALL+before[end:],False
  if current==SELECTED_BODY:return before,True
  raise ValueError('Scalar smoother is neither the frozen placeholder nor selected C')
 
