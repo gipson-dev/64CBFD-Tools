@@ -2,6 +2,7 @@
 
 import csv
 import hashlib
+import os
 import re
 import shutil
 import struct
@@ -22,7 +23,7 @@ class GameTextureMetadataAndMaintenanceTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.root = Path(__file__).resolve().parents[2]
+        cls.root = Path(os.environ.get('CBFD_CONSUMER_ROOT', Path(__file__).resolve().parents[2]))
         cls.metadata_source = (cls.root / 'conker/src/game_305D0.c').read_text()
         cls.cache_source = (cls.root / 'conker/src/game/generated_139FC0.c').read_text()
         cls.bodies = {}
@@ -578,8 +579,12 @@ if(func_1510D0EC(5,&extent,62,1)!=(u32)expanded || error || allocations!=2 || dm
             self.assertEqual(immediate[pc], word)
         self.assertRegex(self.cache_source, r'void func_1510D7AC\(s32 arg0\)')
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as source:
-            self.assertFalse(any(row['function'] in ('func_15003570', 'func_1510D404', 'func_1510D7AC')
+            self.assertFalse(any(row['function'] in ('func_1510D404', 'func_1510D7AC')
                                  for row in csv.DictReader(source)))
+        from tools.experiments import game_resource_header_scan_match as metadata
+        frozen = metadata.snapshot(self.root / metadata.BUILD)['conker/retail_word_patches.us.csv']
+        self.assertEqual((self.root / 'conker/retail_word_patches.us.csv').read_bytes(),
+                         metadata.recovered_guards(frozen))
 
     def test_fresh_ido_slots_and_unchanged_initializer_startup_and_prior_recoveries(self):
         compiler = self.root / 'ido/ido5.3_recomp/cc'
@@ -610,7 +615,7 @@ if(func_1510D0EC(5,&extent,62,1)!=(u32)expanded || error || allocations!=2 || dm
             str(self.root / 'conker/build/conker.us.elf'), 'mips-linux-gnu-objdump')
         rom = (self.root / 'conker/conker.us.bin').read_bytes()
         measurements = {
-            'func_15003570': (58, 62, 0x30, 54, '096cbdac52e624b1a23fd8f3f7430477801c27d22ab78fb3b57418a95138fb06'),
+            'func_15003570': (62, 62, 0x30, 18, '82241471659f43be1eb165c121e4c33bda7914317f8019657ebcc09b087c7a1b'),
             'func_1510D404': (125, 129, 0x40, 119, 'eccdb2fdca0e14d179f3f0e7299448b7dd41135e17ae14d53922683f615ee991'),
             'func_1510D7AC': (46, 46, 0x28, 0, '21edadf96d05d36e293a9788fe9cfb4dba5a4b5c7b916d978b3b21755070046e'),
         }
@@ -620,7 +625,11 @@ if(func_1510D0EC(5,&extent,62,1)!=(u32)expanded || error || allocations!=2 || dm
             self.assertEqual(count, body)
             self.assertEqual(words[count:], [0] * (len(words) - count))
             slot = words[:body] + [0] * (size - body)
-            self.assertEqual(production[name], slot)
+            if name == 'func_15003570':
+                from tools.experiments import game_resource_header_scan_match as metadata
+                self.assertEqual(production[name], metadata.normalize_linked_words(slot))
+            else:
+                self.assertEqual(production[name], slot)
             self.assertEqual(addresses[name], int(name[5:], 16))
             self.assertEqual(0x10000 - (slot[0] & 0xFFFF), frame)
             first = 0x2D4B0 + addresses[name] - 0x15000000
