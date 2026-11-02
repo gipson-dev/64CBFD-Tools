@@ -11,6 +11,7 @@ import unittest
 from pathlib import Path
 
 from tools import match_progress
+from tools.experiments import game_extended_weighted_emitter_guard_match as guard_match
 from tools.patch_generated_slice_ld import load_game_data_layout
 from tools.tests import test_game_random_curve_record as curve
 
@@ -384,7 +385,7 @@ for(mode=0;mode<4;mode++) for(failed=0;failed<3;failed++) {
         finally:
             self.fixture = original
 
-    def test_retail_slot_callback_mapping_and_no_instruction_guards(self):
+    def test_retail_slot_callback_mapping_and_qualified_instruction_guards(self):
         words = struct.unpack('>153I', self.rom[0x116628:0x11688C])
         self.assertEqual(words[0], 0x27BDFF10)
         self.assertEqual(words[-2:], (0x03E00008, 0x27BD00F0))
@@ -395,7 +396,14 @@ for(mode=0;mode<4;mode++) for(failed=0;failed<3;failed++) {
         self.assertNotIn('reserved1C', self.body)
         self.assertNotIn('reserved36', self.body)
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as source:
-            self.assertFalse(any(row['function'] == 'func_150E9178' for row in csv.DictReader(source)))
+            rows = [row for row in csv.DictReader(source)
+                    if row['function'] == 'func_150E9178']
+        if rows:
+            self.assertEqual(len(rows), 54)
+            self.assertEqual(tuple(int(row['offset'], 0) for row in rows), guard_match.OFFSETS)
+            self.assertTrue(all(row['filename'] == guard_match.FILENAME and
+                                row['omit'] == 'false' and not row['insert_after']
+                                for row in rows))
 
     def test_fresh_ido_size_and_production_identity_preserve_exact_neighbors(self):
         compiler = self.root / 'ido/ido5.3_recomp/cc'
@@ -437,7 +445,10 @@ for(mode=0;mode<4;mode++) for(failed=0;failed<3;failed++) {
         self.assertTrue(production.is_file(), 'production relink is required')
         linked, _, addresses = match_progress.load_elf_functions(str(production), 'mips-linux-gnu-objdump')
         self.assertEqual(addresses['func_150E9178'], 0x150E9178)
-        self.assertEqual(tuple(linked['func_150E9178']), body)
+        with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as source_rows:
+            installed = any(row['function'] == 'func_150E9178'
+                            for row in csv.DictReader(source_rows))
+        self.assertEqual(tuple(linked['func_150E9178']), retail if installed else body)
         for name, count in (('func_150E90DC', 39), ('func_150E8A80', 39), ('func_151436B4', 34),
                             ('func_151423D8', 27), ('func_15144B34', 13)):
             with self.subTest(function=name):
@@ -445,7 +456,8 @@ for(mode=0;mode<4;mode++) for(failed=0;failed<3;failed++) {
                 self.assertEqual(len(linked[name]), count)
                 self.assertEqual(struct.pack('>' + 'I' * count, *linked[name]), self.rom[first:first+count*4])
         print('extended weighted emitter slot:', {'body_words': 153, 'slot_words': 153,
-              'frame_bytes': 0xF8, 'different_words': 54})
+              'raw_frame_bytes': 0xF8, 'retail_frame_bytes': 0xF0,
+              'different_words': 54, 'guards_installed': installed})
 
 
 if __name__ == '__main__':
