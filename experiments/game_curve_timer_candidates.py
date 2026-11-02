@@ -39,6 +39,7 @@ s32 func_15131DEC(u8 *record, s32 event) {
     }
     return 1;
 }"""
+SELECTED_DEFINITION = SELECTED.split("\n", 1)[1]
 
 
 def recovered_owner(before, body=SELECTED):
@@ -55,7 +56,7 @@ def recovered_owner(before, body=SELECTED):
 def production_source(source):
     lo, hi = function_span(source, FUNCTION)
     current = source[lo:hi]
-    if current == SELECTED:
+    if current == SELECTED_DEFINITION:
         if DECLARATIONS not in source:
             raise ValueError("Installed curve-timer declaration missing")
         return source, True
