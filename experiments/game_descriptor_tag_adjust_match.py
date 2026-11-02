@@ -222,12 +222,16 @@ def guard_manifest(before, raw, bindings):
 
 
 def compile_candidate(root, output, baseline):
+    before_header = baseline["header"].read_text()
+    (output / "variables-before.h").write_text(before_header)
     header = proposed_header(baseline["header"].read_text())
     (output / "variables-private.h").write_text(header)
-    source = proposed_source(baseline["source"].read_text())
+    baseline_source = baseline["source"].read_text()
+    old_source = baseline_source.replace('#include "variables.h"',
+                                         '#include "variables-before.h"', 1)
+    source = proposed_source(baseline_source)
     (output / "proposed-source.c").write_text(source)
-    old, old_diagnostics = compile_owner(root, output, baseline["source"].read_text(),
-                                         "compact-before")
+    old, old_diagnostics = compile_owner(root, output, old_source, "compact-before")
     new, new_diagnostics = compile_owner(root, output, source, "compact-candidate")
     if old_diagnostics or new_diagnostics:
         raise ValueError("Descriptor-adjust owner compiler diagnostics changed")
