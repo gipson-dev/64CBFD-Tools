@@ -17,7 +17,8 @@ FUNCTION = "func_1518A914"
 SOURCE = "conker/src/game/generated_1B7870.c"
 OWNER = "generated_1B7870"
 BUILD = "conker/build/game-late-uniform-matrix-submit-candidates"
-DECLARATIONS = """void func_150A8050(f32 matrix[4][4], f32, f32, f32);
+DECLARATIONS = """
+void func_150A8050(f32 matrix[4][4], f32, f32, f32);
 """
 TYPES = """typedef struct {
     u8 retained00[0x48];
