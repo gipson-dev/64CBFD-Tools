@@ -26,15 +26,6 @@ TYPES = """typedef struct {
     u8 retained34[0x11];
     u8 opacity;
 } DiagonalMenuRecord150B709C;
-typedef struct {
-    u8 retained00[0x18];
-    s32 progress;
-    u8 retained1C[0x10];
-    volatile f32 xPosition;
-    volatile f32 yPosition;
-    u8 retained34[0x11];
-    u8 opacity;
-} VolatileDiagonalMenuRecord150B709C;
 """
 PLACEHOLDER = """s32 func_150B709C() {
     return 0;
@@ -122,9 +113,6 @@ def variants():
         "    s32 progress = record->progress;",
         "    s32 opacity;\n    s32 progress = record->progress;").replace(
         "        s32 opacity = record->opacity;", "        opacity = record->opacity;")
-    yield "typed-volatile-positions", SELECTED.replace(
-        "DiagonalMenuRecord150B709C *record",
-        "VolatileDiagonalMenuRecord150B709C *record")
 
 
 def compare(name, body, flags=("-O2", "-g3", "-Wo,-loopunroll,0")):
