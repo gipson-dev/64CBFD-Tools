@@ -139,6 +139,10 @@ def source_with(body):
             raise ValueError("Uniform matrix submit predecessor source changed")
         return source.replace(PLACEHOLDER, body).replace(
             anchor, anchor + declarations, 1)
+    if (body == SELECTED_POINTER_BEFORE and
+            source.count(SELECTED_POINTER_BEFORE) == 1 and
+            source.count(declarations) == 1):
+        return source
     if source.count(SELECTED_MATCH) == 1 and source.count(declarations) == 1:
         return source.replace(SELECTED_MATCH, body, 1)
     raise ValueError("Uniform matrix submit source state changed")
