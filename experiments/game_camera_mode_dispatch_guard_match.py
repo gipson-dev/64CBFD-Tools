@@ -308,8 +308,10 @@ def prepare(root, output=None):
         root, output, qualified_compact, qualified_guard_path,
         "qualified-owner")
     production_owner = root / OBJECT
-    if predecessor_owner.read_bytes() != production_owner.read_bytes():
-        raise ValueError("Camera dispatcher predecessor owner differs from production")
+    expected_production_owner = (qualified_owner if source_installed
+                                 else predecessor_owner)
+    if expected_production_owner.read_bytes() != production_owner.read_bytes():
+        raise ValueError("Camera dispatcher selected owner differs from production")
     if function_blob(qualified_owner, FUNCTION) != (retail_object, bindings):
         raise ValueError("Camera dispatcher qualified owner differs from retail")
     neighbors = same_functions(predecessor_owner, qualified_owner, (FUNCTION,))
@@ -321,9 +323,10 @@ def prepare(root, output=None):
     qualified_elf = link_image(root, output, qualified_owner,
                                "qualified-image")
     current_elf = (root / ELF).read_bytes()
-    if predecessor_elf.read_bytes() != current_elf:
-        raise ValueError("Camera dispatcher predecessor image differs from production")
-    predicted = expected_image(current_elf, retail)
+    expected_production_elf = qualified_elf if source_installed else predecessor_elf
+    if expected_production_elf.read_bytes() != current_elf:
+        raise ValueError("Camera dispatcher selected image differs from production")
+    predicted = expected_image(predecessor_elf.read_bytes(), retail)
     if qualified_elf.read_bytes() != predicted:
         raise ValueError("Camera dispatcher qualified image differs from literal prediction")
     old, _, old_addresses = load_elf_functions(
@@ -352,7 +355,7 @@ def prepare(root, output=None):
         "raw_sha256": digest(raw),
         "retail_sha256": digest(retail),
         "qualified_owner_sha256": digest(qualified_owner.read_bytes()),
-        "predecessor_elf_sha256": digest(current_elf),
+        "predecessor_elf_sha256": digest(predecessor_elf.read_bytes()),
         "qualified_elf_sha256": digest(qualified_elf.read_bytes()),
         "functions": len(new),
         "changed_bodies": changed,
