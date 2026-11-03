@@ -130,24 +130,30 @@ def source_states(live):
     raise ValueError("Linked-actor point source state changed")
 
 
-def guard_manifest(before):
+def guard_manifests(before):
     before_hash = digest(before)
     reader = csv.DictReader(io.StringIO(before.decode()))
     fields = reader.fieldnames
     rows = list(reader)
     selected = [row for row in rows if row["function"] == FUNCTION]
+    extra = io.StringIO(newline="")
+    writer = csv.DictWriter(extra, fields, lineterminator="\r\n")
+    writer.writerows(NEW_GUARDS)
+    added = extra.getvalue().encode()
     if before_hash == INSTALLED_GUARDS_SHA256:
         if selected != NEW_GUARDS:
             raise ValueError("Installed linked-actor point guards changed")
-        return before
+        if not before.endswith(added):
+            raise ValueError("Installed linked-actor point guard placement changed")
+        predecessor = before[:-len(added)]
+        if digest(predecessor) != INHERITED_GUARDS_SHA256:
+            raise ValueError("Installed linked-actor point guard history changed")
+        return predecessor, before
     if before_hash != INHERITED_GUARDS_SHA256:
         raise ValueError("Inherited guard manifest changed")
     if selected:
         raise ValueError("Linked-actor point guards already present")
-    extra = io.StringIO(newline="")
-    writer = csv.DictWriter(extra, fields, lineterminator="\r\n")
-    writer.writerows(NEW_GUARDS)
-    return before + extra.getvalue().encode()
+    return before, before + added
 
 
 def retail_bytes(root):
@@ -263,7 +269,9 @@ def prepare(root, output=None):
     output = Path(output or root / BUILD).resolve()
     output.mkdir(parents=True, exist_ok=True)
     inherited_guards = (root / GUARDS).read_bytes()
-    proposed = guard_manifest(inherited_guards)
+    predecessor_guards, proposed = guard_manifests(inherited_guards)
+    predecessor_path = output / "predecessor-guards.csv"
+    predecessor_path.write_bytes(predecessor_guards)
     proposed_path = output / "proposed-guards.csv"
     proposed_path.write_bytes(proposed)
     predecessor_source, qualified_source, installed = source_states(
@@ -276,7 +284,7 @@ def prepare(root, output=None):
         raise ValueError("Linked-actor point owner diagnostics changed")
     raw, bindings = checked_candidate(root, qualified_compact)
     predecessor_owner = assemble_owner(
-        root, output, predecessor_compact, "predecessor-owner", root / GUARDS)
+        root, output, predecessor_compact, "predecessor-owner", predecessor_path)
     qualified_owner = assemble_owner(
         root, output, qualified_compact, "qualified-owner", proposed_path)
     expected_owner = qualified_owner if installed else predecessor_owner
