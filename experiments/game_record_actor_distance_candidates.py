@@ -136,15 +136,21 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def source_with(body):
     source = (ROOT / SOURCE).read_text()
-    if source.count(PLACEHOLDER) != 1:
-        raise ValueError("Record actor distance predecessor source changed")
     marker = "} CleanupNode;\n"
     if source.count(marker) != 1:
         raise ValueError("CleanupNode declaration marker changed")
-    source = source.replace(marker, marker + "\n" + TYPES, 1)
-    source = source.replace("extern CleanupNode *D_800DCF3C;\n",
-                            "extern CleanupNode *D_800DCF3C;\n" + DECLARATIONS, 1)
-    return source.replace(PLACEHOLDER, body, 1)
+    declarations = "extern CleanupNode *D_800DCF3C;\n" + DECLARATIONS
+    if source.count(PLACEHOLDER) == 1:
+        if TYPES in source or DECLARATIONS in source or SELECTED in source:
+            raise ValueError("Record actor distance predecessor source changed")
+        source = source.replace(marker, marker + "\n" + TYPES, 1)
+        source = source.replace("extern CleanupNode *D_800DCF3C;\n",
+                                declarations, 1)
+        return source.replace(PLACEHOLDER, body, 1)
+    if (source.count(TYPES) == 1 and source.count(DECLARATIONS) == 1 and
+            source.count(SELECTED) == 1 and PLACEHOLDER not in source):
+        return source.replace(SELECTED, body, 1)
+    raise ValueError("Record actor distance source state changed")
 
 
 def variants():
