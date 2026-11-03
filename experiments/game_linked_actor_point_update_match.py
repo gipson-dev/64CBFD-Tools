@@ -38,6 +38,7 @@ TABLE_ROM = 0x22D6D0
 RAW_SHA256 = "636bec741ef2e2ce328130a529f68e8c61baeda92620242606cbc681a980938f"
 RETAIL_SHA256 = "835b33ad801fb40a2081dccea40e19beb29da8f9798ad0e2d24346a9c59209f4"
 INHERITED_GUARDS_SHA256 = "cf2019b55b64b2c6a5f6408a41bbcd195cb431b13276d895e893fc84cd2668e1"
+INSTALLED_GUARDS_SHA256 = "1f973e977a2fa5f0cc277b34384fe09b70683a7f7a6b2c64650a7051e9d0a9fb"
 BINDINGS = {
     0x07C: [("R_MIPS_26", "func_15107A20")],
     0x0DC: [("R_MIPS_26", "func_15107AE0")],
@@ -130,12 +131,18 @@ def source_states(live):
 
 
 def guard_manifest(before):
-    if digest(before) != INHERITED_GUARDS_SHA256:
-        raise ValueError("Inherited guard manifest changed")
+    before_hash = digest(before)
     reader = csv.DictReader(io.StringIO(before.decode()))
     fields = reader.fieldnames
     rows = list(reader)
-    if any(row["function"] == FUNCTION for row in rows):
+    selected = [row for row in rows if row["function"] == FUNCTION]
+    if before_hash == INSTALLED_GUARDS_SHA256:
+        if selected != NEW_GUARDS:
+            raise ValueError("Installed linked-actor point guards changed")
+        return before
+    if before_hash != INHERITED_GUARDS_SHA256:
+        raise ValueError("Inherited guard manifest changed")
+    if selected:
         raise ValueError("Linked-actor point guards already present")
     extra = io.StringIO(newline="")
     writer = csv.DictWriter(extra, fields, lineterminator="\r\n")
