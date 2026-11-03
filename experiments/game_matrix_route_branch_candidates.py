@@ -118,6 +118,120 @@ def key_candidates():
         yield 'primary-output%d-%s' % (primary, kind), body
 
 
+def explicit_key_gate(body, topology, carrier):
+    """Expose the retail zero-key gate without an assignment condition."""
+    carrier_forms = {
+        'local': ('key', 'key = *(u16 *)(descriptor + 0x1E)', 'key'),
+        'register16': ('key', 'key = *(u16 *)(descriptor + 0x1E)', 'key'),
+        'register32': ('key', 'key = *(u16 *)(descriptor + 0x1E)', 'key'),
+        'index': ('index', 'index = *(u16 *)(descriptor + 0x1E)', 'index'),
+        'input': ('input', 'input = (struct17 **)(u32)*(u16 *)(descriptor + 0x1E)',
+                  '(u32)input'),
+        'matrix': ('matrix', 'matrix = (Mtx *)(u32)*(u16 *)(descriptor + 0x1E)',
+                   '(u32)matrix'),
+        'attachment': ('attachment',
+                       'attachment = (u8 *)(u32)*(u16 *)(descriptor + 0x1E)',
+                       '(u32)attachment'),
+    }
+    condition, assignment, argument = carrier_forms[carrier]
+    declarations = {
+        'local': '    u16 key;\n',
+        'register16': '    register u16 key;\n',
+        'register32': '    register u32 key;\n',
+    }
+    if carrier in declarations:
+        body = body.replace('    Mtx *other;\n',
+            '    Mtx *other;\n' + declarations[carrier], 1)
+    keyed_marker = '    } else if (*(u16 *)(descriptor + 0x1E) != 0) {\n'
+    descriptor_marker = '    } else if (*(Mtx **)(descriptor + 0x34) != 0) {\n'
+    common_marker = '    }\n    if (matrix != 0)'
+    start = body.index(keyed_marker)
+    middle = body.index(descriptor_marker, start)
+    end = body.index(common_marker, middle)
+    keyed = body[start + len(keyed_marker):middle]
+    keyed = keyed.replace('actor, *(u16 *)(descriptor + 0x1E), 0)',
+        'actor, %s, 0)' % argument, 1)
+    descriptor = body[middle + len(descriptor_marker):end]
+    descriptor = ('        if (*(Mtx **)(descriptor + 0x34) != 0) {\n' +
+        ''.join('    ' + line if line.strip() else line
+                for line in descriptor.splitlines(keepends=True)) +
+        '        }\n')
+    if topology == 'nested':
+        new = (f'''    }} else {{
+        {assignment};
+        if ({condition} != 0) {{
+''' + ''.join('    ' + line if line.strip() else line
+              for line in keyed.splitlines(keepends=True)) + '''        } else {
+''' + ''.join('    ' + line if line.strip() else line
+              for line in descriptor.splitlines(keepends=True)) + '''        }
+    }
+''')
+    else:
+        new = f'''    }} else {{
+        {assignment};
+        if ({condition} == 0) {{
+            goto descriptor_bank;
+        }}
+''' + keyed + '''        goto selected_matrix;
+descriptor_bank:
+''' + descriptor + '''    }
+selected_matrix:
+'''
+    return body[:start] + new + body[end + len('    }\n'):]
+
+
+def primary_output_alias(body, kind):
+    """Keep a real alias to the resolver primary output and reread it."""
+    if kind in ('direct', 'volatile_cast'):
+        primary = ('lookupMatrix' if kind == 'direct' else
+            '*(Mtx *volatile *)&lookupMatrix')
+        body = body.replace(
+            '        if (*(u8 **)((u8 *)input + 0x48) != 0) {',
+            '        matrix = %s;\n' % primary +
+            '        if (*(u8 **)((u8 *)input + 0x48) != 0) {', 1)
+        body = body.replace(
+            '            matrix = lookupMatrix + *(u16 *)(descriptor + 0x20);',
+            '            matrix = %s + *(u16 *)(descriptor + 0x20);' % primary, 1)
+        return body.replace(
+            '        } else {\n            matrix = lookupMatrix;\n        }',
+            '        }', 1)
+    qualifier = 'volatile ' if kind == 'volatile' else ''
+    body = body.replace('    Mtx *other;\n',
+        '    Mtx *other;\n    Mtx **%sprimaryOut;\n' % qualifier, 1)
+    body = body.replace(
+        '        if (func_15031070((struct126 *)input, actor, &lookupMatrix, &other) == 0) {',
+        '        primaryOut = &lookupMatrix;\n'
+        '        if (func_15031070((struct126 *)input, actor, primaryOut, &other) == 0) {', 1)
+    body = body.replace(
+        '        if (*(u8 **)((u8 *)input + 0x48) != 0) {\n'
+        '            matrix = lookupMatrix + *(u16 *)(descriptor + 0x20);\n'
+        '        } else {\n'
+        '            matrix = lookupMatrix;\n'
+        '        }',
+        '        matrix = *primaryOut;\n'
+        '        if (*(u8 **)((u8 *)input + 0x48) != 0) {\n'
+        '            matrix = *primaryOut + *(u16 *)(descriptor + 0x20);\n'
+        '        }', 1)
+    return body
+
+
+def evidence_candidates():
+    """Untested source forms isolated by the post-377-form evidence audit."""
+    base = dict(phase_candidates())['phase-primary0-keyrepeat-order0']
+    for gate, carrier, primary, delegated in itertools.product(
+            ('nested', 'goto'),
+            ('register16', 'register32', 'index', 'input', 'matrix',
+             'attachment', 'local'),
+            ('direct', 'volatile_cast', 'pointer'), range(2)):
+        body = primary_output_alias(base, primary)
+        body = explicit_key_gate(body, gate, carrier)
+        if delegated:
+            body = body.replace('bank + descriptor[2] * 64',
+                'descriptor[2] * 64 + bank')
+        yield 'evidence-gate%s-carrier%s-primary%s-delegated%d' % (
+            gate, carrier, primary, delegated), body
+
+
 def storage_candidates():
     base = dict(phase_candidates())['phase-primary0-keyrepeat-order0']
     for primary, representation in itertools.product(range(3), ('array', 'struct', 'union')):
@@ -175,7 +289,8 @@ SELECTED = dict(phase_candidates())['phase-primary0-keyrepeat-order0']
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     families = dict(phases=phase_candidates, keys=key_candidates,
-        storage=storage_candidates, flow=flow_candidates)
+        storage=storage_candidates, flow=flow_candidates,
+        evidence=evidence_candidates)
     group = parser.add_mutually_exclusive_group()
     for name in families:
         group.add_argument('--' + name, action='store_true')
@@ -186,11 +301,17 @@ def main():
     records = []
     for name, body in families.get(family, candidates)():
         record, words = route.compile_candidate(root, out, name, body)
-        record.update(layout.private_offsets(words))
+        try:
+            record.update(layout.private_offsets(words))
+        except AssertionError:
+            record.update(matrix_offset=None, primary_offset=None,
+                secondary_offset=None)
         record['debug'] = layout.debug_locals(out / (name + '.o'))
         records.append(record)
+        offsets = [hex(record[key]) if record[key] is not None else '-'
+            for key in ('matrix_offset', 'primary_offset', 'secondary_offset')]
         print(name, record['body_words'], hex(record['frame']), record['differences'],
-            [hex(record[key]) for key in ('matrix_offset', 'primary_offset', 'secondary_offset')], flush=True)
+            offsets, flush=True)
     (out / (family + '.json')).write_text(json.dumps(records, indent=2) + '\n')
 
 

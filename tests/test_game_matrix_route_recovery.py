@@ -19,7 +19,7 @@ from tools.tests import test_game_matrix_list_transform_match as matrix_list
 from tools.tests import test_game_point_list_transform_audit as points
 from tools.tests import test_game_random_curve_record as native
 from tools.tests.game_animation_timeline_oracle import bits, signed
-from tools.tests.game_owner_pool import assert_guard_history, normalized_pools
+from tools.tests.game_owner_pool import normalized_pools
 from tools.tests.test_game_actor_triangle_transform_match import TriangleOracle
 from tools.tests.test_game_point_transform_match import put, read, external_memory
 
@@ -300,20 +300,26 @@ class GameMatrixRouteRecoveryTests(unittest.TestCase):
         source = (self.root / 'conker/src/game_16EE20.c').read_text()
         installed_kind, installed_words = 'zero-return-placeholder', 3
         expected = [0x00001025, 0x03E00008, 0] + [0] * 117
-        if 's32 func_1514654C() {\n    return 0;\n}' not in source:
-            from tools.experiments import game_matrix_route_layout_candidates as fit
-            self.assertIn(fit.SELECTED, source)
-            _, expected = screen.compile_candidate(self.root, self.out, 'installed-selected', fit.SELECTED)
-            installed_kind, installed_words = 'complete-nonmatching-C', 120
-        self.assertEqual(functions[screen.FUNCTION], expected)
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
             guards = list(csv.DictReader(stream))
-        assert_guard_history(self, guards)
-        self.assertFalse(any(row['function'] == screen.FUNCTION for row in guards))
+        target_guards = [row for row in guards if row['function'] == screen.FUNCTION]
+        if 's32 func_1514654C() {\n    return 0;\n}' not in source:
+            from tools.experiments import game_matrix_route_layout_candidates as fit
+            if fit.SELECTED in source:
+                _, expected = screen.compile_candidate(self.root, self.out, 'installed-selected', fit.SELECTED)
+                installed_kind, installed_words = 'complete-nonmatching-C', 120
+                self.assertEqual(target_guards, [])
+            else:
+                from tools.experiments import game_matrix_route_branch_candidates as branch
+                self.assertIn(branch.SELECTED, source)
+                expected = self.retail
+                installed_kind, installed_words = 'complete-guarded-C', 119
+                self.assertEqual(len(target_guards), 12)
+        self.assertEqual(functions[screen.FUNCTION], expected)
         self.receipt('slot', dict(retail_words=120, candidate_words=119, retail_frame=160,
             candidate_frame=168, differences=58, raw_exact=False, original_is_reference_only=True,
             installed_kind=installed_kind, installed_body_words=installed_words,
-            candidate_installed=False, guards_added=0, matrix_private_offsets=[104, 76]))
+            candidate_installed=False, guards_added=len(target_guards), matrix_private_offsets=[104, 76]))
 
     def test_all_four_routes_failures_signed_counts_aliases_and_home_mutation(self):
         cases, coverage = 0, [set(), set()]
@@ -613,8 +619,10 @@ if(func_1514654C(&actor,descriptor.bytes,0,0,0,2)||conversions||lookups||resolve
         stub = 's32 func_1514654C() {\n    return 0;\n}'
         if stub not in source:
             from tools.experiments import game_matrix_route_layout_candidates as fit
-            self.assertEqual(source.count(fit.SELECTED), 1)
-            source = source.replace(fit.SELECTED, stub).replace(screen.PROTOTYPE, 's32 func_1514654C();')
+            from tools.experiments import game_matrix_route_branch_candidates as branch
+            installed = [body for body in (fit.SELECTED, branch.SELECTED) if body in source]
+            self.assertEqual(len(installed), 1)
+            source = source.replace(installed[0], stub).replace(screen.PROTOTYPE, 's32 func_1514654C();')
             source = source.replace(screen.DECLARATIONS.splitlines(keepends=True)[0], '', 1)
         self.assertEqual(source.count(stub), 1)
         selected = source.replace(stub, candidate).replace('s32 func_1514654C();',

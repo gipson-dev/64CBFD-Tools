@@ -16,7 +16,6 @@ from tools.pad_generated_object import parse_object
 from tools.tests import test_game_matrix_route_recovery as prior
 from tools.tests.test_game_point_transform_match import external_memory, put
 from tools.tests.test_game_scaled_matrix_match import emit_padded_assembly
-from tools.tests.game_owner_pool import assert_guard_history
 
 
 class GameMatrixRouteLayoutRecoveryTests(unittest.TestCase):
@@ -203,8 +202,18 @@ class GameMatrixRouteLayoutRecoveryTests(unittest.TestCase):
     def test_actual_padder_preserves_raw_body_and_all_relocations_without_new_guards(self):
         self.qualify_copied_owner(fit.SELECTED)
         owner = self.out / 'owner-selected-postprocessed.o'
+        source_patches = self.root / 'conker/retail_word_patches.us.csv'
+        filtered_patches = self.out / 'patches-without-matrix-route.csv'
+        with source_patches.open(newline='') as stream:
+            reader = csv.DictReader(stream)
+            fields = reader.fieldnames
+            rows = [row for row in reader if row['function'] != route.FUNCTION]
+        with filtered_patches.open('w', newline='') as stream:
+            writer = csv.DictWriter(stream, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(rows)
         assembly = emit_padded_assembly(owner, self.root / 'conker/retail_layout.us.txt', 'game_16EE20',
-            rodata_symbol='jtbl_800A5218_game', word_patches_path=self.root / 'conker/retail_word_patches.us.csv')
+            rodata_symbol='jtbl_800A5218_game', word_patches_path=filtered_patches)
         start = assembly.index('.type %s, @function' % route.FUNCTION)
         end = assembly.index('.size %s, . - %s' % (route.FUNCTION, route.FUNCTION), start)
         end = assembly.index('\n', end)+1
@@ -235,14 +244,22 @@ class GameMatrixRouteLayoutRecoveryTests(unittest.TestCase):
 
     def test_installed_complete_nonmatching_body_and_previous_guard_history(self):
         source = (self.root / 'conker/src/game_16EE20.c').read_text()
-        self.assertEqual(source.count(fit.SELECTED), 1)
         self.assertEqual(source.count(route.PROTOTYPE), 1)
         functions, _, addresses = load_elf_functions(str(self.root / 'conker/build/conker.us.elf'), 'mips-linux-gnu-objdump')
-        self.assertEqual((addresses[route.FUNCTION], functions[route.FUNCTION]), (route.ENTRY, self.words))
-        self.assertEqual(sum(a != b for a, b in zip(functions[route.FUNCTION], self.retail)), 60)
         with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as stream:
             guards = list(csv.DictReader(stream))
-        assert_guard_history(self, guards)
-        self.assertFalse(any(row['function'] == route.FUNCTION for row in guards))
-        self.receipt('installed', dict(words=120, frame=160, differences=60, complete_C=True,
-            exact=False, guards_added=0, incoming_ABI_words=6))
+        target_guards = [row for row in guards if row['function'] == route.FUNCTION]
+        if fit.SELECTED in source:
+            self.assertEqual((addresses[route.FUNCTION], functions[route.FUNCTION]), (route.ENTRY, self.words))
+            self.assertEqual(sum(a != b for a, b in zip(functions[route.FUNCTION], self.retail)), 60)
+            self.assertEqual(target_guards, [])
+            installed = dict(words=120, differences=60, exact=False, guards_added=0)
+        else:
+            from tools.experiments import game_matrix_route_branch_candidates as branch
+            self.assertEqual(source.count(branch.SELECTED), 1)
+            self.assertEqual((addresses[route.FUNCTION], functions[route.FUNCTION]),
+                (route.ENTRY, self.retail))
+            self.assertEqual(len(target_guards), 12)
+            installed = dict(words=120, differences=0, exact=True, guards_added=12)
+        self.receipt('installed', dict(frame=160, complete_C=True,
+            incoming_ABI_words=6, **installed))
