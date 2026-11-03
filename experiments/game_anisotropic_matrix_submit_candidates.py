@@ -86,13 +86,18 @@ s32 func_151B9310(Mtx *output, u8 *state) {
 
 def source_with(body):
     source = (ROOT / SOURCE).read_text()
-    if source.count(PLACEHOLDER) != 1:
-        raise ValueError("Anisotropic matrix submit placeholder changed")
-    source = source.replace(PLACEHOLDER, body)
     anchor = "#include <ultra64.h>\n"
     if source.count(anchor) != 1:
         raise ValueError("Anisotropic matrix submit include anchor changed")
-    return source.replace(anchor, anchor + TYPES + DECLARATIONS + "\n", 1)
+    declarations = TYPES + DECLARATIONS + "\n"
+    if source.count(PLACEHOLDER) == 1:
+        if declarations in source or SELECTED_MATCH in source:
+            raise ValueError("Anisotropic matrix submit predecessor source changed")
+        return source.replace(PLACEHOLDER, body).replace(
+            anchor, anchor + declarations, 1)
+    if source.count(SELECTED_MATCH) == 1 and source.count(declarations) == 1:
+        return source.replace(SELECTED_MATCH, body, 1)
+    raise ValueError("Anisotropic matrix submit source state changed")
 
 
 def variants():

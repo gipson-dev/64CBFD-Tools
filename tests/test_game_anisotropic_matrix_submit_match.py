@@ -299,7 +299,8 @@ class AnisotropicMatrixSubmitTest(unittest.TestCase):
         self.assertEqual(candidate_report["differences"], 0)
         result = match.prepare(ROOT)
         report = result["report"]
-        self.assertFalse(report["source_installed"])
+        installed = candidate.SELECTED_MATCH in (ROOT / candidate.SOURCE).read_text()
+        self.assertEqual(report["source_installed"], installed)
         self.assertEqual(report["guards"], 0)
         self.assertEqual(report["natural_positional_differences"], 0)
         self.assertEqual(report["changed_bodies"], [match.FUNCTION])
