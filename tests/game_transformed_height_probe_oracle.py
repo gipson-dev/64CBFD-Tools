@@ -31,6 +31,11 @@ POSITION = 0x30000
 RESULT = 0x34000
 POINT_RIGHT = 0x800A05E0
 POINT_LEFT = 0x800A05EC
+POINT_RIGHT_NAME = "D_800A05E0"
+POINT_LEFT_NAME = "D_800A05EC"
+MODE_ONE_OFFSET = 0xA00
+MODE_TWO_OFFSET = 0xBC0
+OWNER_OBJECT = "generated_F8590.c.o"
 TRANSFORM = 0x15143134
 INITIALIZE = 0x1504715C
 QUERY = 0x15046C80
@@ -118,7 +123,8 @@ def visible(memory, case):
     return result_memory
 
 
-def reference(initial, case, symbols=SYMBOLS):
+def reference(initial, case, symbols=None):
+    symbols = SYMBOLS if symbols is None else symbols
     memory = dict(initial)
     output = position(case)
     target = result(case)
@@ -127,8 +133,8 @@ def reference(initial, case, symbols=SYMBOLS):
     mode = case.fourth & 0xFF
     if mode not in (1, 2):
         return memory, calls, packets, 0
-    point = symbols["D_800A05EC"] if mode == 1 else symbols["D_800A05E0"]
-    offset = 0xA00 if mode == 1 else 0xBC0
+    point = symbols[POINT_LEFT_NAME] if mode == 1 else symbols[POINT_RIGHT_NAME]
+    offset = MODE_ONE_OFFSET if mode == 1 else MODE_TWO_OFFSET
     matrix = read(memory, ACTOR + 0x1D4) + offset
     calls.append((symbols["func_15143134"], (point, output, matrix)))
     transform_effect(memory, case, output, point)
@@ -153,7 +159,9 @@ def reference(initial, case, symbols=SYMBOLS):
 
 
 class Oracle(HeightOracle):
-    def __init__(self, words, memory, case, symbols=SYMBOLS, entry=ENTRY):
+    def __init__(self, words, memory, case, symbols=None, entry=None):
+        symbols = SYMBOLS if symbols is None else symbols
+        entry = ENTRY if entry is None else entry
         self.callback_symbols = symbols
         super().__init__(
             words, memory, case, entry=entry,
@@ -193,7 +201,9 @@ class Oracle(HeightOracle):
         self.hi, self.lo = 0xA5000010, 0xA5000011
 
 
-def linked(obj, label, entry=ENTRY, symbols=SYMBOLS):
+def linked(obj, label, entry=None, symbols=None):
+    entry = ENTRY if entry is None else entry
+    symbols = SYMBOLS if symbols is None else symbols
     text, functions, relocations = parse_object(obj)
     function = functions[FUNCTION]
     assembly, unknown = emit_function(
@@ -222,9 +232,12 @@ def linked(obj, label, entry=ENTRY, symbols=SYMBOLS):
 def programs():
     retail = (ROOT / "conker/conker.us.bin").read_bytes()[ROM:ROM + WORDS * 4]
     result = [list(struct.unpack(">%dI" % WORDS, retail))]
-    result.append(linked(OUTPUT / "qualified-compact.o", "semantic-compact"))
     result.append(linked(
-        OUTPUT / "qualified-owner/generated_F8590.c.o", "semantic-owner"))
+        OUTPUT / "qualified-compact.o", "semantic-compact",
+        entry=ENTRY, symbols=SYMBOLS))
+    result.append(linked(
+        OUTPUT / ("qualified-owner/" + OWNER_OBJECT), "semantic-owner",
+        entry=ENTRY, symbols=SYMBOLS))
     assert result[0] == result[1] == result[2]
     return result
 
@@ -248,7 +261,8 @@ def state(machine):
     )
 
 
-def verify(machine, initial, case, symbols=SYMBOLS):
+def verify(machine, initial, case, symbols=None):
+    symbols = SYMBOLS if symbols is None else symbols
     wanted, calls, packets, value = reference(initial, case, symbols)
     assert (
         visible(machine.memory, case), machine.calls,
@@ -327,10 +341,18 @@ def native_harness(selected):
     body = selected
     mutants = {
         "gate": body.replace("mode != 1 && mode != 2", "mode != 1 && mode != 3"),
-        "point1": body.replace("point = D_800A05EC;", "point = D_800A05E0;", 1),
-        "point2": body.replace("point = D_800A05E0;", "point = D_800A05EC;", 1),
-        "matrix1": body.replace("+ 0xA00;", "+ 0xA04;", 1),
-        "matrix2": body.replace("+ 0xBC0;", "+ 0xBC4;", 1),
+        "point1": body.replace(
+            "point = %s;" % POINT_LEFT_NAME,
+            "point = %s;" % POINT_RIGHT_NAME, 1),
+        "point2": body.replace(
+            "point = %s;" % POINT_RIGHT_NAME,
+            "point = %s;" % POINT_LEFT_NAME, 1),
+        "matrix1": body.replace(
+            "+ 0x%X;" % MODE_ONE_OFFSET,
+            "+ 0x%X;" % (MODE_ONE_OFFSET + 4), 1),
+        "matrix2": body.replace(
+            "+ 0x%X;" % MODE_TWO_OFFSET,
+            "+ 0x%X;" % (MODE_TWO_OFFSET + 4), 1),
         "null_result": body.replace("return 1;", "return 0;", 1),
         "upper": body.replace("position[1] + 100.0f", "position[1] + 99.0f"),
         "lower": body.replace("position[1] - 500.0f", "position[1] - 499.0f"),
@@ -495,6 +517,10 @@ static int run(void) {
     text += START.replace(
         "void _start(void)",
         "__attribute__((force_align_arg_pointer)) void _start(void)")
+    text = text.replace("D_800A05E0", POINT_RIGHT_NAME)
+    text = text.replace("D_800A05EC", POINT_LEFT_NAME)
+    text = text.replace("0xA00", "0x%X" % MODE_ONE_OFFSET)
+    text = text.replace("0xBC0", "0x%X" % MODE_TWO_OFFSET)
     return text, len(mutants)
 
 
