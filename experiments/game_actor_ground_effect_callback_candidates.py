@@ -67,8 +67,8 @@ def source_with(body):
             raise ValueError("Actor ground-effect callback predecessor source changed")
         return source.replace(marker, marker + DECLARATIONS, 1).replace(
             PLACEHOLDER, body, 1)
-    if source.count(SELECTED) == 1 and source.count(DECLARATIONS) == 1:
-        return source.replace(SELECTED, body, 1)
+    if source.count(MATCHED) == 1 and source.count(DECLARATIONS) == 1:
+        return source.replace(MATCHED, body, 1)
     raise ValueError("Actor ground-effect callback source state changed")
 
 
