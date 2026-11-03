@@ -54,57 +54,58 @@ typedef struct {
     s16 countBase;
     s16 countRange;
     void *providerType;
-    s16 private8;
+    s16 reserved8;
     s16 secondAngleBase;
-    s16 privateC;
+    s16 reservedC;
     s16 secondAngleRange;
     f32 radiusBase;
     f32 radiusRange;
     f32 scaleBase;
     f32 scaleRange;
-    f32 mode;
+    /* Raw mode/pointer word; its floating load preserves the retail caller. */
+    f32 modeWord;
     u8 selectorBase;
     u8 selectorRange;
     s16 durationBase;
     s16 durationRange;
-    u8 private2A[2];
+    u8 reserved2A[2];
     f32 timeBase;
     f32 timeRange;
     f32 opaqueChance;
     s32 requestValue;
-} DirectionEffectConfig1F2730;
+} DirectionEffectInput;
 
 extern f32 D_800AAAF4;
 extern f32 D_800AAAF8;
 extern f32 D_800AAAFC;
-void func_15154684(DirectionEffectConfig1F2730 *, s32, s32);
+void func_15154684(DirectionEffectInput *, s32, s32);
 """
 STUB = "s32 func_151C61A0() {\n    return 0;\n}"
-SELECTED = """/* Submit one fixed directional-effect configuration. */
+SELECTED = """/* Submit one fixed input descriptor to the directional-effect factory. */
 void func_151C61A0(void *providerType, s32 requestValue, u8 channel, s32 owner) {
-    DirectionEffectConfig1F2730 config;
+    DirectionEffectInput input;
 
-    config.countBase = 10;
-    config.countRange = 4;
-    config.providerType = providerType;
-    config.private8 = 0;
-    config.privateC = 255;
-    config.secondAngleBase = -24;
-    config.secondAngleRange = 25;
-    config.radiusBase = 5.0f;
-    config.radiusRange = 7.0f;
-    config.scaleBase = D_800AAAF4;
-    config.scaleRange = D_800AAAF8;
-    config.mode = D_800AAAFC;
-    config.selectorBase = 190;
-    config.selectorRange = 65;
-    config.durationBase = 200;
-    config.durationRange = 150;
-    config.timeBase = 96.0f;
-    config.timeRange = 109.0f;
-    config.opaqueChance = 1.0f;
-    config.requestValue = requestValue;
-    func_15154684(&config, channel, owner);
+    input.countBase = 10;
+    input.countRange = 4;
+    input.providerType = providerType;
+    input.reserved8 = 0;
+    input.reservedC = 255;
+    input.secondAngleBase = -24;
+    input.secondAngleRange = 25;
+    input.radiusBase = 5.0f;
+    input.radiusRange = 7.0f;
+    input.scaleBase = D_800AAAF4;
+    input.scaleRange = D_800AAAF8;
+    input.modeWord = D_800AAAFC;
+    input.selectorBase = 190;
+    input.selectorRange = 65;
+    input.durationBase = 200;
+    input.durationRange = 150;
+    input.timeBase = 96.0f;
+    input.timeRange = 109.0f;
+    input.opaqueChance = 1.0f;
+    input.requestValue = requestValue;
+    func_15154684(&input, channel, owner);
 }"""
 
 

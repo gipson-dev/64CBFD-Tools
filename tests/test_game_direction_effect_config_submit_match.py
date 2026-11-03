@@ -90,16 +90,16 @@ static u32 wanted_channel, wanted_globals[3], calls, error;
 static u32 word(f32 value) { union { f32 f; u32 u; } v; v.f = value; return v.u; }
 static f32 real(u32 value) { union { f32 f; u32 u; } v; v.u = value; return v.f; }
 __attribute__((noinline,noclone)) void func_15154684(
-        DirectionEffectConfig1F2730 *p, s32 channel, s32 owner) {
+        DirectionEffectInput *p, s32 channel, s32 owner) {
     calls++;
     if (calls != 1 || p->countBase != 10 || p->countRange != 4 ||
-            p->providerType != wanted_provider || p->private8 != 0 ||
-            p->secondAngleBase != -24 || p->privateC != 255 ||
+            p->providerType != wanted_provider || p->reserved8 != 0 ||
+            p->secondAngleBase != -24 || p->reservedC != 255 ||
             p->secondAngleRange != 25 || word(p->radiusBase) != 0x40A00000u ||
             word(p->radiusRange) != 0x40E00000u ||
             word(p->scaleBase) != wanted_globals[0] ||
             word(p->scaleRange) != wanted_globals[1] ||
-            word(p->mode) != wanted_globals[2] || p->selectorBase != 190 ||
+            word(p->modeWord) != wanted_globals[2] || p->selectorBase != 190 ||
             p->selectorRange != 65 || p->durationBase != 200 ||
             p->durationRange != 150 || word(p->timeBase) != 0x42C00000u ||
             word(p->timeRange) != 0x42DA0000u ||
@@ -134,31 +134,31 @@ static int run(void) {
 def controls():
     selected = match.SELECTED
     return {
-        "wrong_count": selected.replace("config.countBase = 10;", "config.countBase = 11;"),
-        "wrong_provider": selected.replace("config.providerType = providerType;",
-                                             "config.providerType = (void *)0;"),
-        "wrong_private8": selected.replace("config.private8 = 0;", "config.private8 = 1;"),
-        "wrong_angle": selected.replace("config.secondAngleBase = -24;",
-                                          "config.secondAngleBase = -23;"),
-        "wrong_privateC": selected.replace("config.privateC = 255;", "config.privateC = 254;"),
-        "wrong_radius": selected.replace("config.radiusBase = 5.0f;",
-                                           "config.radiusBase = 6.0f;"),
-        "wrong_global": selected.replace("config.scaleBase = D_800AAAF4;",
-                                           "config.scaleBase = D_800AAAF8;"),
-        "wrong_selector": selected.replace("config.selectorBase = 190;",
-                                             "config.selectorBase = 191;"),
-        "wrong_duration": selected.replace("config.durationBase = 200;",
-                                             "config.durationBase = 201;"),
-        "wrong_time": selected.replace("config.timeBase = 96.0f;",
-                                         "config.timeBase = 95.0f;"),
-        "wrong_opacity": selected.replace("config.opaqueChance = 1.0f;",
-                                            "config.opaqueChance = 0.5f;"),
-        "wrong_request": selected.replace("config.requestValue = requestValue;",
-                                            "config.requestValue = requestValue + 1;"),
-        "wrong_channel": selected.replace("&config, channel, owner",
-                                            "&config, channel + 1, owner"),
-        "wrong_owner": selected.replace("&config, channel, owner",
-                                          "&config, channel, owner + 1"),
+        "wrong_count": selected.replace("input.countBase = 10;", "input.countBase = 11;"),
+        "wrong_provider": selected.replace("input.providerType = providerType;",
+                                             "input.providerType = (void *)0;"),
+        "wrong_reserved8": selected.replace("input.reserved8 = 0;", "input.reserved8 = 1;"),
+        "wrong_angle": selected.replace("input.secondAngleBase = -24;",
+                                          "input.secondAngleBase = -23;"),
+        "wrong_reservedC": selected.replace("input.reservedC = 255;", "input.reservedC = 254;"),
+        "wrong_radius": selected.replace("input.radiusBase = 5.0f;",
+                                           "input.radiusBase = 6.0f;"),
+        "wrong_global": selected.replace("input.scaleBase = D_800AAAF4;",
+                                           "input.scaleBase = D_800AAAF8;"),
+        "wrong_selector": selected.replace("input.selectorBase = 190;",
+                                             "input.selectorBase = 191;"),
+        "wrong_duration": selected.replace("input.durationBase = 200;",
+                                             "input.durationBase = 201;"),
+        "wrong_time": selected.replace("input.timeBase = 96.0f;",
+                                         "input.timeBase = 95.0f;"),
+        "wrong_opacity": selected.replace("input.opaqueChance = 1.0f;",
+                                            "input.opaqueChance = 0.5f;"),
+        "wrong_request": selected.replace("input.requestValue = requestValue;",
+                                            "input.requestValue = requestValue + 1;"),
+        "wrong_channel": selected.replace("&input, channel, owner",
+                                            "&input, channel + 1, owner"),
+        "wrong_owner": selected.replace("&input, channel, owner",
+                                          "&input, channel, owner + 1"),
     }
 
 
