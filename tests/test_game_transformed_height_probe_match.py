@@ -107,8 +107,14 @@ class TransformedHeightProbeTests(unittest.TestCase):
                 ("- 500.0f", "- 499.0f")):
             changed = source.candidate.SELECTED.replace(old, new, 1)
             self.assertNotEqual(changed, source.candidate.SELECTED)
+            predecessor, _, _ = source.source_states(
+                (ROOT / source.SOURCE).read_text())
+            control_source = predecessor.replace(
+                source.candidate.ANCHOR,
+                source.candidate.ANCHOR + source.candidate.DECLARATIONS,
+                1).replace(source.candidate.PLACEHOLDER, changed, 1)
             candidate_object, diagnostics = source.candidate.compile_owner(
-                ROOT, self.output, source.candidate.source_with(changed),
+                ROOT, self.output, control_source,
                 "source-control-" + str(controls))
             self.assertFalse(diagnostics)
             with self.assertRaises(ValueError):
