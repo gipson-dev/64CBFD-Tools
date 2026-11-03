@@ -42,6 +42,7 @@ BINDINGS = {
     0x058: [("R_MIPS_26", "func_151423D8")],
     0x07C: [("R_MIPS_26", "func_151423D8")],
 }
+RETAIL_BINDINGS = BINDINGS
 
 PATCH_ROWS = (
     dict(offset="0x000", expected="0x27BDFFE0", replacement="0x27BDFFD0",
@@ -130,7 +131,7 @@ def retail_bytes(root):
 
 def retail_object_bytes(root):
     result = bytearray(retail_bytes(root))
-    for offset, rows in BINDINGS.items():
+    for offset, rows in RETAIL_BINDINGS.items():
         mask = 0xFC000000 if rows[0][0] == "R_MIPS_26" else 0xFFFF0000
         struct.pack_into(">I", result, offset,
                          struct.unpack_from(">I", result, offset)[0] & mask)
@@ -257,7 +258,7 @@ def prepare(root, output=None):
     live_owner = qualified_owner if installed else predecessor_owner
     if live_owner.read_bytes() != (root / OBJECT).read_bytes():
         raise ValueError("Embedded dual-phase position selected owner differs from production")
-    if function_blob(qualified_owner) != (retail_object_bytes(root), BINDINGS):
+    if function_blob(qualified_owner) != (retail_object_bytes(root), RETAIL_BINDINGS):
         raise ValueError("Embedded dual-phase position qualified owner differs from retail")
 
     neighbors = same_functions(predecessor_owner, qualified_owner, (FUNCTION,))
