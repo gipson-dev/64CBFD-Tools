@@ -83,7 +83,12 @@ def recovered_owner(before):
         start, end = function_span(result, name)
         existing = result[start:end]
         body = selected_body(name).rstrip()
-        if existing != body:
+        # function_span deliberately starts at the definition, so an installed
+        # explanatory comment immediately above it is outside the returned
+        # span.  Accept that production form while retaining the comment when
+        # replacing an untouched placeholder.
+        installed_body = body.split("\n", 1)[1]
+        if existing != installed_body:
             if existing != "s32 %s() {\n    return 0;\n}" % name:
                 raise ValueError("Actor point selector definition changed: " + name)
             result = result[:start] + body + result[end:]
