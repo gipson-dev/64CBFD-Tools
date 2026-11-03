@@ -1,6 +1,6 @@
 """Private semantic qualification is not an exact-match or installation claim."""
 from pathlib import Path
-import json,os,struct,unittest
+import hashlib,json,os,struct,unittest
 from tools.experiments import game_record_sound_start_match as source
 from tools.tests import game_record_sound_start_oracle as oracle
 from tools.tests import game_record_sound_start_native as native
@@ -8,7 +8,9 @@ ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2
 class RecordSoundStartTests(unittest.TestCase):
  @classmethod
  def setUpClass(cls):
-  cls.output=ROOT/source.BUILD;source.verify_prepared(cls.output);cls.values=source.check_inputs(ROOT,cls.output)
+  cls.output=ROOT/source.BUILD;source.verify_prepared(cls.output);cls.values=source.snapshot(cls.output)
+  cls.names=(source.SOURCE,source.OBJECT,'conker/build/conker.us.elf','conker/retail_word_patches.us.csv','conker/progress.csv')
+  cls.before={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest()for n in cls.names}
   obj,diag=source.compile_owner(ROOT,cls.output,source.HEADERS+source.SELECTED,'public-fresh-selected');assert not diag
   cls.raw,cls.bindings=source.checked_payload(*source.payload(obj));cls.guest=oracle.qualify(ROOT,cls.output);cls.helpers=oracle.helpers(ROOT,cls.output);cls.callers=oracle.callers(ROOT,cls.output);cls.native=native.qualify(ROOT,cls.output,source.SELECTED,source.HEADERS,oracle)
  def test_natural_candidate_and_unclosed_epilogue_are_not_matching_credit(self):
@@ -30,7 +32,7 @@ class RecordSoundStartTests(unittest.TestCase):
   q=self.callers;self.assertEqual(q['original_callers'],2);self.assertTrue(q['result_not_consumed']);self.assertTrue(q['parent_functions_still_unrecovered']);self.assertFalse(q['full_parent_claim']);self.assertEqual([(v['words'],v['executions'])for v in q['windows']],[(6,120),(4,120)])
  def test_native_typed_enqueue_fences_and_effective_controls(self):
   q=self.native;self.assertEqual((q['cases_per_profile'],q['effective_controls_each']),(2580,7));self.assertEqual(q['profiles'],['O0','O2','O3']);self.assertTrue(q['typed_12_argument_helper']);self.assertTrue(q['callee_halfword_narrowing']);self.assertTrue(q['helper_observes_state_before_final_publication']);self.assertTrue(q['record_and_surrounding_fences']);self.assertTrue(q['UBSan'])
- def test_private_generated_owner_make_complete_image_and_unchanged_production(self):
+ def test_private_generated_owner_make_complete_image_and_frozen_evidence(self):
   for a,b in(('before-owner.o','after-owner.o'),('before-padded.o','qualified-padded.o')):
    self.assertEqual(source.same_functions(self.output/a,self.output/b,(source.FUNCTION,)),27);self.assertEqual(source.normalized_pools(self.output/a),source.normalized_pools(self.output/b))
   self.assertEqual((self.output/'qualified-padded.o').read_bytes(),(self.output/'make-shadow/src/game/generated_CDE80.c.o').read_bytes());self.assertEqual(len(json.loads((self.output/'Make-commands.json').read_text())),5)
@@ -40,4 +42,4 @@ class RecordSoundStartTests(unittest.TestCase):
    bad=bytearray(actual);bad[at]^=1
    with self.assertRaises(ValueError):source.check_image(before,bytes(bad),self.raw,self.bindings)
   with self.assertRaises(ValueError):source.predict(actual,self.raw,self.bindings)
-  self.assertEqual(source.sha((ROOT/'conker/build/conker.us.elf').read_bytes()),source.BASELINE);source.verify_prepared(self.output);source.check_inputs(ROOT,self.output)
+  source.verify_prepared(self.output);self.assertEqual(self.before,{n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest()for n in self.names})

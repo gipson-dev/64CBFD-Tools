@@ -23,10 +23,22 @@ def checked_payload(raw,bindings):
  return raw,bindings
 
 def recovered_owner(before):
+ return production_source(before)[0]
+
+def production_source(before):
+ lo,hi=function_span(before,FUNCTION);current=before[lo:hi]
+ if current==PLACEHOLDER:
+  return before[:lo]+INSTALL_PREFIX+SELECTED.rstrip()+before[hi:],False
+ if current==SELECTED.rstrip():
+  if before[lo-len(INSTALL_PREFIX):lo]!=INSTALL_PREFIX:raise ValueError('Installed sound-start declaration/comment changed')
+  return before,True
+ raise ValueError('Sound-start is neither the placeholder nor selected C')
+
+def source_states(before):
+ proposed,installed=production_source(before)
+ if not installed:return before,proposed,False
  lo,hi=function_span(before,FUNCTION)
- if before[lo:hi]!='s32 func_150A23E4() {\n    return 0;\n}':raise ValueError('Sound-start predecessor changed')
- declaration='u16 func_1000FA64(u16,s16,s16,s16,s32,u16,s16,s32,void*,s32,s32,s32);\n'
- return before[:lo]+declaration+'/* Submit an inactive record sound before publishing its active state. */\n'+SELECTED.rstrip()+before[hi:]
+ return before[:lo-len(INSTALL_PREFIX)]+PLACEHOLDER+before[hi:],before,True
 
 def snapshot(output):
  data=(output/'input-snapshot.json').read_bytes()
@@ -76,7 +88,7 @@ def expected_map(output):
 
 def audit(root,output):
  from tools.check_game_data_layout import audit_layout
- verify_prepared(output);values=check_inputs(root,output);raw,refs=checked_payload(*payload(output/'flow-10.o'))
+ verify_prepared(output);values=snapshot(output);raw,refs=checked_payload(*payload(output/'flow-10.o'))
  actual=(output/'first-linked.elf').read_bytes();check_image(values['conker/build/conker.us.elf'],actual,raw,refs)
  if sha(actual)!='f88a211d92648be3f637ca1561ff121be38984dc9808f2ad1461d72895227abc':raise ValueError('Private sound-start linked image changed')
  data=audit_layout(output/'first-linked.elf',root/'conker')
@@ -89,5 +101,7 @@ def audit(root,output):
 
 HEADERS='#include <ultra64.h>\ntypedef struct {\n    s16 origin0;\n    s16 origin1;\n    s16 origin2;\n    u8 pad6[0xF];\n    u8 flags;\n    u8 pad16;\n    u8 field17;\n    s32 field18;\n    s32 field1C;\n    s32 field20;\n    f32 coefficient0;\n    f32 scale;\n    f32 coefficient1;\n    f32 coefficient2;\n} GeneratedCDE80Record;\nu16 func_1000FA64(u16,s16,s16,s16,s32,u16,s16,s32,void*,s32,s32,s32);\n'
 SELECTED='void func_150A23E4(GeneratedCDE80Record *record) {\n    s32 extra;\n    s32 mode;\n    if (record->field20 == 0) {\n        extra = 0;\n        mode = 8;\n        if ((record->flags & 3) == 0) extra = 0x8000;\n        if (record->field17 >> 7) mode = 0x108;\n        func_1000FA64((u32)record->field1C >> 16,\n            record->origin0, record->origin1, record->origin2,\n            (record->field17 & 0x7F) * 327,\n            record->field18 | extra, record->field1C & 0xFFFF, 0, 0, 0, mode, 0);\n        record->field20 = 1;\n    } else {\n        record->field20 = 1;\n    }\n}\n'
+PLACEHOLDER='s32 func_150A23E4() {\n    return 0;\n}'
+INSTALL_PREFIX='u16 func_1000FA64(u16,s16,s16,s16,s32,u16,s16,s32,void*,s32,s32,s32);\n/* Submit an inactive record sound before publishing its active state. */\n'
 SNAPSHOT_SHA='91bda089c1f51cd67579ac330269124889652fed49f398eab29c46eec998c813'
 ARTIFACT_SHA='62f87b8e7d6df8a20bdf4f2c89a4c18fb9a5e8e862b161de1caba697477ba575'
