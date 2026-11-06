@@ -1,4 +1,4 @@
-"""Private recovery gates explicitly reject byte-match credit and frame normalization."""
+"""Historical private recovery and its immutable predecessor, without matching credit."""
 import hashlib,json,struct,subprocess,unittest
 from pathlib import Path
 from tools.experiments import game_text_buffer_fade_recovery as source
@@ -14,8 +14,19 @@ class TextBufferFadeRecoveryTests(unittest.TestCase):
     def setUpClass(cls):
         cls.out=ROOT/source.BUILD;cls.rom=(ROOT/'conker/conker.us.bin').read_bytes();cls.truth=list(struct.unpack_from('>69I',cls.rom,source.ROM))
         cls.inputs=json.loads((cls.out/'screen-inputs.json').read_text(encoding='utf-8'))
-        for p,h in cls.inputs.items():assert hashlib.sha256((ROOT/p).read_bytes()).hexdigest()==h,p
-        cls.live=(ROOT/source.SOURCE).read_text(encoding='utf-8');assert cls.live.count(source.OLD)==1
+        cls.frozen=cls.out/'screen-frozen'
+        for p,h in cls.inputs.items():assert hashlib.sha256((cls.frozen/p).read_bytes()).hexdigest()==h,p
+        cls.actual_live=(ROOT/source.SOURCE).read_text(encoding='utf-8')
+        cls.live=(cls.frozen/source.SOURCE).read_text(encoding='utf-8');assert cls.live.count(source.OLD)==1
+        cls.successor=cls.actual_live!=cls.live
+        if cls.successor:
+            from tools.experiments import game_text_buffer_fade_candidates as c
+            from tools.experiments import game_text_buffer_fade_match as m
+            assert c.source_states(cls.actual_live)==(cls.live,cls.actual_live,True)
+            assert (ROOT/m.GUARDS).read_bytes()==m.proposed_guards((cls.frozen/m.GUARDS).read_bytes())
+            m.strict_image((cls.frozen/m.ELF).read_bytes(),(ROOT/m.ELF).read_bytes(),cls.rom[source.ROM:source.ROM+276])
+        else:
+            for p,h in cls.inputs.items():assert hashlib.sha256((ROOT/p).read_bytes()).hexdigest()==h,p
         cls.obj,diag=source.compile_owner(ROOT,cls.out,cls.live.replace(source.OLD,source.SELECTED,1),'qualified-private');assert not diag
         cls.raw=g.bound(cls.obj)
         ctx=type('OriginalTextFade',(),dict(root=ROOT,out=cls.out))
@@ -25,8 +36,8 @@ class TextBufferFadeRecoveryTests(unittest.TestCase):
     def test_01_emission_is_unmatched_and_uninstalled(self):
         self.assertEqual(len(self.raw),69);self.assertEqual(self.raw[0],0x27BDFFD0)
         self.assertEqual(sum(a!=b for a,b in zip(self.raw,self.truth)),34)
-        self.assertEqual(len(g.payload(self.obj)[1]),6);self.assertEqual((ROOT/source.SOURCE).read_text(encoding='utf-8'),self.live)
-        self.receipt('private-shape',words=69,frame=48,word_differences=34,bindings=6,source_installed=False,guards_added=0,matching_credit=0)
+        self.assertEqual(len(g.payload(self.obj)[1]),6);self.assertEqual((ROOT/source.SOURCE).read_text(encoding='utf-8'),self.actual_live)
+        self.receipt('private-shape',words=69,frame=48,word_differences=34,bindings=6,private_source_installed=False,qualified_successor_installed=self.successor,guards_added_for_private_body=0,matching_credit=0)
     def test_02_guest_external_contract_all_bytes_and_original_coverage(self):
         count=0;seen=set();paths=set()
         for c in g.cases():
@@ -60,7 +71,8 @@ class TextBufferFadeRecoveryTests(unittest.TestCase):
         parent=(ROOT/'conker/asm/FC5F0.s').read_text(encoding='utf-8').split('glabel func_150D0034\n',1)[1].split('endlabel func_150D0034',1)[0]
         self.assertIn('FD528 150D0078 0320F809',parent);self.assertIn('FD534 150D0084 14400005',parent)
         self.assertIn('s32 (*D_800888A0[])(u8 *arg0)',self.live)
-        for p,h in self.inputs.items():self.assertEqual(hashlib.sha256((ROOT/p).read_bytes()).hexdigest(),h,p)
-        self.receipt('private-production',frozen_inputs=len(self.inputs),registered_callback=0,parent='func_150D0034',caller_site='0x150D0078',return1_consumed=True,complete_caller_execution_claimed=False,production_unchanged=True,matching_credit=0)
+        for p,h in self.inputs.items():self.assertEqual(hashlib.sha256((self.frozen/p).read_bytes()).hexdigest(),h,p)
+        self.assertEqual((ROOT/source.SOURCE).read_text(encoding='utf-8'),self.actual_live)
+        self.receipt('private-production',frozen_inputs=len(self.inputs),registered_callback=0,parent='func_150D0034',caller_site='0x150D0078',return1_consumed=True,complete_caller_execution_claimed=False,production_unchanged=not self.successor,qualified_successor_installed=self.successor,private_body_matching_credit=0)
 
 if __name__=='__main__':unittest.main()

@@ -1,0 +1,8 @@
+"""Text-buffer fade: scalar byte gate and two independently captured descriptors."""
+from tools.experiments.game_text_buffer_fade_recovery import ROOT,FUNCTION,OWNER,SOURCE,BUILD,ENTRY,ROM,WORDS,OLD,compile_owner
+SELECTED = '/* Blend the two text buffers while the signed byte countdown decays. */\ns32 func_150D01A0(u8 *owner) {\n    s8 *count;\n    u8 opacity;\n    u8 inverse;\n    /* The second descriptor is captured before its color-provider call. */\n    TextDescriptorFC5F0 *firstText;\n    TextDescriptorFC5F0 *secondText;\n\n    count = (s8 *)((TextDescriptorFC5F0 *)((((u8 **)&owner)[0]) + 0x28))->payload;\n    if (((((u8 **)&owner)[0])[0x30] & 1) != 0) {\n        *count = 8;\n    }\n    if (*count > 0) {\n        opacity = *count * 31;\n        inverse = 255 - opacity;\n        *count = (u8)((u32)*count - (u32)D_800BE9E4);\n    }\n    else {\n        inverse = 255;\n        opacity = 0;\n    }\n    if (inverse != 0) {\n        func_1504332C(206, 196, 97, inverse);\n        firstText = (TextDescriptorFC5F0 *)((((u8 **)&owner)[0]) + 0x28);\n        func_15042D94(146, 190, 129, (s32)firstText->buffers[firstText->index]);\n    }\n    if (opacity) {\n        secondText = (TextDescriptorFC5F0 *)((((u8 **)&owner)[0]) + 0x28);\n        func_1504332C(206, 196, 97, opacity);\n        func_15042D94(146, 190, 129, (s32)secondText->buffers[secondText->index ^ 1]);\n    }\n    return 1;\n}'
+
+def source_states(live):
+    if live.count(OLD)==1:return live,live.replace(OLD,SELECTED,1),False
+    if live.count(SELECTED)==1:return live.replace(SELECTED,OLD,1),live,True
+    raise ValueError('Text fade source is neither pinned predecessor nor qualified body')
