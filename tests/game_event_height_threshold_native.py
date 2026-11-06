@@ -26,7 +26,8 @@ OFFSET(HeightEntry151CE51C,height,4);OFFSET(HeightOwner151CE51C,flags,0x1e);
 OFFSET(HeightOwner151CE51C,count25,0x25);OFFSET(HeightOwner151CE51C,count,0x2c);
 OFFSET(HeightOwner151CE51C,current,0x2d);OFFSET(HeightOwner151CE51C,previous,0x2e);
 OFFSET(HeightOwner151CE51C,entries,0x94);
-typedef struct {u8 prefix[24];void *context;} Event;
+typedef struct {u8 prefix[20];void *otherContext;void *context;} Event;
+OFFSET(Event,otherContext,20);OFFSET(Event,context,24);
 static struct {u32 left[4];HeightOwner151CE51C owner;u32 right[4];} actual,want;
 static struct {u32 left[4];struct127 actor;u32 right[4];} actor,expected_actor;
 static struct {u32 left[4];Event event;u32 right[4];} event,expected_event;
@@ -58,7 +59,7 @@ static int check(Callback fn,u32 route,u32 present,u32 flags,u32 field,u32 byte,
     p=(u8*)&actual;q=(u8*)&want;for(i=0;i<sizeof(actual);i++)p[i]=q[i]=(u8)(i*29+byte);
     p=(u8*)&actor;q=(u8*)&expected_actor;for(i=0;i<sizeof(actor);i++)p[i]=q[i]=(u8)(i*13+byte);
     p=(u8*)&event;q=(u8*)&expected_event;for(i=0;i<sizeof(event);i++)p[i]=q[i]=(u8)(i*17+byte);
-    event.event.context=&actual;bytes(&expected_event,&event,sizeof(event));
+    event.event.otherContext=0;event.event.context=&actual;bytes(&expected_event,&event,sizeof(event));
     actual.owner.flags=flags;actual.owner.count=1;actual.owner.previous=1;actual.owner.current=0;actual.owner.count25=1;actual.owner.entries=&table[0][128];
     if(field==0)actual.owner.count=(s8)(u8)byte;else if(field==1)actual.owner.previous=(s8)(u8)byte;else if(field==2)actual.owner.current=(s8)(u8)byte;else actual.owner.count25=(u8)byte;
     if(field==3)actual.owner.previous=0;
