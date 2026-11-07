@@ -1,0 +1,18 @@
+"""Zeroed sprite descriptor and explicitly live O32 actor argument home."""
+from pathlib import Path
+from tools.experiments.game_remaining_donor_candidates import compile_owner
+ROOT=Path(__file__).resolve().parents[2]
+BUILD='conker/build/game-seeded-sprite-15193390-match'
+RODATA_SYMBOL=None
+TARGETS=[{'function': 'func_15193390', 'source': 'conker/src/game/generated_1C0840.c', 'owner': 'generated_1C0840', 'object': 'conker/build/src/game/generated_1C0840.c.o', 'assembly': 'conker/asm/1C0840.s', 'entry': 353973136, 'rom': 1837120, 'words': 73, 'frame': 216, 'raw_sha256': 'a08310d6b07265e968dd19d2d4ee1b3676b4ff192e8d4a8479a6796c6d2048e6', 'bindings': {16: [('R_MIPS_26', 'bzero')], 28: [('R_MIPS_HI16', 'D_800A81B0')], 32: [('R_MIPS_LO16', 'D_800A81B0')], 224: [('R_MIPS_26', 'func_1516865C')], 244: [('R_MIPS_26', 'func_15168800')], 252: [('R_MIPS_26', 'func_150ADA20')]}, 'patches': {0: (666763056, 666763048), 8: (2946760912, 2946760920), 24: (2409758928, 2409758936), 84: (1157758991, 1157824516), 88: (2812477630, 2219704322), 92: (2219704322, 268435469), 96: (1006715720, 2812477630), 100: (1149341696, 2219704322), 104: (1150177280, 1006715720), 108: (0, 1149341696), 112: (1182815264, 1150177280), 116: (1175617921, 0), 120: (1174417677, 1182815264), 124: (1142431744, 1175617921), 128: (0, 1174417677), 132: (2813853886, 1142431744), 136: (268435458, 0), 140: (2688548872, 2813853886), 144: (2812477630, 2688548872), 232: (2409758928, 2409758936), 260: (2410217680, 2410217688), 280: (666697936, 666697944)}}]
+SUPPORT='typedef struct {\n    Vtx vertices[8];\n    u8 retained80[6];\n    s16 parameter86;\n    u8 retained88[4];\n    s16 x, y, z, parameter92, parameter94, height;\n    u16 flags;\n    u8 retained9A[6];\n    u8 textureIndex, retainedA1, mode, variant, parameterA4, retainedA5[3];\n} SeedSpriteDescriptor;\ntypedef struct { s16 x, y, z, height; u8 variant; } SeedSpriteInput;\nextern f32 D_800A81B0;\nvoid func_1516865C(void *, u8, u8, u8, u8);\nvoid *func_15168800(void *, u8, s32);\ns32 func_150ADA20(void);\n'
+SELECTED='/* Build the sprite and retain the live O32 actor argument home across helpers. */\nvoid func_15193390(u8 *volatile actor) {\n    SeedSpriteDescriptor descriptor;\n    SeedSpriteInput *cursor;\n    s16 height;\n    bzero(&descriptor, sizeof(descriptor));\n    cursor = (SeedSpriteInput *)(actor + 0x28);\n    height = cursor->height;\n    if (D_800A81B0 == (f32)height) {\n        descriptor.height = (s32)((f32)cursor->y - 200.0f);\n        cursor->variant = 0;\n    } else {\n        descriptor.height = height;\n    }\n    descriptor.x = cursor->x;\n    descriptor.y = cursor->y;\n    descriptor.z = cursor->z;\n    descriptor.parameter92 = 0;\n    descriptor.parameter94 = 0;\n    descriptor.mode = 15;\n    descriptor.textureIndex = 0x45;\n    descriptor.parameter86 = 10;\n    descriptor.variant = cursor->variant;\n    descriptor.flags = 0x4880;\n    descriptor.parameterA4 = 128;\n    func_1516865C(&descriptor, 255, 255, 255, 128);\n    cursor = (SeedSpriteInput *)actor;\n    func_15168800(&descriptor, ((u8 *)cursor)[0xC], ((u8 *)cursor)[1]);\n    *(s16 *)(actor + 0xE) = ((u32)func_150ADA20() & 127) + 100;\n}'
+def source_states(live,index=0):
+    if index!=0:raise ValueError('One seeded sprite callback')
+    stub='s32 func_15193390() {\n    return 0;\n}'
+    selected=SUPPORT+'\n'+SELECTED
+    if live.count(stub)==1:
+        if SUPPORT in live:raise ValueError('Partial sprite installation')
+        return live,live.replace(stub,selected,1),False
+    if live.count(selected)!=1:raise ValueError('Sprite source changed')
+    return live.replace(selected,stub,1),live,True
