@@ -348,13 +348,46 @@ for(phase=0;phase<4;phase++) {
         finally:
             self.fixture=original
 
-    def test_unspecified_scratch_and_unguarded_texture_bodies_are_explicit(self):
+    def test_setup_scratch_and_resolver_guard_boundary_are_explicit(self):
         self.assertRegex(self.bodies['func_1510CE60'],r'\bu32 address;')
         self.assertRegex(self.bodies['func_1510CE60'],r'\bs32 extent;')
         self.assertNotRegex(self.bodies['func_1510CE60'],r'(?:address|extent)\s*=\s*0;')
         with (self.root/'conker/retail_word_patches.us.csv').open(newline='') as source:
-            self.assertFalse(any(row['function'] in ('func_1510CE60','func_1510D0EC')
-                                 for row in csv.DictReader(source)))
+            rows = list(csv.DictReader(source))
+        self.assertFalse(any(row['function'] == 'func_1510CE60' for row in rows))
+        patches = [row for row in rows if row['function'] == 'func_1510D0EC']
+        self.assertEqual(len(patches), 76)
+        for row in patches:
+            self.assertEqual(row['filename'], 'generated_139FC0')
+            self.assertFalse(row['insert_after'])
+            self.assertEqual(row['omit'], 'false')
+
+    def test_fresh_full_owner_resolver_guards_match_all_retail_words(self):
+        from tools.experiments.game_remaining_donor_candidates import compile_owner
+        from tools.experiments.game_path_heading_turn_roles import bound_blob
+        from tools.pad_generated_object import emit_padded_assembly, parse_object
+
+        with tempfile.TemporaryDirectory(prefix='resolver-owner-', dir=self.root/'conker/build') as directory:
+            work = Path(directory)
+            owner = (self.root/'conker/src/game/generated_139FC0.c').read_text()
+            compact, diagnostics = compile_owner(self.root, work, owner, 'fresh-resolver-owner')
+            self.assertEqual(diagnostics, '')
+            assembly = emit_padded_assembly(compact, self.root/'conker/asm/139FC0.s',
+                filename='generated_139FC0', word_patches_path=self.root/'conker/retail_word_patches.us.csv')
+            source, obj = work/'padded.s', work/'padded.o'
+            source.write_text(assembly)
+            subprocess.run(['mips-linux-gnu-as', '-EB', '-mtune=vr4300', '-march=vr4300',
+                '-mabi=32', '-I', str(self.root/'conker/include'), '-o', str(obj), str(source)],
+                check=True, capture_output=True)
+            text, functions, relocations = parse_object(obj)
+            function = functions['func_1510D0EC']
+            self.assertEqual(function['size'], 648)
+            start = function['value']
+            refs = {at-start: rows for at, rows in relocations.items() if start<=at<start+648}
+            symbols = {name: int(name.split('_')[1], 16) for rows in refs.values() for _, name in rows}
+            words = bound_blob(text[start:start+648], refs, symbols)
+            retail = (self.root/'conker/conker.us.bin').read_bytes()[0x13A59C:0x13A824]
+            self.assertEqual(struct.pack('>162I', *words), retail)
 
     def test_fresh_ido_complete_slots_and_exact_prefix_and_adjustment_leaves(self):
         compiler=self.root/'ido/ido5.3_recomp/cc'
@@ -385,7 +418,6 @@ for(phase=0;phase<4;phase++) {
         offsets=[int(offset,16) for offset in re.findall(r'(?m)^([0-9a-f]+)\s+R_MIPS_26\s+func_1510D0EC\s*$',relocations)]
         self.assertEqual(len(offsets),1)
         measured={'func_1510CE60':(152,163,0x430,159,'6ab58d90d8e1815a475fb86e64aa89b31da2a19f6f4e531c96dd158e6b98395c'),
-                  'func_1510D0EC':(155,162,0x50,142,'1fde6b630576ea95a7e990c9402eb31491b7271ff8acd7ec181ad3b42b9100c9'),
                   'func_15168E54':(45,45,0x38,9,'958dcb84bbf375ebdd6c9170744538d8a59afb5385c31977ab50158843aca792')}
         rom=(self.root/'conker/conker.us.bin').read_bytes()
         for name,(body,size,frame,diffs,digest) in measured.items():
