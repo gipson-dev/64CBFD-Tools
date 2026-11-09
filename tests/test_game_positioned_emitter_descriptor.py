@@ -64,7 +64,7 @@ int constants_match(void) {
     def test_initialized_fields_and_submission_arguments(self):
         self.run_host(r'''
 initialize();
-if(func_150E75A0(input,2.5f,-123,0x85,0x123,0x456,0x18001,0xFFFF,pair,-7,0xCD,(s32)0x87654321)!=123) return 1;
+if(func_150E75A0(input,2.5f,-123,0x85,(u8)0x123,(u8)0x456,(s16)0x18001,(s16)0xFFFF,pair,-7,0xCD,(s32)0x87654321)!=123) return 1;
 if(calls!=1 || !constants_match() || capturedPair!=pair) return 2;
 if(captured.position.x!=12.5f || captured.position.y!=-25 || captured.scale[0]!=2.5f || captured.scale[1]!=2.5f) return 3;
 if(captured.tag!=0xAB || captured.id!=-123 || captured.flags!=0xC5 || captured.size0!=(s16)0x8001
