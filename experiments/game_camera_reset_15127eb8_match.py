@@ -17,6 +17,7 @@ def payload(path):
  text,fs,rs=parse_object(path);a,n=fs[NAME]['value'],fs[NAME]['size'];return text[a:a+n],{i-a:v for i,v in rs.items()if a<=i<a+n}
 
 def variant(old):
+ old=old.replace('/* Non-matching C placeholders for asm/nonmatchings/game_14FF90/func_15127EB8.s. */\n','',1)
  source=old.replace('#include "variables.h"','#include "variables.h"\n'+DECLS,1)
  source=source.replace(body(source,NAME),'/* Reset camera state and release the selected actor slot. */\n'+BASE)
  a=source.index('// NON-MATCHING: not too far away\n// void func_15127EB8')
