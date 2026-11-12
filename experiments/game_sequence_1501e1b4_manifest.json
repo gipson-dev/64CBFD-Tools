@@ -1,0 +1,12 @@
+{
+  "function": "func_1501E1B4",
+  "owner": "generated_49D30",
+  "source": "conker/src/game/generated_49D30.c",
+  "assembly": "conker/asm/49D30.s",
+  "address": 352444852,
+  "rom_offset": 308836,
+  "words": 81,
+  "body": "void func_1501E1B4(s32 slot) {\n    if (D_800C3C88 == 0) {\n        if (D_800C35EA[slot] == 1 && func_1501E05C(slot) != 0) {\n            D_8008FD84 = 0;\n            if ((s32)((u32)D_800C3640[slot] - (u32)D_800C35B0[slot]) >= 91) {\n                D_800C3C88 = 1;\n                D_800C3C89 = 30;\n                func_1517EE40(0, 0, 0, 30, 1, 0);\n                func_1000E17C();\n                if (func_151F2CDC() == 1 || func_151F2CDC() == 2) {\n                    func_151F2D6C(0, 0x2B02);\n                }\n            }\n        }\n    } else if (D_800C3C88 == 1) {\n        if (D_800BEA08 < D_800C3C89) {\n            D_800C3C89 = (u32)D_800C3C89 - (u32)D_800BEA08;\n        } else {\n            D_800C3C89 = 0;\n            D_800C3C88 = 2;\n            func_1501DF04(slot);\n            D_800C3C88 = 0;\n        }\n    }\n}",
+  "declarations": "extern u8 D_800C3C88, D_800C3C89;\nextern s32 D_800BEA08;\ns32 func_151F2CDC(void);\nvoid func_1000E17C(void);\nvoid func_151F2D6C(s32, s32);\n",
+  "guard_rows": []
+}
