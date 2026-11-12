@@ -1,0 +1,11 @@
+{
+  "function": "func_151572D0",
+  "owner": "generated_183640",
+  "source": "conker/src/game/generated_183640.c",
+  "assembly": "conker/asm/183640.s",
+  "address": 353727184,
+  "rom_offset": 1591168,
+  "words": 84,
+  "declarations": "typedef struct\n#ifdef __GNUC__\n__attribute__((__may_alias__))\n#endif\n{\n    u8 pad0[0x10];\n    u8 flags;\n    s8 first, second;\n    u8 pad13[3];\n    s16 remaining;\n    u8 pad18[0x2B];\n    u8 alpha;\n    u8 pad44[0x20];\n    s16 fadeStart, fadeRate;\n    u8 *linked;\n} ResourceCallback151572D0;\nextern s32 (*D_8008AD90[])(u8 *);\nextern s32 (*D_8008ADA0[])(u8 *);\nvoid func_1503F4B0(u8 *);",
+  "body": "void func_151572D0(struct102 *object) {\n    ResourceCallback151572D0 *state = (ResourceCallback151572D0 *)object;\n    u8 expired = 0;\n    if (state->flags & 1) {\n        state->remaining = (s16)((u32)state->remaining - (u32)D_800BE9E4);\n        if (state->remaining < 0) expired = 1;\n    }\n    if (!expired) {\n        if (state->first != -1) {\n            if (!D_8008AD90[state->first]((u8 *)object)) expired = 1;\n        }\n        if (state->second != -1) {\n            if (!D_8008ADA0[state->second]((u8 *)object)) expired = 1;\n        }\n    }\n    if (!expired) func_1503F4B0(state->linked);\n    if (!expired && (state->flags & 0x20)) {\n        if (state->remaining < state->fadeStart) {\n            s32 alpha = state->remaining * state->fadeRate;\n            if (alpha < state->alpha) state->alpha = (u8)alpha;\n        }\n    }\n    if (expired) func_1516972C(object);\n}"
+}
