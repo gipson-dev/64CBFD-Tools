@@ -1,0 +1,11 @@
+{
+  "function": "func_1507602C",
+  "owner": "game_A28B0",
+  "source": "conker/src/game_A28B0.c",
+  "assembly": "conker/asm/nonmatchings/game_A28B0/func_1507602C.s",
+  "address": 352804908,
+  "rom_offset": 668892,
+  "words": 103,
+  "body": "void func_1507602C(void) {\n    f32 x;\n    f32 z;\n    f32 duration;\n    PathNode8 *node;\n\n    func_15075548();\n    D_800D154C->unk21E = D_800D1891;\n    node = &((PathNode8 **)D_800D2104)[D_800D154C->unk13F][D_800D1891];\n    x = node[1].x - D_800D154C->x_position;\n    z = node[1].z - D_800D154C->z_position;\n    duration = 2.0f * (sqrtf((x * x) + (z * z)) / D_800D154C->unk44);\n    if (duration < 12.0f) {\n        D_800D154C->unk44 *= duration * D_8009A140;\n        duration = 12.0f;\n    }\n    D_800D154C->unk21C = duration * 100.0f;\n    D_800D154C->y_velocity = D_800D154C->gravity * duration * 0.5f;\n    D_800D154C->unk223 = 4;\n}",
+  "guard_rows": []
+}
