@@ -1,0 +1,39 @@
+{
+  "function": "func_1501DF04",
+  "owner": "generated_49D30",
+  "source": "conker/src/game/generated_49D30.c",
+  "assembly": "conker/asm/49D30.s",
+  "address": 352444164,
+  "rom_offset": 308148,
+  "words": 86,
+  "body": "void func_1501DF04(s32 slot) {\n    struct127 *actor;\n    struct127 *found;\n    u8 pending;\n\n    if (func_100127D0() != 0) func_151F2BA8();\n    found = func_15072208(D_800CC2D0, 0);\n    if (found != NULL) func_15060F28(found, 0);\n    pending = D_800C3C99;\n    func_1501DE18(slot);\n    if (pending != 0 && D_800C35C4 == 0) {\n        do {\n            pending = D_800C3C99;\n            func_1501DE18(slot);\n        } while (pending != 0 && D_800C35C4 == 0);\n    }\n    if (D_800C35A9 == 0 && D_800C3C8A != 1 && D_800C3C8D == 0) {\n        func_1517EE40(0, 0, 0, 30, 0, 0);\n    }\n    actor = D_800CC2D0;\n    do {\n        if (actor->interaction_state != 0) *(u8 *)&actor->padA4 = 0;\n        actor++;\n    } while (actor != (struct127 *)&D_800D121C);\n    D_800C3663 = 0;\n    func_1000E17C();\n    D_800DBFF4 = 4;\n    D_800C3672 = 1;\n}",
+  "declarations": "extern s32 D_800D121C;\ns32 func_100127D0(void);\nvoid func_151F2BA8(void);\nvoid func_1000E17C(void);\nstruct127 *func_15072208(struct127 *, s32);\n",
+  "guard_rows": [
+    {
+      "filename": "generated_49D30",
+      "function": "func_1501DF04",
+      "offset": "0xf4",
+      "expected": "0x24420000",
+      "replacement": "0x24630000",
+      "expected_relocations": "R_MIPS_LO16:D_800CC2D0",
+      "replacement_relocations": "R_MIPS_LO16:D_800D121C",
+      "note": "Normalize independent actor range address setup order",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_49D30",
+      "function": "func_1501DF04",
+      "offset": "0xf8",
+      "expected": "0x24630000",
+      "replacement": "0x24420000",
+      "expected_relocations": "R_MIPS_LO16:D_800D121C",
+      "replacement_relocations": "R_MIPS_LO16:D_800CC2D0",
+      "note": "Normalize independent actor range address setup order",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ]
+}
