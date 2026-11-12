@@ -1,0 +1,12 @@
+{
+  "function": "func_15146E84",
+  "owner": "generated_173D40",
+  "source": "conker/src/game/generated_173D40.c",
+  "assembly": "conker/asm/173D40.s",
+  "address": 353660548,
+  "rom_offset": 1524532,
+  "words": 111,
+  "declarations": "u8 func_151D8E20(void);\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nvoid func_151D9B8C(u8, f32, u8, s16 *, f32 *, s16, u8, u8, u8, u8, s32);\nvoid func_151DAB58(u8, f32, u8, f32 *, u8, u8, u8);",
+  "body": "void func_15146E84(u8 *actor, s32 mode, s32 amount) {\n    f32 position[3];\n    HeightResult71820 result;\n    u8 slot;\n    f32 effectPosition[3];\n    u32 randomB;\n    u32 randomA;\n    f32 randomFloat;\n    if (*(s32 *)(actor + 0x1D4) == 0) return;\n    if (!func_15146890(position, actor, &result, (u8)mode)) return;\n    slot = func_151D8E20();\n    if (amount >= 71) func_15142180(slot, position, result.metadata, 1.0f, 1.0f);\n    effectPosition[0] = position[0];\n    effectPosition[1] = result.height;\n    effectPosition[2] = position[2];\n    if (func_150ADA20() & 1) {\n        randomFloat = func_150ADA68();\n        randomA = func_150ADA20();\n        randomB = func_150ADA20();\n        func_151D9B8C(slot, randomFloat * 10.0f + 10.0f, randomA % 101U + 100,\n                      result.vertices, effectPosition, randomB % 41U + 80, 1, 1, 0, 255, 1);\n    } else {\n        randomFloat = func_150ADA68();\n        randomA = func_150ADA20();\n        func_151DAB58(slot, randomFloat * 8.0f + 5.0f, randomA % 101U + 100,\n                      effectPosition, 1, 255, 1);\n    }\n}",
+  "guard_rows": []
+}
