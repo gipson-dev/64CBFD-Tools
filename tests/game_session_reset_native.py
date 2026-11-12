@@ -35,6 +35,17 @@ def main():
      for opt in ('-O0','-O2','-O3'):
       f=p/('native-typed-reset-'+name+opt+'.c');exe=f.with_suffix('');f.write_text(prefix+src+test+START);args=['cc','-m32',opt,'-std=c99','-fno-strict-aliasing','-ffreestanding','-nostdlib','-static','-fno-pie','-no-pie','-fno-stack-protector','-Wall','-Wextra','-Werror','-Wno-misleading-indentation',str(f),'-o',str(exe)];v=subprocess.run(args,capture_output=True,text=True);assert v.returncode==0,v.stderr;v=subprocess.run([str(exe)],timeout=10);results[name+opt]=v.returncode
     assert all(results['selected'+o]==0 for o in ('-O0','-O2','-O3')) and all(results['bad-counter-bound'+o]!=0 for o in ('-O0','-O2','-O3')),results
+    sanitizer_source = p/'native-typed-reset-selected-O2.c'
+    sanitizer_exe = p/'native-typed-reset-ubsan'
+    args = ['cc','-m32','-O2','-std=c99','-fno-strict-aliasing','-ffreestanding',
+            '-nostdlib','-static','-fno-pie','-no-pie','-fno-stack-protector',
+            '-fsanitize=undefined','-fsanitize-undefined-trap-on-error',
+            '-Wall','-Wextra','-Werror','-Wno-misleading-indentation',
+            str(sanitizer_source),'-o',str(sanitizer_exe)]
+    built = subprocess.run(args,capture_output=True,text=True)
+    assert built.returncode == 0, built.stderr
+    checked = subprocess.run([str(sanitizer_exe)],timeout=10)
+    assert checked.returncode == 0, checked.returncode
     print(json.dumps(dict(cases=24,results=results,scope='32-bit freestanding native C, bounded globals and modeled helper calls; no guest access-order claim'),indent=2))
 
 
