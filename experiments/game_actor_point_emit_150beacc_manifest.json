@@ -1,0 +1,39 @@
+{
+  "function": "func_150BEACC",
+  "owner": "generated_EBE60",
+  "source": "conker/src/game/generated_EBE60.c",
+  "assembly": "conker/asm/EBE60.s",
+  "address": 353102540,
+  "rom_offset": 966524,
+  "words": 89,
+  "declarations": "struct HeightResult71820 { f32 height; s16 vertices[9]; s16 pad16; u32 metadata; u8 flags; u8 state; u16 pad1e; s32 value; };\nextern f32 D_800A00C0,D_800A00C4,D_800A00C8,D_800A00CC;\nvoid func_15141F78(u8,u8 *,f32,u8,f32 *,u8);\nvoid func_15142180(u8,f32 *,s32,f32,f32);",
+  "body": "void func_150BEACC(u8 *actor, s32 mode, s32 amount) {\n    f32 position[3];\n    HeightResult71820 result;\n    s32 selected = (u8)mode;\n    if (*(s32 *)(actor + 0x1D4) == 0) return;\n    if (func_150BE9B0(position, actor, &result, selected) != 0) {\n        func_15141F78(11, (u8 *)&result, ((f32)amount * D_800A00C0) * D_800A00C4,\n                      (u8)(u32)(*(f32 *)(actor + 0x40) * D_800A00C8), position, selected);\n        if (amount >= 76) {\n            func_15142180(2, position, result.metadata, 3.232f, D_800A00CC);\n        }\n    }\n}",
+  "guard_rows": [
+    {
+      "filename": "generated_EBE60",
+      "function": "func_150BEACC",
+      "offset": "0x34",
+      "expected": "0xAFA70020",
+      "replacement": "0xAFA70024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize point effect saved mode temporary stack slot",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_EBE60",
+      "function": "func_150BEACC",
+      "offset": "0x108",
+      "expected": "0x8FAB0020",
+      "replacement": "0x8FAB0024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize point effect saved mode temporary stack slot",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ]
+}
