@@ -1,0 +1,65 @@
+{
+  "frozen": {
+    "conker/src/game/generated_EB340.c": "20d33c8e712a0d490834e827b4ee900c5506a78543b84d73d1f6b66bced5fd52",
+    "conker/Makefile": "378464423a849b1871972a502285c5269aed40620e18b261944fb9aaba109e5c",
+    "conker/retail_word_patches.us.csv": "7b36fc7b18cd4825cdd828d3a1e638f962f02f114d1a97adfdb11d562d3b5168",
+    "conker/asm/EB340.s": "51891730c82f5d1d36a34fd494291ff7306897b3fe4fbe50ff1494dacd757415",
+    "conker/asm/13D350.s": "aae655875cae186bc7377f14463dc61e80cb55f511b1931a0ed03d1308333a2c",
+    "conker/asm/CBDB0.s": "458bcff661533164050bc9f9050035eb65ef70775f9978c8d8e35c82fdee9f92",
+    "conker/asm/data/22D710.rodata.s": "eca1692e7a395158fadf1310352be48c8eb082a2bf7f0839ec96356c3ecc99d1",
+    "conker/build/src/game/generated_EB340.c.o": "948c74bc2c8f55d3aae8106d327336e2c2872189f74d615582929760a020da94",
+    "conker/build/conker.us.elf": "bf74c47dea47efbd05e0842c566b83e17922c5398a5bba32ba79d0f913ac185f",
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.bin": "a652997f25b7cf80c9c5de6c2be0a263dc18f95457eb49cf705e78f61cf01e2f",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "eb8145837da425d7a55080459d22f11e21e1ac69e8b9d8ad5100ed5750d814f1",
+    "conker/progress.csv": "7658d1ff6c2e3ae94567606200fcae0b7d08f5752a9ec0484108dc8056c8bdc0"
+  },
+  "installed": {
+    "conker/src/game/generated_EB340.c": "40d08f4af094437262b40354014bdbc25ead2a5a4362ab48631479cbb6ce2d62",
+    "conker/Makefile": "73c38e03176196b8e59631d2248d81a5fe1b39e63042aa57d0e9be3cde40da3c",
+    "conker/retail_word_patches.us.csv": "a4985a81171850f9e01e4b94724139e8a1f6a0181675b643115a4f87c2fc78d3",
+    "conker/build/src/game/generated_EB340.c.o": "38c550b8c23f5deee8a720450cdfe23e20c191ed992073d407368c2e475112d3",
+    "conker/build/conker.us.elf": "29fa52d17d549bda4c89f100a025d2cd7c369bd3d3da6a630bfa92c16001836b"
+  },
+  "body": "void func_150BE2E8(s16 *p) {\n    f32 x0 = p[0x7c/2], y0 = p[0x7e/2], z0 = p[0x80/2];\n    f32 x1 = p[0x82/2], y1 = p[0x84/2], z1 = p[0x86/2];\n    f32 step = p[0x3c/2] * (1.0f / 16384.0f);\n    f32 t = p[0x3e/2] * (1.0f / 16384.0f);\n    step = step - step * D_800A0068;\n    t = t + step * D_800BE9E4;\n    p[0x10/2] = (s32)((x1-x0)*t+x0);\n    p[0x12/2] = (s32)((y1-y0)*t+y0);\n    p[0x14/2] = (s32)((z1-z0)*t+z0);\n    if (1.0f < t) t = 1.0f;\n    p[0x3c/2] = (s32)(step * 16384.0f);\n    p[0x3e/2] = (s32)(t * 16384.0f);\n}\n",
+  "expected": {
+    "target": "func_150BE2E8",
+    "words": 84,
+    "guards": 10,
+    "neighbors": 7,
+    "actual_make_commands": 4,
+    "addresses_fixed": true,
+    "image": {
+      "changed_bytes": 285,
+      "metadata_groups": [
+        [
+          [
+            "D_800A0068",
+            "D_8009F778"
+          ],
+          [
+            "D_8009F778",
+            "D_800A0068"
+          ]
+        ]
+      ],
+      "strict_exclusions": 0
+    },
+    "protected_data": {
+      "exact": true,
+      "address": 2148018976,
+      "expected_address": 2148018976,
+      "bytes": 189088,
+      "expected_bytes": 189088,
+      "different_bytes": 0,
+      "owner_count": 720,
+      "different_owner_count": 0,
+      "different_owners": [],
+      "sha256": "0bbc00e1adfac5ffe6117f5be9c941575f87b341a77d808004603ac1cb87c670"
+    },
+    "proposed_source_sha": "40d08f4af094437262b40354014bdbc25ead2a5a4362ab48631479cbb6ce2d62",
+    "object_sha": "38c550b8c23f5deee8a720450cdfe23e20c191ed992073d407368c2e475112d3",
+    "elf_sha": "29fa52d17d549bda4c89f100a025d2cd7c369bd3d3da6a630bfa92c16001836b"
+  }
+}
