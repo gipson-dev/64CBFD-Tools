@@ -1,0 +1,77 @@
+{
+  "function": "func_150793D8",
+  "owner": "game_A28B0",
+  "source": "conker/src/game_A28B0.c",
+  "assembly": "conker/asm/nonmatchings/game_A28B0/func_150793D8.s",
+  "address": 352818136,
+  "rom_offset": 682120,
+  "words": 102,
+  "body": "void func_150793D8(void) {\n    f32 dx;\n    f32 dz;\n    f32 unused;\n    s16 x;\n    s16 z;\n\n    x = D_800CC2D0->x_position;\n    z = D_800CC2D0->z_position;\n    if (x < -1180 || x > 1180 || z < -1180 || z > 1180) {\n        x = 0;\n        z = 0;\n    }\n    func_1505A184(func_150ADA20(), 550.0f, 0.0f, &dx, &dz, &unused);\n    x = x + dx;\n    z = z + dz;\n    if (x < -1200) x = -1200;\n    if (x > 1200) x = 1200;\n    if (z < -1200) z = -1200;\n    if (z > 1200) z = 1200;\n    ((PathNode8 **)D_800D2104)[D_800D154C->unk13F][D_800D1890 + 1].x = x;\n    ((PathNode8 **)D_800D2104)[D_800D154C->unk13F][D_800D1890 + 1].z = z;\n}",
+  "guard_rows": [
+    {
+      "filename": "game_A28B0",
+      "function": "func_150793D8",
+      "offset": "0x60",
+      "expected": "0xA7A3002A",
+      "replacement": "0xA7A30024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize closed local coordinate stack slots",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_A28B0",
+      "function": "func_150793D8",
+      "offset": "0x6c",
+      "expected": "0xA7A3002A",
+      "replacement": "0xA7A30024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize closed local coordinate stack slots",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_A28B0",
+      "function": "func_150793D8",
+      "offset": "0x74",
+      "expected": "0xA7A80028",
+      "replacement": "0xA7A80022",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize closed local coordinate stack slots",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_A28B0",
+      "function": "func_150793D8",
+      "offset": "0xa0",
+      "expected": "0x87A3002A",
+      "replacement": "0x87A30024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize closed local coordinate stack slots",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_A28B0",
+      "function": "func_150793D8",
+      "offset": "0xa4",
+      "expected": "0x87A80028",
+      "replacement": "0x87A80022",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize closed local coordinate stack slots",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ]
+}
