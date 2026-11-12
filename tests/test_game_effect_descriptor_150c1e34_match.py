@@ -14,9 +14,9 @@ class EffectDescriptorTests(unittest.TestCase):
  def test_01_actual_Make_and_strict_image(self):
   r=self.report;self.assertEqual(r['image'],source.MANIFEST['image']);self.assertEqual(r['image']['strict_exclusions'],0);self.assertEqual(r['non_target_neighbors'],3);self.assertEqual((r['guards'],r['inserted_words']),(48,1))
  def test_02_retail_guest(self):
-  r=guest.main();self.assertEqual(r['cases'],120);self.assertEqual(r['retail_words_visited'],72);self.assertTrue(r['initialized_packet_fields_only'])
+  r=guest.main();self.assertEqual(r['cases'],160);self.assertEqual(r['retail_words_visited'],72);self.assertTrue(r['initialized_packet_fields_only'])
  def test_03_defined_native_and_controls(self):
-  r=native.main();self.assertEqual(set(r['profiles']),{'-O0','-O2','-O3'});self.assertTrue(all(v['cases']==120 and v['negative_controls']==14 and v['UBSan'] for v in r['profiles'].values()))
+  r=native.main();self.assertEqual(set(r['profiles']),{'-O0','-O2','-O3'});self.assertTrue(all(v['cases']==160 and v['negative_controls']==14 and v['UBSan'] for v in r['profiles'].values()))
  def test_04_original_dispatch(self):
   w=window.main();self.assertEqual(w['cases'],{'ring':32,'line':32,'random-ring':32,'offset-ring':32});self.assertFalse(w['full_callers_qualified']);self.assertEqual(w['helpers'],'modeled')
  def test_05_padding_rebases_and_access_cuts(self):

@@ -11,7 +11,7 @@ def main():
  controls={
   'position_x':('position[0] = x','position[0] = z'),
   'position_y':('position[1] = y','position[1] = z'),
-  'scale':('value16 = (s16)scale','value16 = (s16)scale + 1'),
+ 'scale':('value16 = (s16)(s32)scale','value16 = (s16)(s32)scale + 1'),
   'scale_double':('scale * D_800A0228','scale * 0.5'),
   'velocity_x':('(x - previousX) * 10.0f','(x - previousX) * 9.0f'),
   'velocity_z':('(z - previousZ) * 10.0f','(z - previousZ) * 9.0f'),
