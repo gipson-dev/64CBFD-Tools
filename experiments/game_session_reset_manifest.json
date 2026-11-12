@@ -1,0 +1,356 @@
+{
+  "function": "func_1500E5C0",
+  "owner": "game_3BA70",
+  "words": 83,
+  "rom_offset": 244336,
+  "body": "void func_1500E5C0(void) {\n    s32 i;\n    func_15012470();\n    func_15008A10();\n    func_15012770();\n    for (i = 0; i < 20; i += 4) { D_800E0950[i+1] = 0; D_800E0950[i+2] = 0; D_800E0950[i+3] = 0; D_800E0950[i] = 0; }\n    D_800D9921 = 0;\n    D_800D9920 = 0;\n    D_800D9928 = 0;\n    D_800D9938 = 0;\n    D_800D9929 = 0;\n    D_800D9939 = 0;\n    { u8 *p = D_800D992A; u8 *q = D_800D993A; do { p[1]=0; q[1]=0; p[2]=0; q[2]=0; p[3]=0; q[3]=0; p[0]=0; q[0]=0; p+=4; q+=4; } while (p != D_800D992A + 12); }\n    D_800D9890 = 0;\n    D_800D9894 = NULL;\n    D_800D98D0[3] = NULL; D_800D98D0[2] = NULL; D_800D98D0[1] = NULL; D_800D98D0[0] = NULL;\n    D_80088870 = NULL;\n    bzero(D_800BE500, 5);\n    D_800D9950[2] = 0;\n    D_800D9950[1] = 0;\n    D_800D9950[0] = 0;\n    D_80088980 = 0;\n    D_800D9AA0[0] = NULL;\n    D_800D9AA0[1] = NULL;\n    D_800D9AA0[2] = NULL;\n    D_800BE4F0 = NULL;\n    D_80088B40 = 0;\n}",
+  "guard_rows": [
+    {
+      "offset": 36,
+      "expected": "3C030000",
+      "replacement": "3C030000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800E0950"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800E0964"
+        ]
+      ]
+    },
+    {
+      "offset": 40,
+      "expected": "24630014",
+      "replacement": "24630000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800E0950"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800E0964"
+        ]
+      ]
+    },
+    {
+      "offset": 112,
+      "expected": "3C040000",
+      "replacement": "3C010000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D992A"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D9939"
+        ]
+      ]
+    },
+    {
+      "offset": 116,
+      "expected": "3C010000",
+      "replacement": "3C030000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D9939"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D992A"
+        ]
+      ]
+    },
+    {
+      "offset": 120,
+      "expected": "24840000",
+      "replacement": "3C020000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D992A"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D993A"
+        ]
+      ]
+    },
+    {
+      "offset": 124,
+      "expected": "A0200000",
+      "replacement": "3C040000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D9939"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D9946"
+        ]
+      ]
+    },
+    {
+      "offset": 128,
+      "expected": "3C030000",
+      "replacement": "24840000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D993A"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D9946"
+        ]
+      ]
+    },
+    {
+      "offset": 132,
+      "expected": "24630000",
+      "replacement": "24420000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D993A"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D993A"
+        ]
+      ]
+    },
+    {
+      "offset": 136,
+      "expected": "00801025",
+      "replacement": "24630000",
+      "expected_relocations": [],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D992A"
+        ]
+      ]
+    },
+    {
+      "offset": 140,
+      "expected": "A0400001",
+      "replacement": "A0200000",
+      "expected_relocations": [],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D9939"
+        ]
+      ]
+    },
+    {
+      "offset": 144,
+      "expected": "A0600001",
+      "replacement": "24420004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 148,
+      "expected": "A0400002",
+      "replacement": "A0600001",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 152,
+      "expected": "A0600002",
+      "replacement": "A040FFFD",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 156,
+      "expected": "A0400003",
+      "replacement": "A0600002",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 160,
+      "expected": "A0600003",
+      "replacement": "A040FFFE",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 164,
+      "expected": "A0400000",
+      "replacement": "A0600003",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 168,
+      "expected": "24420004",
+      "replacement": "A040FFFF",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 172,
+      "expected": "248E000C",
+      "replacement": "24630004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 176,
+      "expected": "A0600000",
+      "replacement": "A060FFFC",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 180,
+      "expected": "144EFFF5",
+      "replacement": "1444FFF6",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 184,
+      "expected": "24630004",
+      "replacement": "A040FFFC",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 252,
+      "expected": "3C020000",
+      "replacement": "3C030000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D9950"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D9950"
+        ]
+      ]
+    },
+    {
+      "offset": 256,
+      "expected": "24420000",
+      "replacement": "24630000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D9950"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D9950"
+        ]
+      ]
+    },
+    {
+      "offset": 260,
+      "expected": "A0400002",
+      "replacement": "A0600002",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 264,
+      "expected": "A0400001",
+      "replacement": "A0600001",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 268,
+      "expected": "A0400000",
+      "replacement": "A0600000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 276,
+      "expected": "3C030000",
+      "replacement": "3C040000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D9AA0"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800D9AA0"
+        ]
+      ]
+    },
+    {
+      "offset": 284,
+      "expected": "24630000",
+      "replacement": "24840000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D9AA0"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800D9AA0"
+        ]
+      ]
+    },
+    {
+      "offset": 288,
+      "expected": "AC600000",
+      "replacement": "AC800000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 292,
+      "expected": "AC600004",
+      "replacement": "AC800004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": 296,
+      "expected": "AC600008",
+      "replacement": "AC800008",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    }
+  ]
+}
