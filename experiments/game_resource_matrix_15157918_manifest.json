@@ -1,0 +1,11 @@
+{
+  "function": "func_15157918",
+  "owner": "generated_183640",
+  "source": "conker/src/game/generated_183640.c",
+  "assembly": "conker/asm/183640.s",
+  "address": 353728792,
+  "rom_offset": 1592776,
+  "words": 100,
+  "declarations": "void func_150A8050(f32 matrix[4][4], f32, f32, f32);\ntypedef struct\n#ifdef __GNUC__\n__attribute__((__may_alias__))\n#endif\n{\n    u8 pad0[0x54]; f32 position[3]; u8 pad60[0x1c];\n    f32 matrix[2][4][4]; u8 padfc[0x24]; f32 params[4];\n} ResourceMatrixView;",
+  "body": "s32 func_15157918(u8 *object) {\n    ResourceMatrixView *view = (void *)object;\n    f32 *params = view->params;\n    func_150A8050(view->matrix[D_800BE9C0], view->params[0], view->params[1], view->params[2]);\n    view->matrix[D_800BE9C0][3][0] = view->position[0];\n    view->matrix[D_800BE9C0][3][1] = view->position[1];\n    view->matrix[D_800BE9C0][3][2] = view->position[2];\n    view->matrix[D_800BE9C0][0][0] *= params[3];\n    view->matrix[D_800BE9C0][0][1] *= params[3];\n    view->matrix[D_800BE9C0][0][2] *= params[3];\n    view->matrix[D_800BE9C0][1][0] *= params[3];\n    view->matrix[D_800BE9C0][1][1] *= params[3];\n    view->matrix[D_800BE9C0][1][2] *= params[3];\n    view->matrix[D_800BE9C0][2][0] *= params[3];\n    view->matrix[D_800BE9C0][2][1] *= params[3];\n    view->matrix[D_800BE9C0][2][2] *= params[3];\n    return 1;\n}"
+}
