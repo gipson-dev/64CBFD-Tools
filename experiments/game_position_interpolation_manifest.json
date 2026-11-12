@@ -20,7 +20,8 @@
     "conker/Makefile": "73c38e03176196b8e59631d2248d81a5fe1b39e63042aa57d0e9be3cde40da3c",
     "conker/retail_word_patches.us.csv": "a4985a81171850f9e01e4b94724139e8a1f6a0181675b643115a4f87c2fc78d3",
     "conker/build/src/game/generated_EB340.c.o": "38c550b8c23f5deee8a720450cdfe23e20c191ed992073d407368c2e475112d3",
-    "conker/build/conker.us.elf": "29fa52d17d549bda4c89f100a025d2cd7c369bd3d3da6a630bfa92c16001836b"
+    "conker/build/conker.us.elf": "29fa52d17d549bda4c89f100a025d2cd7c369bd3d3da6a630bfa92c16001836b",
+    "conker/build/conker.us.bin": "97ac8ac7244b76d30e7b5feace67ed691b296780e570d8bd5ee035b7743290c9"
   },
   "body": "void func_150BE2E8(s16 *p) {\n    f32 x0 = p[0x7c/2], y0 = p[0x7e/2], z0 = p[0x80/2];\n    f32 x1 = p[0x82/2], y1 = p[0x84/2], z1 = p[0x86/2];\n    f32 step = p[0x3c/2] * (1.0f / 16384.0f);\n    f32 t = p[0x3e/2] * (1.0f / 16384.0f);\n    step = step - step * D_800A0068;\n    t = t + step * D_800BE9E4;\n    p[0x10/2] = (s32)((x1-x0)*t+x0);\n    p[0x12/2] = (s32)((y1-y0)*t+y0);\n    p[0x14/2] = (s32)((z1-z0)*t+z0);\n    if (1.0f < t) t = 1.0f;\n    p[0x3c/2] = (s32)(step * 16384.0f);\n    p[0x3e/2] = (s32)(t * 16384.0f);\n}\n",
   "expected": {
