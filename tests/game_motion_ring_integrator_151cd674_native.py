@@ -52,15 +52,18 @@ def main():
  typedef s32(*T)(MotionRingOwner151CD674*);
  static void put_bits(f32*dst,u32 x){u8*d=(u8*)dst,*s=(u8*)&x;u32 i;for(i=0;i<4;i++)d[i]=s[i];}
  static u32 get_bits(f32*src){u32 x=0,i;u8*d=(u8*)&x,*s=(u8*)src;for(i=0;i<4;i++)d[i]=s[i];return x;}
+ static void put_word(s32*dst,u32 x){u8*d=(u8*)dst,*s=(u8*)&x;u32 i;for(i=0;i<4;i++)d[i]=s[i];}
+ static u32 get_word(s32*src){u32 x=0,i;u8*d=(u8*)&x,*s=(u8*)src;for(i=0;i<4;i++)d[i]=s[i];return x;}
  static int check(T test){u32 n,i,j;for(n=0;n<sizeof(cases)/sizeof(cases[0]);n++){
   const struct Case*c=&cases[n];MotionRingOwner151CD674 owner;MotionRingEntry151CD674 records[7];MotionRingLimit151CD674 limit;u8 owner_before[sizeof owner],record_before[sizeof records],limit_before[sizeof limit];u8*o=(u8*)&owner,*p=(u8*)records,*l=(u8*)&limit;u32 result;
   for(i=0;i<sizeof owner;i++)o[i]=(i*19+37)&255;for(i=0;i<sizeof records;i++)p[i]=(i*13+11)&255;for(i=0;i<sizeof limit;i++)l[i]=(i*7+9)&255;
   owner.flags=c->flags;owner.capacity=c->cap;owner.count=c->count;owner.current=c->current;owner.end=c->end;owner.entries=records;owner.limit=&limit;put_bits(&limit.threshold,c->threshold);put_bits(&D_800BE9A4,c->step);put_bits(&D_800AAFC0,c->accel);put_bits(&D_800AAFC4,c->half);
-  for(i=0;i<3;i++){((u32*)&owner.source)[i]=source_bits[i];((u32*)&owner.output)[i]=output_bits[i];}
+  put_word(&owner.source.a,source_bits[0]);put_word(&owner.source.b,source_bits[1]);put_word(&owner.source.c,source_bits[2]);
+  put_word(&owner.output.a,output_bits[0]);put_word(&owner.output.b,output_bits[1]);put_word(&owner.output.c,output_bits[2]);
   for(i=0;i<(u32)c->cap;i++){put_bits(&records[i].position,c->position);records[i].position+=(f32)i;put_bits(&records[i].velocity,c->velocity);}
   for(i=0;i<sizeof owner;i++)owner_before[i]=o[i];for(i=0;i<sizeof records;i++)record_before[i]=p[i];for(i=0;i<sizeof limit;i++)limit_before[i]=l[i];result=test(&owner);
   if(result!=(u32)c->answer||owner.count!=c->final_count||owner.current!=c->final_current)return 1;
-  for(i=0;i<3;i++){u32 v=((u32*)&owner.output)[i];if(v!=c->output[i])return 2;}
+  if(get_word(&owner.output.a)!=c->output[0]||get_word(&owner.output.b)!=c->output[1]||get_word(&owner.output.c)!=c->output[2])return 2;
   for(i=0;i<(u32)c->cap;i++)if(get_bits(&records[i].position)!=c->positions[i]||get_bits(&records[i].velocity)!=c->velocities[i])return 3;
   for(i=0;i<sizeof owner;i++)if(i!=0x2c&&i!=0x2d&&(i<0x54||i>=0x60)&&o[i]!=owner_before[i])return 4;
   for(i=0;i<sizeof records;i++){j=i%28;if((i/28>=(u32)c->cap||((j<4||j>=8)&&(j<12||j>=16)))&&p[i]!=record_before[i])return 5;}
