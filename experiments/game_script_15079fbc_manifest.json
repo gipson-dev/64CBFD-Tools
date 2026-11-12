@@ -1,0 +1,11 @@
+{
+  "function": "func_15079FBC",
+  "owner": "game_A28B0",
+  "source": "conker/src/game_A28B0.c",
+  "assembly": "conker/asm/nonmatchings/game_A28B0/func_15079FBC.s",
+  "address": 352821180,
+  "rom_offset": 685164,
+  "words": 81,
+  "body": "void func_15079FBC(void) {\n    s16 speed;\n    if ((D_800CC2D0->unk65 == 0) || (D_800CC2D0->unk44 < 5.0f)) {\n        D_800D154C->unk232 = D_800D1891;\n        D_800D154C->unk218 = (struct216 *)func_1507BB28(0, D_800D154C->unk232);\n        D_800D154C->unk218 -= 1;\n        return;\n    }\n    D_800D154C->unk78 = D_800CC2D0->unk31C->unk4C;\n    if (D_800CC2D0->unk31C->chased) {\n        speed = D_800CC2D0->unk44;\n    } else {\n        speed = D_800CC2D0->unk44 * D_8009A1E4;\n    }\n    if (speed < 17) {\n        D_800D1893 += 1;\n        D_800D1890 = 8;\n    }\n    D_800D1892 = speed;\n    func_15075F40();\n    D_800D154C->unkF4 |= 0x40;\n}",
+  "guard_rows": []
+}
