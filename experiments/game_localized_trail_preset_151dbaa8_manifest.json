@@ -2576,7 +2576,7 @@
     "strict_exclusions": 0
   },
   "installed_hashes": {
-    "conker/src/game_2062D0.c": "c861aa6184d2092f6f117516dfa4b5cce87ef5ec6276aa006c65107cf0abeba8",
+    "conker/src/game_2062D0.c": "ca9d4b7d6fbcd0286c40abb64f69caaff2f66724b70a6f2e77c04e9da7b9d856",
     "conker/retail_word_patches.us.csv": "484a7b72689ffe6a3e9b8db5cf149dea6f74c119f0fe76d90b41734ae21be369",
     "conker/build/src/game_2062D0.c.o": "fd6b690c9896b211765b38080e24d6e38750af1037559e99d0e12933dd17eb24",
     "conker/build/conker.us.elf": "4911767da1a90c69fd9d2e1a0a2450a1433c6ef20252b8e249f5f5fb33faacb3"
