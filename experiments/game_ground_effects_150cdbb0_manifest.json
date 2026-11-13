@@ -1,0 +1,68 @@
+{
+  "source": "conker/src/game/generated_FB060.c",
+  "assembly": "conker/asm/FB060.s",
+  "owner": "generated_FB060",
+  "name": "func_150CDBB0",
+  "entry": "0x150CDBB0",
+  "rom_offset": "0xFB060",
+  "old_source": "#include <ultra64.h>\n\n/* Non-matching placeholders for the text-only asm slice asm/FB060.s. */\n\ns32 func_150CDBB0() {\n    return 0;\n}\n\ns32 func_150CDCF4() {\n    return 0;\n}\n\ns32 func_150CDF10() {\n    return 0;\n}\n",
+  "selected_source": "#include <ultra64.h>\n\ntypedef struct GroundResult150CDBB0 {\n    f32 height;\n    s16 vertices[9];\n    s16 pad16;\n    u32 metadata;\n    u8 flags;\n    u8 state;\n    u16 pad1E;\n    s32 value;\n} GroundResult150CDBB0;\n\nextern f32 D_800A07B0;\nvoid func_1504715C(GroundResult150CDBB0 *, void *);\ns32 func_15046C80(f32 *, u16, f32, GroundResult150CDBB0 *);\nu32 func_150ADA20(void);\nvoid func_1514C678(f32, f32, f32, f32, s16, s16, s16, u8, s32, f32, void *, u8);\n\n/* Query the ground height and submit two randomized effects on success. */\nvoid func_150CDBB0(u8 *actor, u8 flags, s32 unused) {\n    f32 point[3];\n    GroundResult150CDBB0 result;\n    u32 random;\n\n    if (actor != NULL) {\n        func_1504715C(&result, actor);\n        point[0] = *(f32 *)(actor + 0x14);\n        point[1] = *(f32 *)(actor + 0x18) + 1000.0f;\n        point[2] = *(f32 *)(actor + 0x1C);\n        if (func_15046C80(point, 0, *(f32 *)(actor + 0x18) - D_800A07B0, &result)) {\n            point[1] = result.height;\n            random = func_150ADA20();\n            func_1514C678(point[0], point[1], point[2], 251.0f, 0, 255,\n                          (random & 15U) + 35, 0x17, 0, 0.0f, NULL, flags);\n            random = func_150ADA20();\n            func_1514C678(point[0], point[1], point[2], 290.0f, 0, 255,\n                          (random % 21U) + 30, 0x18, 0, 0.0f, NULL, flags);\n        }\n    }\n}\n\n/* Non-matching placeholders for the remaining asm slice. */\ns32 func_150CDCF4() {\n    return 0;\n}\n\ns32 func_150CDF10() {\n    return 0;\n}\n",
+  "guard_rows": [
+    {
+      "filename": "generated_FB060",
+      "function": "func_150CDBB0",
+      "offset": "0x18",
+      "expected": "0x12000044",
+      "replacement": "0x12000045",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve height-result store and random-call schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_FB060",
+      "function": "func_150CDBB0",
+      "offset": "0x74",
+      "expected": "0x1040002D",
+      "replacement": "0x1040002E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve height-result store and random-call schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_FB060",
+      "function": "func_150CDBB0",
+      "offset": "0x7c",
+      "expected": "0x0C000000",
+      "replacement": "0xE7A80070",
+      "expected_relocations": "R_MIPS_26:func_150ADA20",
+      "replacement_relocations": "-",
+      "note": "Preserve height-result store and random-call schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_FB060",
+      "function": "func_150CDBB0",
+      "offset": "0x80",
+      "expected": "0xE7A80070",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA20",
+      "note": "Preserve height-result store and random-call schedule",
+      "insert_after": "0x00000000",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "raw_words": 80,
+  "retail_words": 81,
+  "raw_sha256": "60abf1fb04de4f845d0ee2e8334faf9db6496f646a8028a6d282a58ba7849f26",
+  "retail_sha256": "ad7760b642cb2963bfa11468b197f548849a9c83e9a8d4c95e22f2270931a8e9"
+}
