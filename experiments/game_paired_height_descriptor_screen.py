@@ -25,14 +25,18 @@ def prepare():
  if sha((ROOT/'conker/conker.us.bin').read_bytes())!=MANIFEST['rom_sha256']:raise ValueError('Retail input changed')
  live=(ROOT/'conker/retail_word_patches.us.csv').read_bytes();assert live.endswith(b'\n')
  existing=list(csv.DictReader(io.StringIO(live.decode())));fields=next(csv.reader(io.StringIO(live.decode())));stream=io.StringIO(newline='');writer=csv.DictWriter(stream,fieldnames=fields,lineterminator='\n')
- for spec in MANIFEST['targets']:
-  if any(r['function']==spec['name'] for r in existing):raise ValueError('Candidate unexpectedly installed')
-  writer.writerows(spec['guard_rows'])
- guards=OUT/'private-guards.csv';guards.write_bytes(live+stream.getvalue().encode());result={}
+ for spec in MANIFEST['targets']:writer.writerows(spec['guard_rows'])
+ suffix=stream.getvalue().encode();actual=[r for r in existing if r['function'] in {x['name'] for x in MANIFEST['targets']}]
+ wanted=[r for spec in MANIFEST['targets'] for r in spec['guard_rows']]
+ installed=actual==wanted
+ if actual and not installed:raise ValueError('Unexpected target guards')
+ if installed and not live.endswith(suffix):raise ValueError('Installed target guards not at expected suffix')
+ guards=OUT/'private-guards.csv';guards.write_bytes(live if installed else live+suffix);result={}
  for spec in MANIFEST['targets']:
   name=spec['name'];source=(ROOT/spec['source']).read_bytes()
-  if sha(source)!=spec['baseline_sha256']:raise ValueError('Owner source changed: '+name)
-  before,bd=compile_owner(ROOT,OUT,source.decode(),name+'-before');after,ad=compile_owner(ROOT,OUT,spec['selected_source'],name+'-after')
+  expected=spec['selected_source'].encode() if installed else spec['old_source'].encode()
+  if source!=expected or sha(spec['old_source'].encode())!=spec['baseline_sha256']:raise ValueError('Owner source changed: '+name)
+  before,bd=compile_owner(ROOT,OUT,spec['old_source'],name+'-before');after,ad=compile_owner(ROOT,OUT,spec['selected_source'],name+'-after')
   if same_functions(before,after,(name,))!=9 or normalized_pools(before)!=normalized_pools(after):raise ValueError('Neighbor or pool changed: '+name)
   if diagnostic_rows(bd)!=diagnostic_rows(ad):raise ValueError('Compiler diagnostics changed: '+name)
   raw,_=payload(after,name)
@@ -43,5 +47,5 @@ def prepare():
   generated=assemble(pg.emit_padded_assembly(after,ROOT/spec['assembly'],filename=spec['owner'],word_patches_path=guards),name+'-generated')
   generic=assemble(pc.emit_padded_assembly(after,ROOT/'conker/retail_layout.us.txt',spec['owner'],word_patches_path=guards),name+'-generic')
   if payload(generated,name)!=(truth,refs) or payload(generic,name)!=(truth,refs):raise ValueError('Padded output differs: '+name)
-  result[name]=dict(before=before,after=after,retail=retail,generated=generated,generic=generic)
+  result[name]=dict(before=before,after=after,retail=retail,generated=generated,generic=generic,installed=installed)
  return result

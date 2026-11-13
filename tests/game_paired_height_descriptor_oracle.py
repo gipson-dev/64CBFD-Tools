@@ -8,7 +8,7 @@ from tools.tests.game_owner_float_payload_oracle import FactoryOracle
 from tools.tests.game_animation_timeline_oracle import bits
 from tools.tests.test_game_point_transform_match import put,read
 from tools.tests.game_view_render_pass_oracle import STACK
-QUERY=0x15045800; FACTORY=0x1513418c;COPY=0x10022ec0;OWNER=0x30000;CTX=0x40000;OUT=0x50000
+QUERY=0x15045800; FACTORY=0x1513418c;COPY=0x10022ec0;OWNER=0x30000;CTX=0x48000;OUT=0x50000
 @dataclass(frozen=True)
 class Case:
  phase:int=0;owner:int=OWNER;context:int=CTX;hit:int=0;allocated:int=0;mutation:int=0;seed:int=0
@@ -23,8 +23,8 @@ def fixture(c,syms):
  for i,v in enumerate((100.0,9.0,2.0)):put(m,syms[i],bits(v))
  return m
 class Machine(FactoryOracle):
- def __init__(self,ws,c,m,syms,entry):
-  self.c=c;self.const=syms;super().__init__(ws,m,c,entry=entry,s={},arguments=(c.owner,c.context))
+ def __init__(self,ws,c,m,syms,entry,connected=None):
+  self.c=c;self.const=syms;super().__init__(ws,m,c,entry=entry,s={},arguments=(c.owner,c.context),connected=connected)
  def record_call(self,t):
   a=tuple(self.r[4:8]);snap=()
   if t==QUERY:snap=bytes(self.memory[a[0]+i] for i in range(12))
@@ -60,15 +60,39 @@ def programs(state,name):
 def run_case(ws,c,cs,entry):
  states=[]
  for w in ws:
+  m=Machine(w,c,fixture(c,cs),cs,entry)
   try:
-   m=Machine(w,c,fixture(c,cs),cs,entry).run()
+   m.run()
    public={a:v for a,v in m.memory.items() if not STACK+c.phase-2048<=a<STACK+c.phase+2048}
    states.append(('ok',public,m.calls,m.r[2]))
   except AssertionError as e:
    if not (str(e).startswith("('saved register',") or str(e).startswith("('unowned jump',") or str(e).startswith("('unmapped read',")):raise
-   states.append(('incomplete-alias-cases',str(e)))
+   states.append(('incomplete-alias-cases',str(e),m.memory,m.calls))
  assert all(item==states[0] for item in states), (c,[(s[0],s[2:] if len(s)>2 else s[1:]) for s in states])
  return states[0][0]
+
+def assert_semantic(c,cs,name,m):
+ """Independent field/ABI assertions for the bounded non-overlapping cases."""
+ home=STACK+c.phase;point=home-0x4c;payload=home-0x3c;desc=home-0x30
+ initial=fixture(c,cs);query=m.calls[0]
+ expected_point=struct.pack('>III',bits(1.25),bits(104.5),bits(-3.0))
+ assert query==(QUERY,(point,0,bits(-95.5),c.context+0x34),expected_point),query
+ after_y=7.5 if c.mutation&1 else 4.5
+ height=18.5 if c.hit else after_y+9.0
+ expected_payload=bytearray(initial[payload+i] for i in range(12))
+ expected_payload[0:4]=struct.pack('>I',c.context);expected_payload[4]=1;expected_payload[8:12]=struct.pack('>I',bits(height))
+ expected=bytearray(initial[desc+i] for i in range(48))
+ def store(off,data):expected[off:off+len(data)]=data
+ store(0,b'\0'*8);expected[8]=initial[c.owner+0x3b]^(0x55 if c.mutation&2 else 0)
+ store(12,struct.pack('>I',c.owner));expected[16]=0;store(20,b'\0'*12)
+ first=name.endswith('5F94');store(32,struct.pack('>I',bits(25.0 if first else 80.0)));store(36,struct.pack('>I',bits(2.0)))
+ store(40,struct.pack('>H',300));store(42,bytes((10,4 if first else 5,1 if first else 2,2 if first else 3)))
+ assert m.calls[1]==(FACTORY,(desc,12,255,0),bytes(expected)),m.calls[1]
+ if c.allocated:
+  assert m.calls[2]==(COPY,(OUT+0x58,payload,12,0xa5000007),bytes(expected_payload)),m.calls[2]
+  assert bytes(m.memory[OUT+0x58+i] for i in range(12))==expected_payload
+  assert m.r[2]==OUT and len(m.calls)==3
+ else:assert m.r[2]==0 and len(m.calls)==2
 
 def ordinary(state):
  counts={}
@@ -77,7 +101,10 @@ def ordinary(state):
   n=0
   for phase,hit,allocated,mutation,seed in itertools.product((0,8),(0,1),(0,1),range(4),range(3)):
    c=Case(phase=phase,hit=hit,allocated=allocated,mutation=mutation,seed=seed)
-   assert run_case(ws,c,cs,int(name[5:],16))=='ok';n+=1
+   assert run_case(ws,c,cs,int(name[5:],16))=='ok'
+   for w in ws:
+    m=Machine(w,c,fixture(c,cs),cs,int(name[5:],16)).run();assert_semantic(c,cs,name,m)
+   n+=1
   counts[name]=n
  return counts
 
