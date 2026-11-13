@@ -47,3 +47,14 @@ for first,second,tag,kind,phase,alias in itertools.product(offsets,offsets,(0,1,
   m=Machine(program,initial,args,phase).run();actual=public(m.memory);differences=[(hex(k),actual.get(k),wanted[0].get(k)) for k in actual.keys()|wanted[0].keys() if actual.get(k)!=wanted[0].get(k)];assert (actual,m.calls)==wanted,(label,first,second,tag,kind,phase,alias,m.calls,wanted[1],differences[:12],m.trace,m.r);visited.update(m.visits)
  count+=1
 print(count,'retail, raw-C, and padded guest cases; bounded values, input/output alias and caller stack tested; visited',len(visited),'instruction locations',flush=True)
+extra=0
+for first,second,tag,kind,phase in itertools.product((-0x80000000,0x7fffffff,-813,25*812),(-0x80000000,0x7fffffff,0,24*812),(0,24,255),(0,45),(0,8)):
+ initial,args=fixture(first,second,tag,kind,phase,0);wanted=reference(initial,args,phase)
+ for program in (retail,candidate,padded):
+  m=Machine(program,initial,args,phase).run();assert (public(m.memory),m.calls)==wanted,(first,second,tag,kind,phase)
+ extra+=1
+for kind in range(256):
+ initial,args=fixture(0,812,0,kind,0,0);wanted=reference(initial,args,0)
+ for program in (retail,candidate,padded):
+  m=Machine(program,initial,args,0).run();assert (public(m.memory),m.calls)==wanted,kind
+print(extra,'signed-boundary cases plus all 256 opcode bytes per body',flush=True)

@@ -42,7 +42,7 @@ class SlotNotificationTests(unittest.TestCase):
         self.assertEqual(sum(r['expected_relocations'] != r['replacement_relocations'] for r in added), 7)
 
     def test_02_guest(self):
-        self.run_check('guest', '6144 retail, raw-C, and padded guest cases')
+        self.run_check('guest', '192 signed-boundary cases plus all 256 opcode bytes per body')
 
     def test_03_connected_callers(self):
         self.run_check('connected', '108 original list/direct dispatch cases per body')
