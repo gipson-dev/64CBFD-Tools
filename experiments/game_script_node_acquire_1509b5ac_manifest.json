@@ -1,0 +1,132 @@
+{
+  "paths": {
+    "source": {
+      "path": "conker/src/game_C8950.c",
+      "before_sha256": "b72db30ce856086099b9697a04a3c38113369886534da84dd88c85dbdb40d48e",
+      "after_sha256": "f4d0c90eeaf85a599c242071c4ca3a6c644e2a458c6881c6bcfdb01ff88317e9",
+      "changes": [
+        {
+          "old_at": 24,
+          "new_at": 24,
+          "old": "s32 func_1509B5AC(s32 arg0, s32 arg1);\n",
+          "new": "struct248 *func_1509B5AC(s32 scriptId, s32 force);\nstruct248 *func_1509B8FC(s16 scriptId);\ns32 func_150ADAF0(void *node, s32 command);\n"
+        },
+        {
+          "old_at": 68,
+          "new_at": 70,
+          "old": "/* Non-matching C placeholders for asm/nonmatchings/game_C8950/func_1509B5AC.s. */\ns32 func_1509B5AC(s32 arg0, s32 arg1) {\n    return 0;\n",
+          "new": "/* Acquire a script node and initialize or reset its state. */\nstruct248 *func_1509B5AC(s32 scriptId, s32 force) {\n    struct248 *node;\n    node = (struct248 *)func_1509B704((s16)scriptId);\n    if (force == 0 && (((u8 *)D_800D2E4C)[scriptId >> 3] & (1 << (scriptId & 7)))) return NULL;\n    if (node == NULL) {\n        node = func_1509B8FC((s16)scriptId);\n        func_1509B810((ScriptNodeC8950 *)node);\n        if ((((u8 *)D_800D2E4C)[(s32)(node->unk0 & 0xFFFF03FF) >> 3] &\n             (1 << ((node->unk0 & 0xFFFF03FF) & 7))) == 0) {\n            D_8003C8E0 = 0x06000000;\n            func_150ADAF0(node, 0);\n            D_8003C8E0 = 0;\n        }\n        if (force == 0 || (node->unk0 & 0x0400)) node->unk0 |= 0x4000;\n    } else if (force != 0 && (node->unk0 & 0x1000) && !(node->unk0 & 0x0800)) {\n        bzero((u8 *)node + node->unkA, node->unk6);\n    }\n    return node;\n"
+        },
+        {
+          "old_at": 168,
+          "new_at": 186,
+          "old": "void func_1509B8FC(s16 arg0) {\n",
+          "new": "/* Return the allocated and initialized script node. */\nstruct248 *func_1509B8FC(s16 arg0) {\n"
+        },
+        {
+          "old_at": 175,
+          "new_at": 194,
+          "old": "    func_1509B950(temp_v0);\n",
+          "new": "    return func_1509B950(temp_v0);\n"
+        }
+      ]
+    },
+    "guards": {
+      "path": "conker/retail_word_patches.us.csv",
+      "before_sha256": "33e89fcd251ce0c809563c55aeac4d1c4ba5a41a82389f8f917cb7312a62a6c6",
+      "after_sha256": "8063705fc2474e447bbbff724654275d9da778cd5e5cf5eb21ce038c6be2b630",
+      "changes": [
+        {
+          "old_at": 31008,
+          "new_at": 31008,
+          "old": "",
+          "new": "game_C8950,func_1509B5AC,0x40,0x3C0F0000,0x3C180000,R_MIPS_HI16:D_800D2E4C,R_MIPS_HI16:D_800D2E4C,Normalize closed script bitmap address register allocation,,,false\ngame_C8950,func_1509B5AC,0x44,0x8DEF0000,0x8F180000,R_MIPS_LO16:D_800D2E4C,R_MIPS_LO16:D_800D2E4C,Normalize closed script bitmap address register allocation,,,false\ngame_C8950,func_1509B5AC,0x48,0x0006C0C3,0x000678C3,,,Normalize closed script bitmap address register allocation,,,false\ngame_C8950,func_1509B5AC,0x98,0x3C0D0000,0x3C0E0000,R_MIPS_HI16:D_800D2E4C,R_MIPS_HI16:D_800D2E4C,Normalize closed script bitmap address register allocation,,,false\ngame_C8950,func_1509B5AC,0x9C,0x8DAD0000,0x8DCE0000,R_MIPS_LO16:D_800D2E4C,R_MIPS_LO16:D_800D2E4C,Normalize closed script bitmap address register allocation,,,false\ngame_C8950,func_1509B5AC,0xA8,0x000270C3,0x000268C3,,,Normalize closed script bitmap address register allocation,,,false\n"
+        }
+      ]
+    }
+  },
+  "body": "struct248 *func_1509B5AC(s32 scriptId, s32 force) {\n    struct248 *node;\n    node = (struct248 *)func_1509B704((s16)scriptId);\n    if (force == 0 && (((u8 *)D_800D2E4C)[scriptId >> 3] & (1 << (scriptId & 7)))) return NULL;\n    if (node == NULL) {\n        node = func_1509B8FC((s16)scriptId);\n        func_1509B810((ScriptNodeC8950 *)node);\n        if ((((u8 *)D_800D2E4C)[(s32)(node->unk0 & 0xFFFF03FF) >> 3] &\n             (1 << ((node->unk0 & 0xFFFF03FF) & 7))) == 0) {\n            D_8003C8E0 = 0x06000000;\n            func_150ADAF0(node, 0);\n            D_8003C8E0 = 0;\n        }\n        if (force == 0 || (node->unk0 & 0x0400)) node->unk0 |= 0x4000;\n    } else if (force != 0 && (node->unk0 & 0x1000) && !(node->unk0 & 0x0800)) {\n        bzero((u8 *)node + node->unkA, node->unk6);\n    }\n    return node;\n}",
+  "guard_rows": [
+    {
+      "filename": "game_C8950",
+      "function": "func_1509B5AC",
+      "offset": "0x40",
+      "expected": "0x3C0F0000",
+      "replacement": "0x3C180000",
+      "expected_relocations": "R_MIPS_HI16:D_800D2E4C",
+      "replacement_relocations": "R_MIPS_HI16:D_800D2E4C",
+      "note": "Normalize closed script bitmap address register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509B5AC",
+      "offset": "0x44",
+      "expected": "0x8DEF0000",
+      "replacement": "0x8F180000",
+      "expected_relocations": "R_MIPS_LO16:D_800D2E4C",
+      "replacement_relocations": "R_MIPS_LO16:D_800D2E4C",
+      "note": "Normalize closed script bitmap address register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509B5AC",
+      "offset": "0x48",
+      "expected": "0x0006C0C3",
+      "replacement": "0x000678C3",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed script bitmap address register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509B5AC",
+      "offset": "0x98",
+      "expected": "0x3C0D0000",
+      "replacement": "0x3C0E0000",
+      "expected_relocations": "R_MIPS_HI16:D_800D2E4C",
+      "replacement_relocations": "R_MIPS_HI16:D_800D2E4C",
+      "note": "Normalize closed script bitmap address register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509B5AC",
+      "offset": "0x9C",
+      "expected": "0x8DAD0000",
+      "replacement": "0x8DCE0000",
+      "expected_relocations": "R_MIPS_LO16:D_800D2E4C",
+      "replacement_relocations": "R_MIPS_LO16:D_800D2E4C",
+      "note": "Normalize closed script bitmap address register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509B5AC",
+      "offset": "0xA8",
+      "expected": "0x000270C3",
+      "replacement": "0x000268C3",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed script bitmap address register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "rom_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "layout_sha256": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+  "assembly_sha256": "25339ed97286500cb9f18039cb37882bf5502632e50dba3686eb31991c6d7e4d"
+}
