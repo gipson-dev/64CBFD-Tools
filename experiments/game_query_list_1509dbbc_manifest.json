@@ -1,0 +1,37 @@
+{
+  "source_path": "conker/src/game/generated_C9EC0.c",
+  "source_before_sha256": "d9e0e81cfad47c11c7494bdf63b4bc146b38b887514f6a71da2b9a2bfe68225b",
+  "source_after_sha256": "a9aaccbc9fd0dc20859ca0c7fedfa62b210e1fd481d47ef76cb4cb15e1585da7",
+  "source_changes": [
+    {
+      "old_at": 373,
+      "new_at": 373,
+      "old": "",
+      "new": "typedef struct QueryNodeC9EC0 {\n    u8 pad0[8];\n    struct QueryNodeC9EC0 *next;\n    u8 padC[0x3C];\n    u8 kind;\n} QueryNodeC9EC0;\n\ntypedef struct {\n    QueryNodeC9EC0 *cells[104];\n} QueryRowC9EC0;\n\nextern u8 D_800DCE50[0x340];\nextern u8 D_800A6060[];\nvoid func_150E36BC(s32, s32 *, s32 *, s32 *);\n\n/* Query the selected script value or scan the selected actor lists. */\n"
+    },
+    {
+      "old_at": 374,
+      "new_at": 390,
+      "old": "    return 0;\n",
+      "new": "    s32 x = 0, y = 0, z = 0;\n    u8 row;\n    s8 column;\n    QueryNodeC9EC0 *node, *next;\n    volatile s32 spare; /* Preserve the retail stack layout. */\n\n    switch (arg0) {\n        case 25:\n            if (arg1 == 4) {\n                for (row = 0; row < 2; row++) {\n                    for (column = 0; column < 3; column++) {\n                        node = ((QueryRowC9EC0 *)D_800DCE50)[row].cells[((s32 *)D_800A6060)[column]];\n                        while (node != 0) {\n                            next = node->next;\n                            if (node->kind == 2) return 0;\n                            node = next;\n                        }\n                    }\n                }\n                return 1;\n            }\n            break;\n        case 4:\n        case 5:\n        case 6:\n            if (arg1 == 0 || arg1 == 1) {\n                if (arg0 >> 6) {\n                    func_150E36BC(arg0 >> 6, &x, &y, &z);\n                    if (arg1 == 0) y = ((u32)x << 16) | (z & 0xFFFF);\n                    return y;\n                }\n            }\n            break;\n    }\n    return 4;\n"
+    }
+  ],
+  "guards_before_sha256": "8c78447d471b0e9d376621ca2655ff43eb9d7ff1e0fcdfd5373ad7a8238a4fe8",
+  "guards_after_sha256": "4d4a2321071cda944f55cdddd6da2e6681155f5f9c7a798ab6a7f9bbd233f5b3",
+  "guard_changes": [
+    {
+      "old_at": 30922,
+      "new_at": 30922,
+      "old": "generated_C9EC0,func_1509DBBC,0x0,0xafa40000,0x00000000,-,-,Omit unused placeholder argument-home store,,,true\ngenerated_C9EC0,func_1509DBBC,0x4,0xafa50004,0x00000000,-,-,Omit unused placeholder argument-home store,,,true\ngenerated_C9EC0,func_1509DBBC,0x8,0xafa60008,0x00000000,-,-,Omit unused placeholder argument-home store,,,true\n",
+      "new": ""
+    },
+    {
+      "old_at": 30928,
+      "new_at": 30925,
+      "old": "",
+      "new": "generated_C9EC0,func_1509DBBC,0x40,0x14c10042,0x14c1003f,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x48,0x15c20040,0x15c2003d,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0xbc,0x0,0x601025,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0xc0,0x10000023,0x1000001f,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0xc8,0x1460fff9,0x5460fffa,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0xcc,0x601025,0x904d0048,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0xec,0x10000018,0x10000014,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0xf8,0x24010001,0x13200002,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0xfc,0x62183,0x24010001,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x100,0x13200003,0x1721000f,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x104,0x0,0x00000000,-,-,Omit superseded compiler control-flow word,,,true\ngenerated_C9EC0,func_1509DBBC,0x108,0x57210011,0x00000000,-,-,Omit superseded compiler control-flow word,,,true\ngenerated_C9EC0,func_1509DBBC,0x10c,0x24020004,0x00000000,-,-,Omit superseded compiler control-flow word,,,true\ngenerated_C9EC0,func_1509DBBC,0x110,0x1080000e,0x62183,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x114,0x27a5003c,0x1080000d,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x118,0x27a60038,0x27a5003c,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x11c,0xc000000,0x27a60038,R_MIPS_26:func_150E36BC,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x120,0x27a70034,0xc000000,-,R_MIPS_26:func_150E36BC,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x124,0x8fa90044,0x27a70034,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x128,0x8fac0034,0x8fa90044,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x12c,0x8faa003c,0x8fac0034,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x130,0x15200004,0x8faa003c,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x134,0x318dffff,0x15200004,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x138,0xa5c00,0x318dffff,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x13c,0x16d7025,0xa5c00,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x140,0xafae0038,0x16d7025,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x144,0x10000002,0xafae0038,-,-,Restore retail list traversal and branch scheduling,,,false\ngenerated_C9EC0,func_1509DBBC,0x14c,0x24020004,0x00000000,-,-,Omit superseded compiler control-flow word,,,true\n"
+    }
+  ],
+  "rom_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "layout_sha256": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365"
+}

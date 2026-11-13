@@ -36,12 +36,19 @@ def prepare():
  if hashlib.sha256(rom).hexdigest()!=MANIFEST['rom_sha256'] or hashlib.sha256((ROOT/'conker/retail_layout.us.txt').read_bytes()).hexdigest()!=MANIFEST['layout_sha256']:raise ValueError('retail image or layout changed')
  for owner,spec in MANIFEST['sources'].items():
   current=(ROOT/spec['path']).read_text()
+  if owner=='game/generated_C9EC0' and sha(current) not in (spec['before_sha256'],spec['after_sha256']):
+   from tools.experiments import game_query_list_1509dbbc_match as successor
+   current=successor.historical_source(current)
   if sha(current)==spec['before_sha256']:old=current;new=apply(old,spec['changes'])
   elif sha(current)==spec['after_sha256']:new=current;old=apply(new,spec['changes'],True)
   else:raise ValueError('owner source changed: '+owner)
   if sha(old)!=spec['before_sha256'] or sha(new)!=spec['after_sha256']:raise ValueError('owner patch fingerprint mismatch: '+owner)
   proposals[owner]=(old,new)
- current=(ROOT/'conker/retail_word_patches.us.csv').read_text();fields=next(csv.reader(io.StringIO(current)));fp=io.StringIO(newline='');csv.DictWriter(fp,fieldnames=fields,lineterminator='\n').writerows(MANIFEST['guards']);suffix=fp.getvalue()
+ current=(ROOT/'conker/retail_word_patches.us.csv').read_text()
+ fields=next(csv.reader(io.StringIO(current)));fp=io.StringIO(newline='');csv.DictWriter(fp,fieldnames=fields,lineterminator='\n').writerows(MANIFEST['guards']);suffix=fp.getvalue()
+ if not current.endswith(suffix) and sha(current)!=MANIFEST['guards_sha256']:
+  from tools.experiments import game_query_list_1509dbbc_match as successor
+  current=successor.historical_guards(current)
  if current.endswith(suffix):base=current[:-len(suffix)];guardtext=current
  else:base=current;guardtext=current+suffix
  if sha(base)!=MANIFEST['guards_sha256']:raise ValueError('guard baseline changed')
