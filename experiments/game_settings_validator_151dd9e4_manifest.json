@@ -1,0 +1,76 @@
+{
+  "source": {
+    "path": "conker/src/game/generated_20AE20.c",
+    "before_sha256": "0a7a34d786b18231ee62d148683d4eb1a6134ba2321577f0500f4fc6481e0799",
+    "after_sha256": "7925328b02c22fb93dac97a81d5c2f69475f35afe7545440adacfb5c446473d6",
+    "changes": [
+      {
+        "old_at": 136,
+        "new_at": 136,
+        "old": "s32 func_151DD9E4() {\n    return 0;\n",
+        "new": "/* Signed per-setting bounds and reset defaults occupy separate retail tables. */\nextern s8 D_8008FE6C[23];\nextern s8 D_8008FE84[23];\ns32 func_151DD9E4(void) {\n    s32 i;\n\n    for (i = 0; i < 23; i++) {\n        if (D_800E0BE0[i] < D_8008FE6C[i] || D_800E0BE0[i] > D_8008FE84[i]) {\n            D_800E0BE0[i] = D_8008FE54[i];\n        }\n    }\n    return 23; /* Retail leaves the completed loop index in the return register. */\n"
+      }
+    ]
+  },
+  "guards": {
+    "path": "conker/retail_word_patches.us.csv",
+    "before_sha256": "9efb5b87bb5873077f9992a1ed2c25ff3b0d8da941a873d147f01c411a6c4c08",
+    "after_sha256": "0ab120a21ba93cd6db606f92db01eb2d24e05e243dccdd06943047b00d626931",
+    "append": "generated_20AE20,func_151DD9E4,0x20,0x3C030000,0x3C030000,R_MIPS_HI16:D_800E0BE0,R_MIPS_HI16:D_800E0BE3,Bind settings cursor high half to its original plus-three symbol,,,false\ngenerated_20AE20,func_151DD9E4,0x60,0x24630003,0x24630000,R_MIPS_LO16:D_800E0BE0,R_MIPS_LO16:D_800E0BE3,Bind settings cursor low half to its original plus-three symbol,,,false\ngenerated_20AE20,func_151DD9E4,0x1A8,0x24020017,0x24020017,-,-,Omit redundant return constant after the loop reaches 23,,,true\n"
+  },
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/20AE20.s": "b285f38871e2bc048fc6e576c20c731ce3dc743b8ccace0fac036b546daaa8c4",
+    "conker/Makefile": "8b2e63494fe95f4ce933206e52319ca57022a2adad29272b89eb3aedc0e856af",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/variables.h": "0104542deea4d809471535255a7493c8b01e1ec81af95c994d88831ca65ef9af",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "baseline": {
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.elf": "8990b1301d42e098386d8b79ee76b3766ca9e015ed1a86a6d3c2f402c45ae36b"
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_20AE20",
+      "function": "func_151DD9E4",
+      "offset": "0x20",
+      "expected": "0x3C030000",
+      "replacement": "0x3C030000",
+      "expected_relocations": "R_MIPS_HI16:D_800E0BE0",
+      "replacement_relocations": "R_MIPS_HI16:D_800E0BE3",
+      "note": "Bind settings cursor high half to its original plus-three symbol",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_20AE20",
+      "function": "func_151DD9E4",
+      "offset": "0x60",
+      "expected": "0x24630003",
+      "replacement": "0x24630000",
+      "expected_relocations": "R_MIPS_LO16:D_800E0BE0",
+      "replacement_relocations": "R_MIPS_LO16:D_800E0BE3",
+      "note": "Bind settings cursor low half to its original plus-three symbol",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_20AE20",
+      "function": "func_151DD9E4",
+      "offset": "0x1A8",
+      "expected": "0x24020017",
+      "replacement": "0x24020017",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit redundant return constant after the loop reaches 23",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    }
+  ]
+}

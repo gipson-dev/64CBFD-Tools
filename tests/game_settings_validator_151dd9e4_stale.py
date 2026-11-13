@@ -1,0 +1,31 @@
+"""Reject stale words and relocation bindings for all three candidate guards."""
+from pathlib import Path
+import csv,io,json,sys
+from tools import pad_generated_object as pg
+sys.modules.setdefault('pad_generated_object',pg)
+from tools import pad_c_object as pc
+root=Path(__import__('os').environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve();out=root/'conker/build/game-settings-validator-151dd9e4-durable';conker=root/'conker'
+rows=json.loads((out/'guard-row.json').read_text());assert len(rows)==3
+fields=list(rows[0]);bad=out/'invalid-guards.csv';obj=out/'return-00.o'
+def emit(items):
+    stream=io.StringIO(newline='');w=csv.DictWriter(stream,fieldnames=fields,lineterminator='\n');w.writeheader();w.writerows(items);bad.write_text(stream.getvalue())
+def run(kind):
+    if kind=='c':return pc.emit_padded_assembly(obj,conker/'retail_layout.us.txt','generated_20AE20',rodata_symbol='jtbl_800AB994',word_patches_path=bad)
+    return pg.emit_padded_assembly(obj,conker/'asm/20AE20.s',filename='generated_20AE20',rodata_symbol='jtbl_800AB994',word_patches_path=bad)
+emit(rows)
+for kind in ('c','generated'):run(kind)
+rejected=0
+for index in range(len(rows)):
+    for field in ('expected','expected_relocations'):
+        copy=[dict(r) for r in rows];value=copy[index][field]
+        copy[index][field]='0x%08X'%(int(value,0)^1) if field=='expected' else 'R_MIPS_LO16:incorrect_symbol'
+        emit(copy)
+        for kind in ('c','generated'):
+            try:run(kind)
+            except ValueError as e:
+                assert 'stale' in str(e).lower() or 'mismatch' in str(e).lower(),str(e)
+                rejected+=1
+            else:raise AssertionError((index,field,kind))
+report={'rows':len(rows),'padders':2,'stale_preimage_rejections':rejected,'uncredited':True}
+assert rejected==12
+(out/'stale-guard-screen.json').write_text(json.dumps(report,indent=2)+'\n');print(report,flush=True)
