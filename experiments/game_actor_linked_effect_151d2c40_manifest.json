@@ -1,0 +1,76 @@
+{
+  "source": {
+    "path": "conker/src/game_1FFF60.c",
+    "before_sha256": "8eb108e0e7217b22959122012f2431b1d7d881de777aaa8bfebb6fbfc994793f",
+    "after_sha256": "4547302fa4e7417034735e244c8ef5b4798392cdd859df006f27b96839453fd0",
+    "changes": [
+      {
+        "old_at": 43,
+        "new_at": 43,
+        "old": "s32 func_151D2C40();\n",
+        "new": "\n"
+      },
+      {
+        "old_at": 89,
+        "new_at": 89,
+        "old": "/* Non-matching C placeholders for asm/nonmatchings/game_1FFF60/func_151D2C40.s. */\ns32 func_151D2C40() {\n    return 0;\n",
+        "new": "\n\n#ifdef __GNUC__\n#define EFFECT_UPDATE_ALIAS __attribute__((__may_alias__))\n#else\n#define EFFECT_UPDATE_ALIAS\n#endif\ntypedef struct EFFECT_UPDATE_ALIAS {\n    u8 pad00[0x10];\n    struct127 *actor;\n    u8 actorId;\n    u8 pad15[3];\n    f32 point[3];\n    u8 matrixIndex;\n    u8 pad25;\n    s16 timer;\n    u8 flags;\n    s8 updateKind;\n    s8 releaseKind;\n    u8 pad2b;\n    void *child;\n    u8 pad30[4];\n    u32 output[3];\n} LinkedEffect151D2C40;\ntypedef struct EFFECT_UPDATE_ALIAS {\n    u32 a, b, c;\n} LinkedEffectWords151D2C40;\ntypedef s32 (*LinkedEffectUpdate151D2C40)(LinkedEffect151D2C40 *, f32 *);\nextern LinkedEffectUpdate151D2C40 D_8008FC40[];\nvoid func_15143134(f32 *, f32 *, u8 *);\n\n\n/* Update a linked actor effect, expiring or dispatching its callbacks. */\nvoid func_151D2C40(LinkedEffect151D2C40 *effect) {\n    struct127 *actor;\n    f32 point[3];\n    s8 kind;\n\n    actor = effect->actor;\n    if (!actor->interaction_state || actor->id == 255 || effect->actorId != actor->unique_id ||\n        !actor->unk1D4 || (actor->unk74 & 15) == 15) {\n        func_1516972C((struct102 *)effect);\n        return;\n    }\n    func_15143134(effect->point, point, (u8 *)actor->unk1D4 + (effect->matrixIndex << 6));\n    if (effect->flags & 1) {\n        effect->timer = (s16)((u32)(s32)effect->timer - (u32)D_800BE9E4); /* Match retail's wrapping subtraction. */\n        if (effect->timer < 0) {\n            kind = effect->releaseKind;\n            if (kind != -1) {\n                D_8008FC48[kind]((ReleaseChainNode *)effect, point);\n            }\n            effect->child = 0;\n            func_1516972C((struct102 *)effect);\n            return;\n        }\n    }\n    kind = effect->updateKind;\n    if (kind != -1 && !D_8008FC40[kind](effect, point)) {\n        func_1516972C((struct102 *)effect);\n        return;\n    }\n    /* Copy the transformed point without changing its float bit patterns. */\n    *(LinkedEffectWords151D2C40 *)&effect->output[0] = *(LinkedEffectWords151D2C40 *)point;\n"
+      },
+      {
+        "old_at": 93,
+        "new_at": 154,
+        "old": "",
+        "new": "\n"
+      }
+    ]
+  },
+  "guards": {
+    "path": "conker/retail_word_patches.us.csv",
+    "before_sha256": "0098ebb697fbbdda7e6e2b0fb1b5e5c86d1a24af79885b9d5af717d722283993",
+    "after_sha256": "9efb5b87bb5873077f9992a1ed2c25ff3b0d8da941a873d147f01c411a6c4c08",
+    "append": "game_1FFF60,func_151D2C40,0x30,0x9058003B,0x92180014,-,-,Normalize independent actor/effect identity-byte load order,,,false\ngame_1FFF60,func_151D2C40,0x34,0x92190014,0x9059003B,-,-,Normalize independent actor/effect identity-byte load order,,,false\n"
+  },
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/nonmatchings/game_1FFF60/func_151D2C40.s": "49b92d04296e13c6bcab2862c4032dda2c741e09df39f8ebcfd74e1bb9f6317d",
+    "conker/asm/nonmatchings/game_1944C0/func_151670C0.s": "034998e3b4c9c4a293de7388184e36d2f199ffa0f21129fd8c89b65bf0628042",
+    "conker/Makefile": "8b2e63494fe95f4ce933206e52319ca57022a2adad29272b89eb3aedc0e856af",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/variables.h": "0104542deea4d809471535255a7493c8b01e1ec81af95c994d88831ca65ef9af",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "baseline": {
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.elf": "d5bbfba6aa6322d208240feea43a51f641662a7a93204572f1c711bf5c6cd021"
+  },
+  "guard_rows": [
+    {
+      "filename": "game_1FFF60",
+      "function": "func_151D2C40",
+      "offset": "0x30",
+      "expected": "0x9058003B",
+      "replacement": "0x92180014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent actor/effect identity-byte load order",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_1FFF60",
+      "function": "func_151D2C40",
+      "offset": "0x34",
+      "expected": "0x92190014",
+      "replacement": "0x9059003B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent actor/effect identity-byte load order",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ]
+}
