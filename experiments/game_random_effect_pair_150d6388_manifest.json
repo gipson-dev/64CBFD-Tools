@@ -1,0 +1,26 @@
+{
+  "source": "conker/src/game/generated_1028F0.c",
+  "assembly": "conker/asm/1028F0.s",
+  "owner": "generated_1028F0",
+  "declarations": "f32 func_150ADA68(void);\ns32 func_150ADA20(void);\nvoid *func_151541B8(f32 *, f32, f32, f32, f32, u8, s32);\nvoid *func_15154884(f32 *, f32, f32, f32, u8, s32);\nextern f32 D_800A0AB0, D_800A0AB4;\n",
+  "targets": {
+    "func_150D6388": {
+      "entry": 353198984,
+      "rom_offset": 1062968,
+      "size": 172,
+      "sha256": "401bfcaa025c54cbf2982fb8b4c527eedc8c95dc969cb305dcd108137b7f1a68",
+      "body": "void func_150D6388(f32 *position, u8 selector, s32 context) {\n    u32 value;\n    f32 first;\n    first = func_150ADA68();\n    value = (u32)func_150ADA20();\n    func_151541B8(position, first * 4.0f + 15.0f, 1.3745700120925903f, (value % 56U) + 200U, 0.0f, selector, context);\n}",
+      "comment": "/* Submit a randomized point effect with a bounded lifetime. */",
+      "pragma": "#pragma GLOBAL_ASM(\"asm/nonmatchings/generated_1028F0/func_150D6388.s\")"
+    },
+    "func_150D6434": {
+      "entry": 353199156,
+      "rom_offset": 1063140,
+      "size": 180,
+      "sha256": "82c764372c4fb2574a14439a3329985891c1e3e6fc69d9237a83b6004f796846",
+      "body": "void func_150D6434(f32 *position, u8 selector, s32 context) {\n    f32 third;\n    f32 second;\n    f32 first;\n    first = func_150ADA68();\n    second = func_150ADA68();\n    third = func_150ADA68();\n    func_15154884(position, first * 3.0f + 8.0f, second * D_800A0AB0 + D_800A0AB4, third * 50.0f + 100.0f, selector, context);\n}",
+      "comment": "/* Submit a randomized point effect with a scaled spread. */",
+      "pragma": "#pragma GLOBAL_ASM(\"asm/nonmatchings/generated_1028F0/func_150D6434.s\")"
+    }
+  }
+}
