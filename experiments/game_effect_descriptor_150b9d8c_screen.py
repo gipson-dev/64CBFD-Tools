@@ -39,8 +39,12 @@ def assemble(text,label):
 
 def prepare():
     OUT.mkdir(parents=True,exist_ok=True)
-    source=(ROOT/MANIFEST['source']).read_bytes()
-    if sha(source)!=MANIFEST['source_sha256']:raise ValueError('Owner baseline changed')
+    source=(ROOT/MANIFEST['source']).read_bytes().replace(b'\r\n',b'\n')
+    if sha(source)!=MANIFEST['source_sha256']:
+        from tools.experiments import game_effect_descriptor_150b9d8c_direct as direct
+        if source!=direct.MANIFEST['selected_source'].encode():raise ValueError('Owner baseline changed')
+        source=direct.MANIFEST['old_source'].encode()
+        if sha(source)!=MANIFEST['source_sha256']:raise ValueError('Archived owner baseline changed')
     before,diagnostics=compile_owner(ROOT,OUT,source.decode(),'baseline');objects={}
     for label,spec in MANIFEST['candidates'].items():
         obj,current=compile_owner(ROOT,OUT,spec['source'],label)
