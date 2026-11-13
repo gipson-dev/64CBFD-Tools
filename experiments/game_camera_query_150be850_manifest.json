@@ -1,0 +1,883 @@
+{
+  "sources": {
+    "game_C8950": {
+      "path": "conker/src/game_C8950.c",
+      "before_sha256": "85b7d65d351e1c598b633fe633413ed5e310a2b2df8cafd19be2ded9e51fb401",
+      "after_sha256": "b72db30ce856086099b9697a04a3c38113369886534da84dd88c85dbdb40d48e",
+      "changes": [
+        {
+          "old_at": 1,
+          "new_at": 1,
+          "old": "",
+          "new": "#include <stdarg.h>\n"
+        },
+        {
+          "old_at": 28,
+          "new_at": 29,
+          "old": "s32 func_1509BE40();\n",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        },
+        {
+          "old_at": 215,
+          "new_at": 216,
+          "old": "/* Non-matching C placeholders for asm/nonmatchings/game_C8950/func_1509BE40.s. */\ns32 func_1509BE40() {\n    return 0;\n",
+          "new": "/* Build the variable-argument script query and dispatch its selected provider. */\nextern s32 D_800D3840;\nextern s32 D_800D2F60[];\nextern s32 (*D_80088498[])(s32, s32, s32 *);\ns32 func_1509BE40(s32 count, ...) {\n    va_list args;\n    s32 key, selector, type, previous, result, i;\n    register s32 flags;\n    va_start(args, count);\n    flags = va_arg(args, s32);\n    key = va_arg(args, s32);\n    previous = D_800D3840;\n    type = ((flags & 0xf000) >> 12) - 1;\n    flags &= 0xfff;\n    selector = flags;\n    D_800D2F60[0] = selector;\n    D_800D2F60[1] = key;\n    for (i = 0; i < count; i++) D_800D2F60[i + 2] = va_arg(args, s32);\n    D_800D3840 = count + 2;\n    result = D_80088498[type](selector, key, D_800D2F60);\n    D_800D3840 = previous;\n    va_end(args);\n    return result;\n"
+        }
+      ]
+    },
+    "game/generated_EBD00": {
+      "path": "conker/src/game/generated_EBD00.c",
+      "before_sha256": "87925081c5f25def600e126b6df05d5ece1bf6b76608a9188616094aa898263c",
+      "after_sha256": "8d642bfd9a37edb30b057f11df0f28869eb3f85afacb43a870317198e7e7417c",
+      "changes": [
+        {
+          "old_at": 2,
+          "new_at": 2,
+          "old": "/* Non-matching placeholders for the text-only asm slice asm/EBD00.s. */\n",
+          "new": "/* Camera-condition callback for the script-selected view. */\n"
+        },
+        {
+          "old_at": 4,
+          "new_at": 4,
+          "old": "s32 func_150BE850() {\n    return 0;\n",
+          "new": "#include \"structs.h\"\nextern f32 D_800A00B0, D_800A00B4;\nextern u8 D_800CC335;\ns32 func_1509BE40(s32, ...);\nvoid func_1509BFB0(s32, s32, s32, ...);\nvoid func_1512868C(struct108 *);\ns32 func_15123934(struct108 *, s32, s32, s32, s32);\nvoid func_151254F4(struct108 *, s32);\nvoid func_15123070(struct108 *);\ns32 func_151239CC(struct108 *, s32);\n\n/* Update camera state from the current script conditions. */\nvoid func_150BE850(s32 cameraAddress) {\n    s32 value;\n    s32 condition;\n    f32 width;\n    f32 height;\n    condition = func_1509BE40(0, 0x2006, 0xB7);\n    condition = func_1509BE40(0, condition | 0x2000, 0xBC);\n    value = func_1509BE40(0, 0x2000, 0xBB);\n    if (condition != 0 && value != -1) {\n        func_1509BFB0(0, 0x400E, 1);\n        if (*(s32 *)((u8 *)(struct108 *)cameraAddress + 0x2C) != 8) {\n            func_1512868C((struct108 *)cameraAddress);\n        }\n        if (func_15123934((struct108 *)cameraAddress, 8, 0, *(s32 *)((u8 *)(struct108 *)cameraAddress + 0x134), 3)) {\n            func_151254F4((struct108 *)cameraAddress, D_800CC335 - 1);\n            *(u32 *)((u8 *)(struct108 *)cameraAddress + 0x84) |= 0x1000200;\n            *(s16 *)((u8 *)(struct108 *)cameraAddress + 0x73C) = 0;\n            *(u32 *)((u8 *)(struct108 *)cameraAddress + 0x84) &= ~4;\n            *(f32 *)((u8 *)(struct108 *)cameraAddress + 0x674) = 0.0f;\n        }\n        width = D_800A00B0;\n        height = D_800A00B4;\n        *(f32 *)((u8 *)(struct108 *)cameraAddress + 0x348) = width;\n        *(f32 *)((u8 *)(struct108 *)cameraAddress + 0x34C) = width;\n        *(f32 *)((u8 *)(struct108 *)cameraAddress + 0x374) = height;\n        *(f32 *)((u8 *)(struct108 *)cameraAddress + 0x190) = 0.0f;\n        func_15123070((struct108 *)cameraAddress);\n    } else if (func_151239CC((struct108 *)cameraAddress, 3)) {\n        func_151254F4((struct108 *)cameraAddress, 0);\n        *(f32 *)((u8 *)(struct108 *)cameraAddress + 0x674) = 0.0f;\n        func_1509BFB0(0, 0x400E, 0);\n    }\n"
+        }
+      ]
+    },
+    "game_DBA60": {
+      "path": "conker/src/game_DBA60.c",
+      "before_sha256": "425545976a6ef5fde58e0fb5fd050401797b07c327224c21352e10fb2307c6ff",
+      "after_sha256": "4f5679010ff5426138d12c1d58e517361d69144312df4842fba7de48cb323d29",
+      "changes": [
+        {
+          "old_at": 1,
+          "new_at": 1,
+          "old": "",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_11F780": {
+      "path": "conker/src/game/generated_11F780.c",
+      "before_sha256": "fdd3abb10e09badd3e6e01313c83a2e786d7960e48a8bb16893f453becbfde8b",
+      "after_sha256": "4e4c887439dec3fd1c902e880180db8f4e6290468f7d37e6bafdd442cc9914d2",
+      "changes": [
+        {
+          "old_at": 13,
+          "new_at": 13,
+          "old": "s32 func_1509BE40(s32, s32, s32, s32);\n",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_11FF10": {
+      "path": "conker/src/game/generated_11FF10.c",
+      "before_sha256": "709139a90ac5c27bf50c318281c8a59ca72e6f4107a9474e0fd74020fac56a79",
+      "after_sha256": "e4fffbc6568425c4074348dc7746ca80479028b6966a5d3b852f6ac1cf418e91",
+      "changes": [
+        {
+          "old_at": 3,
+          "new_at": 3,
+          "old": "s32 func_1509BE40(s32, s32, s32, s32);\n",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_122760": {
+      "path": "conker/src/game/generated_122760.c",
+      "before_sha256": "d434d036928ca77148f40c0e07761792a3d08e215c689b81cbc7c64a0e459476",
+      "after_sha256": "d5fdea423e6e29a1699f2c7d7f56693c672cf3b774b51be6624a06a0d5f3cd3f",
+      "changes": [
+        {
+          "old_at": 4,
+          "new_at": 4,
+          "old": "s32 func_1509BE40();\n",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_126ED0": {
+      "path": "conker/src/game/generated_126ED0.c",
+      "before_sha256": "ef7e62b11b9af05bea413e47cac2296d2c4eea99e65a2c02820a253aea11ff83",
+      "after_sha256": "43e13a8aaa3fb9703bbb27c418d0f9919d5163b7686626c00932f05a34995ac7",
+      "changes": [
+        {
+          "old_at": 1,
+          "new_at": 1,
+          "old": "",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_E8BB0": {
+      "path": "conker/src/game/generated_E8BB0.c",
+      "before_sha256": "5dc7e97bf3cc857db210e470241ab8a58515ef756db2869f224cdb9daa4969a1",
+      "after_sha256": "5363c669d32e05a44ffc20f0292e8543803ceecaa572e45d7128288cc368ebab",
+      "changes": [
+        {
+          "old_at": 4,
+          "new_at": 4,
+          "old": "s32 func_1509BE40();\n",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_F4800": {
+      "path": "conker/src/game/generated_F4800.c",
+      "before_sha256": "0340f4a927dbf28005c7bc6f99727861567a5ac17cb0d185513df469bd9ebfe5",
+      "after_sha256": "b5af4f1545507b9b37f7b2aa332b1552bd39a14cf2cf900c9abdd11a0b09bf39",
+      "changes": [
+        {
+          "old_at": 4,
+          "new_at": 4,
+          "old": "s32 func_1509BE40();\n",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_FEFF0": {
+      "path": "conker/src/game/generated_FEFF0.c",
+      "before_sha256": "1da010fc6b004feb0ef0151e78f4d76e2cb22b887584b248049465d0ca652656",
+      "after_sha256": "5f86e6c9dd721bafa1d2f3d112c3466ff2de1c80186e82df49f47a05f884a0f1",
+      "changes": [
+        {
+          "old_at": 7,
+          "new_at": 7,
+          "old": "s32 func_1509BE40();\n",
+          "new": "s32 func_1509BE40(s32, ...);\n"
+        }
+      ]
+    },
+    "game/generated_C98F0": {
+      "path": "conker/src/game/generated_C98F0.c",
+      "before_sha256": "d2fa507662285bbed5f519167648df62f38f2455d1de21e805a7b3851d395a52",
+      "after_sha256": "87e018c10ba514891cfe51f29b3b261135e2d9e02d6ddcc02380b837f0a1d0f5",
+      "changes": [
+        {
+          "old_at": 17,
+          "new_at": 17,
+          "old": "s32 func_1509C7C8(u32 identity, u32 selector, u32 *record) {\n",
+          "new": "s32 func_1509C7C8(s32 rawIdentity, s32 rawSelector, s32 *record) {\n    u32 identity = (u32)rawIdentity, selector = (u32)rawSelector;\n"
+        }
+      ]
+    },
+    "game/generated_C4DC0": {
+      "path": "conker/src/game/generated_C4DC0.c",
+      "before_sha256": "b89ddf7f554a52dcee9adc0b6c7cecedafb852254043688e283b9633af34c5c9",
+      "after_sha256": "2097074ff7299994470032249c6985bf25c9c85fa6d5a6ab30678e17c003153d",
+      "changes": [
+        {
+          "old_at": 72,
+          "new_at": 72,
+          "old": "s32 func_15099C14() {\n",
+          "new": "s32 func_15099C14(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game/generated_CBDB0": {
+      "path": "conker/src/game/generated_CBDB0.c",
+      "before_sha256": "74fee26e0d6505911d041e7f4f7a5f7bf235426658399b1f0079c50a0fbb0df7",
+      "after_sha256": "314b8d568938ffd9f1a0d6b375d9b1b7081987585987b58cefb1cd4a1183d864",
+      "changes": [
+        {
+          "old_at": 10,
+          "new_at": 10,
+          "old": "s32 func_1509ED74() {\n",
+          "new": "s32 func_1509ED74(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        },
+        {
+          "old_at": 46,
+          "new_at": 46,
+          "old": "s32 func_1509F33C(s32 arg0, s32 arg1, s32 arg2) {\n",
+          "new": "s32 func_1509F33C(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        },
+        {
+          "old_at": 172,
+          "new_at": 172,
+          "old": "s32 func_1509F800(s32 arg0, s32 arg1, s32 arg2) {\n",
+          "new": "s32 func_1509F800(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game/generated_CD860": {
+      "path": "conker/src/game/generated_CD860.c",
+      "before_sha256": "ca0d0594089a423526c34246f5b55328e1167b914003b0b4170ce85cd4123c6a",
+      "after_sha256": "721b2edd344cf6a26a1e13b8ab8ef59b505605f4e7886228be018fc0021a8c70",
+      "changes": [
+        {
+          "old_at": 37,
+          "new_at": 37,
+          "old": "s32 func_150A04D8() {\n",
+          "new": "s32 func_150A04D8(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game/generated_CCD00": {
+      "path": "conker/src/game/generated_CCD00.c",
+      "before_sha256": "fec152a6ebd9f9b618943dd84630bb4aeaa13dc5df695b50d3ad662c19fabe38",
+      "after_sha256": "659eeda52046c2c08c504bc61bf445abf7dd5d6b0d4e4cd7cc9f6637708ee683",
+      "changes": [
+        {
+          "old_at": 8,
+          "new_at": 8,
+          "old": "s32 func_1509FE0C() {\n",
+          "new": "s32 func_1509FE0C(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game/generated_CBAF0": {
+      "path": "conker/src/game/generated_CBAF0.c",
+      "before_sha256": "d972af66394529672e044d62b44c7df159e6d184be5a73e728addc8c04a2586c",
+      "after_sha256": "1637a6997767abc482119d4ad914a1a27f12da35fb8064874359712fcea93855",
+      "changes": [
+        {
+          "old_at": 35,
+          "new_at": 35,
+          "old": "s32 func_1509E6F0(u8 *arg0, s32 arg1, s32 arg2) {\n",
+          "new": "s32 func_1509E6F0(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        },
+        {
+          "old_at": 46,
+          "new_at": 46,
+          "old": "s32 func_1509E8A0(s32 arg0, s32 arg1, s32 arg2) {\n",
+          "new": "s32 func_1509E8A0(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game_CB1C0": {
+      "path": "conker/src/game_CB1C0.c",
+      "before_sha256": "9ba3ee3b72a1490b7857948a2f28bc829412e0d274503c47be38b29979035a49",
+      "after_sha256": "39ec602d28a1233559da3527028f251e25df5d61b85845792fddef292ac2a35f",
+      "changes": [
+        {
+          "old_at": 55,
+          "new_at": 55,
+          "old": "s32 func_1509DEC4(s32 arg0, s32 arg1, struct215 *arg2) {\n",
+          "new": "s32 func_1509DEC4(s32 arg0, s32 arg1, s32 *packet) {\n"
+        },
+        {
+          "old_at": 58,
+          "new_at": 58,
+          "old": "        return func_15178C9C(arg0 & 0xff, func_15084000(arg2->unk8 & mask));\n",
+          "new": "        return func_15178C9C(arg0 & 0xff, func_15084000(((struct215 *)packet)->unk8 & mask));\n"
+        }
+      ]
+    },
+    "game/generated_C3E20": {
+      "path": "conker/src/game/generated_C3E20.c",
+      "before_sha256": "d47c1306498c106e231225caf80a2fd3a1ff8484f700c3afef2a2cc149b72640",
+      "after_sha256": "852d5a4fc74ae71a5d9599f13c46526b43ee828fa97dfcc11b172cff354d70f7",
+      "changes": [
+        {
+          "old_at": 51,
+          "new_at": 51,
+          "old": "s32 func_1509759C() {\n",
+          "new": "s32 func_1509759C(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game/generated_CD5A0": {
+      "path": "conker/src/game/generated_CD5A0.c",
+      "before_sha256": "45612d1801211160c705ab79c63f62b88acbafda1b0c6d8744af9866b15e2af3",
+      "after_sha256": "de31172ffb1f175c3adb0fc16a7680ad9a8d4bddae4c94f6ecccfe3951e7b27a",
+      "changes": [
+        {
+          "old_at": 95,
+          "new_at": 95,
+          "old": "s32 func_150A0374(s32 arg0, s32 arg1, s32 arg2) {\n",
+          "new": "s32 func_150A0374(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game/generated_C9EC0": {
+      "path": "conker/src/game/generated_C9EC0.c",
+      "before_sha256": "4961b8c6b8a39ac5e877f7f58f5a14f214cf6d9ea50a51f07560083548773c63",
+      "after_sha256": "d9e0e81cfad47c11c7494bdf63b4bc146b38b887514f6a71da2b9a2bfe68225b",
+      "changes": [
+        {
+          "old_at": 373,
+          "new_at": 373,
+          "old": "s32 func_1509DBBC() {\n",
+          "new": "s32 func_1509DBBC(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    },
+    "game/generated_CB3D0": {
+      "path": "conker/src/game/generated_CB3D0.c",
+      "before_sha256": "898ae03067a45599844b0aadc20161340ebd76f155b04c16ed1b84194418125f",
+      "after_sha256": "e62210302dfd1dae46bcb50276cb7cdf79043fbc8e58d63e9e7bb0d128387e01",
+      "changes": [
+        {
+          "old_at": 24,
+          "new_at": 24,
+          "old": "s32 func_1509E3DC() {\n",
+          "new": "s32 func_1509E3DC(s32 arg0, s32 arg1, s32 *arg2) {\n"
+        }
+      ]
+    }
+  },
+  "guards": [
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x30",
+      "expected": "0x244f0007",
+      "replacement": "0x24590007",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x34",
+      "expected": "0x1e43024",
+      "replacement": "0x3243024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x38",
+      "expected": "0x8cd80000",
+      "replacement": "0x8ccc0000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x40",
+      "expected": "0x8d690000",
+      "replacement": "0x30eaf000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x44",
+      "expected": "0x3c010000",
+      "replacement": "0x8d690000",
+      "expected_relocations": "R_MIPS_HI16:D_800D2F60",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x48",
+      "expected": "0x30ec0fff",
+      "replacement": "0xa7b03",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x4c",
+      "expected": "0xac2c0000",
+      "replacement": "0x3c010000",
+      "expected_relocations": "R_MIPS_LO16:D_800D2F60",
+      "replacement_relocations": "R_MIPS_HI16:D_800D2F60",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x50",
+      "expected": "0x30eaf000",
+      "replacement": "0x30f80fff",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x54",
+      "expected": "0xacb03",
+      "replacement": "0x25eaffff",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x58",
+      "expected": "0x3c010000",
+      "replacement": "0x00000000",
+      "expected_relocations": "R_MIPS_HI16:D_800D2F60",
+      "replacement_relocations": "-",
+      "note": "Omit duplicate packet-base high relocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x5c",
+      "expected": "0x24c30004",
+      "replacement": "0x3003825",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x60",
+      "expected": "0x272affff",
+      "replacement": "0x24c30004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x64",
+      "expected": "0x1803825",
+      "replacement": "0xac380000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800D2F60",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x6c",
+      "expected": "0xafb80028",
+      "replacement": "0xafac0038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x74",
+      "expected": "0xac380004",
+      "replacement": "0xac2c0000",
+      "expected_relocations": "R_MIPS_LO16:D_800D2F60",
+      "replacement_relocations": "R_MIPS_LO16:D_800D2F64",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_C8950",
+      "function": "func_1509BE40",
+      "offset": "0x150",
+      "expected": "0x8fa50028",
+      "replacement": "0x8fa50038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore retail argument homes and packet scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_EBD00",
+      "function": "func_150BE850",
+      "offset": "0xf0",
+      "expected": "0xC4220000",
+      "replacement": "0xC4260000",
+      "expected_relocations": "R_MIPS_LO16:D_800A00B4",
+      "replacement_relocations": "R_MIPS_LO16:D_800A00B4",
+      "note": "Normalize closed floating-register allocation cycle",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_EBD00",
+      "function": "func_150BE850",
+      "offset": "0xf4",
+      "expected": "0x44803000",
+      "replacement": "0x44804000",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed floating-register allocation cycle",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_EBD00",
+      "function": "func_150BE850",
+      "offset": "0x104",
+      "expected": "0xE6020374",
+      "replacement": "0xE6060374",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed floating-register allocation cycle",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_EBD00",
+      "function": "func_150BE850",
+      "offset": "0x10c",
+      "expected": "0xE6060190",
+      "replacement": "0xE6080190",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed floating-register allocation cycle",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_EBD00",
+      "function": "func_150BE850",
+      "offset": "0x130",
+      "expected": "0x44804000",
+      "replacement": "0x44805000",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed floating-register allocation cycle",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_EBD00",
+      "function": "func_150BE850",
+      "offset": "0x144",
+      "expected": "0xE6080674",
+      "replacement": "0xE60A0674",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed floating-register allocation cycle",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_C4DC0",
+      "function": "func_15099C14",
+      "offset": "0x0",
+      "expected": "0xafa40000",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C4DC0",
+      "function": "func_15099C14",
+      "offset": "0x4",
+      "expected": "0xafa50004",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C4DC0",
+      "function": "func_15099C14",
+      "offset": "0x8",
+      "expected": "0xafa60008",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CBDB0",
+      "function": "func_1509ED74",
+      "offset": "0x0",
+      "expected": "0xafa40000",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CBDB0",
+      "function": "func_1509ED74",
+      "offset": "0x4",
+      "expected": "0xafa50004",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CBDB0",
+      "function": "func_1509ED74",
+      "offset": "0x8",
+      "expected": "0xafa60008",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CD860",
+      "function": "func_150A04D8",
+      "offset": "0x0",
+      "expected": "0xafa40000",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CD860",
+      "function": "func_150A04D8",
+      "offset": "0x4",
+      "expected": "0xafa50004",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CD860",
+      "function": "func_150A04D8",
+      "offset": "0x8",
+      "expected": "0xafa60008",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CCD00",
+      "function": "func_1509FE0C",
+      "offset": "0x0",
+      "expected": "0xafa40000",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CCD00",
+      "function": "func_1509FE0C",
+      "offset": "0x4",
+      "expected": "0xafa50004",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CCD00",
+      "function": "func_1509FE0C",
+      "offset": "0x8",
+      "expected": "0xafa60008",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C3E20",
+      "function": "func_1509759C",
+      "offset": "0x0",
+      "expected": "0xafa40000",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C3E20",
+      "function": "func_1509759C",
+      "offset": "0x4",
+      "expected": "0xafa50004",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C3E20",
+      "function": "func_1509759C",
+      "offset": "0x8",
+      "expected": "0xafa60008",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C9EC0",
+      "function": "func_1509DBBC",
+      "offset": "0x0",
+      "expected": "0xafa40000",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C9EC0",
+      "function": "func_1509DBBC",
+      "offset": "0x4",
+      "expected": "0xafa50004",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_C9EC0",
+      "function": "func_1509DBBC",
+      "offset": "0x8",
+      "expected": "0xafa60008",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CB3D0",
+      "function": "func_1509E3DC",
+      "offset": "0x0",
+      "expected": "0xafa40000",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CB3D0",
+      "function": "func_1509E3DC",
+      "offset": "0x4",
+      "expected": "0xafa50004",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_CB3D0",
+      "function": "func_1509E3DC",
+      "offset": "0x8",
+      "expected": "0xafa60008",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Omit unused placeholder argument-home store",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    }
+  ],
+  "guards_sha256": "176cccdd40daf92fe952f6e965ed08d4fff7c0b78f7be565badca212f5059b69",
+  "rom_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "layout_sha256": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365"
+}
