@@ -1,0 +1,18 @@
+{
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/src/game_15B200.c": "f79072f8f70c3a05d93a8775fe446a96fcd54f488f7a87472a96aee57632a449",
+    "conker/asm/nonmatchings/game_15B200/func_1512DEA4.s": "a0eca3a4c3675693bda05aeb595db21424fe82229147d636c85ccd5e807d3e4c",
+    "conker/asm/76A60.s": "32ebe8067e3bd5d8ae1b09a2185d250c54df3c490064e8e14d1045a9d48502bf",
+    "conker/asm/156160.s": "4e10813d55b4483b99161e35e8178361de936b8e589725cb1dc81e24d6543954",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/Makefile": "93941a34b48d3a2d920743e66a3aaa3e0c77a5ad8a484224f74814d191339be5",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "conker/include/variables.h": "0104542deea4d809471535255a7493c8b01e1ec81af95c994d88831ca65ef9af",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "retail_words": 166,
+  "body_va": "0x1512DEA4",
+  "status": "private and uncredited"
+}
