@@ -1,0 +1,157 @@
+{
+  "paths": {
+    "point": {
+      "path": "conker/src/game_161520.c",
+      "before_sha256": "d905084e5b5710e33f77bc1015b0ca9a15d49360a9158d8c4a85c78cad510a31",
+      "after_sha256": "f975580cbede73bfebe02238c507e3bbdae5112b99df01835cc7a27f1ae3a440",
+      "changes": [
+        {
+          "old_at": 51,
+          "new_at": 51,
+          "old": "s32 func_151382E0();\n",
+          "new": "struct ActorEffectSurface;\nvoid func_151382E0(Position161520 *, s32, struct ActorEffectSurface *, u8, s32);\n"
+        },
+        {
+          "old_at": 564,
+          "new_at": 565,
+          "old": "}/* Non-matching C placeholders for asm/nonmatchings/game_161520/func_151382E0.s. */\ns32 func_151382E0() {\n    return 0;\n}/* Non-matching C placeholders for asm/nonmatchings/game_161520/func_15138424.s. */\n",
+          "new": "}\n\n/* Point effect descriptor passed to the trail factory. */\ntypedef struct {\n    Position161520 position;\n    f32 timeBase, timeRange, scaleBase, scaleRange, radiusBase, radiusRange;\n    s16 countBase, countRange, requestSelectorBase, requestSelectorRange;\n    s16 durationBase, durationRange, modeBase, modeRange;\n    u8 selector, private35[3];\n    f32 opaqueChance;\n    s16 firstValue, secondValue;\n    s32 requestValue;\n} LocalizedTrailInput;\ntypedef struct { s16 firstAngleBase, firstAngleRange, secondAngleBase, secondAngleRange; } AngularTrailInput;\ntypedef struct { AngularTrailInput angular; LocalizedTrailInput localized; } PointEffectDescriptor161520;\nextern u8 D_800A3FE6[];\nextern f32 D_800A4830, D_800A4834, D_800A4838, D_800A483C, D_800A4840;\nvoid func_15153F18(void *, void *, s32, s32, s32);\n\n/* Submit the point descriptor unless the selected effect type is disabled. */\nvoid func_151382E0(Position161520 *position, s32 type, struct ActorEffectSurface *surface, u8 group, s32 context) {\n    u32 channel = group;\n    u8 category = D_800A3FE6[type * 16];\n    PointEffectDescriptor161520 descriptor;\n    if (category != 2) {\n        descriptor.localized.position = *position;\n        descriptor.localized.timeBase = D_800A4830;\n        descriptor.localized.timeRange = D_800A4834;\n        descriptor.localized.scaleBase = D_800A4838;\n        descriptor.localized.scaleRange = D_800A483C;\n        descriptor.localized.radiusBase = 4.0f;\n        descriptor.localized.radiusRange = 9.0f;\n        descriptor.localized.countBase = 18;\n        descriptor.localized.countRange = 7;\n        descriptor.angular.firstAngleBase = 0;\n        descriptor.angular.firstAngleRange = 255;\n        descriptor.angular.secondAngleBase = -63;\n        descriptor.angular.secondAngleRange = 78;\n        descriptor.localized.requestSelectorBase = 3;\n        descriptor.localized.requestSelectorRange = 3;\n        descriptor.localized.durationBase = 20;\n        descriptor.localized.durationRange = 30;\n        descriptor.localized.modeBase = 155;\n        descriptor.localized.modeRange = 100;\n        descriptor.localized.firstValue = 16;\n        descriptor.localized.secondValue = 15;\n        descriptor.localized.requestValue = 0;\n        descriptor.localized.opaqueChance = D_800A4840;\n        descriptor.localized.selector = category == 1 ? 1 : 0;\n        func_15153F18(&descriptor.angular, &descriptor.localized, (s32)surface, channel, context);\n    }\n}\n\n/* Non-matching C placeholders for asm/nonmatchings/game_161520/func_15138424.s. */\n"
+        }
+      ]
+    },
+    "helper": {
+      "path": "conker/src/game/generated_17CAF0.c",
+      "before_sha256": "27cf4697394c80861d80e37ff89cd533c9a39fa579eb88153e0483c86a788e0c",
+      "after_sha256": "53780bab36a07c1a33fb7b05e343e9b627257eae9567ae46eb516ebad338858f",
+      "changes": [
+        {
+          "old_at": 874,
+          "new_at": 874,
+          "old": "    f32 position[3];\n",
+          "new": "    struct { f32 x, y, z; } position;\n"
+        },
+        {
+          "old_at": 968,
+          "new_at": 968,
+          "old": "void func_15153F18(AngularTrailInput *arg0, LocalizedTrailInput *arg1,\n                    s32 arg2, s32 arg3, s32 arg4) {\n",
+          "new": "void func_15153F18(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {\n    AngularTrailInput *angularInput = (AngularTrailInput *)arg0;\n    LocalizedTrailInput *localizedInput = (LocalizedTrailInput *)arg1;\n"
+        },
+        {
+          "old_at": 981,
+          "new_at": 982,
+          "old": "    remaining = (u32)func_150ADA20() % ((u32)arg1->countRange + 1U)\n                + arg1->countBase;\n",
+          "new": "    remaining = (u32)func_150ADA20() % ((u32)localizedInput->countRange + 1U)\n                + localizedInput->countBase;\n"
+        },
+        {
+          "old_at": 989,
+          "new_at": 990,
+          "old": "                (s16)(firstRandom % ((u32)arg0->firstAngleRange + 1U)\n                      + arg0->firstAngleBase),\n                (s16)(secondRandom % ((u32)arg0->secondAngleRange + 1U)\n                      + arg0->secondAngleBase),\n                func_150ADA68() * arg1->radiusRange + arg1->radiusBase,\n",
+          "new": "                (s16)(firstRandom % ((u32)angularInput->firstAngleRange + 1U)\n                      + angularInput->firstAngleBase),\n                (s16)(secondRandom % ((u32)angularInput->secondAngleRange + 1U)\n                      + angularInput->secondAngleBase),\n                func_150ADA68() * localizedInput->radiusRange + localizedInput->radiusBase,\n"
+        },
+        {
+          "old_at": 1001,
+          "new_at": 1002,
+          "old": "                arg1,\n",
+          "new": "                localizedInput,\n"
+        },
+        {
+          "old_at": 1003,
+          "new_at": 1004,
+          "old": "                temp_f22 * arg1->scaleRange + arg1->scaleBase,\n                (s16)(durationRandom % ((u32)arg1->durationRange + 1U)\n                      + arg1->durationBase),\n                modeRandom % ((u32)arg1->modeRange + 1U) + arg1->modeBase,\n                temp_f20 * arg1->timeRange + arg1->timeBase,\n                requestRandom % ((u32)arg1->requestSelectorRange + 1U)\n                    + arg1->requestSelectorBase,\n                func_150ADA68() < arg1->opaqueChance,\n",
+          "new": "                temp_f22 * localizedInput->scaleRange + localizedInput->scaleBase,\n                (s16)(durationRandom % ((u32)localizedInput->durationRange + 1U)\n                      + localizedInput->durationBase),\n                modeRandom % ((u32)localizedInput->modeRange + 1U) + localizedInput->modeBase,\n                temp_f20 * localizedInput->timeRange + localizedInput->timeBase,\n                requestRandom % ((u32)localizedInput->requestSelectorRange + 1U)\n                    + localizedInput->requestSelectorBase,\n                func_150ADA68() < localizedInput->opaqueChance,\n"
+        },
+        {
+          "old_at": 1014,
+          "new_at": 1015,
+          "old": "                arg1->selector,\n",
+          "new": "                localizedInput->selector,\n"
+        },
+        {
+          "old_at": 1016,
+          "new_at": 1017,
+          "old": "                arg1->firstValue,\n                arg1->secondValue,\n                arg1->requestValue,\n",
+          "new": "                localizedInput->firstValue,\n                localizedInput->secondValue,\n                localizedInput->requestValue,\n"
+        }
+      ]
+    },
+    "effect": {
+      "path": "conker/src/game_16EE20.c",
+      "before_sha256": "c4f99269b6081edd3315823178e7fe015597175d71874f36c7bc745b07a1e9c0",
+      "after_sha256": "9ae5ccf00a1e6a963b2fec07ffc5433074c3e35eed12e9b3b17769470cbca2e2",
+      "changes": [
+        {
+          "old_at": 34,
+          "new_at": 34,
+          "old": "void func_15153F18(GameScaledDescriptor *, struct17 *, s32, u8, s32);\n",
+          "new": "void func_15153F18(void *, void *, s32, s32, s32);\n"
+        }
+      ]
+    },
+    "trail": {
+      "path": "conker/src/game_2062D0.c",
+      "before_sha256": "76e578a34ecd20fcce7d28e16bbe767a28c3929aa131b873405bd81ffc5d8ed6",
+      "after_sha256": "e4ad1cbf492cdbe66427dd58959277fbfe1be7d58f1f98c3dd4ce83dfc208742",
+      "changes": [
+        {
+          "old_at": 525,
+          "new_at": 525,
+          "old": "    f32 position[3], timeBase, timeRange, scaleBase, scaleRange, radiusBase, radiusRange;\n",
+          "new": "    struct { f32 x, y, z; } position;\n    f32 timeBase, timeRange, scaleBase, scaleRange, radiusBase, radiusRange;\n"
+        },
+        {
+          "old_at": 532,
+          "new_at": 533,
+          "old": "void func_15153F18(AngularTrailInput151DBAA8 *, LocalizedTrailInput151DBAA8 *, s32, s32, s32);\n",
+          "new": "void func_15153F18(void *, void *, s32, s32, s32);\n"
+        },
+        {
+          "old_at": 537,
+          "new_at": 538,
+          "old": "    preset.localized.position[0] = point->unk0;\n    preset.localized.position[1] = point->unk4;\n    preset.localized.position[2] = point->unk8;\n",
+          "new": "    preset.localized.position.x = point->unk0;\n    preset.localized.position.y = point->unk4;\n    preset.localized.position.z = point->unk8;\n"
+        }
+      ]
+    },
+    "caller": {
+      "path": "conker/src/game/translation_units/161520_actor_point_effects.c",
+      "before_sha256": "e27f8eb988340c02f83af7a00ad012895f3f0b30a9c469c4e115050d0edc6bf1",
+      "after_sha256": "dd0aafe45f034a7aa6604a68a070cf5aff526fcd6a5d896bf2611652989ad55f",
+      "changes": [
+        {
+          "old_at": 18,
+          "new_at": 18,
+          "old": "s32 func_151382E0(vertex *position, s32 type, ActorEffectSurface *surface, u8 group, s32 context);\n",
+          "new": "void func_151382E0(vertex *position, s32 type, ActorEffectSurface *surface, u8 group, s32 context);\n"
+        }
+      ]
+    },
+    "guards": {
+      "path": "conker/retail_word_patches.us.csv",
+      "before_sha256": "4d4a2321071cda944f55cdddd6da2e6681155f5f9c7a798ab6a7f9bbd233f5b3",
+      "after_sha256": "71653d3cdb05ff37007705a67419aba00dabd732d9dfc5069de9d7e96df4eae7",
+      "changes": [
+        {
+          "old_at": 25033,
+          "new_at": 25033,
+          "old": "generated_17CAF0,func_15153F18,0x000,0x27BDFF38,0x27BDFF48,-,-,Normalize complete three-float scratch frame layout,,,false\ngenerated_17CAF0,func_15153F18,0x044,0xAFA700D4,0xAFA700C4,-,-,Normalize complete three-float scratch frame layout,,,false\ngenerated_17CAF0,func_15153F18,0x078,0x8FB700D8,0x8FB700C8,-,-,Normalize complete three-float scratch frame layout,,,false\n",
+          "new": "generated_17CAF0,func_15153F18,0x000,0x27BDFF30,0x27BDFF48,-,-,Normalize complete three-float scratch frame layout,,,false\ngenerated_17CAF0,func_15153F18,0x044,0xAFA700DC,0xAFA700C4,-,-,Normalize complete three-float scratch frame layout,,,false\ngenerated_17CAF0,func_15153F18,0x078,0x8FB700E0,0x8FB700C8,-,-,Normalize complete three-float scratch frame layout,,,false\n"
+        },
+        {
+          "old_at": 25047,
+          "new_at": 25047,
+          "old": "generated_17CAF0,func_15153F18,0x22C,0x93AC00D7,0x93AC00C7,-,-,Normalize complete three-float scratch frame layout,,,false\ngenerated_17CAF0,func_15153F18,0x29C,0x27BD00C8,0x27BD00B8,-,-,Normalize complete three-float scratch frame layout,,,false\n",
+          "new": "generated_17CAF0,func_15153F18,0x22C,0x93AC00DF,0x93AC00C7,-,-,Normalize complete three-float scratch frame layout,,,false\ngenerated_17CAF0,func_15153F18,0x29C,0x27BD00D0,0x27BD00B8,-,-,Normalize complete three-float scratch frame layout,,,false\n"
+        },
+        {
+          "old_at": 30953,
+          "new_at": 30953,
+          "old": "",
+          "new": "game_161520,func_151382E0,0x0,0x27BDFF88,0x27BDFF90,-,-,Restore retail descriptor frame and argument homes,,,false\ngame_161520,func_151382E0,0x4,0xAFA70084,0xAFA7007C,-,-,Restore retail descriptor frame and argument homes,,,false\ngame_161520,func_151382E0,0x124,0x8FAC0088,0x8FAC0080,-,-,Restore retail descriptor frame and argument homes,,,false\ngame_161520,func_151382E0,0x138,0x27BD0078,0x27BD0070,-,-,Restore retail descriptor frame and argument homes,,,false\n"
+        }
+      ]
+    }
+  },
+  "rom_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "layout_sha256": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+  "assembly_sha256": "2ddb36edd0a2e2d3338045cd67959202e4c0706daa304c06bdc0e1ef7b779412"
+}
