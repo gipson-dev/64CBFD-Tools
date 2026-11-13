@@ -1,0 +1,256 @@
+{
+  "paths": {
+    "source": {
+      "path": "conker/src/game/generated_1A8060.c",
+      "before_sha256": "8eb91c73d92a23decab2fc24fe58f296cb9032b9651f1360bf9428caf31f920a",
+      "after_sha256": "f63e5bc8a45edf72a712c1d80e15e03615f9c4dd78e69c15b420271ee25fe6a0",
+      "changes": [
+        {
+          "old_at": 2,
+          "new_at": 2,
+          "old": "/* Non-matching placeholders for the text-only asm slice asm/1A8060.s. */\n",
+          "new": ""
+        },
+        {
+          "old_at": 4,
+          "new_at": 3,
+          "old": "s32 func_1517ABB0() {\n    return 0;\n",
+          "new": "typedef struct { void *allocation; u8 age; u8 unused[3]; } CacheEntry1517;\ntypedef struct { u8 countIndex; u8 slots; u8 unused[6]; } CacheDescriptor1517;\nextern s32 D_800DD460[2];\nextern CacheDescriptor1517 D_800A7230[2];\nextern u16 D_800C4310[];\nvoid func_10004074(void *allocation);\n\n/* Age or release cached allocations in both active groups. */\nvoid func_1517ABB0(void) {\n    s32 group, row, col;\n    s32 slots, byteOffset;\n    u16 count;\n    CacheDescriptor1517 *descriptor;\n    CacheEntry1517 *entry;\n    for (group = 0; group < 2; group++) {\n        descriptor = &D_800A7230[group];\n        if (D_800DD460[group] != 0) {\n            row = 0;\n            count = D_800C4310[descriptor->countIndex];\n            while (row < count) {\n                slots = descriptor->slots;\n                if (slots > 0) {\n                    col = 0;\n                    byteOffset = 0;\n                    do {\n                        entry = (CacheEntry1517 *)((u8 *)((CacheEntry1517 **)(u32)D_800DD460[group])[row] + byteOffset);\n                        if (entry->allocation != NULL) {\n                            if (entry->age != 0) {\n                                entry->age--;\n                                slots = descriptor->slots;\n                                goto next_slot;\n                            }\n                            func_10004074(entry->allocation);\n                            ((CacheEntry1517 *)((u8 *)((CacheEntry1517 **)(u32)D_800DD460[group])[row] + byteOffset))->allocation = NULL;\n                            slots = descriptor->slots;\n                        }\nnext_slot:\n                        col++;\n                        byteOffset += 8;\n                    } while (col < slots);\n                    count = D_800C4310[descriptor->countIndex];\n                }\n                row++;\n            }\n        }\n    }\n"
+        },
+        {
+          "old_at": 8,
+          "new_at": 51,
+          "old": "",
+          "new": "/* Non-matching placeholder for asm/1A8060.s. */\n"
+        }
+      ]
+    },
+    "guards": {
+      "path": "conker/retail_word_patches.us.csv",
+      "before_sha256": "8063705fc2474e447bbbff724654275d9da778cd5e5cf5eb21ce038c6be2b630",
+      "after_sha256": "3a0e72e1ca9ebcb7a5d79ebaec9f90caad2645580b20315e5bf341a621e65940",
+      "changes": [
+        {
+          "old_at": 31014,
+          "new_at": 31014,
+          "old": "",
+          "new": "generated_1A8060,func_1517ABB0,0x34,0x3C160000,0x3C170000,R_MIPS_HI16:D_800C4310,R_MIPS_HI16:D_800C4310,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x38,0x26D60000,0x26F70000,R_MIPS_LO16:D_800C4310,R_MIPS_LO16:D_800C4310,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x44,0x0000B825,0x0000B025,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x4C,0x001778C0,0x001678C0,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x58,0x26F70001,0x26D60001,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x68,0x02D94021,0x02F94021,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x6C,0x95030000,0x95020000,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x70,0x58600028,0x58400028,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x74,0x26F70001,0x26D60001,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x84,0x00008025,0x00159080,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x88,0x00159080,0x00008025,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0xF8,0x02C84821,0x02E84821,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0xFC,0x95230000,0x95220000,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x104,0x02A3082A,0x02A2082A,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x110,0x26F70001,0x26D60001,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\ngenerated_1A8060,func_1517ABB0,0x118,0x16E1FFCB,0x16C1FFCB,,,Normalize closed cache expiry register allocation and initialization schedule,,,false\n"
+        }
+      ]
+    }
+  },
+  "body": "void func_1517ABB0(void) {\n    s32 group, row, col;\n    s32 slots, byteOffset;\n    u16 count;\n    CacheDescriptor1517 *descriptor;\n    CacheEntry1517 *entry;\n    for (group = 0; group < 2; group++) {\n        descriptor = &D_800A7230[group];\n        if (D_800DD460[group] != 0) {\n            row = 0;\n            count = D_800C4310[descriptor->countIndex];\n            while (row < count) {\n                slots = descriptor->slots;\n                if (slots > 0) {\n                    col = 0;\n                    byteOffset = 0;\n                    do {\n                        entry = (CacheEntry1517 *)((u8 *)((CacheEntry1517 **)(u32)D_800DD460[group])[row] + byteOffset);\n                        if (entry->allocation != NULL) {\n                            if (entry->age != 0) {\n                                entry->age--;\n                                slots = descriptor->slots;\n                                goto next_slot;\n                            }\n                            func_10004074(entry->allocation);\n                            ((CacheEntry1517 *)((u8 *)((CacheEntry1517 **)(u32)D_800DD460[group])[row] + byteOffset))->allocation = NULL;\n                            slots = descriptor->slots;\n                        }\nnext_slot:\n                        col++;\n                        byteOffset += 8;\n                    } while (col < slots);\n                    count = D_800C4310[descriptor->countIndex];\n                }\n                row++;\n            }\n        }\n    }\n}",
+  "guard_rows": [
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x34",
+      "expected": "0x3C160000",
+      "replacement": "0x3C170000",
+      "expected_relocations": "R_MIPS_HI16:D_800C4310",
+      "replacement_relocations": "R_MIPS_HI16:D_800C4310",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x38",
+      "expected": "0x26D60000",
+      "replacement": "0x26F70000",
+      "expected_relocations": "R_MIPS_LO16:D_800C4310",
+      "replacement_relocations": "R_MIPS_LO16:D_800C4310",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x44",
+      "expected": "0x0000B825",
+      "replacement": "0x0000B025",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x4C",
+      "expected": "0x001778C0",
+      "replacement": "0x001678C0",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x58",
+      "expected": "0x26F70001",
+      "replacement": "0x26D60001",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x68",
+      "expected": "0x02D94021",
+      "replacement": "0x02F94021",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x6C",
+      "expected": "0x95030000",
+      "replacement": "0x95020000",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x70",
+      "expected": "0x58600028",
+      "replacement": "0x58400028",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x74",
+      "expected": "0x26F70001",
+      "replacement": "0x26D60001",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x84",
+      "expected": "0x00008025",
+      "replacement": "0x00159080",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x88",
+      "expected": "0x00159080",
+      "replacement": "0x00008025",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0xF8",
+      "expected": "0x02C84821",
+      "replacement": "0x02E84821",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0xFC",
+      "expected": "0x95230000",
+      "replacement": "0x95220000",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x104",
+      "expected": "0x02A3082A",
+      "replacement": "0x02A2082A",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x110",
+      "expected": "0x26F70001",
+      "replacement": "0x26D60001",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A8060",
+      "function": "func_1517ABB0",
+      "offset": "0x118",
+      "expected": "0x16E1FFCB",
+      "replacement": "0x16C1FFCB",
+      "expected_relocations": "",
+      "replacement_relocations": "",
+      "note": "Normalize closed cache expiry register allocation and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "rom_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "layout_sha256": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+  "assembly_sha256": "763386fb93d5afaed9f8599fe1ba30eab2fe736fb6aa5a3d6b4d383e9d0728ba"
+}
