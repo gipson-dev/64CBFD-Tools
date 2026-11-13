@@ -1,0 +1,75 @@
+{
+  "paths": {
+    "source": {
+      "path": "conker/src/game_3BA70.c",
+      "before_sha256": "88dc9919d3b8812f4551964f192ab7ef9a5eb54112b335d1fa196a470fa498f5",
+      "after_sha256": "859784ae836ab8a0018d3e5aa6fbd48d7fc9f8ca364170bb265db7343c835e25",
+      "changes": [
+        {
+          "old_at": 5,
+          "new_at": 5,
+          "old": "",
+          "new": "extern u8 D_800DCA20, D_800DCA28;\nextern f32 D_800DCA24, D_800DCA2C;\n\n"
+        },
+        {
+          "old_at": 7,
+          "new_at": 10,
+          "old": "s32 func_1500E738();\n",
+          "new": "void func_1500E738(void);\n"
+        },
+        {
+          "old_at": 54,
+          "new_at": 57,
+          "old": "/* Non-matching C placeholders for asm/nonmatchings/game_3BA70/func_1500E738.s. */\ns32 func_1500E738() {\n    return 0;\n",
+          "new": "/* Set the view scaling selectors and factors from the active configuration. */\nvoid func_1500E738(void) {\n    switch (D_80082FA0) {\n        case 0: D_800DCA20 = 0; D_800DCA24 = 1.0f; break;\n        case 1: D_800DCA20 = 1; D_800DCA24 = 0.5f; break;\n        case 2: case 3: D_800DCA20 = 2; D_800DCA24 = 0.25f; break;\n    }\n    switch (D_8008FD8C) {\n        case 2: D_800DCA28 = 1; D_800DCA2C = 0.5f; break;\n        case 3: case 4: D_800DCA28 = 2; D_800DCA2C = 0.25f; break;\n        case 5: case 6: case 7: case 8: D_800DCA28 = 3; D_800DCA2C = 0.125f; break;\n        case 9: case 10: case 11: case 12: case 13: case 14: case 15: case 16:\n            D_800DCA28 = 4; D_800DCA2C = 0.0625f; break;\n        case 1: default: D_800DCA28 = 0; D_800DCA2C = 1.0f; break;\n    }\n"
+        }
+      ]
+    },
+    "guards": {
+      "path": "conker/retail_word_patches.us.csv",
+      "before_sha256": "3a0e72e1ca9ebcb7a5d79ebaec9f90caad2645580b20315e5bf341a621e65940",
+      "after_sha256": "455e3316496ee2a9f2c87a8ebe08c259d2d34c803697737cf653333b8265d52d",
+      "changes": [
+        {
+          "old_at": 31030,
+          "new_at": 31030,
+          "old": "",
+          "new": "game_3BA70,func_1500E738,0xA4,0x3C010000,0x3C010000,R_MIPS_HI16:.rodata,R_MIPS_HI16:jtbl_800961D0_game,Bind generated view-scale jump table to verified retail table,,,false\ngame_3BA70,func_1500E738,0xAC,0x8C390000,0x8C390000,R_MIPS_LO16:.rodata,R_MIPS_LO16:jtbl_800961D0_game,Bind generated view-scale jump table to verified retail table,,,false\n"
+        }
+      ]
+    }
+  },
+  "body": "void func_1500E738(void) {\n    switch (D_80082FA0) {\n        case 0: D_800DCA20 = 0; D_800DCA24 = 1.0f; break;\n        case 1: D_800DCA20 = 1; D_800DCA24 = 0.5f; break;\n        case 2: case 3: D_800DCA20 = 2; D_800DCA24 = 0.25f; break;\n    }\n    switch (D_8008FD8C) {\n        case 2: D_800DCA28 = 1; D_800DCA2C = 0.5f; break;\n        case 3: case 4: D_800DCA28 = 2; D_800DCA2C = 0.25f; break;\n        case 5: case 6: case 7: case 8: D_800DCA28 = 3; D_800DCA2C = 0.125f; break;\n        case 9: case 10: case 11: case 12: case 13: case 14: case 15: case 16:\n            D_800DCA28 = 4; D_800DCA2C = 0.0625f; break;\n        case 1: default: D_800DCA28 = 0; D_800DCA2C = 1.0f; break;\n    }\n}",
+  "guard_rows": [
+    {
+      "filename": "game_3BA70",
+      "function": "func_1500E738",
+      "offset": "0xA4",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:jtbl_800961D0_game",
+      "note": "Bind generated view-scale jump table to verified retail table",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "game_3BA70",
+      "function": "func_1500E738",
+      "offset": "0xAC",
+      "expected": "0x8C390000",
+      "replacement": "0x8C390000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:jtbl_800961D0_game",
+      "note": "Bind generated view-scale jump table to verified retail table",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "rom_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "layout_sha256": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+  "assembly_sha256": "37c144fb07ce7da9063d121f77ae559f994c238eec6aa300f4c34503bddd0304",
+  "makefile_sha256": "62d591a4279d3d163b73540a01ea4979c11282f0d703c8507af13e2787120185"
+}
