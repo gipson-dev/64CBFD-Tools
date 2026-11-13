@@ -1,0 +1,105 @@
+{
+  "source": "conker/src/game/generated_1A6360.c",
+  "assembly": "conker/asm/1A6360.s",
+  "owner": "generated_1A6360",
+  "old_source": "#include <ultra64.h>\n\n/* Recovered routines and remaining placeholders for asm/1A6360.s. */\n\nextern u8 *D_800DBFF0;\nextern s16 D_800DD436;\nextern u8 **D_800DD440;\n\ns32 func_15178EB0() {\n    return 0;\n}\n\ns32 func_15178EFC() {\n    return 0;\n}\n\ns32 func_15179008() {\n    return 0;\n}\n\n#include \"structs.h\"\n#include <math.h>\n\nextern u8 *D_800DBFF0;\nf32 func_150AD78C(f32);\nf32 func_150AD780(f32);\nextern s16 D_800DD438[3];\n\n/* Build the offset point from truncated camera coordinates and two live angles. */\nvoid func_151794C8(void) {\n    s32 x;\n    s32 y;\n    s32 z;\n    f32 zero;\n    f32 vertical;\n    f32 horizontal;\n    f32 sine;\n    f32 angle;\n\n    zero = 0.0f;\n    x = (s32)((struct108 *)D_800DBFF0)->unk2F8;\n    y = (s32)((struct108 *)D_800DBFF0)->unk2FC;\n    z = (s32)((struct108 *)D_800DBFF0)->unk300;\n    angle = ((struct108 *)D_800DBFF0)->unk398;\n    sine = func_150AD78C(angle);\n    horizontal = func_150AD780(angle);\n    vertical = 500.0f * sine;\n    horizontal = -500.0f * horizontal;\n    angle = ((struct108 *)D_800DBFF0)->unk3A0;\n    sine = func_150AD78C(angle);\n    angle = func_150AD780(angle);\n    x = (s32)((f32)x + (zero + horizontal * sine));\n    z = (s32)((f32)z + (horizontal * angle - zero));\n    y = (s32)((f32)y + vertical);\n    D_800DD438[0] = x;\n    D_800DD438[2] = z;\n    D_800DD438[1] = y;\n}\n\ns32 func_15179600() {\n    return 0;\n}\n\ns32 func_151797B0() {\n    return 0;\n}\n\nvoid func_15179AB8(void) {\n    s32 i;\n    u8 *object;\n    u32 flags;\n\n    for (i = D_800DD436 - 1; i >= 0; i--) {\n        object = D_800DD440[i];\n        if (object != NULL) {\n            flags = *(u32 *) (object + 0x90);\n            if (!(flags & 2)) {\n                *(u32 *) (object + 0x90) = flags | 2;\n                return;\n            }\n        }\n    }\n}\n\ns32 func_15179B14() {\n    return 0;\n}\n\n/* Derive the record opacity byte from planar viewer distance. */\nvoid func_15179CB0(u8 *record) {\n    f32 dx;\n    f32 dz;\n    f32 distance;\n    u8 *viewer;\n\n    viewer = D_800DBFF0;\n    dx = (f32)*(s16 *)(record + 0xA0) - *(f32 *)(viewer + 0x300);\n    dz = (f32)*(s16 *)(record + 0x9C) - *(f32 *)(viewer + 0x2F8);\n    distance = sqrtf(dx * dx + dz * dz);\n    record[0xB4] = (u32)(255.0f - distance * 160.0f / 1000.0f);\n}\n",
+  "selected_source": "#include <ultra64.h>\n\n/* Recovered routines and remaining placeholders for asm/1A6360.s. */\n\nextern u8 *D_800DBFF0;\nextern s16 D_800DD436;\nextern u8 **D_800DD440;\n\nextern u8 D_800DD432, D_800DD433, D_800DD434;\nextern s8 D_800DD446;\nextern s16 D_800DD444;\nextern u16 D_800DD430;\nvoid func_1516972C(void *);\nvoid func_10004074(void *);\nvoid func_100111C8(u16);\n\n/* Reset the display state and its default timers. */\nvoid func_15178EB0(void) {\n    D_800DD434 = 0;\n    D_800DD446 = 0;\n    D_800DD444 = 600;\n    D_800DD432 = 240;\n    D_800DD433 = 20;\n    D_800DD436 = 0;\n    D_800DD440 = 0;\n}\n\n/* Transition the display state, disposing all slots on state 2. */\nvoid func_15178EFC(s32 state) {\n    s32 i;\n    if (state == 2) {\n        D_800DD434 = 0;\n        D_800DD446 = 0;\n        if (D_800DD440 != NULL) {\n            for (i = 0; i < 300; i++) {\n                if (D_800DD440[i] != NULL) {\n                    func_1516972C(D_800DD440[i]);\n                    D_800DD440[i] = NULL;\n                }\n            }\n            func_10004074(D_800DD440);\n            D_800DD440 = NULL;\n        }\n        func_100111C8(D_800DD430);\n        D_800DD444 = 0;\n        D_800DD436 = 0;\n    } else if (state == 3) {\n        if (D_800DD446 == 0) {\n            D_800DD444 = 600;\n        } else if (D_800DD446 == 3) {\n            D_800DD446 = 1;\n        }\n        D_800DD434 = state;\n    } else {\n        D_800DD434 = state;\n    }\n}\n\ns32 func_15179008() {\n    return 0;\n}\n\n#include \"structs.h\"\n#include <math.h>\n\nextern u8 *D_800DBFF0;\nf32 func_150AD78C(f32);\nf32 func_150AD780(f32);\nextern s16 D_800DD438[3];\n\n/* Build the offset point from truncated camera coordinates and two live angles. */\nvoid func_151794C8(void) {\n    s32 x;\n    s32 y;\n    s32 z;\n    f32 zero;\n    f32 vertical;\n    f32 horizontal;\n    f32 sine;\n    f32 angle;\n\n    zero = 0.0f;\n    x = (s32)((struct108 *)D_800DBFF0)->unk2F8;\n    y = (s32)((struct108 *)D_800DBFF0)->unk2FC;\n    z = (s32)((struct108 *)D_800DBFF0)->unk300;\n    angle = ((struct108 *)D_800DBFF0)->unk398;\n    sine = func_150AD78C(angle);\n    horizontal = func_150AD780(angle);\n    vertical = 500.0f * sine;\n    horizontal = -500.0f * horizontal;\n    angle = ((struct108 *)D_800DBFF0)->unk3A0;\n    sine = func_150AD78C(angle);\n    angle = func_150AD780(angle);\n    x = (s32)((f32)x + (zero + horizontal * sine));\n    z = (s32)((f32)z + (horizontal * angle - zero));\n    y = (s32)((f32)y + vertical);\n    D_800DD438[0] = x;\n    D_800DD438[2] = z;\n    D_800DD438[1] = y;\n}\n\ns32 func_15179600() {\n    return 0;\n}\n\ns32 func_151797B0() {\n    return 0;\n}\n\nvoid func_15179AB8(void) {\n    s32 i;\n    u8 *object;\n    u32 flags;\n\n    for (i = D_800DD436 - 1; i >= 0; i--) {\n        object = D_800DD440[i];\n        if (object != NULL) {\n            flags = *(u32 *) (object + 0x90);\n            if (!(flags & 2)) {\n                *(u32 *) (object + 0x90) = flags | 2;\n                return;\n            }\n        }\n    }\n}\n\ns32 func_15179B14() {\n    return 0;\n}\n\n/* Derive the record opacity byte from planar viewer distance. */\nvoid func_15179CB0(u8 *record) {\n    f32 dx;\n    f32 dz;\n    f32 distance;\n    u8 *viewer;\n\n    viewer = D_800DBFF0;\n    dx = (f32)*(s16 *)(record + 0xA0) - *(f32 *)(viewer + 0x300);\n    dz = (f32)*(s16 *)(record + 0x9C) - *(f32 *)(viewer + 0x2F8);\n    distance = sqrtf(dx * dx + dz * dz);\n    record[0xB4] = (u32)(255.0f - distance * 160.0f / 1000.0f);\n}\n",
+  "baseline_sha256": "0ce853450ad0e812073490d4f57dca71459cc7e0c171e2b863814abf18360a0f",
+  "rom_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "layout_before": "eb8145837da425d7a55080459d22f11e21e1ac69e8b9d8ad5100ed5750d814f1",
+  "layout_after": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+  "symbols_before": "1e59d193c5aefcc13d14b5083ee80ee977a4a9dcf54b75db8595b192a223bafa",
+  "symbols_after": "2eb50e08f06c79454d9ca57a5e4ba1f1670447de73d65302e7225fed6870e644",
+  "auto_before": "e2090d98c3a5450afc4a78aafd1a7f1f5114bd43c7bddecb6e79434f20955329",
+  "auto_after": "04dbffc147670a3d5de7f3745ed3248e0ea0804e2f9562058aa1d84d875e76d6",
+  "guards_before": "8b9889cdecb92aa5c6cc01b479489f13c286cf6e348bc7b717c28be9fdd2402a",
+  "guards_after": "07032986523613bce11dc378faa80a3b4062bb04c92a02e7468c8a331a4c3349",
+  "raw_sha256": [
+    "896a494212e9b69b81de96950de4f16f8db2bf70757acca3ba962e6ff5e88796",
+    "2bbc80dcfbba019214dcce41fdbae770d15b5a716bfff71a98fdde1abc482ca5"
+  ],
+  "retail_sha256": [
+    "896a494212e9b69b81de96950de4f16f8db2bf70757acca3ba962e6ff5e88796",
+    "54d068733a6f2aac8762c0670826d03ebe22da5c14b3989cdcf3686a6b15bc1e"
+  ],
+  "guard_rows": [
+    {
+      "filename": "generated_1A6360",
+      "function": "func_15178EFC",
+      "offset": "0x030",
+      "expected": "0x8E450000",
+      "replacement": "0x8E420000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize display state transition register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A6360",
+      "function": "func_15178EFC",
+      "offset": "0x03C",
+      "expected": "0x10A00013",
+      "replacement": "0x10400013",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize display state transition register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A6360",
+      "function": "func_15178EFC",
+      "offset": "0x04C",
+      "expected": "0x00B07021",
+      "replacement": "0x00507021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize display state transition register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A6360",
+      "function": "func_15178EFC",
+      "offset": "0x070",
+      "expected": "0x8E450000",
+      "replacement": "0x8E420000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize display state transition register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A6360",
+      "function": "func_15178EFC",
+      "offset": "0x07C",
+      "expected": "0x00B07021",
+      "replacement": "0x00507021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize display state transition register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1A6360",
+      "function": "func_15178EFC",
+      "offset": "0x084",
+      "expected": "0x00A02025",
+      "replacement": "0x00402025",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize display state transition register allocation",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ]
+}
