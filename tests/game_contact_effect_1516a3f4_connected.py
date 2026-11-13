@@ -2,6 +2,7 @@ from tools.tests.game_contact_effect_1516a3f4_oracle import *
 from tools.tests.test_game_character_effect_pair import WindowCode,WindowBoundary
 def run():
  rom=(root/'conker/conker.us.bin').read_bytes();table=0x8008C9C8
+ assert struct.unpack_from('>I',rom,0x2314a4)[0]==ENTRY, 'retail table entry 7 changed'
  programs=[struct.unpack_from('>81I',rom,0x1978a4)]+[program(out/(x+'.o')) for x in ('after','generated','generic')]
  windows=((0x15167e80,0x15167eb0,0x2f),(0x151689d4,0x15168a00,0xb2))
  class Connected(Machine):
