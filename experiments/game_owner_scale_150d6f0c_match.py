@@ -23,7 +23,7 @@ from tools.pad_generated_object import parse_object
 from tools.tests.game_owner_pool import normalized_pools
 
 ROOT = Path(os.environ.get('CBFD_CONSUMER_ROOT', Path(__file__).resolve().parents[2])).resolve()
-OUT = ROOT / 'conker/build/game-effect-intensity-151c7038-match'
+OUT = ROOT / 'conker/build/game-owner-scale-150d6f0c-match'
 MANIFEST = json.loads(Path(__file__).with_name('game_owner_scale_150d6f0c_manifest.json').read_text())
 NAME, OWNER = MANIFEST['function'], MANIFEST['owner']
 STUB = 's32 func_150D6F0C() {\n    return 0;\n}'

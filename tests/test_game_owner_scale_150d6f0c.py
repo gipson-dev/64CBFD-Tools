@@ -1,4 +1,4 @@
-﻿"""Qualification checks for func_150D6F0C's private or installed C body."""
+"""Qualification checks for func_150D6F0C's private or installed C body."""
 import json,unittest
 from tools.experiments import game_owner_scale_150d6f0c_match as match
 from tools.tests import game_owner_scale_150d6f0c_oracle as guest
@@ -12,6 +12,7 @@ class OwnerScaleTests(unittest.TestCase):
     def setUpClass(cls):cls.state=match.prepare()
     def receipt(self,name,result):(match.OUT/(name+'.json')).write_text(json.dumps(result,indent=2)+'\n')
     def test_owner_and_independent_padders(self):
+        self.assertEqual(match.OUT.name, 'game-owner-scale-150d6f0c-match')
         rows=match.MANIFEST['guard_rows']
         self.assertEqual((len(rows),sum(bool(row['insert_after']) for row in rows)),(10,0))
         self.assertEqual(match.payload(self.state['generated']),match.payload(self.state['generic']))

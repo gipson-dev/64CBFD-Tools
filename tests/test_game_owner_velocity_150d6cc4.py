@@ -1,4 +1,4 @@
-﻿"""Qualification checks for func_150D6CC4's private or installed C body."""
+"""Qualification checks for func_150D6CC4's private or installed C body."""
 import json,unittest
 from tools.experiments import game_owner_velocity_150d6cc4_match as match
 from tools.tests import game_owner_velocity_150d6cc4_oracle as guest
@@ -12,6 +12,7 @@ class OwnerVelocityTests(unittest.TestCase):
     def setUpClass(cls):cls.state=match.prepare()
     def receipt(self,name,result):(match.OUT/(name+'.json')).write_text(json.dumps(result,indent=2)+'\n')
     def test_owner_and_independent_padders(self):
+        self.assertEqual(match.OUT.name, 'game-owner-velocity-150d6cc4-match')
         rows=match.MANIFEST['guard_rows']
         self.assertEqual((len(rows),sum(bool(row['insert_after']) for row in rows)),(7,0))
         self.assertEqual(match.payload(self.state['generated']),match.payload(self.state['generic']))
