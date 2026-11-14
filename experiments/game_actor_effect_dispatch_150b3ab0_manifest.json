@@ -1,0 +1,50 @@
+{
+  "source": {
+    "path": "conker/src/game/generated_E0F60.c",
+    "before_sha256": "fab26a262aa60293c96005780601cd2a2e82e57f1a53b229951e76bcc1b1a437",
+    "after_sha256": "6a5a746db26c15c49161e070020afbf7eac9c31ddc914ad62f3d908de76d3470",
+    "changes": [
+      {
+        "old_at": 4,
+        "new_at": 4,
+        "old": "s32 func_150B3AB0() {\n    return 0;\n",
+        "new": "typedef struct { f32 x, y, z; u8 pad[2]; s16 angle; } EffectPosition150B3AB0;\ntypedef struct { u8 kind, pad01; s16 size; u8 mode, enabled; s8 value; u8 pad07; } EffectPacket150B3AB0;\nextern s32 D_800BE9E8;\nextern u8 *D_800DBFF0;\nextern f32 D_8009FBC0[];\nvoid func_1512D748(void *, s32, s32);\nvoid func_15143134(f32 *, void *, void *);\nu32 func_150ADA20(void);\nvoid func_1514C858(f32, f32, f32, f32, s32, s32, s32, s32, s32, s32, f32, s32, s32);\nvoid func_151D8868(void *, s32, s32, s32);\nvoid func_151D3FF4(void *, s32, s32);\n/* Dispatch actor-linked effects; retain the retail slot-byte reloads. */\nvoid func_150B3AB0(u8 *actor, volatile u8 slot) {\n    EffectPosition150B3AB0 position;\n    EffectPacket150B3AB0 packet;\n    if (actor != NULL && *(u8 **)(actor + 0x1D4) != NULL) {\n        func_1512D748(D_800DBFF0 + D_800BE9E8 * 0x9A0, 6, 1);\n        position.angle = (*(u16 *)(actor + 0x7A) >> 8) + 0x40;\n        func_15143134(D_8009FBC0, &position, *(u8 **)(actor + 0x1D4) + 0x640);\n        func_1514C858(position.x, position.y, position.z, 10.0f, position.angle, 0, 255, func_150ADA20() % 31 + 40, 8, 0, 0.0f, 0, slot);\n        packet.kind = 1;\n        packet.size = (func_150ADA20() & 15) + 12;\n        packet.mode = (func_150ADA20() & 3) + 5;\n        packet.value = -1;\n        packet.enabled = 1;\n        func_151D8868(&packet, 0, slot, 0);\n        func_151D3FF4(&position, slot, 0);\n    }\n"
+      }
+    ]
+  },
+  "caller": {
+    "path": "conker/src/game_981E0.c",
+    "before_sha256": "9cce95707aff1e04fcbd008f70a85864a1b64e8e2d1118bbc763f1723f6d0135",
+    "after_sha256": "ed11a6b3f392470145f0857ff0cb212def12aed0020b24d74662a5ce01dfea58",
+    "changes": [
+      {
+        "old_at": 4,
+        "new_at": 4,
+        "old": "",
+        "new": "\nvoid func_150B3AB0(u8 *, u8);\n"
+      },
+      {
+        "old_at": 1119,
+        "new_at": 1121,
+        "old": "    func_150B3AB0(D_800D154C, 0xFF);\n",
+        "new": "    func_150B3AB0((u8 *)D_800D154C, 0xFF);\n"
+      }
+    ]
+  },
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/E0F60.s": "5ca20e727aea656c4db34726d2f704bd7a525ebcc48aba6bb958f14552adb1ab",
+    "conker/Makefile": "567986254bcfe190a777736e2a35e2a8b7f6de62b286eab0ba1f7040b2ebe36d",
+    "conker/retail_word_patches.us.csv": "aecbc0674da2427bc1e0f1cc355820640b80091d2b4b32510a6a1f301376ff79",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/variables.h": "3cd24cd9fea98901536137649368536fbbd56018cac571b6476701802c1bc00c",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "baseline": {
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.elf": "7e8245e39552b905960fb17e2f11c5769abd5e6ec208a281e5a84b2ac6439858"
+  }
+}
