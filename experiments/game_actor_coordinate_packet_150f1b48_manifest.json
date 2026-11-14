@@ -1,0 +1,387 @@
+{
+  "source": {
+    "path": "conker/src/game/generated_11C2B0.c",
+    "before_sha256": "9af9300387c19f4c61086d5a87bca7403923e94ecd2647d159d14ec3605a60bd",
+    "after_sha256": "37f3f4a73144495de6a277b93bf8a148b70d9a2603b0d6a3c7f18598ff378b05",
+    "changes": [
+      {
+        "old_at": 527,
+        "new_at": 527,
+        "old": "s32 func_150F1B48() {\n    return 0;\n",
+        "new": "extern u16 D_800CC354[];\nextern s16 D_800CC298[];\nextern s32 D_800BE9E4;\nextern f32 D_800A18F4, D_800A18F8;\n/* Update the shared coordinate and emit six (x, y) halfword pairs. */\nu8 *func_150F1B48(u8 *output, s32 slot) {\n    s16 *packet = (s16 *)output;\n    s32 delta, next, i;\n    s32 active;\n    if (*(u16 *)((u8 *)D_800CC354 + (u32)slot * 0x32c) == 0x21) active = 1;\n    else active = 0;\n    delta = (s32)((u32)D_800BE9E4 * 0x222u);\n    if (active != 0) {\n        next = (s32)((u32)(s32)D_800CC298[9] - (u32)delta);\n        if (D_800A18F4 < (f32)next) D_800CC298[9] = (s16)next;\n        else D_800CC298[9] = -0x1999;\n    } else {\n        next = (s32)((u32)(s32)D_800CC298[9] + (u32)delta);\n        if ((f32)next < D_800A18F8) D_800CC298[9] = (s16)next;\n        else D_800CC298[9] = 0x1555;\n    }\n    /* The output may overlap the shared coordinate: snapshot before each next x. */\n    packet[0] = 0xb2;\n    next = D_800CC298[9];\n    packet[2] = 0xb8;\n    packet[1] = (s16)next;\n    for (i = 2; i < 6; i++) {\n        next = D_800CC298[9];\n        packet[i * 2] = (s16)(0xb2 + i * 6);\n        packet[i * 2 - 1] = (s16)next;\n    }\n    packet[11] = D_800CC298[9];\n    return output + 24;\n"
+      }
+    ]
+  },
+  "caller": {
+    "path": "conker/src/game/generated_61490.c",
+    "before_sha256": "6295489e006c7559d3920349f7f4d5db404e966512cdcf209b39f26412d378b1",
+    "after_sha256": "2eeac7fc425ee76e32927b977b5493d00b6843757d2d045e51ccb02039684e9d",
+    "changes": [
+      {
+        "old_at": 20,
+        "new_at": 20,
+        "old": "s32 func_150F1B48(u8 *, s32);\n",
+        "new": "u8 *func_150F1B48(u8 *, s32);\n"
+      },
+      {
+        "old_at": 59,
+        "new_at": 59,
+        "old": "                cursor = (u8 *)func_150F1B48(output, slot);\n",
+        "new": "                cursor = func_150F1B48(output, slot);\n"
+      }
+    ]
+  },
+  "guards": {
+    "path": "conker/retail_word_patches.us.csv",
+    "before_sha256": "498c821f9b1428f941fa4928484f2d2eba2c10d7b9fc9de80ee7d7aa677ff973",
+    "after_sha256": "cd849903d3200180f16f26cd8ab8d1b33f5ab10ad1fd821c28bbca17bf05c3f7",
+    "append": "generated_11C2B0,func_150F1B48,0x54,0x240C00B8,0x240D00B8,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0xF8,0x84A20012,0x84AC0012,-,-,Normalize coordinate packet register allocation and peeled loop schedule,0x24020002,-,false\ngenerated_11C2B0,func_150F1B48,0xFC,0xA48C0004,0xA48D0004,-,-,Normalize coordinate packet register allocation and peeled loop schedule,0x00021880,-,false\ngenerated_11C2B0,func_150F1B48,0x100,0x24830008,0xA48C0002,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x104,0xA4820002,0x84AE0012,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x108,0x84A20012,0x00621823,-,-,Normalize coordinate packet register allocation and peeled loop schedule,0x00031840,-,false\ngenerated_11C2B0,func_150F1B48,0x10C,0x240D00BE,0x246F00B2,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x110,0xA46D0000,0xA48F0008,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x114,0xA462FFFE,0xA48E0006,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x118,0x84A20012,0x84B80012,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x11C,0x240E00C4,0x247900B8,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x120,0xA46E0004,0xA499000C,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x124,0xA4620002,0xA498000A,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x128,0x84A20012,0x84A80012,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x12C,0x240F00CA,0x246900BE,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x130,0xA46F0008,0xA4890010,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x134,0xA4620006,0xA488000E,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x138,0x84A20012,0x84AA0012,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x13C,0x241800D0,0x246B00C4,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x140,0xA478000C,0xA48B0014,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x144,0xA462000A,0xA48A0012,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x148,0x84B90012,0x84AC0012,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\ngenerated_11C2B0,func_150F1B48,0x150,0xA4990016,0xA48C0016,-,-,Normalize coordinate packet register allocation and peeled loop schedule,,,false\n"
+  },
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/11C2B0.s": "064851c4bd1d09f2eec8dc0b3bbfa579b8e028d24e94c8ce4468d5a1732403db",
+    "conker/asm/61490.s": "cef63d34c187a6a3058da2f4253076b7b0c48625e03195c2fee4801dd32e9f53",
+    "conker/Makefile": "8b2e63494fe95f4ce933206e52319ca57022a2adad29272b89eb3aedc0e856af",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "baseline": {
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.elf": "0fff7f6aa7bc29585540d514aa43fe4534caaeb09bdaa06b20eea74234b7c98f"
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x54",
+      "expected": "0x240C00B8",
+      "replacement": "0x240D00B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0xF8",
+      "expected": "0x84A20012",
+      "replacement": "0x84AC0012",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "0x24020002",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0xFC",
+      "expected": "0xA48C0004",
+      "replacement": "0xA48D0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "0x00021880",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x100",
+      "expected": "0x24830008",
+      "replacement": "0xA48C0002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x104",
+      "expected": "0xA4820002",
+      "replacement": "0x84AE0012",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x108",
+      "expected": "0x84A20012",
+      "replacement": "0x00621823",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "0x00031840",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x10C",
+      "expected": "0x240D00BE",
+      "replacement": "0x246F00B2",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x110",
+      "expected": "0xA46D0000",
+      "replacement": "0xA48F0008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x114",
+      "expected": "0xA462FFFE",
+      "replacement": "0xA48E0006",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x118",
+      "expected": "0x84A20012",
+      "replacement": "0x84B80012",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x11C",
+      "expected": "0x240E00C4",
+      "replacement": "0x247900B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x120",
+      "expected": "0xA46E0004",
+      "replacement": "0xA499000C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x124",
+      "expected": "0xA4620002",
+      "replacement": "0xA498000A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x128",
+      "expected": "0x84A20012",
+      "replacement": "0x84A80012",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x12C",
+      "expected": "0x240F00CA",
+      "replacement": "0x246900BE",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x130",
+      "expected": "0xA46F0008",
+      "replacement": "0xA4890010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x134",
+      "expected": "0xA4620006",
+      "replacement": "0xA488000E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x138",
+      "expected": "0x84A20012",
+      "replacement": "0x84AA0012",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x13C",
+      "expected": "0x241800D0",
+      "replacement": "0x246B00C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x140",
+      "expected": "0xA478000C",
+      "replacement": "0xA48B0014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x144",
+      "expected": "0xA462000A",
+      "replacement": "0xA48A0012",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x148",
+      "expected": "0x84B90012",
+      "replacement": "0x84AC0012",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_11C2B0",
+      "function": "func_150F1B48",
+      "offset": "0x150",
+      "expected": "0xA4990016",
+      "replacement": "0xA48C0016",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize coordinate packet register allocation and peeled loop schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "actor_declaration": {
+    "path": "conker/src/game/generated_142560.c",
+    "before_sha256": "f12dd5084fcd2e0a0026ca18ae085c7f03065ebb7e56727b5603f1ce8ad1396a",
+    "after_sha256": "d4bf0ab3cb0a0fc94ad71000b072ed76e3868e4b5b605016ddd16612259febf4",
+    "changes": [
+      {
+        "old_at": 222,
+        "new_at": 222,
+        "old": "extern u16 D_800CC354;\n",
+        "new": "extern u16 D_800CC354[];\n"
+      },
+      {
+        "old_at": 245,
+        "new_at": 245,
+        "old": "        if (D_800CC354 == 0x4B) {\n",
+        "new": "        if (D_800CC354[0] == 0x4B) {\n"
+      }
+    ]
+  },
+  "variables": {
+    "path": "conker/include/variables.h",
+    "before_sha256": "0104542deea4d809471535255a7493c8b01e1ec81af95c994d88831ca65ef9af",
+    "after_sha256": "3cd24cd9fea98901536137649368536fbbd56018cac571b6476701802c1bc00c",
+    "changes": [
+      {
+        "old_at": 1061,
+        "new_at": 1061,
+        "old": "extern s32 D_800CC298; // 0x18 length\n",
+        "new": "extern s16 D_800CC298[]; // 0x18 bytes\n"
+      }
+    ]
+  }
+}
