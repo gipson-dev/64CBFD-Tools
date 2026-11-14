@@ -19,4 +19,7 @@ class LinkedEffectTests(unittest.TestCase):
   rom=(source.ROOT/'conker/conker.us.bin').read_bytes();needle=struct.pack('>I',0x0d473aab)
   hits=[i for i in range(0x2d4b0,0x22d710,4) if rom[i:i+4]==needle]
   self.assertEqual(hits,[0x98124,0x1fe338])
+ def test_text_fingerprint_line_endings(self):
+  self.assertEqual(source.input_digest('conker/Makefile',b'first\r\nsecond\n'),source.input_digest('conker/Makefile',b'first\nsecond\n'))
+  self.assertNotEqual(source.input_digest('conker/conker.us.bin',b'first\r\n'),source.input_digest('conker/conker.us.bin',b'first\n'))
 if __name__=='__main__':unittest.main()

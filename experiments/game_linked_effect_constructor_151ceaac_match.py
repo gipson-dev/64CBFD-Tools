@@ -14,6 +14,10 @@ ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2
 OUT=ROOT/'conker/build/game-linked-effect-constructor-151ceaac-durable';NAME='func_151CEAAC';OWNER='generated_1FA770'
 MANIFEST=json.loads(Path(__file__).with_name('game_linked_effect_constructor_151ceaac_manifest.json').read_text())
 sha=lambda s:hashlib.sha256(s.encode()).hexdigest()
+def input_digest(path,data):
+ if path not in ('conker/conker.us.bin','ido/ido5.3_recomp/cc'):
+  data=data.replace(b'\r\n',b'\n')
+ return hashlib.sha256(data).hexdigest()
 def apply(text,changes,reverse=False):
  lines=text.splitlines(keepends=True)
  for item in reversed(changes):
@@ -42,7 +46,7 @@ def assemble(text,label):
 def prepare():
  OUT.mkdir(parents=True,exist_ok=True)
  for path,digest in MANIFEST['inputs'].items():
-  if hashlib.sha256((ROOT/path).read_bytes()).hexdigest()!=digest:raise ValueError('Input changed: '+path)
+  if input_digest(path,(ROOT/path).read_bytes())!=digest:raise ValueError('Input changed: '+path)
  texts,installed=sources()
  for path,digest in MANIFEST['baseline'].items():
   dest=OUT/'frozen'/path;dest.parent.mkdir(parents=True,exist_ok=True)
