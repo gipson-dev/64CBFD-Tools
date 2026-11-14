@@ -38,9 +38,8 @@ static int run(void) {
  return cases==24?0:10;
 }
 '''
-snapshot=body.replace('    u8 *state;', '    u8 *state;\n    s32 random;').replace('            func_1513C73C(', '            random = func_150ADA20();\n            func_1513C73C(').replace('(func_150ADA20() & 255)', '(random & 255)')
-assert snapshot!=body
-compiled=(out/'snapshot.c').read_text();assert compiled[compiled.index('typedef struct HeightEmissionDescriptor113D60'):]==snapshot
+compiled=(out/'snapshot.c').read_text();snapshot=compiled[compiled.index('typedef struct HeightEmissionDescriptor113D60'):]
+assert snapshot.count('random = func_150ADA20();')==1 and snapshot.count('(random & 255)')==1
 def run(label,code,opt,alias):
  src=out/'native-screen.c';exe=out/('native-'+label+opt+'-'+alias);src.write_text(prefix+code+harness+START)
  p=subprocess.run(native_command(opt)+['-mstackrealign','-fstrict-aliasing' if alias=='strict' else '-fno-strict-aliasing',str(src),'-o',str(exe)],cwd=root,capture_output=True,text=True)

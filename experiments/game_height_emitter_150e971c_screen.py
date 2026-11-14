@@ -67,7 +67,19 @@ candidate=body.replace('    s32 random;\n','').replace('            random = fun
 rows={}
 padded_decl=decl.replace('u8 untouched26[2];', 'u8 untouched26[2]; u8 scratch28[4];')
 snapshot=body.replace('(u8)random', '(random & 255)')
-for name,declaration,implementation in (('plain',decl,candidate),('padded',padded_decl,candidate),('snapshot',padded_decl,snapshot)):
+padded_decl_readable=padded_decl.replace('typedef struct HeightEmissionDescriptor113D60 {',
+    '/* Constructor copies 0x28 bytes, including unassigned fields. Extra local\n * space retains retail stack placement. */\ntypedef struct HeightEmissionDescriptor113D60 {')
+snapshot=snapshot.replace('s32 func_150E971C(u8 *actor) {',
+    '/* Advance motion and emit an effect below the height limit. */\ns32 func_150E971C(u8 *actor) {')
+for fields in ('descriptor.kind = 11; descriptor.flags = 0x9701; descriptor.lifetime = 100;',
+        'descriptor.field07 = 0; descriptor.field08 = 0; descriptor.field0c = 0;',
+        'descriptor.field10 = 255; descriptor.field11 = 255; descriptor.field12 = 255;',
+        'descriptor.field13 = 255; descriptor.field14 = 255; descriptor.field15 = 255;',
+        'descriptor.resource = 0x3B0003; descriptor.field16 = 0; descriptor.field17 = 7;',
+        'descriptor.field22 = 20; descriptor.field24 = 12;'):
+    assert snapshot.count(fields)==1
+    snapshot=snapshot.replace(fields,fields.replace('; ', ';\n            '))
+for name,declaration,implementation in (('plain',decl,candidate),('padded',padded_decl,candidate),('snapshot',padded_decl_readable,snapshot)):
     obj,diag=compile_owner(root,out,owner.replace(old,declaration+implementation),name)
     ws=bound_blob(*payload(obj,'func_150E971C'),symbols)
     row={'words':len(ws),'same_positions':sum(a==b for a,b in zip(ws,truth)),
@@ -79,9 +91,12 @@ for name,declaration,implementation in (('plain',decl,candidate),('padded',padde
 (out/'screen.json').write_text(json.dumps(rows,indent=2)+'\n')
 env=dict(os.environ,CBFD_CONSUMER_ROOT=str(root),PYTHONDONTWRITEBYTECODE='1')
 subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_guard_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_padder_screen'],cwd=root,env=env,check=True)
 subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_connected_screen'],cwd=root,env=env,check=True)
 subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_model_screen'],cwd=root,env=env,check=True)
 subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_caller_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_fault_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_overlap_screen'],cwd=root,env=env,check=True)
 subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_native_screen'],cwd=root,env=env,check=True)
 subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_image_screen'],cwd=root,env=env,check=True)
 print(json.dumps(rows),flush=True)
