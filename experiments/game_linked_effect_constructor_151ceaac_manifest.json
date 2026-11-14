@@ -1,0 +1,57 @@
+{
+  "source": {
+    "path": "conker/src/game/generated_1FA770.c",
+    "before_sha256": "17b1d93a4f7252973c08a4d9ba27c026a5056b02c9df21319bc39edf492a88e9",
+    "after_sha256": "a6bbe72166c5879f65922d8187c154dedc86a4316fe9f9f5c6caea56979fd6f3",
+    "changes": [
+      {
+        "old_at": 283,
+        "new_at": 283,
+        "old": "s32 func_151CEAAC() {\n    return 0;\n",
+        "new": "typedef struct {\n    u8 *owner; u8 identity; u8 pad05[3]; u8 *attachment;\n    f32 first, second, third, fourth; u8 flags; u8 pad1D[3]; f32 extent, velocity;\n} LinkedEffectPayload151CEAAC;\n/* The helper copies 28 bytes, including the untouched request tail. */\ntypedef struct {\n    f32 position[3]; s16 lifetime, mode; s32 active; u8 kind, count; u8 untouched16[2]; u8 untouched18[4];\n} LinkedEffectRequest151CEAAC;\nextern f32 D_800AB008;\nf32 func_150ADA68(void);\ns32 func_151CEC10(f32 *, u8 *, u8 *);\nu8 *func_15147A80(void *, s32, s32, s32, s32, s32, s32, s32, void *, u8, s32);\n/* Construct a linked effect and copy its captured payload on success. */\nu8 *func_151CEAAC(u8 *owner, u8 *attachment, u8 mode, u8 channel, s32 context) {\n    LinkedEffectRequest151CEAAC request;\n    LinkedEffectPayload151CEAAC payload;\n    u8 *effect;\n    s32 effectFlags;\n    request.count = 25;\n    request.lifetime = 300;\n    request.mode = 16;\n    request.active = 17;\n    request.kind = 3;\n    payload.owner = owner;\n    if (owner != NULL) payload.identity = owner[0x3b];\n    else payload.identity = 0;\n    payload.second = 1.0f;\n    payload.fourth = 1.0f;\n    payload.attachment = attachment;\n    payload.first = 0.0f;\n    payload.third = 0.0f;\n    if (mode) effectFlags = 2; else effectFlags = 0;\n    payload.flags = effectFlags;\n    payload.extent = func_150ADA68() * 400.0f + 400.0f;\n    payload.velocity = (func_150ADA68() * 2.0f) * D_800AB008;\n    if (func_151CEC10(request.position, owner, attachment) == 0) {\n        request.position[0] = 0.0f;\n        request.position[1] = 0.0f;\n        request.position[2] = 0.0f;\n    }\n    effect = func_15147A80(&request, 0x28, 0x28, 0, 15, 15, 0, 0, NULL, channel, context);\n    if (effect != NULL) memcpy(*(void **)(effect + 0x98), &payload, 0x28);\n    return effect;\n"
+      },
+      {
+        "old_at": 286,
+        "new_at": 327,
+        "old": "",
+        "new": "\n\n"
+      }
+    ]
+  },
+  "caller": {
+    "path": "conker/src/game/generated_97AA0.c",
+    "before_sha256": "4ef88204592efafff1a4fcb8246ed56c2974a2f220272a107ed320997700a902",
+    "after_sha256": "e0a8c3eb4c8580062b8fa03fc44a6dc3652c2aeb01ce1b413b0f88ace1a27323",
+    "changes": [
+      {
+        "old_at": 208,
+        "new_at": 208,
+        "old": "",
+        "new": "u8 *func_151CEAAC(u8 *, u8 *, u8, u8, s32);\n\n"
+      },
+      {
+        "old_at": 209,
+        "new_at": 211,
+        "old": "    func_151CEAAC(arg0, 0, 1, 0xFF, 1);\n",
+        "new": "    func_151CEAAC((u8 *)arg0, 0, 1, 0xFF, 1);\n"
+      }
+    ]
+  },
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/1FA770.s": "cce3e047754e3253d0c7f0d9279cbb86cc922f615e9ef9b79ed786155bde9b60",
+    "conker/asm/97AA0.s": "875b01a1301468f097ce947456ebee3e669675903aa2bd324ba1675883820109",
+    "conker/Makefile": "8b2e63494fe95f4ce933206e52319ca57022a2adad29272b89eb3aedc0e856af",
+    "conker/retail_word_patches.us.csv": "809ff02e7d326291719949ef27327bf3d51dc2b2a6483f6b58da092ac8480a55",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/variables.h": "3cd24cd9fea98901536137649368536fbbd56018cac571b6476701802c1bc00c",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "baseline": {
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.elf": "0a1730487ab9d77e69b1bcba6d0c04faf98ef3882e9898c1e2915c1ba6de2c29"
+  }
+}
