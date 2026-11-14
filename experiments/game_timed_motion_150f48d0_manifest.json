@@ -1,0 +1,37 @@
+{
+  "source": {
+    "path": "conker/src/game/generated_121A20.c",
+    "before_sha256": "f9d51e859077c0f52ca8f3597ea96f163db3b87ee013417a61f12b9c9ede89b6",
+    "after_sha256": "bd20495ae9b76a5628e786df618c32c21418682217fe17028d4b93cc5b31cdf0",
+    "changes": [
+      {
+        "old_at": 22,
+        "new_at": 22,
+        "old": "s32 func_150F48D0() {\n    return 0;\n",
+        "new": "typedef struct { f32 timer, x, y, z, phase, rate, width, depth, scale; } TimedMotion150F48D0;\nextern f32 D_800BE9A4;\nvoid func_1514373C(f32, f32, f32 *, f32 *);\n/* Advance the timed motion and return its embedded state address while active. */\ns32 func_150F48D0(f32 *actor) {\n    TimedMotion150F48D0 *state = (TimedMotion150F48D0 *)((u8 *)actor + 0x170);\n    f32 b, a;\n    state->timer -= D_800BE9A4;\n    if (state->timer <= 0.0f) {\n        return 0;\n    }\n    func_1514373C(state->phase, state->scale, &a, &b);\n    state->phase += state->rate * D_800BE9A4;\n    state->x += actor[0x44 / 4] * D_800BE9A4;\n    state->y += actor[0x48 / 4] * D_800BE9A4;\n    state->z += actor[0x4C / 4] * D_800BE9A4;\n    actor[0x38 / 4] = state->x + a * state->width;\n    actor[0x3C / 4] = state->y + b;\n    actor[0x40 / 4] = state->z - a * state->depth;\n    actor[0x20 / 4] += actor[0x50 / 4] * D_800BE9A4;\n    actor[0x24 / 4] += actor[0x54 / 4] * D_800BE9A4;\n    actor[0x28 / 4] += actor[0x58 / 4] * D_800BE9A4;\n    return (s32)state;\n"
+      }
+    ]
+  },
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/121A20.s": "89aea13b72463dc5e44947b99109c4f528fa2ef4cdc799e9208cd30f9144d2a2",
+    "conker/asm/15F680.s": "f697fe44a7ea8c4c6a7a7016236764a088a6922f559686ee4d3731d5c264413b",
+    "conker/asm/data/22E370.rodata.s": "42925f1b2e64e1ad241cff05afa857ab4dc3b9e812a2764ef360885fdc2c2612",
+    "conker/asm/nonmatchings/game_16EE20/func_1514373C.s": "d32f9f9e10621287da24850c79476945982a82508f7fd35d42be169d863940f9",
+    "conker/Makefile": "567986254bcfe190a777736e2a35e2a8b7f6de62b286eab0ba1f7040b2ebe36d",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/variables.h": "3cd24cd9fea98901536137649368536fbbd56018cac571b6476701802c1bc00c",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "baseline": {
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.elf": "f58e824c7e2a18fc418a404d125f0b445c4c2b286d446152e3cc5e3833f58632",
+    "conker/retail_word_patches.us.csv": "aecbc0674da2427bc1e0f1cc355820640b80091d2b4b32510a6a1f301376ff79"
+  },
+  "guard_append": "generated_121A20,func_150F48D0,0x4,0x3C050000,0x3C030000,R_MIPS_HI16:D_800BE9A4,R_MIPS_HI16:D_800BE9A4,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x8,0x24A50000,0x24630000,R_MIPS_LO16:D_800BE9A4,R_MIPS_LO16:D_800BE9A4,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x14,0xC4A60000,0xC4660000,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x1C,0x24830170,0x24820170,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x40,0xC46C0010,0xC44C0010,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x4C,0xC46C0010,0xC44C0010,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x50,0xC46E0020,0xC44E0020,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x5C,0xAFA30018,0xAFA20018,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x64,0x3C050000,0x3C030000,R_MIPS_HI16:D_800BE9A4,R_MIPS_HI16:D_800BE9A4,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x68,0x24A50000,0x24630000,R_MIPS_LO16:D_800BE9A4,R_MIPS_LO16:D_800BE9A4,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x6C,0xC4A40000,0xC4640000,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x8C,0xC4B20000,0xC4720000,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0xA4,0xC4B00000,0xC4700000,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0xBC,0xC4AA0000,0xC46A0000,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x104,0xC4860050,0x460A4402,-,-,Restore timed motion independent load and float schedule,,,false\ngenerated_121A20,func_150F48D0,0x108,0x460A4402,0x46109101,-,-,Restore timed motion independent load and float schedule,,,false\ngenerated_121A20,func_150F48D0,0x10C,0x46109101,0xE4840040,-,-,Restore timed motion independent load and float schedule,,,false\ngenerated_121A20,func_150F48D0,0x110,0xC4920020,0xC4860050,-,-,Restore timed motion independent load and float schedule,,,false\ngenerated_121A20,func_150F48D0,0x114,0xE4840040,0xC4680000,-,-,Restore timed motion independent load and float schedule,,,false\ngenerated_121A20,func_150F48D0,0x118,0xC4A80000,0xC4920020,-,-,Restore timed motion independent load and float schedule,,,false\ngenerated_121A20,func_150F48D0,0x130,0xC4A60000,0xC4660000,-,-,Normalize timed motion closed register roles,,,false\ngenerated_121A20,func_150F48D0,0x148,0xC4A40000,0xC4640000,-,-,Normalize timed motion closed register roles,,,false\n",
+  "guard_after_sha256": "1c334a7683340d6d28a8df2557fcbc4c6c3e7ba438e0a523b9929e4f580b2f4c",
+  "bound_sha256": "e0bca87b5227ac5c0e5373e2db421cc3bf6751860b996d04c7b63201319d3e91"
+}

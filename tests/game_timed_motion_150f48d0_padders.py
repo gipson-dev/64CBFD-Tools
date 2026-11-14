@@ -1,0 +1,32 @@
+"""Check both private padding paths and retail relocations over four layouts."""
+from pathlib import Path
+import json,struct,subprocess,sys
+from tools import pad_generated_object as pg
+sys.modules.setdefault('pad_generated_object',pg)
+from tools import pad_c_object as pc
+from tools.experiments.game_actor_state_tick_integration import same_functions,symbol_rows
+from tools.experiments.game_paired_ground_constructor_match import payload
+from tools.experiments.game_path_heading_turn_roles import bound_blob
+root=Path(__import__('os').environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve();out=root/'conker/build/game-timed-motion-150f48d0-durable';conker=root/'conker';name='func_150F48D0'
+raw=out/'formatted.o';guards=out/'proposed-guards.csv';symbols={r[1]:r[2][1] for r in symbol_rows((conker/'build/conker.us.elf').read_bytes())};truth=(conker/'conker.us.bin').read_bytes()[0x121d80:0x121ee8]
+texts={'generated':pg.emit_padded_assembly(raw,conker/'asm/121A20.s',filename='generated_121A20',word_patches_path=guards),
+       'c':pc.emit_padded_assembly(raw,conker/'retail_layout.us.txt','generated_121A20',word_patches_path=guards)}
+for label,text in texts.items():
+ asm=out/(label+'-padded.s');obj=out/(label+'-padded.o');asm.write_text(text)
+ subprocess.run(['mips-linux-gnu-as','-EB','-mtune=vr4300','-march=vr4300','-mabi=32','-I','include','-o',str(obj.relative_to(conker)),str(asm.relative_to(conker))],cwd=conker,capture_output=True,check=True)
+ assert struct.pack('>90I',*bound_blob(*payload(obj,name),symbols))==truth and same_functions(conker/'build/src/game/generated_121A20.c.o',obj,(name,))==5
+def link(obj,target,defs,label):
+ _,fs,_=pg.parse_object(obj);offset=fs[name]['value'];script=out/(label+'.ld');elf=out/(label+'.elf');binary=out/(label+'.bin')
+ script.write_text('SECTIONS { .text 0x%X : SUBALIGN(4) { *(.text) } }\n'%(target-offset))
+ lines=subprocess.run(['mips-linux-gnu-nm','-u',str(obj)],capture_output=True,text=True,check=True).stdout.splitlines();names=[line.split()[-1] for line in lines if line.split()];assert set(names)<=set(defs),set(names)-set(defs)
+ args=['mips-linux-gnu-ld','-m','elf32btsmip','-T',str(script),'-e',name,*[x for n in names for x in ('--defsym',n+'='+hex(defs[n]))],'-o',str(elf),str(obj)]
+ p=subprocess.run(args,capture_output=True,text=True);assert p.returncode==0,p.stderr
+ subprocess.run(['mips-linux-gnu-objcopy','-O','binary','-j','.text',str(elf),str(binary)],capture_output=True,check=True)
+ return binary.read_bytes()[offset:offset+360]
+layouts=((0x150f48d0,0x800be9a4),(0x170f48d0,0x80107ffc),(0x190f48d0,0x8020fffc),(0x1b0f48d0,0x80318000))
+for i,(target,tick) in enumerate(layouts):
+ defs=dict(symbols,D_800BE9A4=tick,func_1514373C=(target&0xf0000000)|0x014373c)
+ a=link(out/'retail.o',target,defs,f'link-{i}-retail')
+ for label in texts:assert a==link(out/(label+'-padded.o'),target,defs,f'link-{i}-{label}')
+report={'padders':2,'layouts':len(layouts),'gnu_links':12,'owner_neighbors':5,'uncredited':True}
+(out/'pad-rebase.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
