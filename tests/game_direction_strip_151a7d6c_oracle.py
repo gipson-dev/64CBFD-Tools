@@ -74,12 +74,13 @@ def project(m,c,endpoint,delta,closest,parameter):
  effect(m,c,PROJECT)
 def emit_helper(m,t,p):put(m,p,0xa0000000|(t&0xffffff));put(m,p+4,0x12345678);return p+8
 def reference(initial,c):
- m=dict(initial);calls=[];observed=[];out=c.output;cur=c.buffer
+ m=dict(initial);calls=[];observed=[];out=c.output;cur=c.buffer;private=getattr(c,'private',0)
  if not c.flags&2:return m,calls,observed,out
  calls.append((ALLOC,(OWNER+0x6c,u32(half(c.view)),0x87654321,'cursor',0)));effect(m,c,ALLOC)
  if not c.success:return m,calls,observed,out
  calls.append((CAMERA,(u32(half(c.view)),)));effect(m,c,CAMERA);last=half(half(read(m,OWNER+0x12,2))-1)
  calls.append((TEXTURE,(out,TEX,0,0,0,0,44,0,0,'sync',3)));effect(m,c,TEXTURE);out=emit_helper(m,TEXTURE,out)
+ if private==2:last=0
  calls.append((COMBINE,(out,0x200005,0x1f0600)));effect(m,c,COMBINE);out=emit_helper(m,COMBINE,out)
  calls.append((COLOR,(out,*[m[OWNER+0x24+i] for i in range(4)],'sync')));effect(m,c,COLOR);out=emit_helper(m,COLOR,out)
  calls.append((MODE,(out,25,'sync')));effect(m,c,MODE);out=emit_helper(m,MODE,out)
@@ -88,7 +89,9 @@ def reference(initial,c):
  # Provider locals live in a private reference area, excluded from observables.
  scratch=STACK-1000;store(m,scratch,d)
  calls.append((PROJECT,(endpoint,'delta',CAM,'closest','parameter')));observed.append((vec(m,endpoint),vec(m,scratch),vec(m,CAM)));project(m,c,endpoint,scratch,scratch+16,scratch+32)
- d=floats(m,scratch);ray=[sub(x,y) for x,y in zip(floats(m,CAM),floats(m,scratch+16))]
+ if c.mutation&4:cur=BUFFER+256
+ camera=getattr(c,'alternate_camera',CAM) if private==4 else CAM
+ d=floats(m,scratch);ray=[sub(x,y) for x,y in zip(floats(m,camera),floats(m,scratch+16))]
  nx=sub(mul(d[1],ray[2]),mul(ray[1],d[2]));ny=sub(mul(d[2],ray[0]),mul(ray[2],d[0]));nz=sub(mul(d[0],ray[1]),mul(ray[0],d[1]));mag=add(add(mul(nx,nx),mul(ny,ny)),mul(nz,nz))
  if mag==0.:offset=(0.,0.,0.)
  else:
@@ -128,7 +131,9 @@ class Oracle(FactoryOracle):
   a=self.actual;c=self.case;m=self.memory;value=0
   if t==ALLOC:put(m,a[3],c.buffer if c.success else 0);effect(m,c,t)
   elif t==CAMERA:value=CAM;effect(m,c,t)
-  elif t==PROJECT:project(m,c,*a[:2],a[3],a[4])
+  elif t==PROJECT:
+   project(m,c,*a[:2],a[3],a[4])
+   if c.mutation&4:put(m,self.roles['cursor'],BUFFER+256)
   else:
    effect(m,c,t);value=emit_helper(m,t,a[0])
    if t!=COMBINE:m[self.roles['sync']]=(m[self.roles['sync']]+1)&255
@@ -138,6 +143,7 @@ class Oracle(FactoryOracle):
 def cases():
  for i,(flags,success,count,shape,mutation) in enumerate(itertools.product((0,2,3),(0,1),(-1,0,1,2,5),(0,1,2),(0,1,2,3))):yield Case(flags=flags,success=success,count=count,shape=shape,mutation=mutation,phase=(i&1)*8,seed=i%3)
  for view,width in itertools.product((0,1,0x12348000,0x8765ffff,0x7fff),(0,0x80000000,fb(-2.75))):yield Case(view=view,width=width)
+ for mutation in (4,5,6,7):yield Case(mutation=mutation)
 def run():
  r=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path.cwd())).resolve();o=r/'conker/build/game-direction-strip-151a7d6c-screen'
  name='func_151A7D6C';assembly=(r/'conker/asm/1D4E00.s').read_text();a=assembly.index('glabel '+name+'\n');z=assembly.index('endlabel '+name,a)+len('endlabel '+name)
@@ -175,5 +181,5 @@ def run():
    assert (public(machine.memory),machine.calls,machine.observed,machine.r[2])==(public(expected),[(ENTRY,(c.output,OWNER,u32(c.view)))]+calls,obs,value),(which,c)
    assert machine.r[29]==STACK+c.phase
   callers+=1
- report=dict(cases=count,words=373,observed_words=len(seen),streams=2,caller_windows=2,caller_cases=callers,guest_alias_cases=aliases,providers_modeled=True,private_aliases_not_yet_qualified=True);(o/'behavior.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
+ report=dict(cases=count,words=373,observed_words=len(seen),streams=2,caller_windows=2,caller_cases=callers,guest_alias_cases=aliases,providers_modeled=True,unrestricted_aliases_not_qualified=True);(o/'behavior.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':run()

@@ -1,7 +1,7 @@
-"""Private semantic screen for the polyline strip renderer; never installs code.
+"""Rebuild the strip-renderer proposal or installed C without editing production.
 
-Matching remains incomplete. Equal body length/frame and bounded model cases
-are evidence for this candidate, not production exact-match credit.
+Exact-match credit additionally requires the linked-image qualification;
+body length/frame and bounded model checks alone are insufficient.
 """
 from pathlib import Path
 import hashlib,json,os,struct
@@ -149,15 +149,24 @@ Gfx *func_151A7D6C(Gfx *output, DirectionStripState151A7D6C *state, s16 view) {
 PLACEHOLDER='s32 func_151A7D6C() {\n    return 0;\n}'
 def proposed(source):
     if source.count(PLACEHOLDER)!=1:raise ValueError('Unrecognized strip-renderer source state')
-    return source.replace(PLACEHOLDER,DECLARATIONS+SELECTED.rstrip())
+    return source.replace(PLACEHOLDER,DECLARATIONS+SELECTED.rstrip()).replace(
+        '/* Non-matching placeholders for the text-only asm slice asm/1D4E00.s. */',
+        '/* Recovered routines for the original text-only slice asm/1D4E00.s. */')
 def main():
     root=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path.cwd())).resolve();out=root/BUILD;out.mkdir(parents=True,exist_ok=True)
-    source=(root/SOURCE).read_text();before,_=compile_owner(root,out,source,'baseline');after,diagnostics=compile_owner(root,out,proposed(source),'selected')
+    current=(root/SOURCE).read_text();installed=PLACEHOLDER not in current
+    if installed:
+        assert DECLARATIONS+SELECTED.rstrip() in current,'Installed strip renderer changed'
+        frozen=out/'production-baseline';record=json.loads((frozen/'fingerprints.json').read_text())
+        data=(frozen/SOURCE).read_bytes();assert hashlib.sha256(data).hexdigest()==record['inputs'][SOURCE]
+        baseline=data.decode();candidate=current
+    else:baseline=current;candidate=proposed(current)
+    before,_=compile_owner(root,out,baseline,'baseline');after,diagnostics=compile_owner(root,out,candidate,'selected')
     assert not diagnostics
     symbols={r[1]:r[2][1] for r in symbol_rows((root/'conker/build/conker.us.elf').read_bytes())}
     raw,refs=payload(after,FUNCTION);words=bound_blob(raw,refs,symbols);truth=struct.unpack_from('>373I',(root/'conker/conker.us.bin').read_bytes(),ROM)
     assert len(words)==WORDS and (-words[0])&65535==FRAME
     neighbors=same_functions(before,after,(FUNCTION,));assert neighbors==22 and normalized_pools(before)==normalized_pools(after)
-    report=dict(function=FUNCTION,words=len(words),frame=FRAME,exact_words=sum(a==b for a,b in zip(words,truth)),different_words=sum(a!=b for a,b in zip(words,truth)),neighbors=neighbors,pools_unchanged=True,raw_sha256=hashlib.sha256(raw).hexdigest(),bindings={str(k):v for k,v in refs.items()},source_sha256=hashlib.sha256((out/'selected.c').read_bytes()).hexdigest(),installed=False,credited=False)
+    report=dict(function=FUNCTION,words=len(words),frame=FRAME,exact_words=sum(a==b for a,b in zip(words,truth)),different_words=sum(a!=b for a,b in zip(words,truth)),neighbors=neighbors,pools_unchanged=True,raw_sha256=hashlib.sha256(raw).hexdigest(),bindings={str(k):v for k,v in refs.items()},source_sha256=hashlib.sha256((out/'selected.c').read_bytes()).hexdigest(),installed=installed)
     (out/'selected-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()

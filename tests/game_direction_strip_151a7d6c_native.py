@@ -6,6 +6,8 @@ from tools.experiments import game_direction_strip_151a7d6c_candidates as p
 from tools.tests.test_game_projected_packet_draw import native_command
 from tools.tests.test_game_row_destination_fill import START
 r=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path.cwd())).resolve();o=r/p.BUILD;body=p.SELECTED
+cached=body.replace('    Vtx *cursor;','    Vtx *cursor, *cached;').replace('state->bytes, &cursor, NULL);','state->bytes, &cursor, NULL);\n        cached = cursor;')
+at=cached.index('            if (state->count >= 2)');cached=cached[:at]+cached[at:].replace('cursor','cached')
 bad={
  'wrong_active_gate':body.replace('state->flags & 2','state->flags & 1'),
  'wrong_endpoint':body.replace('last = state->count - 1','last = state->count - 2'),
@@ -14,8 +16,9 @@ bad={
  'wrong_texture_span':body.replace('= 960;','= 1024;'),
  'wrong_triangle_winding':body.replace('gSP1Triangle(output++, 0, 2, 3, 0)','gSP1Triangle(output++, 0, 3, 2, 0)'),
  'cached_count':body.replace('    s16 first, next;','    s16 first, next;\n    s16 cachedCount;').replace('    loopOwner = state;','    cachedCount = state->count;\n    loopOwner = state;').replace('next < loopOwner->count','next < cachedCount'),
- 'signed_color':body.replace('state->color[1]','(s8)state->color[1]')}
-assert len(set(bad.values()))==8 and all(v!=body for v in bad.values())
+ 'signed_color':body.replace('state->color[1]','(s8)state->color[1]'),
+ 'cached_vertex_cursor':cached}
+assert len(set(bad.values()))==9 and all(v!=body for v in bad.values())
 source='#include <ultra64.h>\ntypedef struct {f32 unk0,unk4,unk8;} struct17;\ntypedef struct {f32 x,y,z,outX,outY,outZ;} DirectionVertex151A7A90;\n'+p.DECLARATIONS+'\n'.join(v.replace(p.FUNCTION,'candidate_'+str(i)) for i,v in enumerate([body,*bad.values()]))
 source+=r'''
 typedef union{u32 u;f32 f;} Bits;
@@ -42,7 +45,7 @@ source+=',\n'.join(rows)+'\n};\n'+r'''
 static struct{DirectionStripState151A7D6C state;u8 tail[128];} object;
 static DirectionVertex151A7A90 primary[16],alternate[16];static Vtx vertices[32];static Gfx output[64];static struct17 camera;
 u8 D_80090D70[32];u32 D_800D2C9C,D_800A4AC8[8];
-static const Case*current;static u32 callIndex,error;static Gfx*expectedReturn;
+static const Case*current;static u32 callIndex,error;static Gfx*expectedReturn;static Vtx**savedCursor;
 static f32 real(u32 v){Bits a;a.u=v;return a.f;}static u32 word(f32 v){Bits a;a.f=v;return a.u;}
 f32 sqrtf(f32 v){f32 answer;__asm__("sqrtss %1,%0":"=x"(answer):"x"(v));return answer;}
 static u32 addr(const void*p){u32 a=(u32)p;
@@ -61,10 +64,11 @@ static void effect(u32 t){DirectionStripState151A7D6C*s=&object.state;
   if(t==0x15142b7cu){u32 i;for(i=0;i<4;i++)s->color[i]^=0x55;}if(t==0x1513f4e4u)s->width=-1.5f;if(t==0x15142fbcu)s->vertices=primary+4;}
  if(current->mutation&2){if(t==0x15142e24u){D_800D2C9C=0x55443322u;D_800A4AC8[6]=0x80200480u;D_800A4AC8[7]=0x01020804u;}
   if(t==0x15145548u){camera.unk0=3.f;camera.unk4=-2.f;camera.unk8=7.f;s->count=3;s->width=.75f;s->vertices=alternate+4;}}
+ if((current->mutation&4)&&t==0x15145548u)*savedCursor=vertices+16;
 }
 static Gfx*emit(u32 t,Gfx*out){out->words.w0=0xa0000000u|(t&0xffffffu);out->words.w1=0x12345678u;return out+1;}
 void func_151D5D60(void*cache,s16 view,s32 bytes,Vtx**cursor,u8*fresh){u32 a[]={addr(cache),(u32)(s32)view,(u32)bytes,0xffff0001u,addr(fresh)};
- if(!cursor||fresh)error=1;record(0x151d5d60u,5,a);*cursor=current->success?vertices:0;effect(0x151d5d60u);}
+ if(!cursor||fresh)error=1;record(0x151d5d60u,5,a);savedCursor=cursor;*cursor=current->success?vertices:0;effect(0x151d5d60u);}
 struct17*func_15144B34(s32 view){u32 a[]={(u32)view};record(0x15144b34u,1,a);effect(0x15144b34u);return &camera;}
 Gfx*func_15142E24(Gfx*out,void*texture,s32 packed,s32 width,s32 x,s32 y,s32 mode,u8 flags,u8*palette,u8*sync,s32 tail){u32 a[]={addr(out),addr(texture),(u32)packed,(u32)width,(u32)x,(u32)y,(u32)mode,flags,addr(palette),0xffff0002u,(u32)tail};if(!sync||*sync!=1)error=1;record(0x15142e24u,11,a);effect(0x15142e24u);(*sync)++;return emit(0x15142e24u,out);}
 Gfx*func_15142B7C(Gfx*out,u32 a0,u32 a1){u32 a[]={addr(out),a0,a1};record(0x15142b7cu,3,a);effect(0x15142b7cu);return emit(0x15142b7cu,out);}
@@ -87,7 +91,7 @@ static void setup(void){u32 i,j;u8*bytes=(u8*)&object;for(i=0;i<sizeof(object);i
  for(i=0;i<128;i++){u32 value=0;for(j=0;j<4;j++)value=(value<<8)|(u8)((i*4+j+32)*29+current->seed*11+0x5a);if(i&1)output[i/2].words.w1=value;else output[i/2].words.w0=value;}
  camera.unk0=current->shape==1?0.f:4.f;camera.unk4=current->shape==1?1.f:5.f;camera.unk8=current->shape==1?-2.f:6.f;D_800D2C9C=0x01234567;
  for(i=0;i<8;i++)D_800A4AC8[i]=0x10000000u+i*0x01010101u;
- callIndex=error=0;expectedReturn=output+(current->callCount>2?5:0);if(current->callCount>2){s32 count=(s16)((current->owner[18]<<8)|current->owner[19]);expectedReturn+=count>=2?(count-1)*3:0;}
+ callIndex=error=0;savedCursor=0;expectedReturn=output+(current->callCount>2?5:0);if(current->callCount>2){s32 count=(s16)((current->owner[18]<<8)|current->owner[19]);expectedReturn+=count>=2?(count-1)*3:0;}
 }
 static u32 finish(Gfx*answer){u32 i,j;u8*bytes=(u8*)&object;u32 count=((current->owner[18]<<8)|current->owner[19]);u32 width=(current->owner[40]<<24)|(current->owner[41]<<16)|(current->owner[42]<<8)|current->owner[43];u32 pointer=(current->owner[100]<<24)|(current->owner[101]<<16)|(current->owner[102]<<8)|current->owner[103];
  if(callIndex!=current->callCount||answer!=expectedReturn||object.state.count!=(s16)count||word(object.state.width)!=width||addr(object.state.vertices)!=pointer||object.state.bytes!=(s32)0x87654321u)error=error?error:9000;
@@ -97,11 +101,11 @@ static u32 finish(Gfx*answer){u32 i,j;u8*bytes=(u8*)&object;u32 count=((current-
  if(word(camera.unk0)!=current->camera[0]||word(camera.unk4)!=current->camera[1]||word(camera.unk8)!=current->camera[2]||D_800D2C9C!=current->global)error=error?error:3000;
  for(i=0;i<8;i++)if(D_800A4AC8[i]!=current->table[i])error=error?error:4000+i;return error;
 }
-static Gfx*(*candidates[])(Gfx*,DirectionStripState151A7D6C*,s16)={candidate_0,candidate_1,candidate_2,candidate_3,candidate_4,candidate_5,candidate_6,candidate_7,candidate_8};
+static Gfx*(*candidates[])(Gfx*,DirectionStripState151A7D6C*,s16)={candidate_0,candidate_1,candidate_2,candidate_3,candidate_4,candidate_5,candidate_6,candidate_7,candidate_8,candidate_9};
 typedef char Layout[sizeof(void*)==4&&sizeof(DirectionStripState151A7D6C)==128&&__builtin_offsetof(DirectionStripState151A7D6C,vertices)==100&&__builtin_offsetof(DirectionStripState151A7D6C,cache)==108&&__builtin_offsetof(DirectionStripState151A7D6C,bytes)==124&&sizeof(DirectionVertex151A7A90)==24?1:-1];
-static int run(void){u32 i,j,killed=0;for(i=0;i<sizeof(cases)/sizeof(cases[0]);i++){current=cases+i;for(j=0;j<9;j++){Gfx*answer;setup();answer=candidates[j](output,&object.state,(s16)current->view);if(finish(answer)){if(!j){u32 info[]={i,error,callIndex,addr(answer),addr(expectedReturn)};__asm__ volatile("int $0x80"::"a"(4),"b"(1),"c"(info),"d"(sizeof(info)):"memory");return 10;}killed|=1u<<(j-1);}}}return killed==255u?0:11;}
+static int run(void){u32 i,j,killed=0;for(i=0;i<sizeof(cases)/sizeof(cases[0]);i++){current=cases+i;for(j=0;j<10;j++){Gfx*answer;setup();answer=candidates[j](output,&object.state,(s16)current->view);if(finish(answer)){if(!j){u32 info[]={i,error,callIndex,addr(answer),addr(expectedReturn)};__asm__ volatile("int $0x80"::"a"(4),"b"(1),"c"(info),"d"(sizeof(info)):"memory");return 10;}killed|=1u<<(j-1);}}}return killed==511u?0:11;}
 '''+START.replace('void _start(void)','__attribute__((force_align_arg_pointer)) void _start(void)')
-source=source.replace('current->observation[i])error=1','current->observation[i])error=error?error:7000+i').replace('return killed==255u?0:11;','if(killed!=255u){__asm__ volatile("int $0x80"::"a"(4),"b"(1),"c"(&killed),"d"(4):"memory");return 11;}return 0;')
+source=source.replace('current->observation[i])error=1','current->observation[i])error=error?error:7000+i').replace('return killed==511u?0:11;','if(killed!=511u){__asm__ volatile("int $0x80"::"a"(4),"b"(1),"c"(&killed),"d"(4):"memory");return 11;}return 0;')
 path=o/'native-strip.c';path.write_text(source);profiles=[]
 for opt in ('-O0','-O2','-O3'):
  for alias in ('-fstrict-aliasing','-fno-strict-aliasing'):

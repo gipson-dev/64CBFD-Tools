@@ -3,7 +3,8 @@ import json,subprocess
 from tools.tests import game_direction_update_151a7a90_behavior as b
 from tools.tests.test_game_projected_packet_draw import native_command
 from tools.tests.test_game_row_destination_fill import START
-r=Path.cwd();o=r/'conker/build/game-direction-update-151a7a90-screen';s=(o/'selected.c').read_text();a=s.index('typedef struct {f32 x,y,z,outX,outY,outZ;}');z=s.index('\ns32 func_151A7D6C',a);head,body=s[a:z].split('/* Run lifecycle',1);body='/* Run lifecycle'+body
+from tools.experiments.game_remaining_donor_candidates import function_span
+r=Path.cwd();o=r/'conker/build/game-direction-update-151a7a90-screen';s=(o/'selected.c').read_text();a=s.index('typedef struct {f32 x,y,z,outX,outY,outZ;}');z=function_span(s,'func_151A7A90')[1];head,body=s[a:z].split('/* Run lifecycle',1);body='/* Run lifecycle'+body
 snapshot=body.replace('    u8 dead;','    u8 dead;\n    s8 selectedSecond;').replace('    dead = 0;','    selectedSecond = state->secondCallback;\n    dead = 0;').replace('if (state->secondCallback != -1 && !dead) dead = !D_8008F948[state->secondCallback]','if (selectedSecond != -1 && !dead) dead = !D_8008F948[selectedSecond]')
 range_snapshot=body.replace('    u8 dead;','    u8 dead;\n    f32 oldRange;').replace('            state->timer = func_150ADA68();','            oldRange = state->range;\n            state->timer = func_150ADA68();').replace('state->timer * state->range','state->timer * oldRange')
 bad={'wrong_lifetime_mask':body.replace('state->flags & 1','state->flags & 4'),
