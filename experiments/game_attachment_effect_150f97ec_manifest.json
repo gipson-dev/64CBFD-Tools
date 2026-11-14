@@ -1,0 +1,19 @@
+{
+  "source": "conker/src/game/generated_124920.c",
+  "source_sha256": "b3d37a2460fac993780e8a3024e0cdd8362ef7874e1b7f688135fcf63e29f13b",
+  "candidate_sha256": "86951503b78e7757f8a379fdb3648f6370ec134997c2b5dd3268096a10afe71b",
+  "old": "s32 func_150F97EC() {\n    return 0;\n}",
+  "new": "extern struct17 D_800A1C48, D_800A1C54;\nextern u8 D_80088B50;\ns32 func_150ADA20(void);\nvoid func_15145EA4(struct17 **, struct17 **, u8 *, s32);\nu8 *func_15102B38(u8 *, u8, f32 *, f32 *, f32 *, s16, u8, f32, f32 *, u8, s32, s16, u8, s32);\nvoid func_150F97EC(u8 *volatile actor, volatile u8 selector, volatile s32 context) {\n    struct17 point;\n    f32 scale[2];\n    struct17 *destination;\n    struct17 *input;\n    s32 random[2];\n    if (*(u8 **)(actor + 0x1D4) != 0) {\n        input = &D_800A1C48;\n        destination = &point;\n        func_15145EA4(&input, &destination, *(u8 **)(actor + 0x1D4) + D_80088B50 * 64, 1);\n        scale[1] = func_150ADA68() * 1.0f + 2.0f;\n        scale[0] = func_150ADA68() * 14.0f + 28.0f;\n        random[0] = func_150ADA20();\n        random[1] = func_150ADA20();\n        func_15102B38(actor, D_80088B50, (f32 *)&D_800A1C48, (f32 *)&D_800A1C54, scale,\n            (u32)random[0] % 3 + 4, (u32)random[1] % 156 + 100,\n            func_150ADA68() * 300.0f + 400.0f, (f32 *)&point, 255, 0, -1, selector, context);\n    }\n}",
+  "bound_sha256": "c3ea647b4a25ca6af0814c7c10106da4bef6f39f135eebaa0614d8cdba2fffd0",
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/124920.s": "a51d70de6613d3590130beef2efbf7720ae54af056a64e76f88133e802074262",
+    "conker/asm/50D80.s": "58dec15b45859c1dface2fc227f074871296eb4884e6499e4cfee37b8389111c",
+    "conker/Makefile": "567986254bcfe190a777736e2a35e2a8b7f6de62b286eab0ba1f7040b2ebe36d",
+    "conker/retail_word_patches.us.csv": "aecbc0674da2427bc1e0f1cc355820640b80091d2b4b32510a6a1f301376ff79",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  }
+}
