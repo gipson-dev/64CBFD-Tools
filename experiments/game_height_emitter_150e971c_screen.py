@@ -76,5 +76,5 @@ for name,declaration in (('plain',decl),('padded',decl.replace('u8 untouched26[2
     rows[name]=row
 (out/'screen.json').write_text(json.dumps(rows,indent=2)+'\n')
 env=dict(os.environ,CBFD_CONSUMER_ROOT=str(root),PYTHONDONTWRITEBYTECODE='1')
-subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_guest_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_connected_screen'],cwd=root,env=env,check=True)
 print(json.dumps(rows),flush=True)
