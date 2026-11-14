@@ -1,0 +1,181 @@
+{
+  "source": {
+    "path": "conker/src/game/generated_1C2C60.c",
+    "before_sha256": "40ea66bc9c5872cf54cd42627a0e16b5fb378e75f951b0a4cc0e6ad4506aeaec",
+    "after_sha256": "0a5034305fa03f1739567a88d8e64baec98c28ea319ec751c5d986abc789db49",
+    "changes": [
+      {
+        "old_at": 1,
+        "new_at": 1,
+        "old": "",
+        "new": "#include \"structs.h\"\n#include <string.h>\n"
+      },
+      {
+        "old_at": 692,
+        "new_at": 694,
+        "old": "s32 func_1519C09C() {\n    return 0;\n",
+        "new": "extern f32 D_800A8AF8;\nstruct225 *func_151602C0(Header *, Header2 *, s32, s32, s32, s32, u8, u8, s32, u8, s32);\ntypedef struct { f32 first, second, third, fourth, fifth, sixth, seventh, eighth; } EffectConfig1519C09C;\n/* Build a configured effect and retain its owner pointer. */\nstruct225 *func_1519C09C(void *owner, f32 *position, u8 a, u8 b, u8 c, u8 d, u8 priority, s32 userData) {\n    struct225 *result;\n    Header header;\n    Header2 coords;\n    void *savedOwner;\n    EffectConfig1519C09C config;\n    config.first = 35.0f;\n    config.second = 5.0f;\n    header.unk0 = 2;\n    header.unk1 = 2;\n    header.unk2 = 300;\n    header.unk4 = 0x22;\n    config.third = 110.0f;\n    config.fourth = 1.0f;\n    savedOwner = owner;\n    config.fifth = 0.0f;\n    config.sixth = 7.0f;\n    config.seventh = D_800A8AF8;\n    config.eighth = 127.0f;\n    coords.unk0 = (s32)position[0];\n    coords.unk4 = (s32)position[1];\n    coords.unk8 = (s32)position[2];\n    result = func_151602C0(&header, &coords, a, b, c, d, 255, 0, 0x24, priority, userData);\n    if (result != 0) {\n        memcpy((u8 *)result + 0x18, &config, 0x20);\n        memcpy((u8 *)result + 0x38, &savedOwner, 4);\n    }\n    return result;\n"
+      },
+      {
+        "old_at": 695,
+        "new_at": 727,
+        "old": "",
+        "new": "\n"
+      }
+    ]
+  },
+  "guards": {
+    "path": "conker/retail_word_patches.us.csv",
+    "before_sha256": "9c68a61e929fb636cc12faa0eb48f8957d077fe44c799699f5ff49c80dc0cf2b",
+    "after_sha256": "aecbc0674da2427bc1e0f1cc355820640b80091d2b4b32510a6a1f301376ff79",
+    "append": "generated_1C2C60,func_1519C09C,0x54,0x8FA80078,0x8FAE0078,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x64,0x240E0002,0x240F0002,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x68,0x240F0002,0x24180002,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x6C,0x2418012C,0x2419012C,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x70,0x24190022,0x24080022,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x74,0xA3AE006C,0xA3AF006C,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x78,0xA3AF006D,0xA3B8006D,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x7C,0xA7B8006E,0xA7B9006E,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x80,0xA3B90070,0xA3A80070,-,-,Normalize effect config initialization scheduling and registers,,,false\ngenerated_1C2C60,func_1519C09C,0x94,0xAFA8005C,0xAFAE005C,-,-,Normalize effect config initialization scheduling and registers,,,false\n"
+  },
+  "inputs": {
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/asm/1C2C60.s": "540f52818bc616ff24520ea28277e70ec41dea676c9b54970271364c138f02c0",
+    "conker/Makefile": "8b2e63494fe95f4ce933206e52319ca57022a2adad29272b89eb3aedc0e856af",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/variables.h": "3cd24cd9fea98901536137649368536fbbd56018cac571b6476701802c1bc00c",
+    "conker/include/functions.h": "ecfe651a780f5d9471f9483dc4d62cdea930ecf8d366a417765a79642c3eb610",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "conker/include/libc/string.h": "ff969e54b7abd39d23a73c7b19b66afad925a626559bdaa2c47512341c440db5",
+    "ido/ido5.3_recomp/cc": "ca4b4385eb89c5098b665ffe256f59aa1bfd73ccd8f104fcb3eee0314dcd236a"
+  },
+  "baseline": {
+    "conker/build/conker.ld": "6479ca7cef48dc77d746c16afcc244de6bfb80c6789ba79a03d6f110e42a98d5",
+    "conker/build/conker.us.elf": "636b049706142d4c51e1033ec5c6ac67eb5f5d783610406b7de1a312c867aa16"
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x54",
+      "expected": "0x8FA80078",
+      "replacement": "0x8FAE0078",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x64",
+      "expected": "0x240E0002",
+      "replacement": "0x240F0002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x68",
+      "expected": "0x240F0002",
+      "replacement": "0x24180002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x6C",
+      "expected": "0x2418012C",
+      "replacement": "0x2419012C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x70",
+      "expected": "0x24190022",
+      "replacement": "0x24080022",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x74",
+      "expected": "0xA3AE006C",
+      "replacement": "0xA3AF006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x78",
+      "expected": "0xA3AF006D",
+      "replacement": "0xA3B8006D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x7C",
+      "expected": "0xA7B8006E",
+      "replacement": "0xA7B9006E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x80",
+      "expected": "0xA3B90070",
+      "replacement": "0xA3A80070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1C2C60",
+      "function": "func_1519C09C",
+      "offset": "0x94",
+      "expected": "0xAFA8005C",
+      "replacement": "0xAFAE005C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize effect config initialization scheduling and registers",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ]
+}
