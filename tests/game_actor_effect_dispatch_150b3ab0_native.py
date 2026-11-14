@@ -15,21 +15,22 @@ void func_1512D748(void *p,s32 a,s32 b){
  if(step++!=0||p!=base+0x1340||a!=6||b!=1)errors++;
  if(mutation){*(u8 **)(actor.b+0x1d4)=second.b;*(u16 *)(actor.b+0x7a)=0x0180;}
 }
-void func_15143134(f32 *p,void *o,void *m){
- EffectPosition150B3AB0 *q=o;
+void func_15143134(f32 *p,f32 *o,u8 *m){
+ EffectPosition150B3AB0 *q=(EffectPosition150B3AB0 *)o;
  if(step++!=1||p!=D_8009FBC0||m!=(mutation?second.b:frame.b)+0x640||q->angle!=(mutation?0x41:0x13f))errors++;
  q->x=1.25f;q->y=-2.5f;q->z=3.75f;
 }
-u32 func_150ADA20(void){step++;return values[randomIndex++];}
+s32 func_150ADA20(void){step++;return (s32)values[randomIndex++];}
 void func_1514C858(f32 x,f32 y,f32 z,f32 w,s32 angle,s32 a,s32 b,s32 c,s32 d,s32 e,f32 f,s32 g,s32 slot){
  if(step++!=3||x!=1.25f||y!=-2.5f||z!=3.75f||w!=10.0f||angle!=(mutation?0x41:0x13f)||a||b!=255||c!=(s32)(values[0]%31+40)||d!=8||e||f!=0.0f||g||slot!=expectedSlot)errors++;
 }
-void func_151D8868(void *ptr,s32 a,s32 b,s32 c){
- EffectPacket150B3AB0 *p=ptr;
+u8 *func_151D8868(u8 *ptr,s32 a,u8 b,s32 c){
+ EffectPacket150B3AB0 *p=(EffectPacket150B3AB0 *)ptr;
  if(step++!=6||a||b!=expectedSlot||c||p->kind!=1||p->size!=(s32)((values[1]&15)+12)||p->mode!=((values[2]&3)+5)||p->enabled!=1||p->value!=-1)errors++;
+ return 0;
 }
-void func_151D3FF4(void *ptr,s32 a,s32 b){
- EffectPosition150B3AB0 *p=ptr;
+void func_151D3FF4(f32 *ptr,u8 a,s32 b){
+ EffectPosition150B3AB0 *p=(EffectPosition150B3AB0 *)ptr;
  if(step++!=7||a!=expectedSlot||b||p->x!=1.25f||p->y!=-2.5f||p->z!=3.75f||p->angle!=(mutation?0x41:0x13f))errors++;
 }
 static int run(void){
