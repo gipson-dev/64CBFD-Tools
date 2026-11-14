@@ -17,7 +17,7 @@ class NaNOracle(g.Oracle):
     return
   super().execute(word)
 for rule in ('left','right'):
- NaNOracle.prefer_left=rule=='left';counts[rule]={'candidate':0,'staged':0};cases=0
+ NaNOracle.prefer_left=rule=='left';counts[rule]={'candidate':0,'staged':0,'volatile_output':0};cases=0
  for a,b,c,d in itertools.product((0x7fc00001,0x7fc10002),(0x7fc00003,0x7fc30004),(0,0x7fc50006),(0,0x7fc70008)):
   initial,args=g.fixture(2.,-2.,-5.,0,0)
   for offset,value in ((2,a),(6,b),(10,c),(14,d)):
@@ -26,7 +26,7 @@ for rule in ('left','right'):
    m=NaNOracle(code,initial.copy(),g.Case(),entry=g.entry,s={},arguments=args).run()
    return m.r[2],g.read(m.memory,g.OUTPUT),g.read(m.memory,g.OUTPUT+4)
   retail=observe(g.truth)
-  for label,code in (('candidate',g.candidate),('staged',staged)):
+  for label,code in (('candidate',g.candidate),('staged',staged),('volatile_output',g.volatile_output)):
    actual=observe(code)
    if actual!=retail:
     counts[rule][label]+=1

@@ -51,6 +51,10 @@ staged=staged.replace('horizontal = fabsf(matrix[3][0] + (matrix[0][0] * x + mat
 staged=staged.replace('vertical = fabsf(matrix[3][1] + (matrix[0][1] * x + matrix[1][1] * y + matrix[2][1] * z)) * yScale;', 'vertical = matrix[0][1] * x + matrix[1][1] * y + matrix[2][1] * z;\n    vertical = fabsf(matrix[3][1] + vertical) * yScale;')
 obj,diag=compile_owner(root,out,owner.replace(old,decl+staged),'staged');ws=bound_blob(*payload(obj,'func_1510AEE0'),symbols)
 assert len(ws)==96 and sum(a==b for a,b in zip(ws,truth))==15 and same_functions(base,obj,('func_1510AEE0',))==3 and normalized_pools(base)==normalized_pools(obj) and diag==''
+volatile_output=staged.replace('f32 *yResult)', 'f32 *volatile yResult)');assert volatile_output!=staged
+obj,diag=compile_owner(root,out,owner.replace(old,decl+volatile_output),'volatile-output');ws=bound_blob(*payload(obj,'func_1510AEE0'),symbols)
+assert len(ws)==97 and sum(a==b for a,b in zip(ws,truth))==17 and same_functions(base,obj,('func_1510AEE0',))==3 and normalized_pools(base)==normalized_pools(obj) and diag==''
+print({'variant':'volatile-output','words':97,'same_positions':17,'uncredited':True},flush=True)
 (out/'screen.json').write_text(json.dumps(rows,indent=2)+'\n')
 env=dict(os.environ,CBFD_CONSUMER_ROOT=str(root),PYTHONDONTWRITEBYTECODE='1')
 for test in ('guest','nan'):subprocess.run([sys.executable,'-m','tools.tests.game_projection_bounds_1510aee0_'+test+'_screen'],cwd=root,env=env,check=True)

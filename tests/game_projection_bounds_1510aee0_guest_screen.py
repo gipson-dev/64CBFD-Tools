@@ -10,7 +10,7 @@ from tools.tests.game_view_render_pass_oracle import STACK
 from tools.tests.test_game_point_transform_match import put,read
 root=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve();out=root/'conker/build/game-projection-bounds-1510aee0-durable';name='func_1510AEE0';entry=0x1510aee0;MATRIX=0x30000;OUTPUT=0x50000
 symbols={r[1]:r[2][1] for r in symbol_rows((root/'conker/build/conker.us.elf').read_bytes())}
-truth=list(struct.unpack_from('>100I',(root/'conker/conker.us.bin').read_bytes(),0x138390));candidate=bound_blob(*payload(out/'candidate-26.o',name),symbols);staged=bound_blob(*payload(out/'staged.o',name),symbols)
+truth=list(struct.unpack_from('>100I',(root/'conker/conker.us.bin').read_bytes(),0x138390));candidate=bound_blob(*payload(out/'candidate-26.o',name),symbols);staged=bound_blob(*payload(out/'staged.o',name),symbols);volatile_output=bound_blob(*payload(out/'volatile-output.o',name),symbols)
 def f32(v):return floating(bits(v))
 def fixture(x,y,z,which,pattern):
  m={STACK+i:(i*17+0x41)&255 for i in range(-512,512)}
@@ -43,16 +43,17 @@ class Oracle(FactoryOracle):
    src=(word>>11)&31;dst=(word>>6)&31
    self.f[dst]=(self.f[src]&0x7fffffff) if (word&63)==5 else (self.f[src]^0x80000000)
   else:super().execute(word)
-cases=0;different=[];staged_different=[];corpus=[]
+cases=0;different=[];staged_different=[];volatile_different=[];corpus=[]
 for x,y,z,mode,pattern in itertools.product((0.,2.,6.),(0.,-2.,6.),(-1.,-5.,-10.,1.),range(5),range(2)):
  initial,args=fixture(x,y,z,mode,pattern);result,want=model(initial,args);corpus.append((initial,args,result,want))
  streams=[]
- for code in (truth,candidate,staged):
+ for code in (truth,candidate,staged,volatile_output):
   m=Oracle(code,initial.copy(),Case(),entry=entry,s={},arguments=args).run()
   streams.append((m.r[2],public(m.memory)))
  assert streams[0]==(result,public(want)),(x,y,z,mode,pattern,'retail')
  if streams[1]!=streams[0]:different.append((x,y,z,mode,pattern))
  if streams[2]!=streams[0]:staged_different.append((x,y,z,mode,pattern))
+ if streams[3]!=streams[0]:volatile_different.append((x,y,z,mode,pattern))
  cases+=1
 controls=((0x4608103c,0x4608103e),(0xc4840028,0xc484002c),(0x46064101,0x46064100))
 for before,after in controls:
@@ -62,6 +63,6 @@ for before,after in controls:
   machine=Oracle(changed,initial.copy(),Case(),entry=entry,s={},arguments=args).run()
   if (machine.r[2],public(machine.memory))!=(result,public(want)):caught=True;break
  assert caught,hex(before)
-assert cases==360 and not different and not staged_different
-report={'cases_per_stream':cases,'candidate_differences':len(different),'staged_differences':len(staged_different),'examples':different[:8], 'finite_only':True,'negative_controls':len(controls),'uncredited':True}
+assert cases==360 and not different and not staged_different and not volatile_different
+report={'cases_per_stream':cases,'candidate_differences':len(different),'staged_differences':len(staged_different),'volatile_output_differences':len(volatile_different),'examples':different[:8], 'finite_only':True,'negative_controls':len(controls),'uncredited':True}
 (out/'guest-screen.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
