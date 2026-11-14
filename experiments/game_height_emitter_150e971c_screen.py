@@ -65,8 +65,10 @@ truth=struct.unpack_from('>91I',(root/'conker/conker.us.bin').read_bytes(),0x116
 base,bd=compile_owner(root,out,owner,'baseline')
 candidate=body.replace('    s32 random;\n','').replace('            random = func_150ADA20();\n','').replace('(u8)random', '(func_150ADA20() & 255)')
 rows={}
-for name,declaration in (('plain',decl),('padded',decl.replace('u8 untouched26[2];', 'u8 untouched26[2]; u8 scratch28[4];'))):
-    obj,diag=compile_owner(root,out,owner.replace(old,declaration+candidate),name)
+padded_decl=decl.replace('u8 untouched26[2];', 'u8 untouched26[2]; u8 scratch28[4];')
+snapshot=body.replace('(u8)random', '(random & 255)')
+for name,declaration,implementation in (('plain',decl,candidate),('padded',padded_decl,candidate),('snapshot',padded_decl,snapshot)):
+    obj,diag=compile_owner(root,out,owner.replace(old,declaration+implementation),name)
     ws=bound_blob(*payload(obj,'func_150E971C'),symbols)
     row={'words':len(ws),'same_positions':sum(a==b for a,b in zip(ws,truth)),
          'neighbors':same_functions(base,obj,('func_150E971C',)),
@@ -76,5 +78,10 @@ for name,declaration in (('plain',decl),('padded',decl.replace('u8 untouched26[2
     rows[name]=row
 (out/'screen.json').write_text(json.dumps(rows,indent=2)+'\n')
 env=dict(os.environ,CBFD_CONSUMER_ROOT=str(root),PYTHONDONTWRITEBYTECODE='1')
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_guard_screen'],cwd=root,env=env,check=True)
 subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_connected_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_model_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_caller_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_native_screen'],cwd=root,env=env,check=True)
+subprocess.run([sys.executable,'-m','tools.tests.game_height_emitter_150e971c_image_screen'],cwd=root,env=env,check=True)
 print(json.dumps(rows),flush=True)

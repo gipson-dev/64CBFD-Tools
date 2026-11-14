@@ -16,6 +16,8 @@ update=syms['func_151337C0']; frng=syms['func_150ADA68']; irng=syms['func_150ADA
 truth=list(struct.unpack_from('>91I',(root/'conker/conker.us.bin').read_bytes(),0x116bcc))
 plain=bound_blob(*payload(out/'plain.o','func_150E971C'),syms)
 padded=bound_blob(*payload(out/'padded.o','func_150E971C'),syms)
+snapshot=bound_blob(*payload(out/'snapshot.o','func_150E971C'),syms)
+guarded=bound_blob(*payload(out/'guarded.o','func_150E971C'),syms);assert guarded==truth
 
 class Oracle(FactoryOracle):
  def __init__(self,words,memory,mutate):
@@ -45,11 +47,11 @@ def fixture(height,flags,seed):
  for off,value in ((0x38,4.0),(0x3c,height),(0x40,6.0),(0x170,10.0)):put(m,actor+off,bits(value))
  put(m,actor+0x174,flags);return m
 
-counts={'cases':0,'plain_differs':0,'padded_differs':0,'emissions':0,'plain_packet_differs':0}
+counts={'cases':0,'plain_differs':0,'padded_differs':0,'snapshot_differs':0,'guarded_differs':0,'emissions':0,'plain_packet_differs':0}
 examples={}
 for height,flags,seed,mutation in itertools.product((-5.,10.,11.),(10,9,42),(0,1),(0,1,2,3)):
  initial=fixture(height,flags,seed)
- machines=[Oracle(code,initial.copy(),mutation).run() for code in (truth,plain,padded)]
+ machines=[Oracle(code,initial.copy(),mutation).run() for code in (truth,plain,padded,snapshot,guarded)]
  ref=machines[0]
  def observation(m):
   return (m.r[2],[(t, a if t!=emit else (a[1:],a[0]-STACK), d) for t,a,d in m.seen],
@@ -62,10 +64,10 @@ for height,flags,seed,mutation in itertools.product((-5.,10.,11.),(10,9,42),(0,1
   if not examples:
    examples={'retail_descriptor_offset':original[0][0]-STACK,'plain_descriptor_offset':observed[0][0]-STACK,
              'retail_packet_hex':original[1].hex(),'plain_packet_hex':observed[1].hex()}
- for name,m in zip(('plain','padded'),machines[1:]):
+ for name,m in zip(('plain','padded','snapshot','guarded'),machines[1:]):
   if observation(m)!=want:
    counts[name+'_differs']+=1
-assert counts=={'cases':72,'plain_differs':32,'padded_differs':0,'emissions':32,'plain_packet_differs':32},counts
+assert counts=={'cases':72,'plain_differs':32,'padded_differs':0,'snapshot_differs':0,'guarded_differs':0,'emissions':32,'plain_packet_differs':32},counts
 report={'counts':counts,'examples':examples,'limits':'stubbed helpers; finite float samples; uncredited compiler screen'}
 (out/'guest-screen.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report),flush=True)

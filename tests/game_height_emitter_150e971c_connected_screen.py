@@ -20,13 +20,13 @@ for height,vertical,flag,seed,mutation in itertools.product((8.,10.,11.),(0.,1.,
  for off,value in ((0x20,0.0),(0x24,0.0),(0x28,0.0),(0x44,.25),(0x48,vertical),(0x4c,-.5),(0x50,0.0),(0x54,0.0),(0x58,0.0),(0x5c,0.0)):
   put(initial,g.actor+off,bits(value))
  put(initial,tick,bits(1.0))
- a,b=[Oracle(words,initial.copy(),mutation).run() for words in (g.truth,g.padded)]
- assert observe(a)==observe(b),(height,vertical,flag,seed,mutation)
+ a,b,c,d=[Oracle(words,initial.copy(),mutation).run() for words in (g.truth,g.padded,g.snapshot,g.guarded)]
+ assert observe(a)==observe(b)==observe(c)==observe(d),(height,vertical,flag,seed,mutation)
  assert a.r[2]==(0 if height+vertical<10. else 1)
  assert read(a.memory,g.actor+0x3c)==bits(height+vertical)
  assert any(t==g.emit for t,_,_ in a.seen)==(height+vertical<10. and flag==10)
  if (height<10.)!=(height+vertical<10.):transitions+=1
  emissions+=any(t==g.emit for t,_,_ in a.seen);cases+=1
 assert cases==72 and emissions and transitions
-report={'cases_per_stream':cases,'retail_helper_words':len(helper),'emissions':emissions,'height_gate_transitions':transitions,'helpers_other_than_update':'stubbed','independent_model':False,'uncredited':True}
+report={'cases_per_stream':cases,'streams':4,'retail_helper_words':len(helper),'emissions':emissions,'height_gate_transitions':transitions,'helpers_other_than_update':'stubbed','independent_model':False,'uncredited':True}
 (g.out/'connected-screen.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
