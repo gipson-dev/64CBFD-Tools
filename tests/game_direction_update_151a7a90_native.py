@@ -9,7 +9,7 @@ range_snapshot=body.replace('    u8 dead;','    u8 dead;\n    f32 oldRange;').re
 bad={'wrong_lifetime_mask':body.replace('state->flags & 1','state->flags & 4'),
  'truncate_callback_return':body.replace('dead = !D_8008F940','dead = !(u8)D_8008F940'),
  'snapshot_second_selector':snapshot,
- 'omit_count_narrowing':body.replace('(s16)(state->count - 1)','(state->count - 1)'),
+ 'wrong_last_vertex_index':body.replace('(s16)(state->count - 1)','(s16)(state->count + 1)'),
  'snapshot_range_before_sample':range_snapshot,
  'wrong_vertex_basis':body.replace('vertex->y * side.unk4','vertex->y * side.unk0'),
  'wrong_release_gate':body.replace('if (dead) func_1516972C','if (!dead) func_1516972C')}
@@ -51,7 +51,7 @@ static void effect(u32 stage){DirectionState151A7A90*p=&object.state;if(!(curren
 static s32 gateA(u8*p){event(1);if(p!=(u8*)&object)error=1;effect(1);return current->firstAnswer;}
 static s32 gateB(u8*p){event(2);if(p!=(u8*)&object)error=1;effect(2);return current->secondAnswer;}
 s32(*D_8008F940[])(u8*)={gateA,gateA};s32(*D_8008F948[])(u8*)={gateB,gateB};
-s32 func_151A8340(u8*p,s32 zero,s32 count,s32 context,s32 limit){event(3);if(p!=(u8*)&object||zero||(u32)count!=current->eventCountArgument||(u32)context!=0x87654321u||limit!=100)error=1;effect(3);return 0;}
+void func_151A8340(u8*p,s16 zero,s16 count,f32 amplitude,s16 limit){event(3);if(p!=(u8*)&object||zero||(u32)count!=current->eventCountArgument||word(amplitude)!=0x87654321u||limit!=100)error=1;effect(3);}
 f32 func_150ADA68(void){event(4);if(word(object.state.timer)!=current->randomTimer)error=1;effect(4);return real(current->sample);}
 void func_151450B4(struct17*a,struct17*b,struct17*out){event(5);if(word(a->unk0)!=current->crossInput[0]||word(a->unk4)!=current->crossInput[1]||word(a->unk8)!=current->crossInput[2]||word(b->unk0)!=current->crossInput[3]||word(b->unk4)!=current->crossInput[4]||word(b->unk8)!=current->crossInput[5])error=1;
  out->unk0=a->unk4*b->unk8-a->unk8*b->unk4;out->unk4=a->unk8*b->unk0-a->unk0*b->unk8;out->unk8=a->unk0*b->unk4-a->unk4*b->unk0;effect(5);if(current->mutation&1){a->unk0+=.25f;b->unk8-=.5f;}}
@@ -60,7 +60,7 @@ static void(*candidates[])(struct102*)={candidate_0,candidate_1,candidate_2,cand
 static int run(void){u32 i,j,k,n,killed=0;for(i=0;i<sizeof(cases)/sizeof(cases[0]);i++){current=cases+i;
  for(j=0;j<8;j++){DirectionState151A7A90*p=&object.state;u32 values[14];
   for(k=0;k<256;k++)((u8*)&object)[k]=(u8)(k*19);
-  p->lifetime=(s16)current->lifetime;p->count=(s16)current->count;p->minimum=real(current->minimum);p->range=real(current->range);p->flags=current->flags;p->context=(s32)0x87654321u;p->firstCallback=(s8)current->first;p->secondCallback=(s8)current->second;
+  p->lifetime=(s16)current->lifetime;p->count=(s16)current->count;p->minimum=real(current->minimum);p->range=real(current->range);p->flags=current->flags;p->amplitude=real(0x87654321u);p->firstCallback=(s8)current->first;p->secondCallback=(s8)current->second;
   p->start.unk0=2.f;p->start.unk4=4.f;p->start.unk8=6.f;p->end.unk0=7.f;p->end.unk4=11.f;p->end.unk8=15.f;p->direction.unk0=20.f;p->direction.unk4=21.f;p->direction.unk8=22.f;p->length=13.f;p->reciprocal=17.f;p->cache=cache;p->vertices=vertices;p->timer=real(current->timer);
   D_800BE9E4=(s32)current->ticks;D_800BE9A4=real(current->timestep);
   for(n=0;n<2;n++)for(k=0;k<5;k++){DirectionVertex151A7A90*v=(n?alternate:vertices)+k;v->x=.5f+k+n;v->y=-1.f+.25f*k;v->z=.75f-.125f*k;v->outX=-10.f;v->outY=-20.f;v->outZ=-30.f;}
