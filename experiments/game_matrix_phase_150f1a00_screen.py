@@ -47,6 +47,7 @@ sha=lambda text:hashlib.sha256(text.encode()).hexdigest()
 
 def versions():
     result={};states=[]
+    assert MANIFEST['source']['old']==OLD and MANIFEST['source']['new']==NEW
     for name in ('source','caller'):
         item=MANIFEST[name];text=(ROOT/item['path']).read_text()
         if sha(text)==item['before_sha256']:before=text;installed=False
