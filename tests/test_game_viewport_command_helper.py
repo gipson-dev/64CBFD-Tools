@@ -1,5 +1,6 @@
 """Actual SDK helper and bounded command traces, not complete renderer acceptance."""
 
+import csv
 import hashlib
 import json
 import re
@@ -282,7 +283,22 @@ for(slot=0;slot<4;slot++) for(page=0;page<2;page++) {
         production = self.production['func_1510B7B4']
         end = max(index for index, word in enumerate(actual) if word == 0x03E00008) + 2
         self.assertEqual(addresses['func_1510B7B4'], ENTRY)
-        self.assertEqual(actual[:end], production[:end])
+        # The raw isolated compiler output must satisfy every checked guard;
+        # applying those rows must reproduce the installed retail stream.
+        with (self.root / 'conker/retail_word_patches.us.csv').open(newline='') as manifest:
+            rows = [row for row in csv.DictReader(manifest)
+                    if row['filename'] == 'generated_138520' and row['function'] == 'func_1510B7B4']
+        self.assertEqual(len(rows), 24)
+        guarded = list(actual[:end])
+        for row in rows:
+            index = int(row['offset'], 0) // 4
+            self.assertEqual(guarded[index], int(row['expected'], 0))
+            self.assertIn(row['expected_relocations'], ('', '-'))
+            self.assertIn(row['replacement_relocations'], ('', '-'))
+            self.assertFalse(row['insert_after'])
+            self.assertNotEqual(row['omit'].lower(), 'true')
+            guarded[index] = int(row['replacement'], 0)
+        self.assertEqual(guarded, production[:end])
         self.assertFalse(any(actual[end:]))
         self.assertFalse(any(production[end:]))
 
@@ -310,13 +326,13 @@ for(slot=0;slot<4;slot++) for(page=0;page<2;page++) {
         self.assertIn('gSPClipRatio(arg0++, FRUSTRATIO_3)', self.body)
         self.assertIn('gSPClearGeometryMode(arg0++, G_LOD)', self.body)
         patches = (self.root / 'conker/retail_word_patches.us.csv').read_text()
-        self.assertNotIn(',func_1510B7B4,', patches)
+        self.assertEqual(sum(',func_1510B7B4,' in row for row in patches.splitlines()), 24)
         self.compare(case(), queue.OUTPUT, 0)
         end = max(index for index, word in enumerate(words) if word == 0x03E00008) + 2
-        self.assertEqual(end, 103)
-        self.assertEqual(sum(a != b for a, b in zip(words, self.retail)), 104)
+        self.assertEqual(end, 105)
+        self.assertEqual(words, self.retail)
         self.assertEqual(hashlib.sha256(struct.pack('>105I', *words)).hexdigest(),
-                         '3f8226f75dae50f3e03d73ed53ac6f6bedabbe5b831946646c59856150c4247a')
+                         'c91b8e8993d8d66870083826612f3bba92a836fe990e211ba00d35397e1dbb38')
         self.assertEqual(self.coverage, set(range(ENTRY, ENTRY + end * 4, 4)))
         self.assertEqual(self.retail_coverage, set(range(ENTRY, ENTRY + 105 * 4, 4)))
 

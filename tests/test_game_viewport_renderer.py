@@ -577,11 +577,11 @@ for(effect=0;effect<2;effect++) for(suppressed=0;suppressed<2;suppressed++) {
                              for word in words))
         self.assertIn('Gfx *func_1510B9D0(Gfx *arg0, s16 arg1);',
                       (self.root / 'conker/include/functions.h').read_text())
-        self.assertIn('(s32) func_1510B9D0((Gfx *) temp_s0, arg1)',
+        self.assertIn('commands = func_1510B9D0(commands, view);',
                       (self.root / 'conker/src/game_45B80.c').read_text())
         for name, expected in (
-                ('func_15019464', 'dabbc7a11a875291b6fab2f75d2aaa046833d372ec228b7e2327a687b77cdac8'),
-                ('func_1510B7B4', '3f8226f75dae50f3e03d73ed53ac6f6bedabbe5b831946646c59856150c4247a'),
+                ('func_15019464', '4a4714ec2eb950b8c18a0a2227fdeae3423344c85f73388c8778d2713c06c120'),
+                ('func_1510B7B4', 'c91b8e8993d8d66870083826612f3bba92a836fe990e211ba00d35397e1dbb38'),
                 ('func_1510B32C', '1d1156abe599b3f2474a382805b158a19073bd10f6a273c4e72de1927b0bc317'),
                 ('func_1510B958', '3b4951f5cfb30124cdb1616129dd0a5550a80c40c8f3b0d5ec6c649fe7b399fc')):
             slot = self.production[name]
