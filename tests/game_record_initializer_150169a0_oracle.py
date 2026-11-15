@@ -149,7 +149,7 @@ class Oracle(FactoryOracle):
         self.init_case=c;self.init_observations=[];self.ordinals={};self.init_addresses=tuple(sorted(public(m)))
         super().__init__(words,m,MachineCase(phase=c.phase),entry=source.ENTRY if entry is None else entry,connected=connected,arguments=(u32(c.category),))
     def record_call(self,t):
-        if t==source.ENTRY:return
+        if t in(source.ENTRY,source.RAW_ENTRY):return
         assert t in COUNTS,hex(t);args=tuple(map(u32,self.arguments(COUNTS[t])))
         self.calls.append((t,args));self.events.append(('CALL',t,args));self.init_observations.append(snapshot(self.memory,self.init_addresses))
     def hook(self,t):
@@ -190,9 +190,9 @@ def unreachable_proof(words,pool):
     return [hex(p)for p in(0x15016a90,*dead)]
 
 def run_case(program,c):
-    words,pool=program;m=fixture(c);want,calls,obs=reference(m,c)
+    words,pool,entry=program;m=fixture(c);want,calls,obs=reference(m,c)
     m.update({source.POOL+i:b for i,b in enumerate(pool)})
-    machine=Oracle(words,m,c);saved=(machine.r[16:24],machine.r[29],machine.f[20:])
+    machine=Oracle(words,m,c,entry=entry);saved=(machine.r[16:24],machine.r[29],machine.f[20:])
     machine.run();assert (machine.r[16:24],machine.r[29],machine.f[20:])==saved
     assert public(machine.memory)==public(want),('public memory',c)
     assert machine.calls==calls,('calls',c,machine.calls,calls)
@@ -214,13 +214,13 @@ def main():
     for at,old,new,c in((0x1c,0x24ceffe6,0x24ceffe5,Case(category=26)),
                          (0x248,0xa1c00002,0xa1c70002,Case()),
                          (0x650,0xa72f0006,0xa72f0008,Case(selected=1))):
-        words,pool=programs[0];changed=words[:];assert changed[at//4]==old
+        words,pool,entry=programs[0];changed=words[:];assert changed[at//4]==old
         changed[at//4]=new
-        try:run_case((changed,pool),c)
+        try:run_case((changed,pool,entry),c)
         except AssertionError:controls.append(hex(at))
         else:raise AssertionError('Ineffective emitted negative control')
     missing={hex(source.ENTRY+i*4):hex(w)for i,w in enumerate(programs[0][0])if source.ENTRY+i*4 not in seen}
-    proved=unreachable_proof(*programs[0]);assert set(missing)==set(proved)
+    proved=unreachable_proof(*programs[0][:2]);assert set(missing)==set(proved)
     report=dict(cases=count,streams=2,retail_words_visited=len(seen),retail_words=477,unvisited_words=missing,unreachable_retail_words_proved=proved,public_bytes_and_entry_snapshots=True,saved_gprs_fprs_and_sp=True,opaque_helpers=True,effective_controls=controls,raw_fault_or_native_claimed=False,uncredited=True)
     (source.OUT/'behavior.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()
