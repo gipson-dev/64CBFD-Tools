@@ -11,7 +11,7 @@ from tools.tests.test_game_point_transform_match import put,read
 from tools.tests.game_animation_timeline_oracle import bits,floating
 from tools.tests.test_game_character_effect_pair import WindowCode,WindowBoundary
 from tools.tests import test_game_actor_burst_consumer_match as faults
-STATE,ACTOR,ALT,OUT,PAYLOAD=0x30000,0x31000,0x32000,0x40000,0x400A0
+STATE,ACTOR,ALT,OUT,PAYLOAD=0x30000,0x31000,0x32000,0x80000,0x800A0
 COLOR,QUERY,FACTORY,COPY,ALLOCATE,ZERO,CHECK=0x151D8E20,0x1519EF90,0x15147A80,0x10022EC0,0x15167A68,0x100226F0,0x150A29C8
 HEADING,SAMPLE=offset.HEADING,offset.SAMPLE
 COUNTS={COLOR:0,QUERY:3,FACTORY:11,COPY:3,ALLOCATE:6,ZERO:2,CHECK:2,HEADING:1,SAMPLE:1,s.ENTRY:2,0x151A0928:1}
@@ -36,6 +36,7 @@ def public_trace(q,c):return [v for v in q.trace if not STACK+c.phase-2048<=v[1]
 def fixture(c):
     home=STACK+c.phase;m={home+i:(i*17+c.seed*29+0xA5)&255 for i in range(-2048,2048)}
     for p,n in ((STATE,0x100),(ACTOR,0x240),(ALT,0x240),(OUT,0x240),(s.symbols()['D_800AB414'],768)):
+        assert p+n<=home-2048 or p>=home+2048,('public fixture overlaps stack window',hex(p),n)
         m.update({p+i:(i*13+c.seed*31+0x53)&255 for i in range(n)})
     for p,v in offset.helper_data()[1].items():put(m,p,v)
     for p in (ACTOR,ALT):
