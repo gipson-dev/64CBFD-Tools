@@ -195,9 +195,9 @@ class Machine(FactoryOracle):
   for reg in (1,2,3,*range(4,16),24,25):self.r[reg]=0xA5000000+reg
   self.f[:20]=[0xA5000000+i for i in range(20)];self.hi=self.lo=0xDEADBEEF;self.r[2]=value&0xFFFFFFFF
 def programs():
- return dict(retail=list(struct.unpack_from('>415I',(R/'conker/conker.us.bin').read_bytes(),0x1CCCA0)),candidate=bound_blob(*payload(O/'qualified.o','func_1519F7F0'),symbols()))
+ return dict(retail=list(struct.unpack_from('>415I',(R/'conker/conker.us.bin').read_bytes(),0x1CCCA0)),previous=bound_blob(*payload(O/'previous.o','func_1519F7F0'),symbols()),candidate=bound_blob(*payload(O/'qualified.o','func_1519F7F0'),symbols()))
 def check(w,c,label):
- m=fixture(c);expected,value,calls,ops=reference(m,c,-48 if label=='candidate' else -44,-128 if label=='candidate' else -140)
+ m=fixture(c);expected,value,calls,ops=reference(m,c,-48 if label=='previous' else -44,-128 if label=='previous' else -140)
  q=Machine(w,m,c).run();got=(public(q.memory,c),q.r[2],q.calls);want=(public(expected,c),value,calls)
  assert got==want,(label,c,'memory',[(hex(k),expected.get(k),q.memory.get(k)) for k in expected if public(expected,c).get(k)!=public(q.memory,c).get(k)][:8],'return',q.r[2],value,'calls',q.calls,calls)
  return q
@@ -236,15 +236,23 @@ def controls(streams):
   else:raise AssertionError(('ineffective control',name))
  return rejected
 def main():
- streams=programs();seen={k:set() for k in streams};count=0;different_packets=0
+ streams=programs();seen={k:set() for k in streams};count=0;different_previous_packets=0;different_candidate_packets=0;fp_examples=[]
  for c in cases():
-  observations=[]
+  observations={};machines={}
   for label,w in streams.items():
-   q=check(w,c,label);seen[label]|=q.visits;observations.append([x[2] for x in q.calls if x[0]==COPY])
-  different_packets+=observations[0]!=observations[1]
+   q=check(w,c,label);seen[label]|=q.visits;observations[label]=[x[2] for x in q.calls if x[0]==COPY];machines[label]=q
+  different_previous_packets+=observations['retail']!=observations['previous']
+  different_candidate_packets+=observations['retail']!=observations['candidate']
+  a,b=machines['retail'],machines['candidate']
+  assert (public(a.memory,c),a.calls,a.raw_calls)==(public(b.memory,c),b.calls,b.raw_calls),('refined public/calls',c)
+  if a.fp_ops!=b.fp_ops and len(fp_examples)<3:
+   first=next((i for i,(x,y) in enumerate(zip(a.fp_ops,b.fp_ops)) if x!=y),min(len(a.fp_ops),len(b.fp_ops)))
+   fp_examples.append(dict(case=repr(c),first=first,retail=a.fp_ops[max(0,first-1):first+3],candidate=b.fp_ops[max(0,first-1):first+3]))
   count+=1
- assert different_packets>0,'Corpus did not expose the current private-padding mismatch'
+ assert different_previous_packets>0 and different_candidate_packets==0,'Exposed-home provenance control failed'
  rejected=controls(streams)
- report=dict(cases_per_stream=count,streams=2,visited_words={k:len(v) for k,v in seen.items()},raw_private_padding_equated=False,transition_packet_disagreements=different_packets,ordered_FP_equivalence_proved=False,effective_controls=rejected,c_match_credit=0)
+ report=dict(cases_per_stream=count,streams=3,visited_words={k:len(v) for k,v in seen.items()},all_eight_transition_bytes_and_provider_arguments_equal=True,
+             previous_transition_packet_disagreements=different_previous_packets,transition_packet_disagreements=different_candidate_packets,
+             ordered_FP_equivalence_proved=False,remaining_FP_order_examples=fp_examples,effective_controls=rejected,c_match_credit=0)
  (O/'guest-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()
