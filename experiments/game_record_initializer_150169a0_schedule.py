@@ -1,7 +1,8 @@
-"""Uncredited scheduling projection; independent equivalence proof is pending.
+"""Pinned initializer scheduling projection, with a separate relational proof.
 
-This diagnostic has no installer and emits no production guard rows. Its
-register colors are a hypothesis, not an established semantic normalization.
+This diagnostic has no installer and emits no production guard rows.
+The proof engine independently checks the proposed register colors and public
+effects. This pure projection does not install a body or claim match credit.
 """
 import hashlib,json,struct
 from tools.experiments import game_record_initializer_150169a0_candidates as g
@@ -81,6 +82,8 @@ def main():
         try:private_projection(raw,{**refs,pc:[(kind,name+'_changed')for kind,name in rows]})
         except ValueError:controls+=1
         else:raise AssertionError('Changed binding accepted')
-    report=dict(raw_words=481,projected_words=477,omitted=[hex(pc)for pc in omitted],duplicated=['0x1e8'],table_entries=79,table_pool_exact=True,corruption_controls=controls,independent_equivalence_proof_pending=True,production_installation=False,uncredited=True)
+    from tools.tests.game_record_initializer_150169a0_proof import prove
+    retail,source=g.programs();proof=prove(source,(bound_blob(normal,nrefs,g.symbols()),retail[1],retail[2]))
+    report=dict(raw_words=481,projected_words=477,omitted=[hex(pc)for pc in omitted],duplicated=['0x1e8'],table_entries=79,table_pool_exact=True,corruption_controls=controls,independent_equivalence_proof_pending=False,proof_paths=proof['symbolic_paths'],production_installation=False,uncredited=True)
     (g.OUT/'projection-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()

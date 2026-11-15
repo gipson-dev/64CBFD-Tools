@@ -12,7 +12,7 @@ class RecordInitializer150169A0RecoveryTests(unittest.TestCase):
         self.assertEqual(p.returncode,0,p.stdout+'\n'+p.stderr)
         r=json.loads((source.OUT/'projection-report.json').read_text())
         self.assertEqual((r['raw_words'],r['projected_words'],r['table_entries'],r['corruption_controls']),(481,477,79,549))
-        self.assertTrue(r['independent_equivalence_proof_pending']and r['uncredited']);self.assertFalse(r['production_installation'])
+        self.assertFalse(r['independent_equivalence_proof_pending']);self.assertTrue(r['uncredited']);self.assertFalse(r['production_installation'])
         guards=list(csv.DictReader(io.StringIO((source.ROOT/'conker/retail_word_patches.us.csv').read_text())))
         self.assertFalse([row for row in guards if row['function']==source.NAME])
         print('Scheduling projection remains uninstalled and uncredited',flush=True)
