@@ -1,0 +1,354 @@
+{
+  "raw_relocations": {
+    "68": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "92": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "96": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "104": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "108": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "112": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "116": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "124": [
+      [
+        "R_MIPS_HI16",
+        "D_80082FA4"
+      ]
+    ],
+    "180": [
+      [
+        "R_MIPS_LO16",
+        "D_80082FA4"
+      ]
+    ],
+    "176": [
+      [
+        "R_MIPS_26",
+        "func_15144B34"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "200": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "284": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "288": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "296": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "300": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "316": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "376": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "404": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_26",
+        "func_150484A0"
+      ]
+    ],
+    "440": [
+      [
+        "R_MIPS_26",
+        "func_15144C8C"
+      ]
+    ],
+    "464": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "472": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "476": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "480": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "484": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "504": [
+      [
+        "R_MIPS_26",
+        "func_1514373C"
+      ]
+    ],
+    "512": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "520": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "524": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "528": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "532": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "548": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "556": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "560": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "568": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "576": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "580": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "588": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "592": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "604": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "608": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "616": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "620": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "628": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "632": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "672": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "708": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "740": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "804": [
+      [
+        "R_MIPS_26",
+        "func_15149550"
+      ]
+    ],
+    "824": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "constant_pool_sha256": "e4b3618e3af815343708f5f38ed632631a9b4a5b54ecedebdefdd52e14b63f12",
+  "raw_body_sha256": "fea76614f958e051351b365170fabaa1bf6651de21e4e6e14738686ab5bb7111"
+}

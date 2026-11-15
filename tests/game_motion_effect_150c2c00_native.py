@@ -7,10 +7,12 @@ from tools.experiments.game_remaining_donor_candidates import body
 from tools.tests.test_game_projected_packet_draw import native_command
 from tools.tests.test_game_row_destination_fill import START
 
-def main():
+def main(controls_override=None, declarations_override=None, readonly_coefficients=False, mixed_outcomes=False):
     selected=body((s.OUT/'recovered.c').read_text(),s.NAME)
     controls=dict(threshold=('1.0f < *accumulator','2.0f < *accumulator'),motion=('x * x + z * z','x * x - z * z'),duration=('% 151U','% 150U'),color=('% 156U','% 155U'),kind=('&packet, 10','&packet, 9'),owner=('owner[0xC]','owner[0xB]'),copy=('+ 0x160','+ 0x164'),cached=(' * headingScale + headingBase',' * D_800A02DC + D_800A02D8'))
-    code='#include <ultra64.h>\n#include <string.h>\n'+packet.PREAMBLE.replace('extern f32','f32')+s.PREAMBLE.replace('extern f32','f32')
+    controls.update(controls_override or {})
+    declarations=s.PREAMBLE if declarations_override is None else declarations_override
+    code='#include <ultra64.h>\n#include <string.h>\n'+packet.PREAMBLE.replace('extern f32','f32')+declarations.replace('extern f32','f32')
     names=['D_%08X'%(g.CONST+i*4) for i in range(20)]
     arr=lambda vs:'{'+','.join('0x%Xu'%v for v in vs)+'}'
     code+='static f32 *const coefficients[20]={'+','.join('&'+n for n in names)+'};\n'
@@ -76,6 +78,14 @@ void *memcpy(void*dst,const void*src,size_t size){u32 i;u8*d=dst;const u8*p=src;
  event(0x10022ec0,0x501a0,0,(u32)size,0,0,0);if(dst!=output.bytes+32+0x160||size!=4)bad=6;
  for(i=0;i<size;i++)d[i]=p[i];copies++;return dst;}
 '''.replace('COEFFICIENTS',arr(g.coefficients()))
+    if readonly_coefficients:
+        mutation=' if(target==0x150484a0||target==0x15144c8c||target==0x1514373c||target==0x15149550)\n  for(i=3;i<20;i++)*coefficients[i]=value(initial[i])*(n&1?1.25f:.75f);'
+        assert code.count(mutation)==1
+        code=code.replace(mutation,'').replace('static void effect(u32 target,u32 n){u32 i;','static void effect(u32 target,u32 n){')
+    if mixed_outcomes:
+        old='return current->outcome?(void*)(output.bytes+32):0;'
+        assert code.count(old)==1
+        code=code.replace(old,'return (current->outcome==1||(current->outcome==2&&n%2==0))?(void*)(output.bytes+32):0;')
     for name,text in {'selected':selected,**{n:selected.replace(a,b,1) for n,(a,b) in controls.items()}}.items():
         if name=='cached':text=text.replace('headingScale = D_800A02DC;','headingScale = D_800A02DC;\n            (void)headingScale; (void)headingBase;')
         if name!='selected':assert text!=selected,name
