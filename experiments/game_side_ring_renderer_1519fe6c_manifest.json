@@ -1,7 +1,7 @@
 {
-  "source": "/* Render the backward side-effect ring as a three-vertex ribbon strip. */\nGfx *func_1519FE6C(SideEmitter1519F7F0 *effect, Gfx *output, s16 view) {\n    Vtx *cursor;\n    SidePayload1519F1C8 *packet;\n    SideEmitEntry1519F7F0 *entries;\n    SidePosition1519F1C8 position, previousPosition;\n    f32 previousWidth, currentWidth, dx, dz, inverseLength, offsetX, offsetZ;\n    s32 index, previous, high, low;\n    u8 previousAlpha, alpha;\n    s16 previousTag, tag;\n    s16 texture[3];\n    s16 remaining;\n    u8 sync;\n    u8 factor;\n    SideEmitEntry1519F7F0 *entry;\n\n    if (effect->count >= 2) {\n    func_151D5D60(effect->reserved84, view,\n        effect->capacity * 48 + 0x120, &cursor, NULL);\n    if (cursor != NULL) {\n    packet = effect->payload;\n    entries = effect->entries;\n    sync = 1;\n    if (packet->kind & 2) {\n        remaining = packet->style;\n        factor = 0;\n        index = effect->head;\n        /* Retail enters even when the initial fade count is zero. */\n        do {\n            entries[index].light = factor;\n            factor += packet->first;\n            index++;\n            if (index == effect->capacity) index = 0;\n            remaining = (s16)(remaining - 1);\n        } while (remaining != 0 && index != effect->tail);\n    }\n    if (packet->kind & 4) {\n        index = effect->tail - 1;\n        factor = 0;\n        remaining = packet->second;\n        if (index < 0) index = effect->capacity - 1;\n        do {\n            entries[index].light = (entries[index].light * factor) >> 8;\n            factor += packet->third;\n            index--;\n            if (index < 0) index = effect->capacity - 1;\n            remaining = (s16)(remaining - 1);\n        } while (remaining != 0 && index != effect->tail);\n    }\n    output = func_15142E24(output, D_80090E0C, 0, 0, 0, 0, 57, 0, NULL, &sync, 62);\n    output = func_15142B7C(output, 1, 0x160600);\n    output = func_15142C10(output, packet->red, packet->green, packet->blue, 255, &sync);\n    output = func_15142CF0(output, 0, 0, 255, 255, 255, 0, &sync);\n    output = func_1513F4E4(output, 7, &sync);\n    output = func_15142FBC(output, D_800D2C9C | 0x80000 | 0x2CA0, 0x5049D8, &sync);\n    if (effect->flags & 2) {\n        index = effect->tail - 1;\n        if (index < 0) index = effect->capacity - 1;\n        previousPosition = effect->point;\n        previousWidth = packet->speed;\n        previousAlpha = (entries[index].light * entries[index].alpha) >> 8;\n        previousTag = entries[index].tag;\n    } else {\n        previous = effect->tail - 1;\n        if (previous < 0) previous = effect->capacity - 1;\n        index = previous - 1;\n        if (index < 0) index = effect->capacity - 1;\n        entry = &entries[previous];\n        previousPosition.x = entry->x;\n        previousPosition.y = entry->height;\n        previousPosition.z = entry->z;\n        previousWidth = entry->phase;\n        previousAlpha = (entry->light * entry->alpha) >> 8;\n        previousTag = entry->tag;\n    }\n    entry = &entries[index];\n    position.x = entry->x;\n    position.y = entry->height;\n    position.z = entry->z;\n    dx = position.x - previousPosition.x;\n    dz = position.z - previousPosition.z;\n    alpha = (entry->light * entry->alpha) >> 8;\n    tag = entry->tag;\n    currentWidth = entry->phase;\n    if (0.0001f < fabsf(dx) || 0.0001f < fabsf(dz))\n        inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n    else inverseLength = 1.0f;\n    /* zero46 and command hold the signed texture interval for this strip. */\n    texture[0] = packet->zero46;\n    texture[2] = packet->zero46 + packet->command;\n    if (texture[2] < texture[0]) {\n        texture[0] = packet->zero46 % 1024;\n        packet->zero46 = texture[0];\n        texture[2] = packet->zero46 + packet->command;\n    }\n    texture[1] = (texture[2] + texture[0]) >> 1;\n    if (effect->mode == 6) { high = 0; low = 2; }\n    else if (effect->mode == 7) { high = 2; low = 0; }\n    else { high = 2; low = 0; }\n    offsetX = (-dz * inverseLength) * previousWidth;\n    offsetZ = (dx * inverseLength) * previousWidth;\n    cursor->v.ob[0] = (s32)(previousPosition.x + offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z + offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[high];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[1];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = previousAlpha;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x - offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z - offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[low];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    do {\n        offsetX = (-dz * inverseLength) * currentWidth;\n        offsetZ = (dx * inverseLength) * currentWidth;\n        cursor->v.ob[0] = (s32)(position.x + offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z + offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[high];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[1];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = alpha;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x - offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z - offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[low];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        gSPVertex(output++, cursor - 6, 6, 0);\n        gSP1Triangle(output++, 0, 3, 4, 0);\n        gSP1Triangle(output++, 0, 4, 1, 0);\n        gSP1Triangle(output++, 1, 4, 5, 0);\n        gSP1Triangle(output++, 1, 5, 2, 0);\n        previous = index;\n        index--;\n        if (index < 0) index = effect->capacity - 1;\n        if (previous != effect->head) {\n            previousPosition = position;\n            entry = &entries[index];\n            position.x = entry->x;\n            position.y = entry->height;\n            position.z = entry->z;\n            alpha = (entry->light * entry->alpha) >> 8;\n            tag = entry->tag;\n            dx = position.x - previousPosition.x;\n            dz = position.z - previousPosition.z;\n            /* Later joins use exact zero, unlike the initial epsilon gate. */\n            if (position.x == previousPosition.x && dz == 0.0f) inverseLength = 1.0f;\n            else inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n            currentWidth = entry->phase;\n        }\n    } while (previous != effect->head);\n    }\n    }\n    return output;\n}\n",
+  "source": "/* Render the backward side-effect ring as a three-vertex ribbon strip. */\nGfx *func_1519FE6C(SideEmitter1519F7F0 *effect, Gfx *output, s16 view) {\n    Vtx *cursor;\n    SidePayload1519F1C8 *packet;\n    SideEmitEntry1519F7F0 *entries;\n    SidePosition1519F1C8 position, previousPosition;\n    f32 previousWidth, currentWidth, dx, dz, inverseLength, offsetX, offsetZ;\n    s32 index, previous, high, low;\n    u8 previousAlpha, alpha;\n    s16 previousTag, tag;\n    s16 texture[3];\n    s16 remaining;\n    u8 sync;\n    u8 factor;\n    SideEmitEntry1519F7F0 *entry;\n\n    if (effect->count >= 2) {\n    func_151D5D60(effect->reserved84, view,\n        effect->capacity * 48 + 0x120, &cursor, NULL);\n    if (cursor != NULL) {\n    packet = effect->payload;\n    entries = effect->entries;\n    sync = 1;\n    factor = 0;\n    if (packet->kind & 2) {\n        s32 forwardIndex;\n        remaining = packet->style;\n        forwardIndex = effect->head;\n        /* Retail enters even when the initial fade count is zero. */\n        do {\n            entries[forwardIndex].light = factor;\n            factor += packet->first;\n            forwardIndex++;\n            if (forwardIndex == effect->capacity) forwardIndex = 0;\n            remaining = (s16)(remaining - 1);\n        } while (remaining != 0 && forwardIndex != effect->tail);\n    }\n    if (packet->kind & 4) {\n        s16 backwardRemaining;\n        u8 backwardFactor;\n        s32 backwardIndex;\n        backwardIndex = effect->tail - 1;\n        backwardFactor = 0;\n        backwardRemaining = packet->second;\n        if (backwardIndex < 0) backwardIndex = effect->capacity - 1;\n        do {\n            entries[backwardIndex].light = (entries[backwardIndex].light * backwardFactor) >> 8;\n            backwardFactor += packet->third;\n            backwardIndex--;\n            if (backwardIndex < 0) backwardIndex = effect->capacity - 1;\n            backwardRemaining = (s16)(backwardRemaining - 1);\n        } while (backwardRemaining != 0 && backwardIndex != effect->tail);\n    }\n    output = func_15142E24(output, D_80090E0C, 0, 0, 0, 0, 57, 0, NULL, &sync, 62);\n    output = func_15142B7C(output, 1, 0x160600);\n    output = func_15142C10(output, packet->red, packet->green, packet->blue, 255, &sync);\n    output = func_15142CF0(output, 0, 0, 255, 255, 255, 0, &sync);\n    output = func_1513F4E4(output, 7, &sync);\n    output = func_15142FBC(output, D_800D2C9C | 0x80000 | 0x2CA0, 0x5049D8, &sync);\n    if (effect->flags & 2) {\n        index = effect->tail - 1;\n        if (index < 0) index = effect->capacity - 1;\n        previousPosition = effect->point;\n        previousWidth = packet->speed;\n        entry = &entries[index];\n        previousAlpha = (entry->light * entry->alpha) >> 8;\n        previousTag = entry->tag;\n    } else {\n        previous = effect->tail - 1;\n        if (previous < 0) previous = effect->capacity - 1;\n        index = previous - 1;\n        if (index < 0) index = effect->capacity - 1;\n        entry = &entries[previous];\n        previousPosition.x = entry->x;\n        previousPosition.y = entry->height;\n        previousPosition.z = entry->z;\n        previousWidth = entry->phase;\n        previousAlpha = (entry->light * entry->alpha) >> 8;\n        previousTag = entry->tag;\n    }\n    entry = &entries[index];\n    position.x = entry->x;\n    position.y = entry->height;\n    position.z = entry->z;\n    dx = position.x - previousPosition.x;\n    dz = position.z - previousPosition.z;\n    alpha = (entry->light * entry->alpha) >> 8;\n    tag = entry->tag;\n    currentWidth = entry->phase;\n    if (0.0001f < fabsf(dx) || 0.0001f < fabsf(dz))\n        inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n    else inverseLength = 1.0f;\n    /* zero46 and command hold the signed texture interval for this strip. */\n    texture[0] = packet->zero46;\n    texture[2] = packet->zero46 + packet->command;\n    if (texture[2] < texture[0]) {\n        texture[0] = packet->zero46 % 1024;\n        packet->zero46 = texture[0];\n        texture[2] = packet->zero46 + packet->command;\n    }\n    texture[1] = (texture[2] + texture[0]) >> 1;\n    if (effect->mode == 6) { high = 0; low = 2; }\n    else if (effect->mode == 7) { high = 2; low = 0; }\n    else { high = 2; low = 0; }\n    offsetX = (-dz * inverseLength) * previousWidth;\n    offsetZ = (dx * inverseLength) * previousWidth;\n    cursor->v.ob[0] = (s32)(previousPosition.x + offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z + offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[high];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[1];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = previousAlpha;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x - offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z - offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[low];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    do {\n        offsetX = (-dz * inverseLength) * currentWidth;\n        offsetZ = (dx * inverseLength) * currentWidth;\n        cursor->v.ob[0] = (s32)(position.x + offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z + offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[high];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[1];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = alpha;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x - offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z - offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[low];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        gSPVertex(output++, cursor - 6, 6, 0);\n        gSP1Triangle(output++, 0, 3, 4, 0);\n        gSP1Triangle(output++, 0, 4, 1, 0);\n        gSP1Triangle(output++, 1, 4, 5, 0);\n        gSP1Triangle(output++, 1, 5, 2, 0);\n        previous = index;\n        index--;\n        if (index < 0) index = effect->capacity - 1;\n        if (previous != effect->head) {\n            previousPosition = position;\n            entry = &entries[index];\n            position.x = entry->x;\n            position.y = entry->height;\n            position.z = entry->z;\n            alpha = (entry->light * entry->alpha) >> 8;\n            tag = entry->tag;\n            dx = position.x - previousPosition.x;\n            dz = position.z - previousPosition.z;\n            /* Later joins use exact zero, unlike the initial epsilon gate. */\n            if (position.x == previousPosition.x && dz == 0.0f) inverseLength = 1.0f;\n            else inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n            currentWidth = entry->phase;\n        }\n    } while (previous != effect->head);\n    }\n    }\n    return output;\n}\n",
   "declarations": "extern u8 D_80090E0C[];\nextern u32 D_800D2C9C;\nvoid func_151D5D60(void *, s16, s32, Vtx **, u8 *);\nGfx *func_15142E24(Gfx *, void *, s32, s32, s32, s32, s32, u8, u8 *, u8 *, s32);\nGfx *func_15142B7C(Gfx *, u32, u32);\nGfx *func_15142C10(Gfx *, s32, s32, s32, s32, u8 *);\nGfx *func_15142CF0(Gfx *, s32, s32, s32, s32, s32, s32, u8 *);\nGfx *func_1513F4E4(Gfx *, u8, u8 *);\nGfx *func_15142FBC(Gfx *, u32, u32, u8 *);\n",
-  "raw_sha256": "c04f5dc1324f7969b3093335463cdd7be05de52ad111d147b6b59514cde30c66",
+  "raw_sha256": "4f1d014df4dccc1d394183098667e837cda18e904d9992ad952a134af72b9b0a",
   "previous": {
     "source": "/* Render the backward side-effect ring as a three-vertex ribbon strip. */\nGfx *func_1519FE6C(SideEmitter1519F7F0 *effect, Gfx *output, s16 view) {\n    SidePosition1519F1C8 previousPosition, position;\n    SidePayload1519F1C8 *packet;\n    SideEmitEntry1519F7F0 *entries, *entry;\n    Vtx *cursor;\n    u8 sync;\n    s16 texture[3];\n    f32 previousWidth, currentWidth;\n    f32 dx, dz, inverseLength, offsetX, offsetZ;\n    s32 index, previous, previousAlpha, alpha;\n    s32 previousTag, tag, high, low;\n    s16 remaining;\n    u8 factor;\n\n    if (effect->count < 2) return output;\n    func_151D5D60(effect->reserved84, view,\n        effect->capacity * 48 + 0x120, &cursor, NULL);\n    if (cursor == NULL) return output;\n    packet = effect->payload;\n    entries = effect->entries;\n    sync = 1;\n    if (packet->kind & 2) {\n        remaining = packet->style;\n        factor = 0;\n        index = effect->head;\n        /* Retail enters even when the initial fade count is zero. */\n        do {\n            entries[index].light = factor;\n            factor += packet->first;\n            index++;\n            if (index == effect->capacity) index = 0;\n            remaining = (s16)(remaining - 1);\n        } while (remaining != 0 && index != effect->tail);\n    }\n    if (packet->kind & 4) {\n        index = effect->tail - 1;\n        factor = 0;\n        remaining = packet->second;\n        if (index < 0) index = effect->capacity - 1;\n        do {\n            entries[index].light = (entries[index].light * factor) >> 8;\n            factor += packet->third;\n            index--;\n            if (index < 0) index = effect->capacity - 1;\n            remaining = (s16)(remaining - 1);\n        } while (remaining != 0 && index != effect->tail);\n    }\n    output = func_15142E24(output, D_80090E0C, 0, 0, 0, 0, 57, 0, NULL, &sync, 62);\n    output = func_15142B7C(output, 1, 0x160600);\n    output = func_15142C10(output, packet->red, packet->green, packet->blue, 255, &sync);\n    output = func_15142CF0(output, 0, 0, 255, 255, 255, 0, &sync);\n    output = func_1513F4E4(output, 7, &sync);\n    output = func_15142FBC(output, D_800D2C9C | 0x80000 | 0x2CA0, 0x5049D8, &sync);\n    if (effect->flags & 2) {\n        index = effect->tail - 1;\n        if (index < 0) index = effect->capacity - 1;\n        previousPosition = effect->point;\n        previousWidth = packet->speed;\n        previousAlpha = (entries[index].light * entries[index].alpha) >> 8;\n        previousTag = entries[index].tag;\n    } else {\n        previous = effect->tail - 1;\n        if (previous < 0) previous = effect->capacity - 1;\n        index = previous - 1;\n        if (index < 0) index = effect->capacity - 1;\n        entry = &entries[previous];\n        previousPosition.x = entry->x;\n        previousPosition.y = entry->height;\n        previousPosition.z = entry->z;\n        previousWidth = entry->phase;\n        previousAlpha = (entry->light * entry->alpha) >> 8;\n        previousTag = entry->tag;\n    }\n    entry = &entries[index];\n    position.x = entry->x;\n    position.y = entry->height;\n    position.z = entry->z;\n    dx = position.x - previousPosition.x;\n    dz = position.z - previousPosition.z;\n    alpha = (entry->light * entry->alpha) >> 8;\n    tag = entry->tag;\n    currentWidth = entry->phase;\n    if (0.0001f < fabsf(dx) || 0.0001f < fabsf(dz))\n        inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n    else inverseLength = 1.0f;\n    /* zero46 and command hold the signed texture interval for this strip. */\n    texture[0] = packet->zero46;\n    texture[2] = packet->zero46 + packet->command;\n    if (texture[2] < texture[0]) {\n        texture[0] = packet->zero46 % 1024;\n        packet->zero46 = texture[0];\n        texture[2] = packet->zero46 + packet->command;\n    }\n    texture[1] = (texture[2] + texture[0]) >> 1;\n    if (effect->mode == 6) { high = 0; low = 2; }\n    else { high = 2; low = 0; }\n    offsetX = (-dz * inverseLength) * previousWidth;\n    offsetZ = (dx * inverseLength) * previousWidth;\n    cursor->v.ob[0] = (s32)(previousPosition.x + offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z + offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[high];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[1];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = previousAlpha;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x - offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z - offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[low];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    do {\n        offsetX = (-dz * inverseLength) * currentWidth;\n        offsetZ = (dx * inverseLength) * currentWidth;\n        cursor->v.ob[0] = (s32)(position.x + offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z + offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[high];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[1];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = alpha;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x - offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z - offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[low];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        gSPVertex(output++, cursor - 6, 6, 0);\n        gSP1Triangle(output++, 0, 3, 4, 0);\n        gSP1Triangle(output++, 0, 4, 1, 0);\n        gSP1Triangle(output++, 1, 4, 5, 0);\n        gSP1Triangle(output++, 1, 5, 2, 0);\n        previous = index;\n        index--;\n        if (index < 0) index = effect->capacity - 1;\n        if (previous != effect->head) {\n            previousPosition = position;\n            entry = &entries[index];\n            position.x = entry->x;\n            position.y = entry->height;\n            position.z = entry->z;\n            alpha = (entry->light * entry->alpha) >> 8;\n            tag = entry->tag;\n            dx = position.x - previousPosition.x;\n            dz = position.z - previousPosition.z;\n            /* Later joins use exact zero, unlike the initial epsilon gate. */\n            if (position.x == previousPosition.x && dz == 0.0f) inverseLength = 1.0f;\n            else inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n            currentWidth = entry->phase;\n        }\n    } while (previous != effect->head);\n    return output;\n}\n",
     "declarations": "extern u8 D_80090E0C[];\nextern u32 D_800D2C9C;\nvoid func_151D5D60(void *, s16, s32, Vtx **, u8 *);\nGfx *func_15142E24(Gfx *, void *, s32, s32, s32, s32, s32, u8, u8 *, u8 *, s32);\nGfx *func_15142B7C(Gfx *, u32, u32);\nGfx *func_15142C10(Gfx *, s32, s32, s32, s32, u8 *);\nGfx *func_15142CF0(Gfx *, s32, s32, s32, s32, s32, s32, u8 *);\nGfx *func_1513F4E4(Gfx *, u8, u8 *);\nGfx *func_15142FBC(Gfx *, u32, u32, u8 *);\n",
@@ -94,77 +94,162 @@
         "func_151D5D60"
       ]
     ],
-    "408": [
+    "404": [
       [
         "R_MIPS_HI16",
         "D_80090E0C"
       ]
     ],
-    "436": [
+    "432": [
       [
         "R_MIPS_LO16",
         "D_80090E0C"
       ]
     ],
-    "464": [
+    "460": [
       [
         "R_MIPS_26",
         "func_15142E24"
       ]
     ],
-    "488": [
+    "484": [
       [
         "R_MIPS_26",
         "func_15142B7C"
       ]
     ],
-    "524": [
+    "520": [
       [
         "R_MIPS_26",
         "func_15142C10"
       ]
     ],
-    "568": [
+    "564": [
       [
         "R_MIPS_26",
         "func_15142CF0"
       ]
     ],
-    "584": [
+    "580": [
       [
         "R_MIPS_26",
         "func_1513F4E4"
       ]
     ],
-    "592": [
+    "588": [
       [
         "R_MIPS_HI16",
         "D_800D2C9C"
       ]
     ],
-    "596": [
+    "592": [
       [
         "R_MIPS_LO16",
         "D_800D2C9C"
       ]
     ],
-    "624": [
+    "620": [
       [
         "R_MIPS_26",
         "func_15142FBC"
       ]
     ],
-    "896": [
+    "892": [
       [
         "R_MIPS_HI16",
         ".rodata"
       ]
     ],
-    "900": [
+    "896": [
       [
         "R_MIPS_LO16",
         ".rodata"
       ]
     ]
+  },
+  "prior_selected": {
+    "source": "/* Render the backward side-effect ring as a three-vertex ribbon strip. */\nGfx *func_1519FE6C(SideEmitter1519F7F0 *effect, Gfx *output, s16 view) {\n    Vtx *cursor;\n    SidePayload1519F1C8 *packet;\n    SideEmitEntry1519F7F0 *entries;\n    SidePosition1519F1C8 position, previousPosition;\n    f32 previousWidth, currentWidth, dx, dz, inverseLength, offsetX, offsetZ;\n    s32 index, previous, high, low;\n    u8 previousAlpha, alpha;\n    s16 previousTag, tag;\n    s16 texture[3];\n    s16 remaining;\n    u8 sync;\n    u8 factor;\n    SideEmitEntry1519F7F0 *entry;\n\n    if (effect->count >= 2) {\n    func_151D5D60(effect->reserved84, view,\n        effect->capacity * 48 + 0x120, &cursor, NULL);\n    if (cursor != NULL) {\n    packet = effect->payload;\n    entries = effect->entries;\n    sync = 1;\n    if (packet->kind & 2) {\n        remaining = packet->style;\n        factor = 0;\n        index = effect->head;\n        /* Retail enters even when the initial fade count is zero. */\n        do {\n            entries[index].light = factor;\n            factor += packet->first;\n            index++;\n            if (index == effect->capacity) index = 0;\n            remaining = (s16)(remaining - 1);\n        } while (remaining != 0 && index != effect->tail);\n    }\n    if (packet->kind & 4) {\n        index = effect->tail - 1;\n        factor = 0;\n        remaining = packet->second;\n        if (index < 0) index = effect->capacity - 1;\n        do {\n            entries[index].light = (entries[index].light * factor) >> 8;\n            factor += packet->third;\n            index--;\n            if (index < 0) index = effect->capacity - 1;\n            remaining = (s16)(remaining - 1);\n        } while (remaining != 0 && index != effect->tail);\n    }\n    output = func_15142E24(output, D_80090E0C, 0, 0, 0, 0, 57, 0, NULL, &sync, 62);\n    output = func_15142B7C(output, 1, 0x160600);\n    output = func_15142C10(output, packet->red, packet->green, packet->blue, 255, &sync);\n    output = func_15142CF0(output, 0, 0, 255, 255, 255, 0, &sync);\n    output = func_1513F4E4(output, 7, &sync);\n    output = func_15142FBC(output, D_800D2C9C | 0x80000 | 0x2CA0, 0x5049D8, &sync);\n    if (effect->flags & 2) {\n        index = effect->tail - 1;\n        if (index < 0) index = effect->capacity - 1;\n        previousPosition = effect->point;\n        previousWidth = packet->speed;\n        previousAlpha = (entries[index].light * entries[index].alpha) >> 8;\n        previousTag = entries[index].tag;\n    } else {\n        previous = effect->tail - 1;\n        if (previous < 0) previous = effect->capacity - 1;\n        index = previous - 1;\n        if (index < 0) index = effect->capacity - 1;\n        entry = &entries[previous];\n        previousPosition.x = entry->x;\n        previousPosition.y = entry->height;\n        previousPosition.z = entry->z;\n        previousWidth = entry->phase;\n        previousAlpha = (entry->light * entry->alpha) >> 8;\n        previousTag = entry->tag;\n    }\n    entry = &entries[index];\n    position.x = entry->x;\n    position.y = entry->height;\n    position.z = entry->z;\n    dx = position.x - previousPosition.x;\n    dz = position.z - previousPosition.z;\n    alpha = (entry->light * entry->alpha) >> 8;\n    tag = entry->tag;\n    currentWidth = entry->phase;\n    if (0.0001f < fabsf(dx) || 0.0001f < fabsf(dz))\n        inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n    else inverseLength = 1.0f;\n    /* zero46 and command hold the signed texture interval for this strip. */\n    texture[0] = packet->zero46;\n    texture[2] = packet->zero46 + packet->command;\n    if (texture[2] < texture[0]) {\n        texture[0] = packet->zero46 % 1024;\n        packet->zero46 = texture[0];\n        texture[2] = packet->zero46 + packet->command;\n    }\n    texture[1] = (texture[2] + texture[0]) >> 1;\n    if (effect->mode == 6) { high = 0; low = 2; }\n    else if (effect->mode == 7) { high = 2; low = 0; }\n    else { high = 2; low = 0; }\n    offsetX = (-dz * inverseLength) * previousWidth;\n    offsetZ = (dx * inverseLength) * previousWidth;\n    cursor->v.ob[0] = (s32)(previousPosition.x + offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z + offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[high];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[1];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = previousAlpha;\n    cursor->v.flag = 0;\n    cursor++;\n    cursor->v.ob[0] = (s32)(previousPosition.x - offsetX);\n    cursor->v.ob[1] = (s32)previousPosition.y;\n    cursor->v.ob[2] = (s32)(previousPosition.z - offsetZ);\n    cursor->v.tc[0] = previousTag;\n    cursor->v.tc[1] = texture[low];\n    cursor->v.cn[0] = 255;\n    cursor->v.cn[1] = 255;\n    cursor->v.cn[2] = 255;\n    cursor->v.cn[3] = 0;\n    cursor->v.flag = 0;\n    cursor++;\n    do {\n        offsetX = (-dz * inverseLength) * currentWidth;\n        offsetZ = (dx * inverseLength) * currentWidth;\n        cursor->v.ob[0] = (s32)(position.x + offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z + offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[high];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[1];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = alpha;\n        cursor->v.flag = 0;\n        cursor++;\n        cursor->v.ob[0] = (s32)(position.x - offsetX);\n        cursor->v.ob[1] = (s32)position.y;\n        cursor->v.ob[2] = (s32)(position.z - offsetZ);\n        cursor->v.tc[0] = tag;\n        cursor->v.tc[1] = texture[low];\n        cursor->v.cn[0] = 255;\n        cursor->v.cn[1] = 255;\n        cursor->v.cn[2] = 255;\n        cursor->v.cn[3] = 0;\n        cursor->v.flag = 0;\n        cursor++;\n        gSPVertex(output++, cursor - 6, 6, 0);\n        gSP1Triangle(output++, 0, 3, 4, 0);\n        gSP1Triangle(output++, 0, 4, 1, 0);\n        gSP1Triangle(output++, 1, 4, 5, 0);\n        gSP1Triangle(output++, 1, 5, 2, 0);\n        previous = index;\n        index--;\n        if (index < 0) index = effect->capacity - 1;\n        if (previous != effect->head) {\n            previousPosition = position;\n            entry = &entries[index];\n            position.x = entry->x;\n            position.y = entry->height;\n            position.z = entry->z;\n            alpha = (entry->light * entry->alpha) >> 8;\n            tag = entry->tag;\n            dx = position.x - previousPosition.x;\n            dz = position.z - previousPosition.z;\n            /* Later joins use exact zero, unlike the initial epsilon gate. */\n            if (position.x == previousPosition.x && dz == 0.0f) inverseLength = 1.0f;\n            else inverseLength = 1.0f / sqrtf(dx * dx + dz * dz);\n            currentWidth = entry->phase;\n        }\n    } while (previous != effect->head);\n    }\n    }\n    return output;\n}\n",
+    "declarations": "extern u8 D_80090E0C[];\nextern u32 D_800D2C9C;\nvoid func_151D5D60(void *, s16, s32, Vtx **, u8 *);\nGfx *func_15142E24(Gfx *, void *, s32, s32, s32, s32, s32, u8, u8 *, u8 *, s32);\nGfx *func_15142B7C(Gfx *, u32, u32);\nGfx *func_15142C10(Gfx *, s32, s32, s32, s32, u8 *);\nGfx *func_15142CF0(Gfx *, s32, s32, s32, s32, s32, s32, u8 *);\nGfx *func_1513F4E4(Gfx *, u8, u8 *);\nGfx *func_15142FBC(Gfx *, u32, u32, u8 *);\n",
+    "raw_sha256": "c04f5dc1324f7969b3093335463cdd7be05de52ad111d147b6b59514cde30c66",
+    "refs": {
+      "108": [
+        [
+          "R_MIPS_26",
+          "func_151D5D60"
+        ]
+      ],
+      "408": [
+        [
+          "R_MIPS_HI16",
+          "D_80090E0C"
+        ]
+      ],
+      "436": [
+        [
+          "R_MIPS_LO16",
+          "D_80090E0C"
+        ]
+      ],
+      "464": [
+        [
+          "R_MIPS_26",
+          "func_15142E24"
+        ]
+      ],
+      "488": [
+        [
+          "R_MIPS_26",
+          "func_15142B7C"
+        ]
+      ],
+      "524": [
+        [
+          "R_MIPS_26",
+          "func_15142C10"
+        ]
+      ],
+      "568": [
+        [
+          "R_MIPS_26",
+          "func_15142CF0"
+        ]
+      ],
+      "584": [
+        [
+          "R_MIPS_26",
+          "func_1513F4E4"
+        ]
+      ],
+      "592": [
+        [
+          "R_MIPS_HI16",
+          "D_800D2C9C"
+        ]
+      ],
+      "596": [
+        [
+          "R_MIPS_LO16",
+          "D_800D2C9C"
+        ]
+      ],
+      "624": [
+        [
+          "R_MIPS_26",
+          "func_15142FBC"
+        ]
+      ],
+      "896": [
+        [
+          "R_MIPS_HI16",
+          ".rodata"
+        ]
+      ],
+      "900": [
+        [
+          "R_MIPS_LO16",
+          ".rodata"
+        ]
+      ]
+    }
   }
 }

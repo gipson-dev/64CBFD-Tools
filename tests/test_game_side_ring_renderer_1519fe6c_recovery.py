@@ -16,4 +16,7 @@ class SideRingRendererRecoveryTests(unittest.TestCase):
    expected,result,calls,_=g.reference(m,c)
    for label,w in g.programs().items():
     q=g.Machine(w,m,c).run();self.assertEqual((g.public(q.memory),q.r[2],q.calls),(g.public(expected),result,calls),label)
+ def test_instruction_driven_opening_and_inductive_fade_loops(self):
+  from tools.tests import game_side_ring_renderer_1519fe6c_opening_proof as proof
+  proof.main()
 if __name__=='__main__':unittest.main()

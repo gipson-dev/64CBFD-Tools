@@ -190,6 +190,7 @@ class Machine(FactoryOracle):
 def programs():
  return dict(retail=list(struct.unpack_from('>632I',(R/'conker/conker.us.bin').read_bytes(),0x1CD31C)),
              previous=bound_blob(*payload(O/'previous.o','func_1519FE6C'),{**S,'.rodata':S['D_800A8CF4']}),
+             prior_selected=bound_blob(*payload(O/'prior-selected.o','func_1519FE6C'),{**S,'.rodata':S['D_800A8CF4']}),
              candidate=bound_blob(*payload(O/'qualified.o','func_1519FE6C'),{**S,'.rodata':S['D_800A8CF4']}))
 
 def cases():
