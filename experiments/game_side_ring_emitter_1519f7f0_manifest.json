@@ -1,0 +1,97 @@
+{
+  "declarations": "typedef struct { f32 x, z; } SideVelocity1519F7F0;\ntypedef struct {\n    f32 x, z, height, phase;\n    s16 alpha, delay, light, tag, lifetime, reserved1A;\n    SideVelocity1519F7F0 velocity;\n} SideEmitEntry1519F7F0;\ntypedef struct {\n    u8 reserved00[0x10];\n    SidePosition1519F1C8 point;\n    s16 lifetime;\n    u16 flags;\n    s32 mode;\n    u8 reserved24, capacity, reserved26[6];\n    s8 count, head, tail;\n    u8 reserved2F[0x25];\n    SidePosition1519F1C8 published;\n    SideFloor1519F4F0 floor;\n    u8 reserved84[0x10];\n    SideEmitEntry1519F7F0 *entries;\n    SidePayload1519F1C8 *payload;\n    s32 reserved9C;\n} SideEmitter1519F7F0;\ntypedef struct {\n    u8 *state;\n    u8 mode, reserved05[3];\n} SideTransition1519F7F0;\nextern f32 D_800A8CF4, D_800A8CF8, D_800A8CFC;\nstruct260 *func_151491F4(s16, s8, s8, u8, u8, s32, u8, s32);\ns32 func_150ADA20(void);\n",
+  "source": "/* Sample movement into the side-effect ring and smooth its transverse velocity. */\ns32 func_1519F7F0(SideEmitter1519F7F0 *effect) {\n    SidePayload1519F1C8 *packet = effect->payload;\n    SideEmitEntry1519F7F0 *entries = effect->entries;\n    u8 *state = packet->state;\n    u8 *actor = *(u8 **)(state + 0x18);\n    s32 initialized;\n    SidePosition1519F1C8 position;\n    SideVelocity1519F7F0 velocity;\n    SideTransition1519F7F0 transition;\n    FourWord1CC440 *outputs;\n    SideEmitEntry1519F7F0 *entry;\n    u8 *created;\n    f32 dx, dy, dz, length, inverseLength;\n    f32 fraction, remaining, timeStep, weight, weightStep;\n    f32 stepX, stepY, stepZ, bound;\n    f32 point[3];\n    u32 random;\n    s32 previous, accepted;\n\n    if (*(s32 *)actor == 0) return 0;\n    if (*(void **)(actor + 0x1D4) == NULL) return 0;\n    if (state[0x1C] != actor[0x3B]) return 0;\n    initialized = 0;\n    if (!(effect->flags & 4)) {\n        if (func_1519EF90((u8 *)packet, (u8)effect->mode, (f32 *)&effect->point)) {\n            packet->position = effect->point;\n            effect->flags |= 4;\n            initialized = 1;\n        } else return 1;\n    }\n    if (!initialized && !func_1519EF90((u8 *)packet, (u8)effect->mode, (f32 *)&effect->point)) {\n        func_1519F48C((u8 *)effect);\n        transition.state = packet->state;\n        transition.mode = effect->mode;\n        outputs = (FourWord1CC440 *)(transition.state + 0x58);\n        /* Preserve the three untouched bytes copied with this transition. */\n        created = (u8 *)func_151491F4(300, -1, 11, 0, 6, 8, 255, 0);\n        if (created != NULL) memcpy(created + 0x28, &transition, 8);\n        if (effect->mode == 6) outputs->second = created;\n        else outputs->fourth = created;\n        return 1;\n    }\n    packet->referenceX = *(f32 *)(actor + 0x14);\n    packet->referenceZ = *(f32 *)(actor + 0x1C);\n    dx = effect->point.x - packet->position.x;\n    dy = effect->point.y - packet->position.y;\n    dz = effect->point.z - packet->position.z;\n    /* Retail leaves inverseLength untouched when motion is below the bound.\n     * Normal retained progress is <= 1 on that path, so no sample uses it. */\n    if (D_800A8CF4 < fabsf(dx) || D_800A8CF4 < fabsf(dy) || D_800A8CF4 < fabsf(dz)) {\n        length = sqrtf(dx * dx + dy * dy + dz * dz);\n        inverseLength = 1.0f / length;\n        packet->phase += length * packet->scale;\n    }\n    if (1.0f < packet->phase) {\n        fraction = 1.0f / packet->phase;\n        remaining = packet->elapsed + D_800BE9A4;\n        timeStep = remaining * fraction;\n        position = packet->position;\n        weight = packet->speed + packet->limit * remaining;\n        weightStep = packet->speed - weight;\n        if (effect->mode == 7) {\n            velocity.x = (-dz * inverseLength) * packet->rate;\n            velocity.z = (dx * inverseLength) * packet->rate;\n        } else {\n            velocity.x = (dz * inverseLength) * packet->rate;\n            velocity.z = (-dx * inverseLength) * packet->rate;\n        }\n        previous = effect->tail - 1;\n        if (previous < 0) previous = effect->capacity - 1;\n        if (previous != effect->head && effect->count != 0) {\n            previous--;\n            if (previous < 0) previous = effect->capacity - 1;\n            entries[previous].velocity.x = (entries[previous].velocity.x + velocity.x) * 0.5f;\n            entries[previous].velocity.z = (entries[previous].velocity.z + velocity.z) * 0.5f;\n        }\n        stepX = dx * fraction;\n        stepY = dy * fraction;\n        stepZ = dz * fraction;\n        weightStep *= fraction;\n        bound = D_800A8CF8;\n        do {\n            entry = &entries[effect->tail];\n            entry->velocity = velocity;\n            entry->x = position.x;\n            entry->z = position.z;\n            entry->lifetime = packet->duration;\n            entry->phase = weight;\n            entry->alpha = packet->alpha;\n            entry->delay = packet->width;\n            entry->light = 255;\n            entry->tag = packet->zero28;\n            random = (u32)func_150ADA20();\n            packet->zero28 = (u32)packet->zero28 + packet->fourth + random % ((u32)packet->fifth + 1);\n            entry->x += entry->velocity.x * remaining;\n            entry->z += entry->velocity.z * remaining;\n            point[0] = entry->x;\n            if (*(f32 *)(actor + 0x118) < D_800A8CFC) point[1] = *(f32 *)(actor + 0x18) + 100.0f;\n            else point[1] = *(f32 *)(actor + 0x118) + 100.0f;\n            point[2] = entry->z;\n            accepted = 1;\n            if (bound < fabsf(point[0]) || bound < fabsf(point[2])) accepted = 0;\n            else if (func_15045800(point, 0, point[1] - 200.0f, &effect->floor)) entry->height = effect->floor.height;\n            else accepted = 0;\n            if (accepted) {\n                effect->tail++;\n                if (effect->tail == effect->capacity) effect->tail = 0;\n                effect->count++;\n                if (effect->head == effect->tail) {\n                    effect->head++;\n                    if (effect->head == effect->capacity) effect->head = 0;\n                    effect->count--;\n                }\n            }\n            position.x += stepX;\n            position.y += stepY;\n            position.z += stepZ;\n            weight += weightStep;\n            remaining -= timeStep;\n            packet->phase -= 1.0f;\n        } while (1.0f < packet->phase);\n        packet->position = position;\n        packet->elapsed = remaining;\n    }\n    return 1;\n}",
+  "raw_sha256": "ce398de9691b2d23a90fc7049aad3ce67c9c791b291154beff4c1ce8406fa84c",
+  "refs": {
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_1519EF90"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "func_1519EF90"
+      ]
+    ],
+    "272": [
+      [
+        "R_MIPS_26",
+        "func_1519F48C"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "364": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CF4"
+      ]
+    ],
+    "444": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CF4"
+      ]
+    ],
+    "624": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "628": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "936": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CF8"
+      ]
+    ],
+    "940": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CF8"
+      ]
+    ],
+    "1096": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1148": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CFC"
+      ]
+    ],
+    "1208": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CFC"
+      ]
+    ],
+    "1340": [
+      [
+        "R_MIPS_26",
+        "func_15045800"
+      ]
+    ]
+  }
+}
