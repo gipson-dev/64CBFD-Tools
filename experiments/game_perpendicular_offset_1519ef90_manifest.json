@@ -1,0 +1,51 @@
+{
+  "declarations": "#include <math.h>\nf32 fabsf(f32);\n#pragma intrinsic (fabsf)\ntypedef struct { u8 retained00[0x10]; f32 offset; } SideParameters1519EF90;\ntypedef struct {\n    u8 retained00[0x18];\n    struct127 *actor;\n    u8 retained1C[0x3C];\n    SideParameters1519EF90 parameters;\n} SideState1519EF90;\nextern f32 D_800A8CE0, D_800A8CE4;\ns32 func_15143E08(struct127 *);\nf32 func_151423D8(u8);",
+  "source": "s32 func_1519EF90(u8 *record, u8 mode, f32 *output) {\n    SideState1519EF90 *state = *(SideState1519EF90 **)record;\n    SideParameters1519EF90 *parameters = &state->parameters;\n    u8 *actor = (u8 *)state->actor;\n    f32 deltaX, deltaZ;\n    f32 tangentX, tangentZ;\n    f32 reciprocalLength;\n    f32 offset;\n    u8 heading;\n\n    if (*(void **)(actor + 0x1D4) == 0) return 0;\n    deltaX = *(f32 *)(actor + 0x14) - *(f32 *)(record + 0x20);\n    deltaZ = *(f32 *)(actor + 0x1C) - *(f32 *)(record + 0x24);\n    if (D_800A8CE0 < fabsf(deltaX) || D_800A8CE0 < fabsf(deltaZ)) {\n        reciprocalLength = 1.0f / sqrtf(deltaX * deltaX + deltaZ * deltaZ);\n        tangentX = deltaZ * reciprocalLength;\n        tangentZ = deltaX * reciprocalLength;\n    } else {\n        heading = func_15143E08((struct127 *)actor);\n        tangentX = func_151423D8(heading);\n        tangentZ = func_151423D8((u8)(heading - 0x40));\n    }\n    if (mode == 6) offset = parameters->offset;\n    else offset = -parameters->offset;\n    output[0] = *(f32 *)(actor + 0x14) + offset * tangentX;\n    output[2] = *(f32 *)(actor + 0x1C) - offset * tangentZ;\n    if (*(f32 *)(actor + 0x118) < D_800A8CE4) output[1] = *(f32 *)(actor + 0x18);\n    else output[1] = *(f32 *)(actor + 0x118);\n    return 1;\n}",
+  "raw_sha256": "911315ef0bdfa216cab3b64596f9cd25a57a9f684af078362967bbbd65efda27",
+  "refs": {
+    "48": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CE0"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CE0"
+      ]
+    ],
+    "172": [
+      [
+        "R_MIPS_26",
+        "func_15143E08"
+      ]
+    ],
+    "184": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "208": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CE4"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CE4"
+      ]
+    ]
+  },
+  "words": 92,
+  "frame": 64
+}
