@@ -52,19 +52,19 @@ def reads(w):
  if op==3:return set()
  raise AssertionError(('Unmodeled suffix word',hex(w)))
 
-def certify(retail,raw):
+def certify(retail,raw,motion_address=0x800d2438,bzero_address=0x100226f0,entry=source.ENTRY):
  assert len(retail)==len(raw)==82 and retail[34:]==raw[34:]
  left,right=prefix(retail),prefix(raw)
  assert left[1:]==right[1:],'Prefix memory/FPR/trace differs'
  differences=[i for i,(a,b) in enumerate(zip(left[0],right[0])) if a!=b]
- assert differences==[6] and left[0][6]==0x800d2438 and right[0][6]==('R',6)
+ assert differences==[6] and left[0][6]==motion_address and right[0][6]==('R',6)
  killed=False;calls=[]
  for index,w in enumerate(retail[34:],34):
   # LUI A2 is the first explicit definition, before the seven-argument call.
   if w>>26==15 and w>>16&31==6:killed=True;break
   assert 6 not in reads(w),('A2 is observed before its kill',index)
-  if w>>26==3:calls.append(((w&0x3ffffff)<<2)|((source.ENTRY+index*4+4)&0xf0000000))
- assert killed and calls==[0x100226f0]
+  if w>>26==3:calls.append(((w&0x3ffffff)<<2)|((entry+index*4+4)&0xf0000000))
+ assert killed and calls==[bzero_address]
  return dict(prefix_words=34,identical_suffix_words=48,arbitrary_symbolic_input=True,fixed_retail_addresses=True,
              public_memory_trace_equal=True,all_fprs_equal=True,dead_input_register='A2',
              unpassed_registers_not_provider_inputs=True,normalization_installed=False)
