@@ -1,0 +1,120 @@
+{
+  "declarations": "typedef struct { f32 x, y, z; } SidePosition1519F1C8;\ntypedef struct {\n    SidePosition1519F1C8 position;\n    s16 lifetime;\n    u16 flags;\n    s32 mode;\n    u8 reserved14, count, reserved16[6];\n} SideRequest1519F1C8;\ntypedef struct {\n    u8 *state;\n    u8 kind, reserved05[3];\n    f32 scale, phase;\n    SidePosition1519F1C8 position;\n    f32 elapsed, referenceX, referenceZ;\n    s16 zero28;\n    u8 red, green, blue, reserved2D;\n    s16 duration, alpha, width, height;\n    u8 reserved36[2];\n    f32 speed, limit;\n    u8 style, first, second, third, fourth, fifth;\n    s16 zero46, count, command;\n    f32 rate;\n} SidePayload1519F1C8;\nextern f32 D_800A8CE8, D_800A8CEC;\nextern u8 D_800AB414[];\nu8 func_151D8E20(void);\nu8 *func_15147A80(void *, s32, s32, s32, s32, s32, s32, s32, void *, u8, s32);\nvoid *memcpy(void *, const void *, u32);\n",
+  "source": "/* Create a side-offset effect and attach its owner-linked payload. */\nu8 *func_1519F1C8(u8 *state, u8 mode) {\n    u8 *actor = *(u8 **)(state + 0x18);\n    SideRequest1519F1C8 request;\n    SidePayload1519F1C8 packet;\n    u8 *created;\n    u8 color;\n\n    color = func_151D8E20();\n    /* Reserved fields and a failed position query retain their stack bytes. */\n    request.flags = 0x42;\n    request.lifetime = 300;\n    request.count = 10;\n    packet.duration = 200;\n    packet.style = 3;\n    packet.state = state;\n    packet.kind = 6;\n    packet.first = 0x55;\n    packet.second = 3;\n    packet.third = 0x55;\n    packet.fourth = 0x88;\n    packet.fifth = 0xC4;\n    packet.zero28 = 0;\n    packet.zero46 = 0;\n    packet.alpha = 255;\n    packet.width = 40;\n    packet.height = 25;\n    packet.count = 6;\n    packet.command = 0x325;\n    packet.scale = D_800A8CE8;\n    packet.speed = D_800A8CEC;\n    packet.limit = 1.0f;\n    packet.phase = 0.0f;\n    packet.elapsed = 0.0f;\n    request.mode = mode;\n    packet.rate = 1.5f;\n    packet.referenceX = *(f32 *)(actor + 0x14);\n    packet.referenceZ = *(f32 *)(actor + 0x1C);\n    if (func_1519EF90((u8 *)&packet, mode, (f32 *)&request.position)) {\n        packet.position = request.position;\n        request.flags |= 4;\n    }\n    packet.red = D_800AB414[color * 3];\n    packet.green = D_800AB414[color * 3 + 1];\n    packet.blue = D_800AB414[color * 3 + 2];\n    created = func_15147A80(&request, 0x50, 0x24, 5, 5, 5, 0, 0, state + 0x34, 255, 1);\n    if (created != NULL) {\n        memcpy(*(void **)(created + 0x98), &packet, 0x50);\n    }\n    return created;\n}",
+  "raw_sha256": "1f9c4ce034b21320ffe0766270c3a0060da69d4e8693101302bc33be8a8a0f4f",
+  "refs": {
+    "24": [
+      [
+        "R_MIPS_26",
+        "func_151D8E20"
+      ]
+    ],
+    "32": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CE8"
+      ]
+    ],
+    "36": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CE8"
+      ]
+    ],
+    "40": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CEC"
+      ]
+    ],
+    "44": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CEC"
+      ]
+    ],
+    "272": [
+      [
+        "R_MIPS_26",
+        "func_1519EF90"
+      ]
+    ],
+    "332": [
+      [
+        "R_MIPS_HI16",
+        "D_800AB414"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_LO16",
+        "D_800AB414"
+      ]
+    ],
+    "436": [
+      [
+        "R_MIPS_26",
+        "func_15147A80"
+      ]
+    ],
+    "464": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "replacements": {
+    "13": 2410610872,
+    "17": 2477195455,
+    "19": 605552706,
+    "20": 605618476,
+    "21": 604504074,
+    "22": 604569800,
+    "23": 604700675,
+    "24": 2409824436,
+    "25": 2813853862,
+    "26": 2813919396,
+    "27": 2745696429,
+    "28": 2812870774,
+    "29": 604635142,
+    "30": 2745893000,
+    "31": 2947481672,
+    "32": 604766293,
+    "33": 604831747,
+    "34": 604897365,
+    "35": 604962952,
+    "36": 605552836,
+    "37": 605618431,
+    "38": 604504104,
+    "39": 604569625,
+    "40": 604701477,
+    "41": 2745303107,
+    "42": 2745827404,
+    "43": 2745958537,
+    "44": 2746024074,
+    "45": 2746089611,
+    "46": 2746155148,
+    "47": 2746744973,
+    "48": 2812280944,
+    "49": 2812280974,
+    "50": 2813919352,
+    "51": 2812805242,
+    "52": 2812870780,
+    "53": 2812936336,
+    "54": 2813001874,
+    "55": 3886284880,
+    "56": 3886416000,
+    "57": 3886547076,
+    "58": 3886022740,
+    "59": 3886022756,
+    "60": 2946957480,
+    "61": 3886678164,
+    "62": 3295674388,
+    "63": 665059400,
+    "64": 665190552,
+    "65": 3887071336,
+    "66": 3295805468,
+    "67": 820314367
+  }
+}
