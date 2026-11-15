@@ -19,7 +19,8 @@ CONTROLS={
 }
 def arr(values):return '{'+','.join(str(v&0xFFFFFFFF)+'U' for v in values)+'}'
 
-def main():
+def main(source_module=None):
+    s=source_module or globals()['s']
     selected=body((s.OUT/'recovered.c').read_text(),s.NAME)
     cases=list(g.cases())
     code='''#include <ultra64.h>
