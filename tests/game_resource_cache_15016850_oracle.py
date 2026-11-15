@@ -74,7 +74,7 @@ class Oracle(FactoryOracle):
         self.f[:20]=[0xa5000000+i for i in range(20)];self.hi,self.lo=0xa5000010,0xa5000011;self.r[2]=0x87654321
 
 def main():
-    programs=[source.bound(*payload(source.OUT/n,source.NAME))for n in('retail.o','selected.o')];rows=list(corpus());seen=set();unchanged=0
+    programs=[source.bound(*payload(source.OUT/n,source.NAME))for n in(('retail.o','selected.o','guarded.o')if (source.OUT/'guarded.o').is_file()else('retail.o','selected.o'))];rows=list(corpus());seen=set();unchanged=0
     for initial,args,native in rows:
         want,calls,obs=model(initial,args)
         for w in programs:
@@ -92,6 +92,6 @@ def main():
                 killed=True;break
             if(public(m.memory),m.calls,m.cache_observations)!=(public(want),calls,obs):killed=True;break
         assert killed,hex(pc);controls.append(hex(pc))
-    report=dict(cases=len(rows),streams=2,visited_retail_words=len(seen),cache_bytes=LENGTH,record_stride=48,all_count_bytes=256,alias_cases=32,public_and_helper_snapshots=True,effective_controls=controls,zero_helper_cases=unchanged,private=True,raw_fault_order_claimed=False)
+    report=dict(cases=len(rows),streams=len(programs),visited_retail_words=len(seen),cache_bytes=LENGTH,record_stride=48,all_count_bytes=256,alias_cases=32,public_and_helper_snapshots=True,effective_controls=controls,zero_helper_cases=unchanged,private=True,raw_fault_order_claimed=False)
     (source.OUT/'behavior.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()
