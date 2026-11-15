@@ -1,0 +1,335 @@
+{
+  "candidates": {
+    "conditional_pair": {
+      "source": "#include <ultra64.h>\nf32 func_150ADA68(void);\n\ntypedef struct { f32 horizontal, vertical; } JointEffectSpread150F97EC;\nextern f32 D_800A1C48[3], D_800A1C54[3];\nextern u8 D_80088B50;\ns32 func_150ADA20(void);\nvoid func_15145EA4(f32 **, f32 **, void *, s32);\nu8 *func_15102B38(u8 *, u8, f32 *, f32 *, JointEffectSpread150F97EC *, s16,\n                   u8, f32, f32 *, u8, s32, s16, u8, s32);\n/* Emit an effect from the selected joint when the actor has joint matrices. */\nvoid func_150F97EC(u8 *actor, u8 priority, s32 context) {\n    f32 transformed[3];\n    JointEffectSpread150F97EC spread;\n    f32 *source;\n    f32 *destination;\n    u32 secondRandom;\n    u32 firstRandom;\n    f32 coefficient;\n\n    if (*(u8 **)(actor + 0x1D4) != 0) {\n        source = D_800A1C48;\n        destination = transformed;\n        func_15145EA4(&source, &destination,\n                     *(u8 **)(actor + 0x1D4) + (D_80088B50 << 6), 1);\n        spread.vertical = func_150ADA68() * 1.0f + 2.0f;\n        spread.horizontal = func_150ADA68() * 14.0f + 28.0f;\n        firstRandom = (u32)func_150ADA20();\n        secondRandom = (u32)func_150ADA20();\n        coefficient = func_150ADA68() * 300.0f + 400.0f;\n        func_15102B38(actor, D_80088B50, D_800A1C48, D_800A1C54, &spread,\n                     firstRandom % 3U + 4, secondRandom % 156U + 100,\n                     coefficient, transformed,\n                     255, 0, -1, priority, context);\n    }\n}\n",
+      "raw_sha256": "e1aaf0a952e20bb92cc8a5aaae25dbc1bf3a91265490cb1729ba5cd2eeb5338f",
+      "relocations": {
+        "36": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C48"
+          ]
+        ],
+        "48": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C48"
+          ]
+        ],
+        "40": [
+          [
+            "R_MIPS_HI16",
+            "D_80088B50"
+          ]
+        ],
+        "44": [
+          [
+            "R_MIPS_LO16",
+            "D_80088B50"
+          ]
+        ],
+        "84": [
+          [
+            "R_MIPS_26",
+            "func_15145EA4"
+          ]
+        ],
+        "92": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "124": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "156": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "164": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "172": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "260": [
+          [
+            "R_MIPS_HI16",
+            "D_80088B50"
+          ]
+        ],
+        "308": [
+          [
+            "R_MIPS_LO16",
+            "D_80088B50"
+          ]
+        ],
+        "264": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C48"
+          ]
+        ],
+        "304": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C48"
+          ]
+        ],
+        "268": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C54"
+          ]
+        ],
+        "300": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C54"
+          ]
+        ],
+        "336": [
+          [
+            "R_MIPS_26",
+            "func_15102B38"
+          ]
+        ]
+      },
+      "words": 90,
+      "frame": 104
+    },
+    "conditional_triple": {
+      "source": "#include <ultra64.h>\nf32 func_150ADA68(void);\n\ntypedef struct { f32 horizontal, vertical, unused; } JointEffectSpread150F97EC;\nextern f32 D_800A1C48[3], D_800A1C54[3];\nextern u8 D_80088B50;\ns32 func_150ADA20(void);\nvoid func_15145EA4(f32 **, f32 **, void *, s32);\nu8 *func_15102B38(u8 *, u8, f32 *, f32 *, JointEffectSpread150F97EC *, s16,\n                   u8, f32, f32 *, u8, s32, s16, u8, s32);\n/* Emit an effect from the selected joint when the actor has joint matrices. */\nvoid func_150F97EC(u8 *actor, u8 priority, s32 context) {\n    f32 transformed[3];\n    JointEffectSpread150F97EC spread;\n    f32 *source;\n    f32 *destination;\n    u32 secondRandom;\n    u32 firstRandom;\n    f32 coefficient;\n\n    if (*(u8 **)(actor + 0x1D4) != 0) {\n        source = D_800A1C48;\n        destination = transformed;\n        func_15145EA4(&source, &destination,\n                     *(u8 **)(actor + 0x1D4) + (D_80088B50 << 6), 1);\n        spread.vertical = func_150ADA68() * 1.0f + 2.0f;\n        spread.horizontal = func_150ADA68() * 14.0f + 28.0f;\n        firstRandom = (u32)func_150ADA20();\n        secondRandom = (u32)func_150ADA20();\n        coefficient = func_150ADA68() * 300.0f + 400.0f;\n        func_15102B38(actor, D_80088B50, D_800A1C48, D_800A1C54, &spread,\n                     firstRandom % 3U + 4, secondRandom % 156U + 100,\n                     coefficient, transformed,\n                     255, 0, -1, priority, context);\n    }\n}\n",
+      "raw_sha256": "fa48ee48f223414e9eb19ecc932598bf433fb54addc794d1778b9e1f4c7895a0",
+      "relocations": {
+        "36": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C48"
+          ]
+        ],
+        "48": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C48"
+          ]
+        ],
+        "40": [
+          [
+            "R_MIPS_HI16",
+            "D_80088B50"
+          ]
+        ],
+        "44": [
+          [
+            "R_MIPS_LO16",
+            "D_80088B50"
+          ]
+        ],
+        "84": [
+          [
+            "R_MIPS_26",
+            "func_15145EA4"
+          ]
+        ],
+        "92": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "124": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "156": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "164": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "172": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "260": [
+          [
+            "R_MIPS_HI16",
+            "D_80088B50"
+          ]
+        ],
+        "308": [
+          [
+            "R_MIPS_LO16",
+            "D_80088B50"
+          ]
+        ],
+        "264": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C48"
+          ]
+        ],
+        "304": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C48"
+          ]
+        ],
+        "268": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C54"
+          ]
+        ],
+        "300": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C54"
+          ]
+        ],
+        "336": [
+          [
+            "R_MIPS_26",
+            "func_15102B38"
+          ]
+        ]
+      },
+      "words": 90,
+      "frame": 112
+    },
+    "early_triple": {
+      "source": "#include <ultra64.h>\nf32 func_150ADA68(void);\n\ntypedef struct { f32 horizontal, vertical, unused; } JointEffectSpread150F97EC;\nextern f32 D_800A1C48[3], D_800A1C54[3];\nextern u8 D_80088B50;\ns32 func_150ADA20(void);\nvoid func_15145EA4(f32 **, f32 **, void *, s32);\nu8 *func_15102B38(u8 *, u8, f32 *, f32 *, JointEffectSpread150F97EC *, s16,\n                   u8, f32, f32 *, u8, s32, s16, u8, s32);\n/* Emit an effect from the selected joint when the actor has joint matrices. */\nvoid func_150F97EC(u8 *actor, u8 priority, s32 context) {\n    f32 transformed[3];\n    JointEffectSpread150F97EC spread;\n    f32 *source = D_800A1C48;\n    f32 *destination = transformed;\n    u32 secondRandom;\n    u32 firstRandom;\n    f32 coefficient;\n\n    if (*(u8 **)(actor + 0x1D4) != 0) {\n        func_15145EA4(&source, &destination,\n                     *(u8 **)(actor + 0x1D4) + (D_80088B50 << 6), 1);\n        spread.vertical = func_150ADA68() * 1.0f + 2.0f;\n        spread.horizontal = func_150ADA68() * 14.0f + 28.0f;\n        firstRandom = (u32)func_150ADA20();\n        secondRandom = (u32)func_150ADA20();\n        coefficient = func_150ADA68() * 300.0f + 400.0f;\n        func_15102B38(actor, D_80088B50, D_800A1C48, D_800A1C54, &spread,\n                     firstRandom % 3U + 4, secondRandom % 156U + 100,\n                     coefficient, transformed,\n                     255, 0, -1, priority, context);\n    }\n}\n",
+      "raw_sha256": "ffa2fced7675f8605e59b05733d1eeb89177205ba52f6c02e74547e0a452a7bb",
+      "relocations": {
+        "24": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C48"
+          ]
+        ],
+        "28": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C48"
+          ]
+        ],
+        "56": [
+          [
+            "R_MIPS_HI16",
+            "D_80088B50"
+          ]
+        ],
+        "60": [
+          [
+            "R_MIPS_LO16",
+            "D_80088B50"
+          ]
+        ],
+        "80": [
+          [
+            "R_MIPS_26",
+            "func_15145EA4"
+          ]
+        ],
+        "88": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "120": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "152": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "160": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "168": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "256": [
+          [
+            "R_MIPS_HI16",
+            "D_80088B50"
+          ]
+        ],
+        "304": [
+          [
+            "R_MIPS_LO16",
+            "D_80088B50"
+          ]
+        ],
+        "260": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C48"
+          ]
+        ],
+        "300": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C48"
+          ]
+        ],
+        "264": [
+          [
+            "R_MIPS_HI16",
+            "D_800A1C54"
+          ]
+        ],
+        "296": [
+          [
+            "R_MIPS_LO16",
+            "D_800A1C54"
+          ]
+        ],
+        "332": [
+          [
+            "R_MIPS_26",
+            "func_15102B38"
+          ]
+        ]
+      },
+      "words": 89,
+      "frame": 112
+    }
+  },
+  "oracle_sha256": "258a60bbb5863f200a1acf2f743620f9e753ccc567c1f63f2d970b070f2864b1"
+}
