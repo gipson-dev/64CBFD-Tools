@@ -19,4 +19,22 @@ class SideRingRendererRecoveryTests(unittest.TestCase):
  def test_instruction_driven_opening_and_inductive_fade_loops(self):
   from tools.tests import game_side_ring_renderer_1519fe6c_opening_proof as proof
   proof.main()
+ def test_symbolic_setup_transfer(self):
+  from tools.tests import game_side_ring_renderer_1519fe6c_setup_proof as proof
+  proof.main()
+ def test_symbolic_seed_transfer(self):
+  from tools.tests import game_side_ring_renderer_1519fe6c_seed_proof as proof
+  proof.main()
+ def test_symbolic_texture_transfer(self):
+  from tools.tests import game_side_ring_renderer_1519fe6c_texture_proof as proof
+  proof.main()
+ def test_symbolic_vertices_transfer(self):
+  from tools.tests import game_side_ring_renderer_1519fe6c_vertices_proof as proof
+  proof.main()
+ def test_symbolic_segment_transfer(self):
+  from tools.tests import game_side_ring_renderer_1519fe6c_segment_proof as proof
+  proof.main()
+ def test_symbolic_tail_transfer(self):
+  from tools.tests import game_side_ring_renderer_1519fe6c_tail_proof as proof
+  proof.main()
 if __name__=='__main__':unittest.main()
