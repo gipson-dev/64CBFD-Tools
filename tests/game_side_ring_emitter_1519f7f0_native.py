@@ -12,10 +12,14 @@ PF=dict(scale=8,phase=12,**{'position.x':16,'position.y':20,'position.z':24},ela
 PS=dict(zero28=40,duration=46,alpha=48,width=50,height=52,zero46=70,count=72,command=74)
 EF=dict(x=0,z=4,height=8,phase=12,**{'velocity.x':28,'velocity.z':32})
 ES=dict(alpha=16,delay=18,light=20,tag=22,lifetime=24,reserved1A=26)
-def make_source():
+def make_source(pin=None):
+ pin=PIN if pin is None else pin
  corpus=[]
  for c in g.cases():
   if c.side_effects or c.hit!=1 or c.rule!='left' or c.seed or c.phase:continue
+  # C literals are immutable source values. Other injected pool values remain
+  # guest-instruction diagnostics, outside the native literal-source domain.
+  if 'literal_pool' in pin and c.bound!=g.bits(20000.):continue
   m=g.fixture(c);expected,result,calls,ops=g.reference(m,c)
   if any(v&0x7F800000==0x7F800000 for op in ops for v in op[1:]):continue
   corpus.append((c,m,expected,result,calls))
@@ -37,7 +41,7 @@ def make_source():
   rows.append('{'+','.join('0x%Xu'%v for v in values)+','+','.join(spans)+',{'+','.join(callrows)+'}}')
  prefix='#include <ultra64.h>\n#include "structs.h"\n'+ctor.PIN['declarations']+updater.PIN['declarations']+'''
 typedef struct {u8 *first,*second,*third,*fourth;} FourWord1CC440;
-'''+PIN['declarations']+'''
+'''+pin['declarations']+'''
 s32 func_1519EF90(u8 *,u8,f32 *);
 void func_1519F48C(u8 *);
 f32 sqrtf(f32);
@@ -124,7 +128,7 @@ static int run(void){
  for member,at in ES.items():harness+=f'   entries[i].{member}=get16(p+{at});\n'
  harness+='''  }
   D_800A8CF4=number(0x38D1B717);D_800A8CFC=-9500.f;D_800BE9A4=.5f;
-  /* Initial bounds vary independently of a callback's final cached-bound mutation. */
+  /* Preserve provider bookkeeping; literal source keeps its own cached value. */
   D_800A8CF8=number(c->initialBound);
   if((u32)func_1519F7F0(&effect)!=c->want||ordinal!=c->ncall||failure)return 151;
   if(word(D_800BE9A4)!=c->finalTime||word(D_800A8CF8)!=c->finalBound)return 152;
@@ -145,11 +149,12 @@ static int run(void){
  return 0;
 }
 '''
- return prefix+PIN['source']+harness+START,len(corpus)
-def main():
- text,count=make_source();path=O/'refined-native.c';path.write_text(text);profiles=[];warnings=[];controls=0
+ return prefix+pin['source']+harness+START,len(corpus)
+def main(pin=None,out=None):
+ pin=PIN if pin is None else pin;out=O if out is None else out
+ text,count=make_source(pin);path=out/'refined-native.c';path.write_text(text);profiles=[];warnings=[];controls=0
  def compile_run(code,label,opt,alias):
-  path=O/(label+'.c');exe=path.with_suffix('');path.write_text(code)
+  path=out/(label+'.c');exe=path.with_suffix('');path.write_text(code)
   # Retail intentionally leaves inverseLength untouched on a path excluded
   # by the tested retained-progress contract. Preserve the exact source and
   # retain this diagnostic; do not initialize the local just to silence it.
@@ -157,7 +162,7 @@ def main():
   assert p.returncode==0,p.stderr
   if p.stderr:
    assert p.stderr.count('warning:')==1 and 'inverseLength' in p.stderr and ' may be used uninitialized [-Wmaybe-uninitialized]' in p.stderr,p.stderr
-   warnings.append(label);(O/(label+'-diagnostics.txt')).write_text(p.stderr)
+   warnings.append(label);(out/(label+'-diagnostics.txt')).write_text(p.stderr)
   return subprocess.run([str(exe)],capture_output=True).returncode
  for opt in ('-O0','-O2','-O3'):
   for alias in ('-fstrict-aliasing','-fno-strict-aliasing'):
@@ -167,11 +172,11 @@ def main():
            'query-span':('point[1] - 200.0f','point[1] - 201.0f'),
            'signed-random':('random % ((u32)packet->fifth + 1)','((s32)random % ((s32)packet->fifth + 1))')}
   for label,(old,new) in changes.items():
-   assert PIN['source'].count(old)==1
-   wrong=text.replace(PIN['source'],PIN['source'].replace(old,new))
+   assert pin['source'].count(old)==1
+   wrong=text.replace(pin['source'],pin['source'].replace(old,new))
    result=compile_run(wrong,'refined-native-control-'+label+opt,opt,'-fstrict-aliasing')
    assert result in (151,152,153),(label,opt,result);controls+=1
  report=dict(cases_per_profile=count,profiles=profiles,UBSan=True,complete_public_snapshots=True,opaque_transition_and_nonfinite_inputs_excluded=True,
-             expected_out_of_domain_uninitialized_inverse_warning=warnings,effective_source_controls=controls,hardware_FCSR_emulated=False,c_match_credit=0)
- (O/'refined-native-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
+             expected_out_of_domain_uninitialized_inverse_warning=warnings,effective_source_controls=controls,hardware_FCSR_emulated=False,fixed_source_literals='literal_pool' in pin,c_match_credit=0)
+ (out/'refined-native-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()

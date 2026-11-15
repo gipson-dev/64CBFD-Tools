@@ -235,6 +235,18 @@ def controls(streams):
   except (AssertionError,KeyError):rejected.append(name)
   else:raise AssertionError(('ineffective control',name))
  return rejected
+def qualify_match(streams,out):
+ seen={k:set() for k in streams};count=0
+ for c in cases():
+  machines={label:check(w,c,label) for label,w in streams.items()}
+  retail=machines['retail']
+  for label,q in machines.items():
+   assert (q.fp_ops,q.raw_calls,q.calls)==(retail.fp_ops,retail.raw_calls,retail.calls),('ordered FP/provider arguments',label,c)
+   seen[label]|=q.visits
+  count+=1
+ report=dict(cases_per_stream=count,streams=len(streams),visited_words={k:len(v) for k,v in seen.items()},ordered_FP_operations_and_raw_provider_arguments_equal=True,all_eight_transition_bytes_equal=True,effective_controls=controls(streams),injected_literal_values_instruction_only=True,c_match_credit=0)
+ (out/'guest-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
+
 def main():
  streams=programs();seen={k:set() for k in streams};count=0;different_previous_packets=0;different_candidate_packets=0;fp_examples=[]
  for c in cases():

@@ -1,0 +1,1135 @@
+{
+  "source": "/* Sample movement into the side-effect ring and smooth its transverse velocity. */\ns32 func_1519F7F0(SideEmitter1519F7F0 *effect) {\n    SidePayload1519F1C8 *packet = effect->payload;\n    SideEmitEntry1519F7F0 *entries = effect->entries;\n    u8 *state = packet->state;\n    struct127 *actor = *(struct127 **)(state + 0x18);\n    s32 initialized;\n    f32 dx, dy, dz, inverseLength;\n    SideTransition1519F7F0 transition;\n    f32 length, fraction, remaining, weight, timeStep, weightStep;\n    SidePosition1519F1C8 position;\n    FourWord1CC440 *outputs;\n    SideEmitEntry1519F7F0 *entry;\n    u8 *created;\n    s32 previous, earlier, accepted;\n    SideVelocity1519F7F0 velocity;\n    f32 stepX, stepY, stepZ, bound;\n    f32 point[3];\n    u32 random;\n    f32 weightDifference;\n\n    if (actor->interaction_state == 0) return 0;\n    if (actor->unk1D4 == NULL) return 0;\n    if (state[0x1C] != actor->unique_id) return 0;\n    initialized = 0;\n    if (!(effect->flags & 4)) {\n        if (func_1519EF90((u8 *)packet, (u8)effect->mode, (f32 *)&effect->point)) {\n            packet->position = effect->point;\n            effect->flags |= 4;\n            initialized = 1;\n        } else return 1;\n    }\n    if (!initialized && !func_1519EF90((u8 *)packet, (u8)effect->mode, (f32 *)&effect->point)) {\n        func_1519F48C((u8 *)effect);\n        transition.state = packet->state;\n        transition.mode = effect->mode;\n        outputs = (FourWord1CC440 *)(transition.state + 0x58);\n        /* Preserve the three untouched bytes copied with this transition. */\n        created = (u8 *)func_151491F4(300, -1, 11, 0, 6, 8, 255, 0);\n        if (created != NULL) memcpy(created + 0x28, &transition, 8);\n        if (effect->mode == 6) outputs->second = created;\n        else outputs->fourth = created;\n        return 1;\n    }\n    packet->referenceX = actor->x_position;\n    packet->referenceZ = actor->z_position;\n    dx = effect->point.x - packet->position.x;\n    dy = effect->point.y - packet->position.y;\n    dz = effect->point.z - packet->position.z;\n    /* Retail leaves inverseLength untouched when motion is below the bound.\n     * Normal retained progress is <= 1 on that path, so no sample uses it. */\n    if (0.0001f < fabsf(dx) || 0.0001f < fabsf(dy) || 0.0001f < fabsf(dz)) {\n        length = sqrtf(dx * dx + dy * dy + dz * dz);\n        inverseLength = 1.0f / length;\n        packet->phase += length * packet->scale;\n    }\n    if (1.0f < packet->phase) {\n        fraction = 1.0f / packet->phase;\n        remaining = packet->elapsed + D_800BE9A4;\n        timeStep = remaining * fraction;\n        position = packet->position;\n        weight = packet->speed + packet->limit * remaining;\n        weightDifference = packet->speed - weight;\n        if (effect->mode == 7) {\n            velocity.x = (-dz * inverseLength) * packet->rate;\n            velocity.z = (dx * inverseLength) * packet->rate;\n        } else {\n            velocity.x = (dz * inverseLength) * packet->rate;\n            velocity.z = (-dx * inverseLength) * packet->rate;\n        }\n        previous = effect->tail - 1;\n        if (previous < 0) previous = effect->capacity - 1;\n        if (previous != effect->head && effect->count != 0) {\n            earlier = previous - 1;\n            if (earlier < 0) earlier = effect->capacity - 1;\n            entries[earlier].velocity.x = (entries[earlier].velocity.x + velocity.x) * 0.5f;\n            entries[earlier].velocity.z = (entries[earlier].velocity.z + velocity.z) * 0.5f;\n        }\n        stepX = dx * fraction;\n        stepY = dy * fraction;\n        stepZ = dz * fraction;\n        weightStep = weightDifference * fraction;\n        bound = 20000.0f;\n        do {\n            entry = &entries[effect->tail];\n            entry->velocity = velocity;\n            entry->x = position.x;\n            entry->z = position.z;\n            entry->lifetime = packet->duration;\n            entry->phase = weight;\n            entry->alpha = packet->alpha;\n            entry->delay = packet->width;\n            entry->light = 255;\n            entry->tag = packet->zero28;\n            random = (u32)func_150ADA20();\n            packet->zero28 = (u32)packet->zero28 + packet->fourth + random % ((u32)packet->fifth + 1);\n            entry->x += entry->velocity.x * remaining;\n            entry->z += entry->velocity.z * remaining;\n            point[0] = entry->x;\n            if (actor->unk118 < -9500.0f) point[1] = actor->y_position + 100.0f;\n            else point[1] = actor->unk118 + 100.0f;\n            point[2] = entry->z;\n            accepted = 1;\n            if (bound < fabsf(point[0]) || bound < fabsf(point[2])) accepted = 0;\n            else if (func_15045800(point, 0, point[1] - 200.0f, &effect->floor)) entry->height = effect->floor.height;\n            else accepted = 0;\n            if (accepted) {\n                effect->tail++;\n                if (effect->tail == effect->capacity) effect->tail = 0;\n                effect->count++;\n                if (effect->head == effect->tail) {\n                    effect->head++;\n                    if (effect->head == effect->capacity) effect->head = 0;\n                    effect->count--;\n                }\n            }\n            position.x += stepX;\n            position.y += stepY;\n            position.z += stepZ;\n            weight += weightStep;\n            remaining -= timeStep;\n            packet->phase -= 1.0f;\n        } while (1.0f < packet->phase);\n        packet->position = position;\n        packet->elapsed = remaining;\n    }\n    return 1;\n}",
+  "declarations": "typedef struct { f32 x, z; } SideVelocity1519F7F0;\ntypedef struct {\n    f32 x, z, height, phase;\n    s16 alpha, delay, light, tag, lifetime, reserved1A;\n    SideVelocity1519F7F0 velocity;\n} SideEmitEntry1519F7F0;\ntypedef struct {\n    u8 reserved00[0x10];\n    SidePosition1519F1C8 point;\n    s16 lifetime;\n    u16 flags;\n    s32 mode;\n    u8 reserved24, capacity, reserved26[6];\n    s8 count, head, tail;\n    u8 reserved2F[0x25];\n    SidePosition1519F1C8 published;\n    SideFloor1519F4F0 floor;\n    u8 reserved84[0x10];\n    SideEmitEntry1519F7F0 *entries;\n    SidePayload1519F1C8 *payload;\n    s32 reserved9C;\n} SideEmitter1519F7F0;\ntypedef struct {\n    u8 *state;\n    u8 mode, reserved05[3];\n} SideTransition1519F7F0;\nstruct260 *func_151491F4(s16, s8, s8, u8, u8, s32, u8, s32);\ns32 func_150ADA20(void);\n",
+  "raw_sha256": "15d83d28b8889c14488f175ad2361a60c88fe84426f520991007c62e2ecef59c",
+  "refs": {
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_1519EF90"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "func_1519EF90"
+      ]
+    ],
+    "272": [
+      [
+        "R_MIPS_26",
+        "func_1519F48C"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "364": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "416": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "420": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "632": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "636": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "936": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "964": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "1092": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1144": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "1204": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "1336": [
+      [
+        "R_MIPS_26",
+        "func_15045800"
+      ]
+    ]
+  },
+  "normal_sha256": "c162b26ecafc4c9b5a05803148575a6824851c64ec94a40a943a78d8123df891",
+  "normal_refs": {
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_1519EF90"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "func_1519EF90"
+      ]
+    ],
+    "272": [
+      [
+        "R_MIPS_26",
+        "func_1519F48C"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "364": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "416": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CF4"
+      ]
+    ],
+    "420": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CF4"
+      ]
+    ],
+    "632": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "636": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "936": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CF8"
+      ]
+    ],
+    "964": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CF8"
+      ]
+    ],
+    "1092": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1192": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CFC"
+      ]
+    ],
+    "1196": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CFC"
+      ]
+    ],
+    "1336": [
+      [
+        "R_MIPS_26",
+        "func_15045800"
+      ]
+    ]
+  },
+  "changes": [
+    {
+      "offset": "0x60",
+      "expected": "0x9298003b",
+      "replacement": "0x9058001c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x6c",
+      "expected": "0x9298003b",
+      "replacement": "0x9058001c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x70",
+      "expected": "0x9059001c",
+      "replacement": "0x9299003b",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x118",
+      "expected": "0x8e6e0000",
+      "replacement": "0x8e620000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x11c",
+      "expected": "0x24180006",
+      "replacement": "0x240f0006",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x120",
+      "expected": "0x24190008",
+      "replacement": "0x24180008",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x124",
+      "expected": "0xafae00ec",
+      "replacement": "0xafa200ec",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x128",
+      "expected": "0x8e2f0020",
+      "replacement": "0x8e2e0020",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x12c",
+      "expected": "0x240800ff",
+      "replacement": "0x241900ff",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x130",
+      "expected": "0xafa80018",
+      "replacement": "0xafb90018",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x138",
+      "expected": "0xafb90014",
+      "replacement": "0xafb80014",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x13c",
+      "expected": "0xafb80010",
+      "replacement": "0xafaf0010",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x150",
+      "expected": "0x25d20058",
+      "replacement": "0x24520058",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x158",
+      "expected": "0xa3af00f0",
+      "replacement": "0xa3ae00f0",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x174",
+      "expected": "0x8e290020",
+      "replacement": "0x8e280020",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x180",
+      "expected": "0x55210004",
+      "replacement": "0x55010004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x1a0",
+      "expected": "0x3c010000",
+      "replacement": "0x3c010000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          ".rodata"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800A8CF4"
+        ]
+      ]
+    },
+    {
+      "offset": "0x1a4",
+      "expected": "0xc4220000",
+      "replacement": "0xc4220000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          ".rodata"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800A8CF4"
+        ]
+      ]
+    },
+    {
+      "offset": "0x240",
+      "expected": "0x4600e083",
+      "replacement": "0x4600e303",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x250",
+      "expected": "0xe7a200f4",
+      "replacement": "0xe7ac00f4",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x25c",
+      "expected": "0xc66c000c",
+      "replacement": "0xc662000c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x260",
+      "expected": "0xc7a200f4",
+      "replacement": "0xc7ac00f4",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x264",
+      "expected": "0x460ce03c",
+      "replacement": "0x4602e03c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x274",
+      "expected": "0x460ce383",
+      "replacement": "0x4602e383",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x288",
+      "expected": "0x27aa00c8",
+      "replacement": "0x27a900c8",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x29c",
+      "expected": "0xad410000",
+      "replacement": "0xad210000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2a0",
+      "expected": "0x8cad0004",
+      "replacement": "0x8cac0004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2a4",
+      "expected": "0xad4d0004",
+      "replacement": "0xad2c0004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2ac",
+      "expected": "0xad410008",
+      "replacement": "0xad210008",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2b8",
+      "expected": "0x8e2e0020",
+      "replacement": "0x8e2d0020",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2c8",
+      "expected": "0x15c1000c",
+      "replacement": "0x15a1000c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2d8",
+      "expected": "0x46022202",
+      "replacement": "0x460c2202",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2e8",
+      "expected": "0x46028102",
+      "replacement": "0x460c8102",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x2fc",
+      "expected": "0x46029182",
+      "replacement": "0x460c9182",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x310",
+      "expected": "0x46025182",
+      "replacement": "0x460c5182",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x32c",
+      "expected": "0x822f002d",
+      "replacement": "0x822e002d",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x338",
+      "expected": "0x822f002d",
+      "replacement": "0x822e002d",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x33c",
+      "expected": "0x106f0019",
+      "replacement": "0x106e0019",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x344",
+      "expected": "0x8238002c",
+      "replacement": "0x822f002c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x350",
+      "expected": "0x13000014",
+      "replacement": "0x11e00014",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x378",
+      "expected": "0xc812",
+      "replacement": "0xc012",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x37c",
+      "expected": "0xf91021",
+      "replacement": "0x3071021",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3a8",
+      "expected": "0x3c010000",
+      "replacement": "0x3c010000",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          ".rodata"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800A8CF8"
+        ]
+      ]
+    },
+    {
+      "offset": "0x3ac",
+      "expected": "0xafa50080",
+      "replacement": "0xafa50084",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3bc",
+      "expected": "0xe7aa0074",
+      "replacement": "0xe7aa007c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3c4",
+      "expected": "0xc43a0004",
+      "replacement": "0xc43a0000",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          ".rodata"
+        ]
+      ],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800A8CF8"
+        ]
+      ]
+    },
+    {
+      "offset": "0x3d0",
+      "expected": "0xe7a4006c",
+      "replacement": "0xe7a40074",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3d4",
+      "expected": "0xe7a60070",
+      "replacement": "0xe7a60078",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3d8",
+      "expected": "0xe7a80068",
+      "replacement": "0xe7a80070",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3dc",
+      "expected": "0x8228002e",
+      "replacement": "0x24030024",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3e0",
+      "expected": "0x24030024",
+      "replacement": "0x8fa70110",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3e4",
+      "expected": "0x8fa70110",
+      "replacement": "0x8239002e",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3e8",
+      "expected": "0x1030019",
+      "replacement": "0x27ab00a8",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3ec",
+      "expected": "0x27ac00a8",
+      "replacement": "0x8d610000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3f0",
+      "expected": "0x8d810000",
+      "replacement": "0x3230019",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3f4",
+      "expected": "0x241900ff",
+      "replacement": "0x241800ff",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x3fc",
+      "expected": "0x4812",
+      "replacement": "0x4012",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x400",
+      "expected": "0x1278021",
+      "replacement": "0x1078021",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x408",
+      "expected": "0x8d8d0004",
+      "replacement": "0x8d6c0004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x40c",
+      "expected": "0xae0d0020",
+      "replacement": "0xae0c0020",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x420",
+      "expected": "0x866e002e",
+      "replacement": "0x866d002e",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x428",
+      "expected": "0xa60e0018",
+      "replacement": "0xa60d0018",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x42c",
+      "expected": "0x866f0030",
+      "replacement": "0x866e0030",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x430",
+      "expected": "0xa60f0010",
+      "replacement": "0xa60e0010",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x434",
+      "expected": "0x86780032",
+      "replacement": "0x866f0032",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x438",
+      "expected": "0xa6190014",
+      "replacement": "0xa6180014",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x43c",
+      "expected": "0xa6180012",
+      "replacement": "0xa60f0012",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x440",
+      "expected": "0x86680028",
+      "replacement": "0x86790028",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x448",
+      "expected": "0xa6080016",
+      "replacement": "0xa6190016",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x44c",
+      "expected": "0x926c0045",
+      "replacement": "0x926b0045",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x450",
+      "expected": "0x86690028",
+      "replacement": "0x86680028",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x454",
+      "expected": "0x926a0044",
+      "replacement": "0x92690044",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x458",
+      "expected": "0x258d0001",
+      "replacement": "0x256c0001",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x45c",
+      "expected": "0x4d001b",
+      "replacement": "0x4c001b",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x460",
+      "expected": "0x7010",
+      "replacement": "0x6810",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x464",
+      "expected": "0x12a5821",
+      "replacement": "0x1095021",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x468",
+      "expected": "0x16e7821",
+      "replacement": "0x14d7021",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x46c",
+      "expected": "0xa66f0028",
+      "replacement": "0xa66e0028",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x478",
+      "expected": "0x3c010000",
+      "replacement": "0x15800002",
+      "expected_relocations": [
+        [
+          "R_MIPS_HI16",
+          ".rodata"
+        ]
+      ],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x47c",
+      "expected": "0x46144282",
+      "replacement": "0x0",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x480",
+      "expected": "0xc6080004",
+      "replacement": "0x7000d",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x484",
+      "expected": "0x15a00002",
+      "replacement": "0x46144282",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x488",
+      "expected": "0x0",
+      "replacement": "0xc6080004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x48c",
+      "expected": "0x7000d",
+      "replacement": "0x460a2180",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x490",
+      "expected": "0x460a2180",
+      "replacement": "0xc6040020",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x494",
+      "expected": "0xc6040020",
+      "replacement": "0x46142282",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x498",
+      "expected": "0x46142282",
+      "replacement": "0xe6060000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x49c",
+      "expected": "0xe6060000",
+      "replacement": "0x460a4180",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x4a0",
+      "expected": "0xc6040000",
+      "replacement": "0xe6060004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x4a4",
+      "expected": "0x460a4180",
+      "replacement": "0xc6040000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x4a8",
+      "expected": "0xe6060004",
+      "replacement": "0x3c010000",
+      "expected_relocations": [],
+      "replacement_relocations": [
+        [
+          "R_MIPS_HI16",
+          "D_800A8CFC"
+        ]
+      ]
+    },
+    {
+      "offset": "0x4ac",
+      "expected": "0xe7a4008c",
+      "replacement": "0xc4280000",
+      "expected_relocations": [],
+      "replacement_relocations": [
+        [
+          "R_MIPS_LO16",
+          "D_800A8CFC"
+        ]
+      ]
+    },
+    {
+      "offset": "0x4b0",
+      "expected": "0xc6800118",
+      "replacement": "0xe7a4008c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x4b4",
+      "expected": "0xc4280008",
+      "replacement": "0xc6800118",
+      "expected_relocations": [
+        [
+          "R_MIPS_LO16",
+          ".rodata"
+        ]
+      ],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x560",
+      "expected": "0x8238002e",
+      "replacement": "0x822f002e",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x564",
+      "expected": "0x92280025",
+      "replacement": "0x92390025",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x568",
+      "expected": "0x27190001",
+      "replacement": "0x25f80001",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x56c",
+      "expected": "0xa239002e",
+      "replacement": "0xa238002e",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x574",
+      "expected": "0x55020004",
+      "replacement": "0x57220004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x578",
+      "expected": "0x8229002c",
+      "replacement": "0x8228002c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x584",
+      "expected": "0x8229002c",
+      "replacement": "0x8228002c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x58c",
+      "expected": "0x252a0001",
+      "replacement": "0x25090001",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x590",
+      "expected": "0x1443000b",
+      "replacement": "0x1462000b",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x594",
+      "expected": "0xa22a002c",
+      "replacement": "0xa229002c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x598",
+      "expected": "0x246c0001",
+      "replacement": "0x246b0001",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x59c",
+      "expected": "0xa22c002d",
+      "replacement": "0xa22b002d",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5a0",
+      "expected": "0x822b002d",
+      "replacement": "0x822a002d",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5a4",
+      "expected": "0x922d0025",
+      "replacement": "0x922c0025",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5a8",
+      "expected": "0x55ab0003",
+      "replacement": "0x558a0003",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5ac",
+      "expected": "0x822e002c",
+      "replacement": "0x822d002c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5b4",
+      "expected": "0x822e002c",
+      "replacement": "0x822d002c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5b8",
+      "expected": "0x25cfffff",
+      "replacement": "0x25aeffff",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5bc",
+      "expected": "0xa22f002c",
+      "replacement": "0xa22e002c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5c4",
+      "expected": "0xc7a60074",
+      "replacement": "0xc7a6007c",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5d0",
+      "expected": "0xc7aa0070",
+      "replacement": "0xc7aa0078",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5e0",
+      "expected": "0xc7a8006c",
+      "replacement": "0xc7a80074",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x5e8",
+      "expected": "0xc7a60068",
+      "replacement": "0xc7a60070",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x61c",
+      "expected": "0x8228002e",
+      "replacement": "0x24030024",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x620",
+      "expected": "0x27b900c8",
+      "replacement": "0x27b800c8",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x624",
+      "expected": "0x8f210000",
+      "replacement": "0x8f010000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x628",
+      "expected": "0x8fb80080",
+      "replacement": "0x8faf0084",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x62c",
+      "expected": "0xaf010000",
+      "replacement": "0xade10000",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x630",
+      "expected": "0x8f290004",
+      "replacement": "0x8f080004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x634",
+      "expected": "0xaf090004",
+      "replacement": "0xade80004",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x638",
+      "expected": "0x8f210008",
+      "replacement": "0x8f010008",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    },
+    {
+      "offset": "0x63c",
+      "expected": "0xaf010008",
+      "replacement": "0xade10008",
+      "expected_relocations": [],
+      "replacement_relocations": []
+    }
+  ],
+  "literal_pool": "38d1b717469c4000c614700000000000"
+}

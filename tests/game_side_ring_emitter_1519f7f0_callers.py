@@ -101,10 +101,11 @@ def cleanup_fault(streams):
    if outcome:assert q.calls[-1][0]==g.COPY and q.calls[-1][2][:4]==b'\0'*4
    result.append(dict(stream=label,mode=mode,factory=outcome,unmapped_store=hex(low),store_not_performed=True))
  return result
-def main():
- streams=g.programs();n,visits=side_queries(streams);parent=dispatcher(streams);faults=cleanup_fault(streams)
+def main(streams=None,out=None):
+ streams=g.programs() if streams is None else streams;out=g.O if out is None else out
+ n,visits=side_queries(streams);parent=dispatcher(streams);faults=cleanup_fault(streams)
  report=dict(connected_side_cases_per_stream=n,original_side_words=94,original_heading_words=7,original_sample_words=27,side_visited_words=visits,
  parent_cases_per_stream=parent,original_dispatcher_words=100,callback_table='D_8008A23C',slot=5,cleanup_words=32,guest_low_address_observations=faults,
  opaque_query_miss_excluded_from_ordinary_real_helper_domain=True,hardware_faults_emulated=False,c_match_credit=0)
- (g.O/'connected-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
+ (out/'connected-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()
