@@ -6,9 +6,10 @@ from tools.experiments.game_remaining_donor_candidates import body
 from tools.tests.test_game_projected_packet_draw import native_command
 from tools.tests.test_game_row_destination_fill import START
 
-def main():
+def main(controls_override=None):
  selected=body((s.OUT/'recovered.c').read_text(),s.NAME)
  controls=dict(angle=('angle - 64','angle - 63'),radius=('radius * directionX','radius + directionX'),duration=('% 201U','% 200U'),timer=('% 51U','% 50U'),kind=('&packet, 10','&packet, 9'),code=('0x6231','0x6230'),owner=('owner[0xC]','owner[0xB]'),scale=('D_800A02AC * firstScale','D_800A02AC * secondScale'))
+ controls.update(controls_override or {})
  code='#include <ultra64.h>\n'+s.PREAMBLE.replace('extern f32','f32')
  code+=r'''
  _Static_assert(sizeof(void*)==4 && sizeof(RadialEffectPacket150C29F0)==72,"SDK32 packet");
