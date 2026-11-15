@@ -1,10 +1,11 @@
 """Native32 sender validation with typed factories and defined-byte packet checks."""
 import hashlib,json,subprocess
-from tools.experiments import game_actor_effect_binding_150c4120_recovery as s
+from tools.experiments import game_actor_effect_binding_150c4120_recovery as default_source
 from tools.experiments.game_remaining_donor_candidates import body
 from tools.tests import game_actor_effect_binding_150c4120_oracle as g
 from tools.tests.test_game_projected_packet_draw import native_command
 from tools.tests.test_game_row_destination_fill import START
+s=default_source
 
 CONTROLS={
     'lifetime-sentinel':('requestedLifetime == -1','requestedLifetime == 0'),
@@ -20,7 +21,8 @@ CONTROLS={
 
 def arr(values):return '{'+','.join(str(v&0xFFFFFFFF)+'U' for v in values)+'}'
 
-def main():
+def main(module=None):
+    s=default_source if module is None else module
     selected=body((s.OUT/'recovered.c').read_text(),s.NAME)
     code='''#include <ultra64.h>
 '''+s.PREAMBLE+'''
