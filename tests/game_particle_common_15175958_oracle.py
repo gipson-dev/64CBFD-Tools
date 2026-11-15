@@ -48,6 +48,8 @@ class Case:
     speed:int=10
     acceleration:int=1
     source_y:int=20
+    late_divisor:int=7
+    cooldown_zero:int=0
 
 def fixture(c):
     m=base.fixture(base.Case(variant=c.variant,opacity=c.alpha,fading=c.fading,step=c.step,present=c.present,enabled=c.enabled,live=c.live,state=c.state,seed=c.seed))
@@ -67,18 +69,23 @@ def fixture(c):
     put(m,0x800dbe3c,SURFACE);put(m,0x800dbe5c,ATTR)
     for i in range(32):put(m,ATTR+i*4,i^0x12345678)
     m[0x800ddf60+1]=0 if c.seed&4 else 1
+    if c.cooldown_zero:
+        for i in range(12):m[0x800ddf60+i]=0
     return m
 
 class Oracle(FactoryOracle):
-    def __init__(self,w,m,c):
-        super().__init__(w,m,c,entry=ENTRY,arguments=(P,));self.observed=[];self.before_r=self.r[:];self.before_f=self.f[:]
+    def __init__(self,w,m,c,entry=ENTRY,connected=None):
+        super().__init__(w,m,c,entry=entry,connected=connected,arguments=(P,));self.observed=[];self.before_r=self.r[:];self.before_f=self.f[:]
     def execute(self,w):
+        if w>>26==0 and w&63==27 and self.r[w>>16&31]==0:raise base.DivisionBoundary
         if w>>26==17 and w>>21&31==16 and w&63 in(4,5,7):
             fd,fs=w>>6&31,w>>11&31;fn=w&63
             self.f[fd]=bits(math.sqrt(floating(self.f[fs])))if fn==4 else self.f[fs]&0x7fffffff if fn==5 else self.f[fs]^0x80000000
             return
         return super().execute(w)
     def record_call(self,t):
+        if t==ENTRY:
+            assert self.r[4]==P,('entry-pointer',self.r[4]);return
         if t in FLOATS:a=(self.f[12],self.f[14])if t==ATAN else(self.f[12],)
         else:
             assert t in COUNTS,hex(t);a=tuple(self.arguments(COUNTS[t]))
@@ -97,11 +104,13 @@ class Oracle(FactoryOracle):
         if c.mode:
             if c.mode&1:
                 for off,v in ((0xa8,3.+n),(0xac,20.+n),(0xb8,-2.+n),(0xbc,100.+n),(0x98,10.+n),(0x9c,70.+n),(0xa0,-20.-n),(0xe0,50.+n),(0xe4,60.+n)):put(self.memory,P+off,bits(v))
+                self.memory[P+0x90]=(c.seed+n)%12
                 self.memory[P+0xed]=(c.seed+n)%4
                 self.memory[P+0x91]=(c.seed+n)%4
             if c.mode&2:
                 put(self.memory,base.STEP,n+1);self.memory[0x800c35ea]=0 if n&1 else 1
             if c.mode&4:put(self.memory,P+0x92,(c.flags^(n&7))&65535,2)
+        if t==RNG and c.mode&8:put(self.memory,P+0xda,c.late_divisor&65535,2)
         put(self.memory,base.MARK,t^n)
         for i in range(4):self.put(self.r[29]+i*4,0xb5000000+i,4)
         for i in(1,2,3,*range(4,16),24,25):self.r[i]=0xa5000000+i
@@ -121,6 +130,11 @@ def cases():
         yield Case(flags=0x14,distance=distance,angle=angle,state=3)
     for speed,acceleration,step in itertools.product((-32768,0,32767),(-32768,-1,0,1,32767),(-1,0,1,0x7fffffff,0x80000000)):
         yield Case(speed=speed,acceleration=acceleration,step=step)
+    for flags,state,field,value in itertools.product((0,4,0x20,0x40,0x200,0x3ff),(2,3),('tilt','heading','bank','rate'),(float('nan'),float('inf'),-float('inf'))):
+        yield Case(flags=flags,state=state,**{field:value})
+    for divisor,late,mode in itertools.product((1,-1),(1,-1,-32768),(8,9,11,15)):
+        yield Case(flags=0x40,timer=0,divisor=divisor,late_divisor=late,mode=mode,seed=5)
+    yield Case(seed=5,mode=1,cooldown_zero=1)
 
 def main():
     rom=(ROOT/'conker/conker.us.bin').read_bytes();retail=list(struct.unpack_from('>961I',rom,0x1a2e08));candidate=bound(*payload(OUT/'selected.o','func_15175958'));count=0;seen=set()
@@ -153,6 +167,18 @@ def main():
         bad=Oracle(w,initial,c);good=Oracle(candidate,initial,c);bad.run();good.run()
         assert (base.public(bad.memory),bad.calls,bad.observed)!=(base.public(good.memory),good.calls,good.observed),'Ineffective control '+label
         controls.append(label)
-    report=dict(cases=count,retail_words_visited=len(seen),streams=2,effective_controls=controls,private=True,exact_credit=0)
+    zeroes=0
+    for flags,mode,seed,late in itertools.product((0x40,0xc0),(0,1,3,7,8,9),(0,5),(0,)):
+        c=Case(flags=flags,timer=0,divisor=0 if mode<8 else 7,late_divisor=late,mode=mode,seed=seed);initial=fixture(c);pair=[]
+        for w in(retail,candidate):
+            m=Oracle(w,initial,c)
+            try:m.run()
+            except base.DivisionBoundary:pass
+            else:raise AssertionError('Missing pre-division boundary')
+            assert m.calls[-1][0]==RNG and read(m.memory,P+0xde,2)==65535
+            pair.append(m)
+        a,b=pair;assert (base.public(a.memory),a.calls,a.observed)==(base.public(b.memory),b.calls,b.observed),c
+        zeroes+=1
+    report=dict(cases=count,retail_words_visited=len(seen),streams=2,effective_controls=controls,predivision_zero_prefixes=zeroes,private=True,exact_credit=0)
     (OUT/'behavior-screen.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()
