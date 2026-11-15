@@ -1,0 +1,3543 @@
+{
+  "raw_sha256": "4f1d014df4dccc1d394183098667e837cda18e904d9992ad952a134af72b9b0a",
+  "raw_refs": {
+    "108": [
+      [
+        "R_MIPS_26",
+        "func_151D5D60"
+      ]
+    ],
+    "404": [
+      [
+        "R_MIPS_HI16",
+        "D_80090E0C"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_LO16",
+        "D_80090E0C"
+      ]
+    ],
+    "460": [
+      [
+        "R_MIPS_26",
+        "func_15142E24"
+      ]
+    ],
+    "484": [
+      [
+        "R_MIPS_26",
+        "func_15142B7C"
+      ]
+    ],
+    "520": [
+      [
+        "R_MIPS_26",
+        "func_15142C10"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_26",
+        "func_15142CF0"
+      ]
+    ],
+    "580": [
+      [
+        "R_MIPS_26",
+        "func_1513F4E4"
+      ]
+    ],
+    "588": [
+      [
+        "R_MIPS_HI16",
+        "D_800D2C9C"
+      ]
+    ],
+    "592": [
+      [
+        "R_MIPS_LO16",
+        "D_800D2C9C"
+      ]
+    ],
+    "620": [
+      [
+        "R_MIPS_26",
+        "func_15142FBC"
+      ]
+    ],
+    "892": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "896": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ]
+  },
+  "order": [
+    {
+      "source": 0,
+      "kind": "instruction",
+      "operands": 62717952,
+      "private_offset": 65296
+    },
+    {
+      "source": 4,
+      "kind": "instruction",
+      "operands": 61997056,
+      "private_offset": 80
+    },
+    {
+      "source": 8,
+      "kind": "instruction",
+      "operands": 430080
+    },
+    {
+      "source": 12,
+      "kind": "instruction",
+      "operands": 1208320
+    },
+    {
+      "source": 16,
+      "kind": "instruction",
+      "operands": 61931520,
+      "private_offset": 76
+    },
+    {
+      "source": 20,
+      "kind": "instruction",
+      "operands": 61865984,
+      "private_offset": 72
+    },
+    {
+      "source": 24,
+      "kind": "instruction",
+      "operands": 10518528
+    },
+    {
+      "source": 28,
+      "kind": "instruction",
+      "operands": 8423424
+    },
+    {
+      "source": 32,
+      "kind": "instruction",
+      "operands": 29396992
+    },
+    {
+      "source": 36,
+      "kind": "instruction",
+      "operands": 62849024,
+      "private_offset": 84
+    },
+    {
+      "source": 44,
+      "kind": "instruction",
+      "operands": 62259200,
+      "private_offset": 64
+    },
+    {
+      "source": 48,
+      "kind": "instruction",
+      "operands": 62128128,
+      "private_offset": 56
+    },
+    {
+      "source": 52,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 248
+    },
+    {
+      "source": 56,
+      "kind": "instruction",
+      "operands": 36634624
+    },
+    {
+      "source": 60,
+      "kind": "instruction",
+      "operands": 1189888
+    },
+    {
+      "source": 64,
+      "kind": "instruction",
+      "operands": 376832
+    },
+    {
+      "source": 68,
+      "kind": "instruction",
+      "operands": 31522816
+    },
+    {
+      "source": 72,
+      "kind": "instruction",
+      "operands": 2097152,
+      "target": 2492,
+      "branch_mode": 67108864
+    },
+    {
+      "source": 76,
+      "kind": "instruction",
+      "operands": 35913728
+    },
+    {
+      "source": 80,
+      "kind": "instruction",
+      "operands": 36044800
+    },
+    {
+      "source": 84,
+      "kind": "instruction",
+      "operands": 60817408,
+      "private_offset": 16
+    },
+    {
+      "source": 88,
+      "kind": "instruction",
+      "operands": 50341888
+    },
+    {
+      "source": 92,
+      "kind": "instruction",
+      "operands": 444416
+    },
+    {
+      "source": 96,
+      "kind": "instruction",
+      "operands": 52873216
+    },
+    {
+      "source": 100,
+      "kind": "instruction",
+      "operands": 1667072
+    },
+    {
+      "source": 104,
+      "kind": "instruction",
+      "operands": 29753344
+    },
+    {
+      "source": 108,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 112,
+      "kind": "instruction",
+      "operands": 61276160,
+      "private_offset": 236
+    },
+    {
+      "source": 116,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 120,
+      "kind": "instruction",
+      "operands": 1572864
+    },
+    {
+      "source": 124,
+      "kind": "instruction",
+      "operands": 14336
+    },
+    {
+      "source": 128,
+      "kind": "instruction",
+      "operands": 31457280,
+      "target": 2496,
+      "branch_mode": 1073741824
+    },
+    {
+      "source": 132,
+      "kind": "instruction",
+      "operands": 33558528
+    },
+    {
+      "source": 136,
+      "kind": "instruction",
+      "operands": 36241408
+    },
+    {
+      "source": 140,
+      "kind": "instruction",
+      "operands": 36438016
+    },
+    {
+      "source": 144,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 145
+    },
+    {
+      "source": 148,
+      "kind": "instruction",
+      "operands": 19005440
+    },
+    {
+      "source": 156,
+      "kind": "instruction",
+      "operands": 5832704
+    },
+    {
+      "source": 160,
+      "kind": "instruction",
+      "operands": 52428800,
+      "target": 256,
+      "branch_mode": 0
+    },
+    {
+      "source": 152,
+      "kind": "instruction",
+      "operands": 10240
+    },
+    {
+      "source": 168,
+      "kind": "instruction",
+      "operands": 19136512
+    },
+    {
+      "source": 172,
+      "kind": "instruction",
+      "operands": 35782656
+    },
+    {
+      "source": 176,
+      "kind": "instruction",
+      "operands": 1179648
+    },
+    {
+      "source": 180,
+      "kind": "instruction",
+      "operands": 5373952
+    },
+    {
+      "source": 184,
+      "kind": "instruction",
+      "operands": 4325376
+    },
+    {
+      "source": 188,
+      "kind": "instruction",
+      "operands": 8650752
+    },
+    {
+      "source": 192,
+      "kind": "instruction",
+      "operands": 28672
+    },
+    {
+      "source": 196,
+      "kind": "instruction",
+      "operands": 26114048
+    },
+    {
+      "source": 200,
+      "kind": "instruction",
+      "operands": 31784960
+    },
+    {
+      "source": 204,
+      "kind": "instruction",
+      "operands": 20447232
+    },
+    {
+      "source": 208,
+      "kind": "instruction",
+      "operands": 36569088
+    },
+    {
+      "source": 212,
+      "kind": "instruction",
+      "operands": 292864
+    },
+    {
+      "source": 216,
+      "kind": "instruction",
+      "operands": 12068864
+    },
+    {
+      "source": 220,
+      "kind": "instruction",
+      "operands": 12124160
+    },
+    {
+      "source": 224,
+      "kind": "instruction",
+      "operands": 5111808,
+      "target": 228,
+      "branch_mode": 67108864
+    },
+    {
+      "source": 228,
+      "kind": "instruction",
+      "operands": 52439040
+    },
+    {
+      "source": 232,
+      "kind": "instruction",
+      "operands": 4096
+    },
+    {
+      "source": 236,
+      "kind": "instruction",
+      "operands": 991232
+    },
+    {
+      "source": 240,
+      "kind": "instruction",
+      "operands": 8388608,
+      "target": 256,
+      "branch_mode": 1073741824
+    },
+    {
+      "source": 244,
+      "kind": "instruction",
+      "operands": 19005440
+    },
+    {
+      "source": 248,
+      "kind": "instruction",
+      "operands": 37289984
+    },
+    {
+      "source": 252,
+      "kind": "instruction",
+      "operands": 5832704,
+      "target": 172,
+      "branch_mode": 67108864
+    },
+    {
+      "source": 256,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 260,
+      "kind": "instruction",
+      "operands": 19005440
+    },
+    {
+      "source": 264,
+      "kind": "instruction",
+      "operands": 5111808
+    },
+    {
+      "source": 268,
+      "kind": "instruction",
+      "operands": 29360128,
+      "target": 396,
+      "branch_mode": 0
+    },
+    {
+      "source": 272,
+      "kind": "instruction",
+      "operands": 1179648
+    },
+    {
+      "source": 276,
+      "kind": "instruction",
+      "operands": 35782656
+    },
+    {
+      "source": 280,
+      "kind": "instruction",
+      "operands": 12288
+    },
+    {
+      "source": 284,
+      "kind": "instruction",
+      "operands": 19202048
+    },
+    {
+      "source": 288,
+      "kind": "instruction",
+      "operands": 4325376
+    },
+    {
+      "source": 292,
+      "kind": "instruction",
+      "operands": 4194304,
+      "target": 300,
+      "branch_mode": 65536
+    },
+    {
+      "source": 296,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 300,
+      "kind": "instruction",
+      "operands": 35782656
+    },
+    {
+      "source": 304,
+      "kind": "instruction",
+      "operands": 4325376
+    },
+    {
+      "source": 308,
+      "kind": "instruction",
+      "operands": 5373952
+    },
+    {
+      "source": 312,
+      "kind": "instruction",
+      "operands": 10813440
+    },
+    {
+      "source": 316,
+      "kind": "instruction",
+      "operands": 4325376
+    },
+    {
+      "source": 320,
+      "kind": "instruction",
+      "operands": 30720
+    },
+    {
+      "source": 324,
+      "kind": "instruction",
+      "operands": 26155008
+    },
+    {
+      "source": 328,
+      "kind": "instruction",
+      "operands": 7864320
+    },
+    {
+      "source": 332,
+      "kind": "instruction",
+      "operands": 50724864
+    },
+    {
+      "source": 336,
+      "kind": "instruction",
+      "operands": 51200
+    },
+    {
+      "source": 340,
+      "kind": "instruction",
+      "operands": 1667072
+    },
+    {
+      "source": 344,
+      "kind": "instruction",
+      "operands": 7208960
+    },
+    {
+      "source": 348,
+      "kind": "instruction",
+      "operands": 19857408
+    },
+    {
+      "source": 352,
+      "kind": "instruction",
+      "operands": 378880
+    },
+    {
+      "source": 356,
+      "kind": "instruction",
+      "operands": 1648640
+    },
+    {
+      "source": 360,
+      "kind": "instruction",
+      "operands": 13578240
+    },
+    {
+      "source": 364,
+      "kind": "instruction",
+      "operands": 14155776
+    },
+    {
+      "source": 368,
+      "kind": "instruction",
+      "operands": 4194304,
+      "target": 376,
+      "branch_mode": 65536
+    },
+    {
+      "source": 372,
+      "kind": "instruction",
+      "operands": 50343936
+    },
+    {
+      "source": 376,
+      "kind": "instruction",
+      "operands": 35782656
+    },
+    {
+      "source": 380,
+      "kind": "instruction",
+      "operands": 4325376
+    },
+    {
+      "source": 384,
+      "kind": "instruction",
+      "operands": 10485760,
+      "target": 396,
+      "branch_mode": 0
+    },
+    {
+      "source": 388,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 392,
+      "kind": "instruction",
+      "operands": 36634624
+    },
+    {
+      "source": 396,
+      "kind": "instruction",
+      "operands": 5177344,
+      "target": 300,
+      "branch_mode": 67108864
+    },
+    {
+      "source": 400,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 404,
+      "kind": "instruction",
+      "operands": 327680
+    },
+    {
+      "source": 408,
+      "kind": "instruction",
+      "operands": 1572864
+    },
+    {
+      "source": 412,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 145
+    },
+    {
+      "source": 416,
+      "kind": "instruction",
+      "operands": 917504
+    },
+    {
+      "source": 420,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 40
+    },
+    {
+      "source": 424,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 36
+    },
+    {
+      "source": 428,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 24
+    },
+    {
+      "source": 432,
+      "kind": "instruction",
+      "operands": 10813440
+    },
+    {
+      "source": 436,
+      "kind": "instruction",
+      "operands": 33562624
+    },
+    {
+      "source": 440,
+      "kind": "instruction",
+      "operands": 12288
+    },
+    {
+      "source": 444,
+      "kind": "instruction",
+      "operands": 60817408,
+      "private_offset": 16
+    },
+    {
+      "source": 448,
+      "kind": "instruction",
+      "operands": 60817408,
+      "private_offset": 20
+    },
+    {
+      "source": 452,
+      "kind": "instruction",
+      "operands": 60817408,
+      "private_offset": 28
+    },
+    {
+      "source": 456,
+      "kind": "instruction",
+      "operands": 60817408,
+      "private_offset": 32
+    },
+    {
+      "source": 464,
+      "kind": "instruction",
+      "operands": 61407232,
+      "private_offset": 232
+    },
+    {
+      "source": 460,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 516,
+      "kind": "instruction",
+      "operands": 61603840,
+      "private_offset": 228
+    },
+    {
+      "source": 468,
+      "kind": "instruction",
+      "operands": 393216
+    },
+    {
+      "source": 472,
+      "kind": "instruction",
+      "operands": 61865984,
+      "private_offset": 145
+    },
+    {
+      "source": 476,
+      "kind": "instruction",
+      "operands": 12976128
+    },
+    {
+      "source": 480,
+      "kind": "instruction",
+      "operands": 4202496
+    },
+    {
+      "source": 484,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 488,
+      "kind": "instruction",
+      "operands": 327680
+    },
+    {
+      "source": 492,
+      "kind": "instruction",
+      "operands": 61407232,
+      "private_offset": 232
+    },
+    {
+      "source": 496,
+      "kind": "instruction",
+      "operands": 983040
+    },
+    {
+      "source": 500,
+      "kind": "instruction",
+      "operands": 4202496
+    },
+    {
+      "source": 504,
+      "kind": "instruction",
+      "operands": 19202048
+    },
+    {
+      "source": 508,
+      "kind": "instruction",
+      "operands": 19267584
+    },
+    {
+      "source": 512,
+      "kind": "instruction",
+      "operands": 19333120
+    },
+    {
+      "source": 524,
+      "kind": "instruction",
+      "operands": 61865984,
+      "private_offset": 20
+    },
+    {
+      "source": 520,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 540,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 16
+    },
+    {
+      "source": 532,
+      "kind": "instruction",
+      "operands": 1572864
+    },
+    {
+      "source": 528,
+      "kind": "instruction",
+      "operands": 1638400
+    },
+    {
+      "source": 536,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 20
+    },
+    {
+      "source": 560,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 16
+    },
+    {
+      "source": 544,
+      "kind": "instruction",
+      "operands": 4202496
+    },
+    {
+      "source": 548,
+      "kind": "instruction",
+      "operands": 10240
+    },
+    {
+      "source": 552,
+      "kind": "instruction",
+      "operands": 12288
+    },
+    {
+      "source": 556,
+      "kind": "instruction",
+      "operands": 458752
+    },
+    {
+      "source": 568,
+      "kind": "instruction",
+      "operands": 60817408,
+      "private_offset": 24
+    },
+    {
+      "source": 564,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 568,
+      "kind": "instruction",
+      "operands": 61865984,
+      "private_offset": 28
+    },
+    {
+      "source": 572,
+      "kind": "instruction",
+      "operands": 4202496
+    },
+    {
+      "source": 576,
+      "kind": "instruction",
+      "operands": 327680
+    },
+    {
+      "source": 580,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 584,
+      "kind": "instruction",
+      "operands": 33566720
+    },
+    {
+      "source": 588,
+      "kind": "instruction",
+      "operands": 327680
+    },
+    {
+      "source": 592,
+      "kind": "instruction",
+      "operands": 10813440
+    },
+    {
+      "source": 596,
+      "kind": "instruction",
+      "operands": 65536
+    },
+    {
+      "source": 600,
+      "kind": "instruction",
+      "operands": 393216
+    },
+    {
+      "source": 604,
+      "kind": "instruction",
+      "operands": 10602496
+    },
+    {
+      "source": 608,
+      "kind": "instruction",
+      "operands": 52756480
+    },
+    {
+      "source": 612,
+      "kind": "instruction",
+      "operands": 12976128
+    },
+    {
+      "source": 616,
+      "kind": "instruction",
+      "operands": 4202496
+    },
+    {
+      "source": 620,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 624,
+      "kind": "instruction",
+      "operands": 33568768
+    },
+    {
+      "source": 628,
+      "kind": "instruction",
+      "operands": 36634624
+    },
+    {
+      "source": 632,
+      "kind": "instruction",
+      "operands": 61407232,
+      "private_offset": 232
+    },
+    {
+      "source": 632,
+      "kind": "instruction",
+      "operands": 61603840,
+      "private_offset": 228
+    },
+    {
+      "source": 640,
+      "kind": "instruction",
+      "operands": 33030144
+    },
+    {
+      "source": 644,
+      "kind": "instruction",
+      "operands": 50331648,
+      "target": 752,
+      "branch_mode": 0
+    },
+    {
+      "source": 636,
+      "kind": "instruction",
+      "operands": 4227072
+    },
+    {
+      "source": 648,
+      "kind": "instruction",
+      "operands": 36175872
+    },
+    {
+      "source": 656,
+      "kind": "instruction",
+      "operands": 17301504
+    },
+    {
+      "source": 660,
+      "kind": "instruction",
+      "operands": 16777216,
+      "target": 672,
+      "branch_mode": 65536
+    },
+    {
+      "source": 788,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 668,
+      "kind": "instruction",
+      "operands": 36175872
+    },
+    {
+      "source": 672,
+      "kind": "instruction",
+      "operands": 17301504
+    },
+    {
+      "source": 684,
+      "kind": "instruction",
+      "operands": 17956864
+    },
+    {
+      "source": 676,
+      "kind": "instruction",
+      "operands": 35717120
+    },
+    {
+      "source": 680,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 204
+    },
+    {
+      "source": 688,
+      "kind": "instruction",
+      "operands": 52494336
+    },
+    {
+      "source": 692,
+      "kind": "instruction",
+      "operands": 36634624
+    },
+    {
+      "source": 696,
+      "kind": "instruction",
+      "operands": 53411840
+    },
+    {
+      "source": 700,
+      "kind": "instruction",
+      "operands": 35717120
+    },
+    {
+      "source": 712,
+      "kind": "instruction",
+      "operands": 49152
+    },
+    {
+      "source": 716,
+      "kind": "instruction",
+      "operands": 26742784
+    },
+    {
+      "source": 704,
+      "kind": "instruction",
+      "operands": 52494336
+    },
+    {
+      "source": 724,
+      "kind": "instruction",
+      "operands": 5832704
+    },
+    {
+      "source": 728,
+      "kind": "instruction",
+      "operands": 5111808
+    },
+    {
+      "source": 708,
+      "kind": "instruction",
+      "operands": 19136512
+    },
+    {
+      "source": 732,
+      "kind": "instruction",
+      "operands": 4849664
+    },
+    {
+      "source": 736,
+      "kind": "instruction",
+      "operands": 30998528
+    },
+    {
+      "source": 720,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 164
+    },
+    {
+      "source": 740,
+      "kind": "instruction",
+      "operands": 10240
+    },
+    {
+      "source": 744,
+      "kind": "instruction",
+      "operands": 358400
+    },
+    {
+      "source": 748,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 884,
+      "branch_mode": 0
+    },
+    {
+      "source": 752,
+      "kind": "byte-move",
+      "operands": 31467520
+    },
+    {
+      "source": 756,
+      "kind": "instruction",
+      "operands": 35913728
+    },
+    {
+      "source": 760,
+      "kind": "instruction",
+      "operands": 8650752
+    },
+    {
+      "source": 764,
+      "kind": "instruction",
+      "operands": 8388608,
+      "target": 780,
+      "branch_mode": 196608
+    },
+    {
+      "source": 776,
+      "kind": "instruction",
+      "operands": 8912896
+    },
+    {
+      "source": 772,
+      "kind": "instruction",
+      "operands": 35913728
+    },
+    {
+      "source": 780,
+      "kind": "instruction",
+      "operands": 8650752
+    },
+    {
+      "source": 768,
+      "kind": "instruction",
+      "operands": 8912896
+    },
+    {
+      "source": 784,
+      "kind": "instruction",
+      "operands": 16777216,
+      "target": 796,
+      "branch_mode": 65536
+    },
+    {
+      "source": 1016,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 792,
+      "kind": "instruction",
+      "operands": 36175872
+    },
+    {
+      "source": 796,
+      "kind": "instruction",
+      "operands": 17301504
+    },
+    {
+      "source": 800,
+      "kind": "instruction",
+      "operands": 9568256
+    },
+    {
+      "source": 804,
+      "kind": "instruction",
+      "operands": 49152
+    },
+    {
+      "source": 808,
+      "kind": "instruction",
+      "operands": 26744832
+    },
+    {
+      "source": 812,
+      "kind": "instruction",
+      "operands": 6684672
+    },
+    {
+      "source": 856,
+      "kind": "instruction",
+      "operands": 573440
+    },
+    {
+      "source": 860,
+      "kind": "instruction",
+      "operands": 50905088
+    },
+    {
+      "source": 824,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 204
+    },
+    {
+      "source": 820,
+      "kind": "instruction",
+      "operands": 6815744
+    },
+    {
+      "source": 864,
+      "kind": "instruction",
+      "operands": 1622016
+    },
+    {
+      "source": 868,
+      "kind": "instruction",
+      "operands": 26742784
+    },
+    {
+      "source": 832,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 208
+    },
+    {
+      "source": 828,
+      "kind": "instruction",
+      "operands": 6946816
+    },
+    {
+      "source": 872,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 212
+    },
+    {
+      "source": 836,
+      "kind": "instruction",
+      "operands": 7929856
+    },
+    {
+      "source": 840,
+      "kind": "instruction",
+      "operands": 7208960
+    },
+    {
+      "source": 844,
+      "kind": "instruction",
+      "operands": 7077888
+    },
+    {
+      "source": 848,
+      "kind": "instruction",
+      "operands": 6946816
+    },
+    {
+      "source": 852,
+      "kind": "instruction",
+      "operands": 30998528
+    },
+    {
+      "source": 900,
+      "kind": "instruction",
+      "operands": 61603840,
+      "private_offset": 164
+    },
+    {
+      "source": 876,
+      "kind": "instruction",
+      "operands": 10240
+    },
+    {
+      "source": 880,
+      "kind": "instruction",
+      "operands": 358400
+    },
+    {
+      "source": 884,
+      "kind": "byte-move",
+      "operands": 31467520
+    },
+    {
+      "source": 888,
+      "kind": "instruction",
+      "operands": 4456448
+    },
+    {
+      "source": 892,
+      "kind": "instruction",
+      "operands": 65536
+    },
+    {
+      "source": 896,
+      "kind": "instruction",
+      "operands": 3014656
+    },
+    {
+      "source": 916,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 216
+    },
+    {
+      "source": 904,
+      "kind": "instruction",
+      "operands": 4587520
+    },
+    {
+      "source": 908,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 216
+    },
+    {
+      "source": 912,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 204
+    },
+    {
+      "source": 932,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 220
+    },
+    {
+      "source": 920,
+      "kind": "instruction",
+      "operands": 4718592
+    },
+    {
+      "source": 924,
+      "kind": "instruction",
+      "operands": 283392
+    },
+    {
+      "source": 928,
+      "kind": "instruction",
+      "operands": 196608
+    },
+    {
+      "source": 816,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 224
+    },
+    {
+      "source": 936,
+      "kind": "instruction",
+      "operands": 5832704
+    },
+    {
+      "source": 940,
+      "kind": "instruction",
+      "operands": 5111808
+    },
+    {
+      "source": 944,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 224
+    },
+    {
+      "source": 948,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 212
+    },
+    {
+      "source": 952,
+      "kind": "instruction",
+      "operands": 30998528
+    },
+    {
+      "source": 956,
+      "kind": "instruction",
+      "operands": 24576
+    },
+    {
+      "source": 960,
+      "kind": "instruction",
+      "operands": 536704
+    },
+    {
+      "source": 972,
+      "kind": "instruction",
+      "operands": 4653056
+    },
+    {
+      "source": 980,
+      "kind": "instruction",
+      "operands": 5242880
+    },
+    {
+      "source": 968,
+      "kind": "instruction",
+      "operands": 28672
+    },
+    {
+      "source": 976,
+      "kind": "instruction",
+      "operands": 5504
+    },
+    {
+      "source": 964,
+      "kind": "instruction",
+      "operands": 25856
+    },
+    {
+      "source": 984,
+      "kind": "instruction",
+      "operands": 45440
+    },
+    {
+      "source": 988,
+      "kind": "instruction",
+      "operands": 22528
+    },
+    {
+      "source": 992,
+      "kind": "instruction",
+      "operands": 751616
+    },
+    {
+      "source": 996,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 1024,
+      "branch_mode": 65536
+    },
+    {
+      "source": 1000,
+      "kind": "byte-move",
+      "operands": 31479808
+    },
+    {
+      "source": 1004,
+      "kind": "instruction",
+      "operands": 4096
+    },
+    {
+      "source": 1008,
+      "kind": "instruction",
+      "operands": 65536
+    },
+    {
+      "source": 1012,
+      "kind": "instruction",
+      "operands": 28672
+    },
+    {
+      "source": 1064,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1020,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 1060,
+      "branch_mode": 131072
+    },
+    {
+      "source": 1024,
+      "kind": "instruction",
+      "operands": 102400
+    },
+    {
+      "source": 1028,
+      "kind": "instruction",
+      "operands": 811648
+    },
+    {
+      "source": 1032,
+      "kind": "instruction",
+      "operands": 65536
+    },
+    {
+      "source": 1036,
+      "kind": "instruction",
+      "operands": 102400
+    },
+    {
+      "source": 1040,
+      "kind": "instruction",
+      "operands": 135424
+    },
+    {
+      "source": 1044,
+      "kind": "instruction",
+      "operands": 282624
+    },
+    {
+      "source": 1048,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1052,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 1068,
+      "branch_mode": 0
+    },
+    {
+      "source": 1056,
+      "kind": "instruction",
+      "operands": 37760
+    },
+    {
+      "source": 1060,
+      "kind": "instruction",
+      "operands": 102400
+    },
+    {
+      "source": 1064,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1068,
+      "kind": "instruction",
+      "operands": 37760
+    },
+    {
+      "source": 1072,
+      "kind": "instruction",
+      "operands": 20447232
+    },
+    {
+      "source": 1076,
+      "kind": "instruction",
+      "operands": 930304
+    },
+    {
+      "source": 1080,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 148
+    },
+    {
+      "source": 1084,
+      "kind": "instruction",
+      "operands": 20512768
+    },
+    {
+      "source": 1088,
+      "kind": "instruction",
+      "operands": 19791872
+    },
+    {
+      "source": 1092,
+      "kind": "instruction",
+      "operands": 31029248
+    },
+    {
+      "source": 1096,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 152
+    },
+    {
+      "source": 1104,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 152
+    },
+    {
+      "source": 1100,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 148
+    },
+    {
+      "source": 1108,
+      "kind": "instruction",
+      "operands": 51251200
+    },
+    {
+      "source": 1112,
+      "kind": "instruction",
+      "operands": 2097152,
+      "target": 1168,
+      "branch_mode": 1073741824
+    },
+    {
+      "source": 1116,
+      "kind": "instruction",
+      "operands": 61603840,
+      "private_offset": 164
+    },
+    {
+      "source": 1124,
+      "kind": "instruction",
+      "operands": 29360128,
+      "target": 1136,
+      "branch_mode": 65536
+    },
+    {
+      "source": 1128,
+      "kind": "instruction",
+      "operands": 30998528
+    },
+    {
+      "source": 1132,
+      "kind": "instruction",
+      "operands": 52428800,
+      "target": 1136,
+      "branch_mode": 0
+    },
+    {
+      "source": 1136,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1140,
+      "kind": "instruction",
+      "operands": 54067200
+    },
+    {
+      "source": 1144,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 148
+    },
+    {
+      "source": 1148,
+      "kind": "private-reload-move",
+      "operands": 52477952
+    },
+    {
+      "source": 1156,
+      "kind": "instruction",
+      "operands": 20447232
+    },
+    {
+      "source": 1160,
+      "kind": "instruction",
+      "operands": 19791872
+    },
+    {
+      "source": 1152,
+      "kind": "instruction",
+      "operands": 20512768
+    },
+    {
+      "source": 1164,
+      "kind": "instruction",
+      "operands": 31029248
+    },
+    {
+      "source": 1168,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 152
+    },
+    {
+      "source": 1172,
+      "kind": "instruction",
+      "operands": 61603840,
+      "private_offset": 164
+    },
+    {
+      "source": 1176,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 152
+    },
+    {
+      "source": 1180,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 148
+    },
+    {
+      "source": 1184,
+      "kind": "instruction",
+      "operands": 802816
+    },
+    {
+      "source": 1188,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 204
+    },
+    {
+      "source": 1192,
+      "kind": "instruction",
+      "operands": 51300352
+    },
+    {
+      "source": 1196,
+      "kind": "instruction",
+      "operands": 1669120
+    },
+    {
+      "source": 1200,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 150
+    },
+    {
+      "source": 1204,
+      "kind": "instruction",
+      "operands": 35782656
+    },
+    {
+      "source": 1208,
+      "kind": "instruction",
+      "operands": 65536
+    },
+    {
+      "source": 1212,
+      "kind": "instruction",
+      "operands": 20736
+    },
+    {
+      "source": 1216,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1220,
+      "kind": "instruction",
+      "operands": 4259840,
+      "target": 1228,
+      "branch_mode": 67108864
+    },
+    {
+      "source": 1224,
+      "kind": "instruction",
+      "operands": 8576
+    },
+    {
+      "source": 1228,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 1256,
+      "branch_mode": 0
+    },
+    {
+      "source": 1232,
+      "kind": "instruction",
+      "operands": 4096
+    },
+    {
+      "source": 1236,
+      "kind": "instruction",
+      "operands": 65536
+    },
+    {
+      "source": 1240,
+      "kind": "instruction",
+      "operands": 4259840,
+      "target": 1252,
+      "branch_mode": 67108864
+    },
+    {
+      "source": 1244,
+      "kind": "instruction",
+      "operands": 6144
+    },
+    {
+      "source": 1248,
+      "kind": "instruction",
+      "operands": 131072
+    },
+    {
+      "source": 1252,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 1256,
+      "branch_mode": 0
+    },
+    {
+      "source": 1256,
+      "kind": "instruction",
+      "operands": 6144
+    },
+    {
+      "source": 1260,
+      "kind": "instruction",
+      "operands": 131072
+    },
+    {
+      "source": 1264,
+      "kind": "instruction",
+      "operands": 929792
+    },
+    {
+      "source": 1268,
+      "kind": "instruction",
+      "operands": 958720
+    },
+    {
+      "source": 1272,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 148
+    },
+    {
+      "source": 1276,
+      "kind": "instruction",
+      "operands": 53346304
+    },
+    {
+      "source": 1280,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 208
+    },
+    {
+      "source": 1284,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1288,
+      "kind": "instruction",
+      "operands": 182272
+    },
+    {
+      "source": 1292,
+      "kind": "instruction",
+      "operands": 17024
+    },
+    {
+      "source": 1296,
+      "kind": "instruction",
+      "operands": 794752
+    },
+    {
+      "source": 1300,
+      "kind": "instruction",
+      "operands": 10053632
+    },
+    {
+      "source": 1304,
+      "kind": "instruction",
+      "operands": 393216
+    },
+    {
+      "source": 1308,
+      "kind": "instruction",
+      "operands": 1593344
+    },
+    {
+      "source": 1688,
+      "kind": "instruction",
+      "operands": 2031616
+    },
+    {
+      "source": 1696,
+      "kind": "instruction",
+      "operands": 67043328
+    },
+    {
+      "source": 1320,
+      "kind": "instruction",
+      "operands": 30932992
+    },
+    {
+      "source": 1324,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 212
+    },
+    {
+      "source": 1328,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1336,
+      "kind": "instruction",
+      "operands": 143872
+    },
+    {
+      "source": 1344,
+      "kind": "instruction",
+      "operands": 17024
+    },
+    {
+      "source": 1348,
+      "kind": "instruction",
+      "operands": 1003520
+    },
+    {
+      "source": 1352,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1356,
+      "kind": "instruction",
+      "operands": 51314688
+    },
+    {
+      "source": 1360,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1364,
+      "kind": "instruction",
+      "operands": 30015488
+    },
+    {
+      "source": 1368,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1372,
+      "kind": "instruction",
+      "operands": 28246016
+    },
+    {
+      "source": 1376,
+      "kind": "instruction",
+      "operands": 51314688
+    },
+    {
+      "source": 1380,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1384,
+      "kind": "instruction",
+      "operands": 29753344
+    },
+    {
+      "source": 1396,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1392,
+      "kind": "instruction",
+      "operands": 52822016
+    },
+    {
+      "source": 1388,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1400,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 1412,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1408,
+      "kind": "instruction",
+      "operands": 50331648
+    },
+    {
+      "source": 1404,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1416,
+      "kind": "instruction",
+      "operands": 29360128
+    },
+    {
+      "source": 1420,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 204
+    },
+    {
+      "source": 1424,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1428,
+      "kind": "instruction",
+      "operands": 8576
+    },
+    {
+      "source": 1432,
+      "kind": "instruction",
+      "operands": 53411840
+    },
+    {
+      "source": 1436,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1440,
+      "kind": "instruction",
+      "operands": 929792
+    },
+    {
+      "source": 1444,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1448,
+      "kind": "instruction",
+      "operands": 32374784
+    },
+    {
+      "source": 1452,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 208
+    },
+    {
+      "source": 1456,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1460,
+      "kind": "instruction",
+      "operands": 17024
+    },
+    {
+      "source": 1464,
+      "kind": "instruction",
+      "operands": 1593344
+    },
+    {
+      "source": 1468,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1472,
+      "kind": "instruction",
+      "operands": 30932992
+    },
+    {
+      "source": 1476,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 212
+    },
+    {
+      "source": 1480,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1484,
+      "kind": "instruction",
+      "operands": 8576
+    },
+    {
+      "source": 1488,
+      "kind": "instruction",
+      "operands": 1650688
+    },
+    {
+      "source": 1492,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1496,
+      "kind": "instruction",
+      "operands": 51970048
+    },
+    {
+      "source": 1508,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1504,
+      "kind": "instruction",
+      "operands": 30015488
+    },
+    {
+      "source": 1500,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1512,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 150
+    },
+    {
+      "source": 1516,
+      "kind": "instruction",
+      "operands": 53411840
+    },
+    {
+      "source": 1528,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1524,
+      "kind": "instruction",
+      "operands": 50724864
+    },
+    {
+      "source": 1544,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1532,
+      "kind": "instruction",
+      "operands": 29753344
+    },
+    {
+      "source": 1536,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1540,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 1552,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1548,
+      "kind": "instruction",
+      "operands": 52756480
+    },
+    {
+      "source": 1564,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1556,
+      "kind": "instruction",
+      "operands": 50331648
+    },
+    {
+      "source": 1560,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 204
+    },
+    {
+      "source": 1520,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1568,
+      "kind": "instruction",
+      "operands": 17024
+    },
+    {
+      "source": 1572,
+      "kind": "instruction",
+      "operands": 30343168
+    },
+    {
+      "source": 1576,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1580,
+      "kind": "instruction",
+      "operands": 20736
+    },
+    {
+      "source": 1584,
+      "kind": "instruction",
+      "operands": 1581056
+    },
+    {
+      "source": 1588,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1592,
+      "kind": "instruction",
+      "operands": 33030144
+    },
+    {
+      "source": 1596,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 208
+    },
+    {
+      "source": 1600,
+      "kind": "instruction",
+      "operands": 12800
+    },
+    {
+      "source": 1604,
+      "kind": "instruction",
+      "operands": 1654784
+    },
+    {
+      "source": 1608,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1612,
+      "kind": "instruction",
+      "operands": 33095680
+    },
+    {
+      "source": 1616,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 212
+    },
+    {
+      "source": 1620,
+      "kind": "instruction",
+      "operands": 247808
+    },
+    {
+      "source": 1624,
+      "kind": "instruction",
+      "operands": 32112640
+    },
+    {
+      "source": 1628,
+      "kind": "instruction",
+      "operands": 151808
+    },
+    {
+      "source": 1632,
+      "kind": "instruction",
+      "operands": 10045440
+    },
+    {
+      "source": 1636,
+      "kind": "instruction",
+      "operands": 8576
+    },
+    {
+      "source": 1640,
+      "kind": "instruction",
+      "operands": 929792
+    },
+    {
+      "source": 1644,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1648,
+      "kind": "instruction",
+      "operands": 32374784
+    },
+    {
+      "source": 1652,
+      "kind": "instruction",
+      "operands": 20447232
+    },
+    {
+      "source": 1656,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 1660,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 1664,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 1668,
+      "kind": "instruction",
+      "operands": 31457280
+    },
+    {
+      "source": 1672,
+      "kind": "instruction",
+      "operands": 31457280
+    },
+    {
+      "source": 1684,
+      "kind": "instruction",
+      "operands": 32374784
+    },
+    {
+      "source": 1676,
+      "kind": "instruction",
+      "operands": 33030144
+    },
+    {
+      "source": 1692,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1700,
+      "kind": "instruction",
+      "operands": 45568
+    },
+    {
+      "source": 1704,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 216
+    },
+    {
+      "source": 1708,
+      "kind": "instruction",
+      "operands": 934528
+    },
+    {
+      "source": 1712,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1720,
+      "kind": "instruction",
+      "operands": 33558528
+    },
+    {
+      "source": 1728,
+      "kind": "instruction",
+      "operands": 1069056
+    },
+    {
+      "source": 1732,
+      "kind": "instruction",
+      "operands": 8576
+    },
+    {
+      "source": 1736,
+      "kind": "instruction",
+      "operands": 12800
+    },
+    {
+      "source": 1740,
+      "kind": "instruction",
+      "operands": 958848
+    },
+    {
+      "source": 1744,
+      "kind": "instruction",
+      "operands": 1589248
+    },
+    {
+      "source": 1748,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1752,
+      "kind": "instruction",
+      "operands": 33030144
+    },
+    {
+      "source": 1756,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 220
+    },
+    {
+      "source": 1760,
+      "kind": "instruction",
+      "operands": 1060992
+    },
+    {
+      "source": 1764,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1768,
+      "kind": "instruction",
+      "operands": 20736
+    },
+    {
+      "source": 1772,
+      "kind": "instruction",
+      "operands": 1646592
+    },
+    {
+      "source": 1776,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1780,
+      "kind": "instruction",
+      "operands": 51970048
+    },
+    {
+      "source": 1784,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 224
+    },
+    {
+      "source": 1788,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1792,
+      "kind": "instruction",
+      "operands": 148096
+    },
+    {
+      "source": 1796,
+      "kind": "instruction",
+      "operands": 20736
+    },
+    {
+      "source": 1800,
+      "kind": "instruction",
+      "operands": 925696
+    },
+    {
+      "source": 1804,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1808,
+      "kind": "instruction",
+      "operands": 53346304
+    },
+    {
+      "source": 1820,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1816,
+      "kind": "instruction",
+      "operands": 50790400
+    },
+    {
+      "source": 1812,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1828,
+      "kind": "instruction",
+      "operands": 28246016
+    },
+    {
+      "source": 1832,
+      "kind": "instruction",
+      "operands": 30343168
+    },
+    {
+      "source": 1824,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1840,
+      "kind": "instruction",
+      "operands": 52822016
+    },
+    {
+      "source": 1844,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1848,
+      "kind": "instruction",
+      "operands": 50724864
+    },
+    {
+      "source": 1836,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1856,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 1860,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1864,
+      "kind": "instruction",
+      "operands": 29360128
+    },
+    {
+      "source": 1852,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1872,
+      "kind": "instruction",
+      "operands": 52428800
+    },
+    {
+      "source": 1876,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 216
+    },
+    {
+      "source": 1868,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1884,
+      "kind": "instruction",
+      "operands": 12800
+    },
+    {
+      "source": 1888,
+      "kind": "instruction",
+      "operands": 51314688
+    },
+    {
+      "source": 1892,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1896,
+      "kind": "instruction",
+      "operands": 1654784
+    },
+    {
+      "source": 1900,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1904,
+      "kind": "instruction",
+      "operands": 33095680
+    },
+    {
+      "source": 1908,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 220
+    },
+    {
+      "source": 1880,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1916,
+      "kind": "instruction",
+      "operands": 20736
+    },
+    {
+      "source": 1920,
+      "kind": "instruction",
+      "operands": 925696
+    },
+    {
+      "source": 1924,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1928,
+      "kind": "instruction",
+      "operands": 53346304
+    },
+    {
+      "source": 1932,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 224
+    },
+    {
+      "source": 1912,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1940,
+      "kind": "instruction",
+      "operands": 12800
+    },
+    {
+      "source": 1944,
+      "kind": "instruction",
+      "operands": 1589248
+    },
+    {
+      "source": 1948,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 1952,
+      "kind": "instruction",
+      "operands": 30932992
+    },
+    {
+      "source": 1936,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1960,
+      "kind": "instruction",
+      "operands": 52887552
+    },
+    {
+      "source": 1964,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 1968,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 150
+    },
+    {
+      "source": 1972,
+      "kind": "instruction",
+      "operands": 51314688
+    },
+    {
+      "source": 1956,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 1980,
+      "kind": "instruction",
+      "operands": 29753344
+    },
+    {
+      "source": 1976,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 1988,
+      "kind": "instruction",
+      "operands": 52822016
+    },
+    {
+      "source": 1984,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 1996,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 1992,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 2004,
+      "kind": "instruction",
+      "operands": 51052544
+    },
+    {
+      "source": 2008,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 2012,
+      "kind": "instruction",
+      "operands": 29360128
+    },
+    {
+      "source": 2016,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 216
+    },
+    {
+      "source": 2000,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 2024,
+      "kind": "instruction",
+      "operands": 20736
+    },
+    {
+      "source": 2028,
+      "kind": "instruction",
+      "operands": 53411840
+    },
+    {
+      "source": 2032,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 2036,
+      "kind": "instruction",
+      "operands": 8576
+    },
+    {
+      "source": 2040,
+      "kind": "instruction",
+      "operands": 929792
+    },
+    {
+      "source": 2044,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2048,
+      "kind": "instruction",
+      "operands": 32374784
+    },
+    {
+      "source": 2052,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 220
+    },
+    {
+      "source": 2056,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 2060,
+      "kind": "instruction",
+      "operands": 17024
+    },
+    {
+      "source": 2064,
+      "kind": "instruction",
+      "operands": 1593344
+    },
+    {
+      "source": 2068,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2072,
+      "kind": "instruction",
+      "operands": 30932992
+    },
+    {
+      "source": 2076,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 224
+    },
+    {
+      "source": 2080,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 2084,
+      "kind": "instruction",
+      "operands": 139648
+    },
+    {
+      "source": 2088,
+      "kind": "instruction",
+      "operands": 12800
+    },
+    {
+      "source": 2092,
+      "kind": "instruction",
+      "operands": 1654784
+    },
+    {
+      "source": 2096,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2100,
+      "kind": "instruction",
+      "operands": 51970048
+    },
+    {
+      "source": 2104,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 2108,
+      "kind": "instruction",
+      "operands": 29818880
+    },
+    {
+      "source": 2112,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 2116,
+      "kind": "instruction",
+      "operands": 19857408
+    },
+    {
+      "source": 2120,
+      "kind": "instruction",
+      "operands": 53411840
+    },
+    {
+      "source": 2124,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 2128,
+      "kind": "instruction",
+      "operands": 50724864
+    },
+    {
+      "source": 2132,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 2136,
+      "kind": "instruction",
+      "operands": 29753344
+    },
+    {
+      "source": 2148,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 2144,
+      "kind": "instruction",
+      "operands": 31850496
+    },
+    {
+      "source": 2140,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 2152,
+      "kind": "instruction",
+      "operands": 52428800
+    },
+    {
+      "source": 2156,
+      "kind": "instruction",
+      "operands": 62390272,
+      "private_offset": 236
+    },
+    {
+      "source": 2160,
+      "kind": "instruction",
+      "operands": 50331648
+    },
+    {
+      "source": 2164,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 236
+    },
+    {
+      "source": 2168,
+      "kind": "instruction",
+      "operands": 30343168
+    },
+    {
+      "source": 2172,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 236
+    },
+    {
+      "source": 2176,
+      "kind": "instruction",
+      "operands": 6225920
+    },
+    {
+      "source": 2180,
+      "kind": "instruction",
+      "operands": 62455808,
+      "private_offset": 236
+    },
+    {
+      "source": 2184,
+      "kind": "instruction",
+      "operands": 34603008
+    },
+    {
+      "source": 1316,
+      "kind": "instruction",
+      "operands": 917504
+    },
+    {
+      "source": 2192,
+      "kind": "instruction",
+      "operands": 54001664
+    },
+    {
+      "source": 2196,
+      "kind": "instruction",
+      "operands": 5767168
+    },
+    {
+      "source": 2200,
+      "kind": "instruction",
+      "operands": 33558528
+    },
+    {
+      "source": 1332,
+      "kind": "instruction",
+      "operands": 30277632
+    },
+    {
+      "source": 2204,
+      "kind": "instruction",
+      "operands": 5111808
+    },
+    {
+      "source": 2208,
+      "kind": "instruction",
+      "operands": 4194304
+    },
+    {
+      "source": 2212,
+      "kind": "instruction",
+      "operands": 34603008
+    },
+    {
+      "source": 2216,
+      "kind": "instruction",
+      "operands": 33560576
+    },
+    {
+      "source": 1312,
+      "kind": "instruction",
+      "operands": 983040
+    },
+    {
+      "source": 1340,
+      "kind": "instruction",
+      "operands": 32440320
+    },
+    {
+      "source": 2220,
+      "kind": "instruction",
+      "operands": 7274496
+    },
+    {
+      "source": 2224,
+      "kind": "instruction",
+      "operands": 6291456
+    },
+    {
+      "source": 2228,
+      "kind": "instruction",
+      "operands": 34603008
+    },
+    {
+      "source": 2232,
+      "kind": "instruction",
+      "operands": 33562624
+    },
+    {
+      "source": 2256,
+      "kind": "instruction",
+      "operands": 1638400
+    },
+    {
+      "source": 2236,
+      "kind": "instruction",
+      "operands": 54067200
+    },
+    {
+      "source": 2240,
+      "kind": "instruction",
+      "operands": 10027008
+    },
+    {
+      "source": 2244,
+      "kind": "instruction",
+      "operands": 8388608
+    },
+    {
+      "source": 2248,
+      "kind": "instruction",
+      "operands": 34603008
+    },
+    {
+      "source": 2252,
+      "kind": "instruction",
+      "operands": 33564672
+    },
+    {
+      "source": 2188,
+      "kind": "instruction",
+      "operands": 1572864
+    },
+    {
+      "source": 2260,
+      "kind": "instruction",
+      "operands": 51904512
+    },
+    {
+      "source": 2264,
+      "kind": "instruction",
+      "operands": 12058624
+    },
+    {
+      "source": 2268,
+      "kind": "instruction",
+      "operands": 10485760
+    },
+    {
+      "source": 2272,
+      "kind": "instruction",
+      "operands": 34603008
+    },
+    {
+      "source": 1716,
+      "kind": "instruction",
+      "operands": 16785408
+    },
+    {
+      "source": 2288,
+      "kind": "instruction",
+      "operands": 17301504
+    },
+    {
+      "source": 2276,
+      "kind": "instruction",
+      "operands": 16777216,
+      "target": 2276,
+      "branch_mode": 65536
+    },
+    {
+      "source": 2280,
+      "kind": "instruction",
+      "operands": 61800448,
+      "private_offset": 216
+    },
+    {
+      "source": 2284,
+      "kind": "instruction",
+      "operands": 36175872
+    },
+    {
+      "source": 1724,
+      "kind": "instruction",
+      "operands": 17301504
+    },
+    {
+      "source": 2292,
+      "kind": "instruction",
+      "operands": 35848192
+    },
+    {
+      "source": 2296,
+      "kind": "instruction",
+      "operands": 8585216,
+      "target": 2484,
+      "branch_mode": 0
+    },
+    {
+      "source": 2300,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2304,
+      "kind": "instruction",
+      "operands": 17956864
+    },
+    {
+      "source": 2308,
+      "kind": "instruction",
+      "operands": 31522816
+    },
+    {
+      "source": 2312,
+      "kind": "instruction",
+      "operands": 61734912,
+      "private_offset": 204
+    },
+    {
+      "source": 2316,
+      "kind": "instruction",
+      "operands": 29425664
+    },
+    {
+      "source": 2320,
+      "kind": "instruction",
+      "operands": 33030144
+    },
+    {
+      "source": 2324,
+      "kind": "instruction",
+      "operands": 30932992
+    },
+    {
+      "source": 2328,
+      "kind": "instruction",
+      "operands": 31522816
+    },
+    {
+      "source": 2332,
+      "kind": "instruction",
+      "operands": 51200
+    },
+    {
+      "source": 2336,
+      "kind": "instruction",
+      "operands": 26808320
+    },
+    {
+      "source": 2340,
+      "kind": "instruction",
+      "operands": 29425664
+    },
+    {
+      "source": 2344,
+      "kind": "instruction",
+      "operands": 4849664
+    },
+    {
+      "source": 2348,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 216
+    },
+    {
+      "source": 2352,
+      "kind": "instruction",
+      "operands": 4456448
+    },
+    {
+      "source": 2356,
+      "kind": "instruction",
+      "operands": 61341696,
+      "private_offset": 216
+    },
+    {
+      "source": 2360,
+      "kind": "instruction",
+      "operands": 61472768,
+      "private_offset": 204
+    },
+    {
+      "source": 2364,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 220
+    },
+    {
+      "source": 2368,
+      "kind": "instruction",
+      "operands": 4587520
+    },
+    {
+      "source": 2372,
+      "kind": "instruction",
+      "operands": 671744
+    },
+    {
+      "source": 2376,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 224
+    },
+    {
+      "source": 2380,
+      "kind": "instruction",
+      "operands": 5767168
+    },
+    {
+      "source": 2384,
+      "kind": "instruction",
+      "operands": 5177344
+    },
+    {
+      "source": 2388,
+      "kind": "instruction",
+      "operands": 61079552,
+      "private_offset": 224
+    },
+    {
+      "source": 2392,
+      "kind": "instruction",
+      "operands": 61210624,
+      "private_offset": 212
+    },
+    {
+      "source": 2396,
+      "kind": "instruction",
+      "operands": 33030144
+    },
+    {
+      "source": 2400,
+      "kind": "instruction",
+      "operands": 672512
+    },
+    {
+      "source": 2404,
+      "kind": "instruction",
+      "operands": 4653056
+    },
+    {
+      "source": 2408,
+      "kind": "instruction",
+      "operands": 401536
+    },
+    {
+      "source": 2412,
+      "kind": "instruction",
+      "operands": 25856
+    },
+    {
+      "source": 2416,
+      "kind": "instruction",
+      "operands": 5504
+    },
+    {
+      "source": 2420,
+      "kind": "instruction",
+      "operands": 22528
+    },
+    {
+      "source": 2424,
+      "kind": "instruction",
+      "operands": 772096
+    },
+    {
+      "source": 2428,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 2444,
+      "branch_mode": 0
+    },
+    {
+      "source": 2432,
+      "kind": "byte-move",
+      "operands": 52451328
+    },
+    {
+      "source": 2436,
+      "kind": "instruction",
+      "operands": 8192
+    },
+    {
+      "source": 2440,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2444,
+      "kind": "instruction",
+      "operands": 266240
+    },
+    {
+      "source": 2448,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2452,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 2476,
+      "branch_mode": 196608
+    },
+    {
+      "source": 2464,
+      "kind": "instruction",
+      "operands": 37760
+    },
+    {
+      "source": 2468,
+      "kind": "instruction",
+      "operands": 811392
+    },
+    {
+      "source": 2456,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2476,
+      "kind": "instruction",
+      "operands": 135680
+    },
+    {
+      "source": 2480,
+      "kind": "instruction",
+      "operands": 536576
+    },
+    {
+      "source": 2484,
+      "kind": "instruction",
+      "operands": 0
+    },
+    {
+      "source": 2460,
+      "kind": "instruction",
+      "operands": 0,
+      "target": 2476,
+      "branch_mode": 0
+    },
+    {
+      "source": 2488,
+      "kind": "instruction",
+      "operands": 37760
+    },
+    {
+      "source": 2464,
+      "kind": "instruction",
+      "operands": 37760
+    },
+    {
+      "source": 2492,
+      "kind": "instruction",
+      "operands": 5242880
+    },
+    {
+      "source": 2496,
+      "kind": "instruction",
+      "operands": 35848192
+    },
+    {
+      "source": 2500,
+      "kind": "instruction",
+      "operands": 8585216,
+      "target": 1676,
+      "branch_mode": 1140850688
+    },
+    {
+      "source": 2504,
+      "kind": "instruction",
+      "operands": 45568
+    },
+    {
+      "source": 2508,
+      "kind": "instruction",
+      "operands": 33558528
+    },
+    {
+      "source": 2512,
+      "kind": "instruction",
+      "operands": 62849024,
+      "private_offset": 84
+    },
+    {
+      "source": 2516,
+      "kind": "instruction",
+      "operands": 62128128,
+      "private_offset": 56
+    },
+    {
+      "source": 2520,
+      "kind": "instruction",
+      "operands": 62259200,
+      "private_offset": 64
+    },
+    {
+      "source": 2524,
+      "kind": "instruction",
+      "operands": 61865984,
+      "private_offset": 72
+    },
+    {
+      "source": 2532,
+      "kind": "instruction",
+      "operands": 61931520,
+      "private_offset": 76
+    },
+    {
+      "source": 2536,
+      "kind": "instruction",
+      "operands": 61997056,
+      "private_offset": 80
+    },
+    {
+      "source": 2540,
+      "kind": "instruction",
+      "operands": 65011712
+    },
+    {
+      "source": 2544,
+      "kind": "instruction",
+      "operands": 62717952,
+      "private_offset": 240
+    }
+  ],
+  "normal_sha256": "5127b59de1a61f0dd5824525237a6dcc347a7e5457a783c327a32180453e1862",
+  "normal_refs": {
+    "104": [
+      [
+        "R_MIPS_26",
+        "func_151D5D60"
+      ]
+    ],
+    "396": [
+      [
+        "R_MIPS_HI16",
+        "D_80090E0C"
+      ]
+    ],
+    "424": [
+      [
+        "R_MIPS_LO16",
+        "D_80090E0C"
+      ]
+    ],
+    "456": [
+      [
+        "R_MIPS_26",
+        "func_15142E24"
+      ]
+    ],
+    "480": [
+      [
+        "R_MIPS_26",
+        "func_15142B7C"
+      ]
+    ],
+    "516": [
+      [
+        "R_MIPS_26",
+        "func_15142C10"
+      ]
+    ],
+    "560": [
+      [
+        "R_MIPS_26",
+        "func_15142CF0"
+      ]
+    ],
+    "576": [
+      [
+        "R_MIPS_26",
+        "func_1513F4E4"
+      ]
+    ],
+    "584": [
+      [
+        "R_MIPS_HI16",
+        "D_800D2C9C"
+      ]
+    ],
+    "588": [
+      [
+        "R_MIPS_LO16",
+        "D_800D2C9C"
+      ]
+    ],
+    "616": [
+      [
+        "R_MIPS_26",
+        "func_15142FBC"
+      ]
+    ],
+    "888": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8CF4"
+      ]
+    ],
+    "892": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8CF4"
+      ]
+    ]
+  },
+  "literal_pool": "38d1b717469c4000c614700038d1b717"
+}
