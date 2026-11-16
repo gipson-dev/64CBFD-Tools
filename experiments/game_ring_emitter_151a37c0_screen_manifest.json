@@ -1,0 +1,104 @@
+{
+  "name": "func_151A37C0",
+  "source": "conker/src/game/generated_1D0840.c",
+  "entry": 354039744,
+  "rom": 1903728,
+  "slot_words": 265,
+  "raw_words": 266,
+  "frame": 288,
+  "replacement": "#include <math.h>\nf32 fabsf(f32);\n#pragma intrinsic (fabsf)\nextern f32 D_800A8D58;\ns32 func_150ADA20(void);\nvoid *func_151491F4(s16, s8, s8, u8, u8, s32, u8, s32);\ntypedef struct {\n    u8 *owner;\n    u8 identity, attachment, reserved06[2];\n    f32 vector08[3], scale;\n    s16 lifetime, delay, lifetimeScale;\n    u8 reserved1E[2];\n    f32 value, rate;\n    u8 phaseBase, phaseRange, phaseStep, reserved2B[5];\n    u8 kind, reserved31[3];\n    RingPosition151A361C position;\n    f32 pending;\n    u8 phase, reserved45[3];\n    f32 elapsed;\n    u8 flags, reserved4D[3];\n} RingPayload151A37C0;\ntypedef struct {\n    RingPosition151A361C position;\n    f32 value;\n    s16 lifetime, delay;\n    u8 mark, phase, reserved16[2];\n} RingSample151A37C0;\n\n/* Sample linked-owner movement into the ring, retaining fractional progress. */\ns32 func_151A37C0(u8 *owner) {\n    RingPayload151A37C0 *state = *(RingPayload151A37C0 **)(owner + 0x98);\n    RingSample151A37C0 *entries = *(RingSample151A37C0 **)(owner + 0x94);\n    s32 initialized;\n    f32 dx, dy, dz;\n    OwnerSetupDescriptor151A3390 snapshot;\n    f32 points, fraction, remaining, value, timeStep, valueStep;\n    RingPosition151A361C position;\n    RingSample151A37C0 *entry;\n    u8 *created;\n    f32 stepX, stepY, stepZ;\n    f32 valueDifference;\n\n    if (*(s32 *)state->owner == 0) return 0;\n    if (state->identity != state->owner[0x3B]) return 0;\n    initialized = 0;\n    if (!(*(u16 *)(owner + 0x1E) & 4)) {\n        if (func_151A4E34((u8 *)state, owner + 0x10)) {\n            state->position = *(RingPosition151A361C *)(owner + 0x10);\n            *(u16 *)(owner + 0x1E) |= 4;\n            initialized = 1;\n        } else return 1;\n    }\n    if (!initialized && !func_151A4E34((u8 *)state, owner + 0x10)) {\n        func_151A4E9C(owner);\n        memcpy(&snapshot, state, 0x30);\n        created = func_151491F4(300, -1, 10, 0, 5, 48, owner[0xC], 0);\n        if (created != NULL) memcpy(created + 0x28, &snapshot, 0x30);\n        return 1;\n    }\n    dx = *(f32 *)(owner + 0x10) - state->position.x;\n    dy = *(f32 *)(owner + 0x14) - state->position.y;\n    dz = *(f32 *)(owner + 0x18) - state->position.z;\n    if (D_800A8D58 < fabsf(dx) || D_800A8D58 < fabsf(dy) || D_800A8D58 < fabsf(dz)) {\n        state->pending += sqrtf(dx * dx + dy * dy + dz * dz) * state->scale;\n    }\n    points = state->pending;\n    if (1.0f < points) {\n        fraction = 1.0f / points;\n        position = state->position;\n        remaining = state->elapsed + D_800BE9A4;\n        timeStep = remaining * fraction;\n        value = state->value + state->rate * remaining;\n        valueDifference = state->value - value;\n        stepX = dx * fraction;\n        stepY = dy * fraction;\n        stepZ = dz * fraction;\n        valueStep = valueDifference * fraction;\n        do {\n            entry = &entries[*(s8 *)(owner + 0x2E)];\n            entry->position = position;\n            entry->value = value;\n            entry->lifetime = state->lifetime;\n            entry->delay = state->delay;\n            entry->phase = state->phase;\n            state->phase = (u32)state->phase + state->phaseBase +\n                (u32)func_150ADA20() % ((u32)state->phaseRange + 1);\n            entry->mark = 255;\n            owner[0x2E] = *(s8 *)(owner + 0x2E) + 1;\n            if (owner[0x25] == *(s8 *)(owner + 0x2E)) owner[0x2E] = 0;\n            owner[0x2C] = *(s8 *)(owner + 0x2C) + 1;\n            if (*(s8 *)(owner + 0x2D) == *(s8 *)(owner + 0x2E)) {\n                owner[0x2D] = *(s8 *)(owner + 0x2D) + 1;\n                if (owner[0x25] == *(s8 *)(owner + 0x2D)) owner[0x2D] = 0;\n                owner[0x2C] = *(s8 *)(owner + 0x2C) - 1;\n            }\n            position.x += stepX;\n            position.y += stepY;\n            position.z += stepZ;\n            value += valueStep;\n            remaining -= timeStep;\n            state->pending -= 1.0f;\n        } while (1.0f < state->pending);\n        state->position = position;\n        state->elapsed = remaining;\n    }\n    return 1;\n}",
+  "raw_sha256": "ecd27daa05e56adeb187bd5a42f34aa2d076a8f2fa7eb7e2ee762310f8fbfd87",
+  "refs": {
+    "144": [
+      [
+        "R_MIPS_26",
+        "func_151A4E34"
+      ]
+    ],
+    "220": [
+      [
+        "R_MIPS_26",
+        "func_151A4E34"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_26",
+        "func_151A4E9C"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D58"
+      ]
+    ],
+    "352": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D58"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "568": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ]
+  },
+  "symbols": {
+    "func_151A4E34": 354045492,
+    "func_151A4E9C": 354045596,
+    "memcpy": 268578496,
+    "func_151491F4": 353669620,
+    "D_800A8D58": 2148175192,
+    "D_800BE9A4": 2148264356,
+    "func_150ADA20": 353032736
+  },
+  "rejected_replacement": "#include <math.h>\nf32 fabsf(f32);\n#pragma intrinsic (fabsf)\nextern f32 D_800A8D58;\ns32 func_150ADA20(void);\nvoid *func_151491F4(s16, s8, s8, u8, u8, s32, u8, s32);\ntypedef struct {\n    u8 *owner;\n    u8 identity, attachment, reserved06[2];\n    f32 vector08[3], scale;\n    s16 lifetime, delay, lifetimeScale;\n    u8 reserved1E[2];\n    f32 value, rate;\n    u8 phaseBase, phaseRange, phaseStep, reserved2B[5];\n    u8 kind, reserved31[3];\n    RingPosition151A361C position;\n    f32 pending;\n    u8 phase, reserved45[3];\n    f32 elapsed;\n    u8 flags, reserved4D[3];\n} RingPayload151A37C0;\ntypedef struct {\n    RingPosition151A361C position;\n    f32 value;\n    s16 lifetime, delay;\n    u8 mark, phase, reserved16[2];\n} RingSample151A37C0;\n\n/* Sample linked-owner movement into the ring, retaining fractional progress. */\ns32 func_151A37C0(u8 *owner) {\n    RingPayload151A37C0 *state = *(RingPayload151A37C0 **)(owner + 0x98);\n    RingSample151A37C0 *entries = *(RingSample151A37C0 **)(owner + 0x94);\n    s32 initialized;\n    f32 dx, dy, dz, limit;\n    OwnerSetupDescriptor151A3390 snapshot;\n    f32 points, fraction, remaining, value, timeStep, valueStep;\n    RingPosition151A361C position;\n    RingSample151A37C0 *entry;\n    u8 *created;\n    f32 stepX, stepY, stepZ;\n    u32 random;\n\n    if (*(s32 *)state->owner == 0) return 0;\n    if (state->identity != state->owner[0x3B]) return 0;\n    initialized = 0;\n    if (!(*(u16 *)(owner + 0x1E) & 4)) {\n        if (func_151A4E34((u8 *)state, owner + 0x10)) {\n            state->position = *(RingPosition151A361C *)(owner + 0x10);\n            *(u16 *)(owner + 0x1E) |= 4;\n            initialized = 1;\n        } else return 1;\n    }\n    if (!initialized && !func_151A4E34((u8 *)state, owner + 0x10)) {\n        func_151A4E9C(owner);\n        memcpy(&snapshot, state, 0x30);\n        created = func_151491F4(300, -1, 10, 0, 5, 48, owner[0xC], 0);\n        if (created != NULL) memcpy(created + 0x28, &snapshot, 0x30);\n        return 1;\n    }\n    dx = *(f32 *)(owner + 0x10) - state->position.x;\n    dy = *(f32 *)(owner + 0x14) - state->position.y;\n    dz = *(f32 *)(owner + 0x18) - state->position.z;\n    limit = D_800A8D58;\n    if (limit < fabsf(dx) || limit < fabsf(dy) || limit < fabsf(dz)) {\n        state->pending += sqrtf(dx * dx + dy * dy + dz * dz) * state->scale;\n    }\n    points = state->pending;\n    if (1.0f < points) {\n        fraction = 1.0f / points;\n        position = state->position;\n        remaining = state->elapsed + D_800BE9A4;\n        timeStep = remaining * fraction;\n        value = state->value + state->rate * remaining;\n        stepX = dx * fraction;\n        stepY = dy * fraction;\n        stepZ = dz * fraction;\n        valueStep = (state->value - value) * fraction;\n        do {\n            entry = &entries[*(s8 *)(owner + 0x2E)];\n            entry->position = position;\n            entry->value = value;\n            entry->lifetime = state->lifetime;\n            entry->delay = state->delay;\n            entry->phase = state->phase;\n            random = (u32)func_150ADA20();\n            state->phase = (u32)state->phase + state->phaseBase +\n                random % ((u32)state->phaseRange + 1);\n            entry->mark = 255;\n            owner[0x2E] = *(s8 *)(owner + 0x2E) + 1;\n            if (owner[0x25] == *(s8 *)(owner + 0x2E)) owner[0x2E] = 0;\n            owner[0x2C] = *(s8 *)(owner + 0x2C) + 1;\n            if (*(s8 *)(owner + 0x2D) == *(s8 *)(owner + 0x2E)) {\n                owner[0x2D] = *(s8 *)(owner + 0x2D) + 1;\n                if (owner[0x25] == *(s8 *)(owner + 0x2D)) owner[0x2D] = 0;\n                owner[0x2C] = *(s8 *)(owner + 0x2C) - 1;\n            }\n            position.x += stepX;\n            position.y += stepY;\n            position.z += stepZ;\n            value += valueStep;\n            remaining -= timeStep;\n            state->pending -= 1.0f;\n        } while (1.0f < state->pending);\n        state->position = position;\n        state->elapsed = remaining;\n    }\n    return 1;\n}",
+  "rejected_raw_sha256": "05f9ab98ceb748f8c3ab4cf823633438aa04affbfe328ec274a2d3954cf21cb4",
+  "rejected_raw_words": 265,
+  "retail_sha256": "3afaf8db633d924a1a666b9098d3e63100acf0214203b652c326ad97f4c72a9c",
+  "threshold_word": "0x38D1B717",
+  "callback": {
+    "table": "D_8008A23C",
+    "slot": 6,
+    "VA": 2148049492,
+    "ROM": 2288916,
+    "parent": "func_15147740",
+    "jalr": 353663008
+  },
+  "whole_function_qualified": false,
+  "source_installed": false,
+  "c_match_credit": 0
+}
