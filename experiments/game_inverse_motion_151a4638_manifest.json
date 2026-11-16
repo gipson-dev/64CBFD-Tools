@@ -1,0 +1,659 @@
+{
+  "name": "func_151A4638",
+  "source": "conker/src/game/generated_1D0840.c",
+  "entry": 354043448,
+  "rom": 1907432,
+  "retail_sha256": "15c88618ce7ba7188d27daef72646963ec29f3008ea7b95fba8fa46dcdaa40a7",
+  "raw_sha256": "4c78d618c868e0cd54c60e9a4c5d0b195685957387c6480938d8d5774972ed25",
+  "refs": {
+    "52": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "156": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "216": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D60"
+      ]
+    ],
+    "228": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D60"
+      ]
+    ],
+    "232": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A8"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A8"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "476": [
+      [
+        "R_MIPS_26",
+        "func_15130374"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "normalized_sha256": "895b3e0e9ad299249723182662dbc89fbc4cdd3e834f29b37654071ddc45f700",
+  "normalized_refs": {
+    "52": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "156": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "184": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D60"
+      ]
+    ],
+    "188": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D60"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A8"
+      ]
+    ],
+    "212": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A8"
+      ]
+    ],
+    "316": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "472": [
+      [
+        "R_MIPS_26",
+        "func_15130374"
+      ]
+    ],
+    "492": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "symbols": {
+    "D_800A8D60": 2148175200,
+    "D_800BE9A8": 2148264360,
+    "func_150ADA20": 353032736,
+    "func_150ADA68": 353032808,
+    "func_15130374": 353567604,
+    "memcpy": 268578496
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xa8",
+      "expected": "0x44818000",
+      "replacement": "0x44813000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xb0",
+      "expected": "0x44812000",
+      "replacement": "0x44815000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xb4",
+      "expected": "0x46100482",
+      "replacement": "0x46060202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xb8",
+      "expected": "0xC7A600A8",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_800A8D60",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xbc",
+      "expected": "0xC7A800AC",
+      "replacement": "0xC4260000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8D60",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xc0",
+      "expected": "0xC7AA00B0",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_800BE9A8",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xc4",
+      "expected": "0x27A20038",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xc8",
+      "expected": "0xE7A60068",
+      "replacement": "0xC7B000A8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xcc",
+      "expected": "0xE7A8006C",
+      "replacement": "0xC7B200AC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xd0",
+      "expected": "0x46049300",
+      "replacement": "0xC7A400B0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xd4",
+      "expected": "0xE7AA0070",
+      "replacement": "0x460A4300",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xd8",
+      "expected": "0x3C010000",
+      "replacement": "0xC4280000",
+      "expected_relocations": "R_MIPS_HI16:D_800A8D60",
+      "replacement_relocations": "R_MIPS_LO16:D_800BE9A8",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xdc",
+      "expected": "0x240E000D",
+      "replacement": "0xC7AA00B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xe0",
+      "expected": "0xE44C0028",
+      "replacement": "0xE7B00068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xe4",
+      "expected": "0xC4260000",
+      "replacement": "0x46083082",
+      "expected_relocations": "R_MIPS_LO16:D_800A8D60",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xe8",
+      "expected": "0x3C010000",
+      "replacement": "0x46005407",
+      "expected_relocations": "R_MIPS_HI16:D_800BE9A8",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xec",
+      "expected": "0xC4280000",
+      "replacement": "0xE7B2006C",
+      "expected_relocations": "R_MIPS_LO16:D_800BE9A8",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xf0",
+      "expected": "0xC7AA00B4",
+      "replacement": "0xE7A40070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xf4",
+      "expected": "0xE7AC0064",
+      "replacement": "0xC7A400B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xf8",
+      "expected": "0x46083082",
+      "replacement": "0xC7AA00BC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0xfc",
+      "expected": "0x46005407",
+      "replacement": "0x240E000D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x100",
+      "expected": "0x240F0001",
+      "replacement": "0x46028482",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x104",
+      "expected": "0x24180001",
+      "replacement": "0x46002187",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x108",
+      "expected": "0x46028482",
+      "replacement": "0x46005407",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x10c",
+      "expected": "0xE4520048",
+      "replacement": "0x46023202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x110",
+      "expected": "0xC7A400B8",
+      "replacement": "0x44802000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x114",
+      "expected": "0xC7AA00BC",
+      "replacement": "0x240F0001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x118",
+      "expected": "0xAFAE0090",
+      "replacement": "0x24180001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x11c",
+      "expected": "0x46002187",
+      "replacement": "0xE7B20080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x120",
+      "expected": "0x46005407",
+      "replacement": "0x46028482",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x124",
+      "expected": "0x46023202",
+      "replacement": "0xE7AC0060",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x128",
+      "expected": "0x44802000",
+      "replacement": "0xE7A80084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x12c",
+      "expected": "0xA3AF0098",
+      "replacement": "0xAFAE0090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x130",
+      "expected": "0x46028482",
+      "replacement": "0xA3AF0098",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x138",
+      "expected": "0xE7A4008C",
+      "replacement": "0xE7AC0064",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x13c",
+      "expected": "0xE7A80084",
+      "replacement": "0xE7B20088",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4638",
+      "offset": "0x144",
+      "expected": "0xE7B20088",
+      "replacement": "0xE7A4008C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold the private descriptor address into stack accesses; normalize proved inverse-motion constructor allocation and scheduling",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "declarations": "typedef struct {\n    u32 field00, field04;\n    s16 field08, counter;\n    u32 field0C, field10;\n    u8 field14, field15, field16, field17;\n    u8 field18, field19, field1A, field1B, field1C, field1D;\n    s16 field1E, field20, field22;\n    f32 field24, firstValue, secondValue;\n    RingPosition151A361C position;\n    u8 reserved3C[12];\n    RingPosition151A361C velocity;\n    f32 field54;\n    u32 flags;\n    u8 reserved5C[4];\n    u8 field60, field61, field62;\n    s8 field63;\n    /* The factory copies all 0x70 descriptor bytes, including this tail. */\n    u8 reserved64[12];\n} InverseMotionEffect151A4638;\nextern f32 D_800A8D60, D_800BE9A8;\nf32 func_150ADA68(void);\nvoid *func_15130374(void *, u8, s32, u8, s32);\n\n",
+  "body": "/* Submit an inverse-motion effect with a random initial counter and flag bits. */\nvoid func_151A4638(f32 x, f32 y, f32 z, f32 vx, f32 vy, f32 vz, u8 *owner) {\n    InverseMotionEffect151A4638 packet;\n    f32 scale;\n    s16 parameters[6];\n    u8 *created;\n\n    packet.field1D = 0x27;\n    packet.field08 = 0x1401;\n    packet.field00 = 0x200005;\n    packet.field04 = 0;\n    packet.counter = (u32)func_150ADA20() % 5U + 15;\n    packet.field0C = 0;\n    packet.field10 = 0;\n    packet.field14 = 0x8A;\n    packet.field15 = 0;\n    packet.field16 = 0;\n    packet.field17 = 255;\n    packet.field18 = 0;\n    packet.field19 = 0;\n    packet.field1A = 0;\n    packet.field1E = 1;\n    packet.field20 = 255;\n    packet.field22 = 1;\n    packet.field24 = 1.0f;\n    scale = func_150ADA68();\n    packet.position.x = x;\n    packet.position.y = y;\n    packet.position.z = z;\n    /* The two volatile accesses preserve the retail floating-point order. */\n    scale = scale * 50.0f + 500.0f;\n    ((volatile InverseMotionEffect151A4638 *)&packet)->firstValue = scale;\n    packet.secondValue = scale;\n    scale = D_800A8D60 * D_800BE9A8;\n    ((volatile InverseMotionEffect151A4638 *)&packet)->velocity.x = -vx * scale;\n    packet.velocity.y = -vy * scale;\n    packet.velocity.z = -vz * scale;\n    packet.field54 = 0.0f;\n    packet.flags = 13;\n    packet.field60 = 1;\n    packet.field61 = 1;\n    if (func_150ADA20() & 1) packet.flags |= 0x40;\n    if (func_150ADA20() & 1) packet.flags |= 0x80;\n    packet.field1B = 255;\n    packet.field1C = 255;\n    packet.field62 = 0;\n    packet.field63 = -1;\n    parameters[0] = 16;\n    parameters[1] = 15;\n    parameters[2] = 13;\n    parameters[3] = 19;\n    parameters[4] = 17;\n    parameters[5] = -24;\n    created = func_15130374(&packet, 0, sizeof(parameters), owner[0xC], 1);\n    if (created != NULL) memcpy(created + 0xA8, parameters, sizeof(parameters));\n}\n",
+  "replacement": "typedef struct {\n    u32 field00, field04;\n    s16 field08, counter;\n    u32 field0C, field10;\n    u8 field14, field15, field16, field17;\n    u8 field18, field19, field1A, field1B, field1C, field1D;\n    s16 field1E, field20, field22;\n    f32 field24, firstValue, secondValue;\n    RingPosition151A361C position;\n    u8 reserved3C[12];\n    RingPosition151A361C velocity;\n    f32 field54;\n    u32 flags;\n    u8 reserved5C[4];\n    u8 field60, field61, field62;\n    s8 field63;\n    /* The factory copies all 0x70 descriptor bytes, including this tail. */\n    u8 reserved64[12];\n} InverseMotionEffect151A4638;\nextern f32 D_800A8D60, D_800BE9A8;\nf32 func_150ADA68(void);\nvoid *func_15130374(void *, u8, s32, u8, s32);\n\n/* Submit an inverse-motion effect with a random initial counter and flag bits. */\nvoid func_151A4638(f32 x, f32 y, f32 z, f32 vx, f32 vy, f32 vz, u8 *owner) {\n    InverseMotionEffect151A4638 packet;\n    f32 scale;\n    s16 parameters[6];\n    u8 *created;\n\n    packet.field1D = 0x27;\n    packet.field08 = 0x1401;\n    packet.field00 = 0x200005;\n    packet.field04 = 0;\n    packet.counter = (u32)func_150ADA20() % 5U + 15;\n    packet.field0C = 0;\n    packet.field10 = 0;\n    packet.field14 = 0x8A;\n    packet.field15 = 0;\n    packet.field16 = 0;\n    packet.field17 = 255;\n    packet.field18 = 0;\n    packet.field19 = 0;\n    packet.field1A = 0;\n    packet.field1E = 1;\n    packet.field20 = 255;\n    packet.field22 = 1;\n    packet.field24 = 1.0f;\n    scale = func_150ADA68();\n    packet.position.x = x;\n    packet.position.y = y;\n    packet.position.z = z;\n    /* The two volatile accesses preserve the retail floating-point order. */\n    scale = scale * 50.0f + 500.0f;\n    ((volatile InverseMotionEffect151A4638 *)&packet)->firstValue = scale;\n    packet.secondValue = scale;\n    scale = D_800A8D60 * D_800BE9A8;\n    ((volatile InverseMotionEffect151A4638 *)&packet)->velocity.x = -vx * scale;\n    packet.velocity.y = -vy * scale;\n    packet.velocity.z = -vz * scale;\n    packet.field54 = 0.0f;\n    packet.flags = 13;\n    packet.field60 = 1;\n    packet.field61 = 1;\n    if (func_150ADA20() & 1) packet.flags |= 0x40;\n    if (func_150ADA20() & 1) packet.flags |= 0x80;\n    packet.field1B = 255;\n    packet.field1C = 255;\n    packet.field62 = 0;\n    packet.field63 = -1;\n    parameters[0] = 16;\n    parameters[1] = 15;\n    parameters[2] = 13;\n    parameters[3] = 19;\n    parameters[4] = 17;\n    parameters[5] = -24;\n    created = func_15130374(&packet, 0, sizeof(parameters), owner[0xC], 1);\n    if (created != NULL) memcpy(created + 0xA8, parameters, sizeof(parameters));\n}\n",
+  "factory_bytes": 112,
+  "parameter_bytes": 12,
+  "defined_packet_bytes": 84,
+  "constant_word": "0x3DB22D0E",
+  "parent": {
+    "parent": "func_151342BC",
+    "parent_entry": "0x151342BC",
+    "parent_words": 261,
+    "parent_frame": 184,
+    "parent_retail_and_production_identical": true,
+    "parent_asm_sha256": "12527f45231a7d9bf7bb6e24131df268f49e441aa6485ea7adc354bb9792e1fc",
+    "parent_code_sha256": "240e3664554ec7f4d98fec22752fe91819fcb868be363e9dc5c084705e02d1dc",
+    "table": "D_80089A70[1]",
+    "pointer_VA": "0x80089A74",
+    "pointer_ROM": "0x22E534",
+    "callback": "0x151345FC",
+    "callback_window": "0x15134528..0x15134628",
+    "window_words": 64,
+    "arguments": [
+      "F12=x",
+      "F14=y",
+      "A2=z bits",
+      "A3=vx bits",
+      "SP+0x10=vy bits",
+      "SP+0x14=vz bits",
+      "SP+0x18=owner"
+    ],
+    "callback_result_ignored": true,
+    "initial_search_limit": "rg honored ignored nonmatchings; original-ROM low-word search located the retained ignored caller ASM",
+    "source_installed": false,
+    "c_match_credit": 0
+  }
+}
