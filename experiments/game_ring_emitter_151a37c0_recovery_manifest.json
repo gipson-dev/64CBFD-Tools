@@ -1,0 +1,786 @@
+{
+  "name": "func_151A37C0",
+  "source": "conker/src/game/generated_1D0840.c",
+  "entry": 354039744,
+  "rom": 1903728,
+  "retail_sha256": "3afaf8db633d924a1a666b9098d3e63100acf0214203b652c326ad97f4c72a9c",
+  "symbols": {
+    "func_151A4E34": 354045492,
+    "func_151A4E9C": 354045596,
+    "memcpy": 268578496,
+    "func_151491F4": 353669620,
+    "D_800A8D58": 2148175192,
+    "D_800BE9A4": 2148264356,
+    "func_150ADA20": 353032736
+  },
+  "threshold_word": "0x38D1B717",
+  "raw_sha256": "b8ae6eb6f52c8c383c4023df49bdf4880ac214f723d09655f13ef740c1266852",
+  "refs": {
+    "144": [
+      [
+        "R_MIPS_26",
+        "func_151A4E34"
+      ]
+    ],
+    "220": [
+      [
+        "R_MIPS_26",
+        "func_151A4E34"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_26",
+        "func_151A4E9C"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D58"
+      ]
+    ],
+    "352": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D58"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "568": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ]
+  },
+  "normalized_sha256": "260b9809b82c399214b1dc13140c6ad2213e0dce54262f312e9acee9df8d6533",
+  "normalized_refs": {
+    "144": [
+      [
+        "R_MIPS_26",
+        "func_151A4E34"
+      ]
+    ],
+    "220": [
+      [
+        "R_MIPS_26",
+        "func_151A4E34"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_26",
+        "func_151A4E9C"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D58"
+      ]
+    ],
+    "352": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D58"
+      ]
+    ],
+    "524": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "528": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "720": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ]
+  },
+  "replacement": "#include <math.h>\nf32 fabsf(f32);\n#pragma intrinsic (fabsf)\nextern f32 D_800A8D58;\ns32 func_150ADA20(void);\nvoid *func_151491F4(s16, s8, s8, u8, u8, s32, u8, s32);\ntypedef struct {\n    u8 *owner;\n    u8 identity, attachment, reserved06[2];\n    f32 vector08[3], scale;\n    s16 lifetime, delay, lifetimeScale;\n    u8 reserved1E[2];\n    f32 value, rate;\n    u8 phaseBase, phaseRange, phaseStep, reserved2B[5];\n    u8 kind, reserved31[3];\n    RingPosition151A361C position;\n    f32 pending;\n    u8 phase, reserved45[3];\n    f32 elapsed;\n    u8 flags, reserved4D[3];\n} RingPayload151A37C0;\ntypedef struct {\n    RingPosition151A361C position;\n    f32 value;\n    s16 lifetime, delay;\n    u8 mark, phase, reserved16[2];\n} RingSample151A37C0;\n\n/* Sample linked-owner movement into the ring, retaining fractional progress. */\ns32 func_151A37C0(u8 *owner) {\n    RingPayload151A37C0 *state = *(RingPayload151A37C0 **)(owner + 0x98);\n    RingSample151A37C0 *entries = *(RingSample151A37C0 **)(owner + 0x94);\n    s32 initialized;\n    f32 dx, dy, dz;\n    OwnerSetupDescriptor151A3390 snapshot;\n    f32 points, fraction, remaining, value, timeStep, valueStep;\n    RingPosition151A361C position;\n    RingSample151A37C0 *entry;\n    u8 *created;\n    f32 stepX, stepY, stepZ;\n    f32 valueDifference;\n    u32 random;\n\n    if (*(s32 *)state->owner == 0) return 0;\n    if (state->identity != state->owner[0x3B]) return 0;\n    initialized = 0;\n    if (!(*(u16 *)(owner + 0x1E) & 4)) {\n        if (func_151A4E34((u8 *)state, owner + 0x10)) {\n            state->position = *(RingPosition151A361C *)(owner + 0x10);\n            *(u16 *)(owner + 0x1E) |= 4;\n            initialized = 1;\n        } else return 1;\n    }\n    if (!initialized && !func_151A4E34((u8 *)state, owner + 0x10)) {\n        func_151A4E9C(owner);\n        memcpy(&snapshot, state, 0x30);\n        created = func_151491F4(300, -1, 10, 0, 5, 48, owner[0xC], 0);\n        if (created != NULL) memcpy(created + 0x28, &snapshot, 0x30);\n        return 1;\n    }\n    dx = *(f32 *)(owner + 0x10) - state->position.x;\n    dy = *(f32 *)(owner + 0x14) - state->position.y;\n    dz = *(f32 *)(owner + 0x18) - state->position.z;\n    if (D_800A8D58 < fabsf(dx) || D_800A8D58 < fabsf(dy) || D_800A8D58 < fabsf(dz)) {\n        state->pending += sqrtf(dx * dx + dy * dy + dz * dz) * state->scale;\n    }\n    points = state->pending;\n    if (1.0f < points) {\n        fraction = 1.0f / points;\n        position = state->position;\n        remaining = state->elapsed + D_800BE9A4;\n        timeStep = remaining * fraction;\n        value = state->value + state->rate * remaining;\n        valueDifference = state->value - value;\n        stepX = dx * fraction;\n        stepY = dy * fraction;\n        stepZ = dz * fraction;\n        valueStep = valueDifference * fraction;\n        do {\n            entry = &entries[*(s8 *)(owner + 0x2E)];\n            entry->position = position;\n            entry->value = value;\n            entry->lifetime = state->lifetime;\n            entry->delay = state->delay;\n            entry->phase = state->phase;\n            /* The RNG may change the phase fields; read them after it returns. */\n            random = (u32)func_150ADA20();\n            state->phase = (u32)state->phase + state->phaseBase +\n                random % ((u32)state->phaseRange + 1);\n            entry->mark = 255;\n            owner[0x2E] = *(s8 *)(owner + 0x2E) + 1;\n            if (owner[0x25] == *(s8 *)(owner + 0x2E)) owner[0x2E] = 0;\n            owner[0x2C] = *(s8 *)(owner + 0x2C) + 1;\n            if (*(s8 *)(owner + 0x2D) == *(s8 *)(owner + 0x2E)) {\n                owner[0x2D] = *(s8 *)(owner + 0x2D) + 1;\n                if (owner[0x25] == *(s8 *)(owner + 0x2D)) owner[0x2D] = 0;\n                owner[0x2C] = *(s8 *)(owner + 0x2C) - 1;\n            }\n            position.x += stepX;\n            position.y += stepY;\n            position.z += stepZ;\n            value += valueStep;\n            remaining -= timeStep;\n            state->pending -= 1.0f;\n        } while (1.0f < state->pending);\n        state->position = position;\n        state->elapsed = remaining;\n    }\n    return 1;\n}\n",
+  "guard_rows": [
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x058",
+      "expected": "0x100000E3",
+      "replacement": "0x100000E2",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x070",
+      "expected": "0x100000DD",
+      "replacement": "0x100000DC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x0CC",
+      "expected": "0x100000C6",
+      "replacement": "0x100000C5",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x0F4",
+      "expected": "0x27B000D8",
+      "replacement": "0x27B000D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x14C",
+      "expected": "0x100000A6",
+      "replacement": "0x100000A5",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x160",
+      "expected": "0xC4220000",
+      "replacement": "0xC42E0000",
+      "expected_relocations": "R_MIPS_LO16:D_800A8D58",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8D58",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x17C",
+      "expected": "0x4600103C",
+      "replacement": "0x4600703C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x184",
+      "expected": "0x460A4301",
+      "replacement": "0x460A4081",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x18C",
+      "expected": "0x46062381",
+      "replacement": "0x46062301",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x190",
+      "expected": "0x46006005",
+      "replacement": "0x46001005",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x194",
+      "expected": "0x4600103C",
+      "replacement": "0x4600703C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x1A4",
+      "expected": "0x46007005",
+      "replacement": "0x46006005",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x1A8",
+      "expected": "0x4600103C",
+      "replacement": "0x4600703C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x1C0",
+      "expected": "0x460C6282",
+      "replacement": "0x46021282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x1C8",
+      "expected": "0x460E7182",
+      "replacement": "0x460C6182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x1F0",
+      "expected": "0xE7AE0108",
+      "replacement": "0xE7AC0110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x1F4",
+      "expected": "0xE7AC010C",
+      "replacement": "0xE7A2010C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x1FC",
+      "expected": "0x26420034",
+      "replacement": "0xE7A00090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x200",
+      "expected": "0xE7A000D4",
+      "replacement": "0x45000077",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x204",
+      "expected": "0x45020078",
+      "replacement": "0x27B500B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x208",
+      "expected": "0x24020001",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "true"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x20C",
+      "expected": "0x8C410000",
+      "replacement": "0xC7AA0090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x210",
+      "expected": "0x27B500B4",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_800BE9A4",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x214",
+      "expected": "0x241400FF",
+      "replacement": "0xC4240000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800BE9A4",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x218",
+      "expected": "0xAEA10000",
+      "replacement": "0x460AC003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x21C",
+      "expected": "0x8C590004",
+      "replacement": "0x26420034",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x220",
+      "expected": "0x24130018",
+      "replacement": "0x8C410000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x224",
+      "expected": "0xAEB90004",
+      "replacement": "0xC6480048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x228",
+      "expected": "0x8C410008",
+      "replacement": "0x241400FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x22C",
+      "expected": "0xAEA10008",
+      "replacement": "0xAEA10000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x230",
+      "expected": "0xC7A400D4",
+      "replacement": "0x8C590004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x234",
+      "expected": "0x3C010000",
+      "replacement": "0x46044580",
+      "expected_relocations": "R_MIPS_HI16:D_800BE9A4",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x238",
+      "expected": "0xC4280000",
+      "replacement": "0x24130018",
+      "expected_relocations": "R_MIPS_LO16:D_800BE9A4",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x23C",
+      "expected": "0x4604C003",
+      "replacement": "0xAEB90004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x240",
+      "expected": "0xC64A0048",
+      "replacement": "0x8C410008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x244",
+      "expected": "0xC6460024",
+      "replacement": "0xAEA10008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x248",
+      "expected": "0xC64E0020",
+      "replacement": "0xC6460024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x24C",
+      "expected": "0x46085580",
+      "replacement": "0xC64E0020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x254",
+      "expected": "0xC7A40108",
+      "replacement": "0xC7A40110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x258",
+      "expected": "0xAFA20090",
+      "replacement": "0xAFA20094",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x2D0",
+      "expected": "0xE7AC007C",
+      "replacement": "0xE7AC0080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x2D8",
+      "expected": "0xE7A20080",
+      "replacement": "0xE7A20084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x2F8",
+      "expected": "0xC7A20080",
+      "replacement": "0x010A6021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x2FC",
+      "expected": "0xC7AC007C",
+      "replacement": "0xC7A20084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x300",
+      "expected": "0x010A6021",
+      "replacement": "0xC7AC0080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x3BC",
+      "expected": "0x4503FFB4",
+      "replacement": "0x4501FFB3",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x3C0",
+      "expected": "0x8228002E",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A37C0",
+      "offset": "0x3C4",
+      "expected": "0x8FAD0090",
+      "replacement": "0x8FAD0094",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Fold duplicated conditional return into shared return; normalize proved ring-emitter register, stack and scheduling roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "raw_words": 266,
+  "slot_words": 265,
+  "frame": 288,
+  "semantic_domain": "Ordinary mapped aligned public memory, immutable epsilon, private disjoint stack, opaque o32 providers; native finite disjoint typed objects; no general C fault-prefix claim."
+}
