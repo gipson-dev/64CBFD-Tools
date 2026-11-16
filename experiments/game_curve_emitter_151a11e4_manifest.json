@@ -1,0 +1,1912 @@
+{
+  "name": "func_151A11E4",
+  "source": "conker/src/game/generated_1CC440.c",
+  "entry": 354030052,
+  "rom": 1894036,
+  "words": 350,
+  "frame": 272,
+  "shared_types": "typedef struct {\n    f32 x, y, z;\n} EffectPacketPosition1CC440;\n\ntypedef struct {\n    EffectPacketPosition1CC440 position;\n    f32 sourceValueA;\n    f32 phase;\n    f32 sourceValueB;\n    s16 parameters[4];\n} RecordEffectPacket1CC440;",
+  "replacement": "typedef struct {\n    f32 x, y, z;\n} EffectPacketPosition1CC440;\n\ntypedef struct {\n    EffectPacketPosition1CC440 position;\n    f32 sourceValueA;\n    f32 phase;\n    f32 sourceValueB;\n    s16 parameters[4];\n} RecordEffectPacket1CC440;\n\ntypedef struct {\n    u8 *descriptor;\n    u32 flags;\n    u8 private08[4];\n    s16 zero0C, lifetime;\n    s16 x, y, z, zero16, zero18;\n    u8 private1A[2];\n    u8 fractionX, fractionZ, fractionY, fractionScale;\n    s16 zero20, zero22, sizeY, sizeX, age;\n    u8 zero2A, private2B;\n    u8 red, green, blue, alpha;\n    u8 zero30, zero31, zero32, private33;\n    u16 curveFlags;\n    u8 private36[2];\n} EmissionPacket151A11E4;\n\nextern u8 D_80090D34[];\nextern u8 D_80090B60[];\n\n/* Emit randomized particles with a 17-short motion and intensity curve. */\nvoid func_151A11E4(struct260 *record) {\n    RecordEffectPacket1CC440 *state = (RecordEffectPacket1CC440 *)((u8 *)record + 0x28);\n    EmissionPacket151A11E4 packet;\n    s16 curve[17];\n    s32 firstAngle, secondAngle;\n    f32 componentX, componentY, componentZ, polarSine;\n    f32 targetX, targetZ, targetY;\n    f32 radius, planar;\n    f32 inverseHalf;\n    u32 random;\n    s16 size, peak;\n\n    u8 *created;\n\n    state->phase = state->phase + state->sourceValueB * D_800BE9A4;\n    if (state->phase > 1.0f) {\n        packet.red = 255;\n        packet.green = 255;\n        packet.blue = 255;\n        packet.zero30 = 0;\n        packet.zero31 = 0;\n        packet.zero32 = 0;\n        packet.fractionScale = 16;\n        packet.curveFlags = 0x120;\n        packet.flags = 0xC0001;\n        packet.zero0C = 0;\n        packet.descriptor = D_80090D34;\n        packet.zero16 = 0;\n        packet.zero20 = 0;\n        packet.zero18 = 0;\n        packet.zero22 = 0;\n        packet.zero2A = 0;\n        packet.alpha = 0;\n        packet.sizeX = 2000;\n        packet.sizeY = 2000;\n        do {\n            firstAngle = func_150ADA20() & 255;\n            secondAngle = func_150ADA20() & 255;\n            /* Capture the target before later providers can change the record. */\n            componentX = func_151423D8((u8)(firstAngle - 64));\n            componentY = func_151423D8((u8)firstAngle);\n            componentZ = func_151423D8((u8)(secondAngle - 64));\n            polarSine = func_151423D8((u8)secondAngle);\n            radius = func_150ADA68() * state->sourceValueA;\n            planar = radius * polarSine;\n            targetX = state->position.x + planar * componentX;\n            targetY = state->position.y - radius * componentZ;\n            targetZ = state->position.z + planar * componentY;\n\n            if (func_150ADA20() & 1) packet.curveFlags |= 4;\n            if (func_150ADA20() & 1) packet.curveFlags |= 8;\n            random = (u32)func_150ADA20();\n            packet.lifetime = random % (u32)(state->parameters[1] + 1) + state->parameters[0];\n            random = (u32)func_150ADA20();\n            size = random % (u32)(state->parameters[3] + 1) + state->parameters[2];\n            packet.age = D_80090B60[0x1D8] * (256 / packet.lifetime);\n            peak = packet.age;\n            curve[5] = peak >> 1;\n            curve[0] = 255 / (peak - (s16)(peak - (peak >> 2)));\n            curve[1] = peak;\n            curve[2] = peak - (peak >> 2);\n            curve[3] = size / (peak - curve[5]);\n            curve[4] = peak;\n            curve[6] = (peak >> 1);\n            curve[13] = (peak >> 2);\n            curve[14] = 255 / (s16)(peak >> 2);\n            curve[15] = (peak >> 1);\n            curve[16] = size / (s16)(peak >> 1);\n\n            packet.x = (s32)state->position.x;\n            packet.y = (s32)state->position.y;\n            packet.z = (s32)state->position.z;\n            packet.fractionX = (s32)(state->position.x * 256.0f);\n            packet.fractionY = (s32)(state->position.y * 256.0f);\n            packet.fractionZ = (s32)(state->position.z * 256.0f);\n            inverseHalf = 1.0f / (f32)(s16)(peak >> 1);\n            /* The basis components are dead; reuse them for velocity. */\n            componentX = (targetX - state->position.x) * inverseHalf;\n            componentY = (targetY - state->position.y) * inverseHalf;\n            componentZ = (targetZ - state->position.z) * inverseHalf;\n            curve[7] = (s32)componentX;\n            curve[8] = (s32)componentY;\n            curve[9] = (s32)componentZ;\n            curve[10] = (u8)(s32)(componentX * 256.0f);\n            curve[11] = (u8)(s32)(componentY * 256.0f);\n            curve[12] = (u8)(s32)(componentZ * 256.0f);\n            created = func_15167D84(&packet, 0, 34, -1,\n                                  *((u8 *)record + 12), *((u8 *)record + 1));\n            if (created != NULL) memcpy(created + 0x50, curve, 34);\n            state->phase = state->phase - 1.0f;\n        } while (state->phase > 1.0f);\n    }\n}\n\n",
+  "schedule": {
+    "raw_sha256": "9add47659e4f249bfd0a9f084b1ae2ebed574e1466102bcd3896cb1b72293988",
+    "refs": {
+      "68": [
+        [
+          "R_MIPS_HI16",
+          "D_800BE9A4"
+        ]
+      ],
+      "72": [
+        [
+          "R_MIPS_LO16",
+          "D_800BE9A4"
+        ]
+      ],
+      "100": [
+        [
+          "R_MIPS_HI16",
+          "D_80090D34"
+        ]
+      ],
+      "140": [
+        [
+          "R_MIPS_LO16",
+          "D_80090D34"
+        ]
+      ],
+      "172": [
+        [
+          "R_MIPS_HI16",
+          "D_80090B60"
+        ]
+      ],
+      "256": [
+        [
+          "R_MIPS_LO16",
+          "D_80090B60"
+        ]
+      ],
+      "268": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "276": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "296": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "308": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "328": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "340": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "348": [
+        [
+          "R_MIPS_26",
+          "func_150ADA68"
+        ]
+      ],
+      "420": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "448": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "476": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "524": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "1236": [
+        [
+          "R_MIPS_26",
+          "func_15167D84"
+        ]
+      ],
+      "1256": [
+        [
+          "R_MIPS_26",
+          "memcpy"
+        ]
+      ]
+    },
+    "order": [
+      {
+        "kind": "instruction",
+        "source": 0,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 4,
+        "operands": 1245184
+      },
+      {
+        "kind": "instruction",
+        "source": 8,
+        "operands": 8427520
+      },
+      {
+        "kind": "instruction",
+        "source": 12,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 16,
+        "operands": 1507328
+      },
+      {
+        "kind": "instruction",
+        "source": 20,
+        "operands": 1441792
+      },
+      {
+        "kind": "instruction",
+        "source": 24,
+        "operands": 1376256
+      },
+      {
+        "kind": "instruction",
+        "source": 28,
+        "operands": 1310720
+      },
+      {
+        "kind": "instruction",
+        "source": 32,
+        "operands": 1179648
+      },
+      {
+        "kind": "instruction",
+        "source": 36,
+        "operands": 1114112
+      },
+      {
+        "kind": "instruction",
+        "source": 40,
+        "operands": 1048576
+      },
+      {
+        "kind": "instruction",
+        "source": 44,
+        "operands": 1966080
+      },
+      {
+        "kind": "instruction",
+        "source": 48,
+        "operands": 1835008
+      },
+      {
+        "kind": "instruction",
+        "source": 52,
+        "operands": 1703936
+      },
+      {
+        "kind": "instruction",
+        "source": 56,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 60,
+        "operands": 1441792
+      },
+      {
+        "kind": "instruction",
+        "source": 64,
+        "operands": 1310720
+      },
+      {
+        "kind": "instruction",
+        "source": 68,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 72,
+        "operands": 2490368
+      },
+      {
+        "kind": "instruction",
+        "source": 76,
+        "operands": 40108032
+      },
+      {
+        "kind": "instruction",
+        "source": 80,
+        "operands": 40501248
+      },
+      {
+        "kind": "instruction",
+        "source": 84,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 88,
+        "operands": 401920
+      },
+      {
+        "kind": "instruction",
+        "source": 92,
+        "operands": 102400
+      },
+      {
+        "kind": "instruction",
+        "source": 96,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 100,
+        "operands": 655360
+      },
+      {
+        "kind": "instruction",
+        "source": 104,
+        "operands": 917504
+      },
+      {
+        "kind": "instruction",
+        "source": 108,
+        "operands": 983040
+      },
+      {
+        "kind": "instruction",
+        "source": 112,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 116,
+        "operands": 545792
+      },
+      {
+        "kind": "instruction",
+        "source": 120,
+        "operands": 1638400
+      },
+      {
+        "kind": "instruction",
+        "source": 124,
+        "operands": 524288
+      },
+      {
+        "kind": "instruction",
+        "source": 128,
+        "operands": 19464192
+      },
+      {
+        "kind": "instruction",
+        "source": 132,
+        "operands": 40894464
+      },
+      {
+        "kind": "instruction",
+        "source": 136,
+        "operands": 40108032
+      },
+      {
+        "kind": "instruction",
+        "source": 140,
+        "operands": 21626880
+      },
+      {
+        "kind": "instruction",
+        "source": 144,
+        "operands": 720896
+      },
+      {
+        "kind": "instruction",
+        "source": 148,
+        "operands": 299008
+      },
+      {
+        "kind": "instruction",
+        "source": 152,
+        "operands": 786432
+      },
+      {
+        "kind": "instruction",
+        "source": 156,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 160,
+        "operands": 40894464
+      },
+      {
+        "kind": "instruction",
+        "source": 164,
+        "operands": 0,
+        "target": 1332
+      },
+      {
+        "kind": "instruction",
+        "source": 168,
+        "operands": 1507328
+      },
+      {
+        "kind": "instruction",
+        "source": 172,
+        "operands": 1376256
+      },
+      {
+        "kind": "instruction",
+        "source": 176,
+        "operands": 122880
+      },
+      {
+        "kind": "instruction",
+        "source": 180,
+        "operands": 917504
+      },
+      {
+        "kind": "instruction",
+        "source": 184,
+        "operands": 983040
+      },
+      {
+        "kind": "instruction",
+        "source": 188,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 192,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 196,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 200,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 204,
+        "operands": 1638400
+      },
+      {
+        "kind": "instruction",
+        "source": 208,
+        "operands": 524288
+      },
+      {
+        "kind": "instruction",
+        "source": 212,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 216,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 220,
+        "operands": 655360
+      },
+      {
+        "kind": "instruction",
+        "source": 224,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 228,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 232,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 236,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 240,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 244,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 248,
+        "operands": 720896
+      },
+      {
+        "kind": "instruction",
+        "source": 252,
+        "operands": 786432
+      },
+      {
+        "kind": "instruction",
+        "source": 256,
+        "operands": 45416448
+      },
+      {
+        "kind": "instruction",
+        "source": 260,
+        "operands": 1441792
+      },
+      {
+        "kind": "instruction",
+        "source": 264,
+        "operands": 1310720
+      },
+      {
+        "kind": "instruction",
+        "source": 268,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 272,
+        "operands": 0
+      },
+      {
+        "kind": "gpr-copy",
+        "source_register": 2,
+        "destination": 17
+      },
+      {
+        "kind": "instruction",
+        "source": 280,
+        "operands": 36503552
+      },
+      {
+        "kind": "instruction",
+        "source": 276,
+        "operands": 0
+      },
+      {
+        "kind": "gpr-copy",
+        "source_register": 13,
+        "destination": 17
+      },
+      {
+        "kind": "gpr-copy",
+        "source_register": 2,
+        "destination": 18
+      },
+      {
+        "kind": "instruction",
+        "source": 284,
+        "operands": 35913728
+      },
+      {
+        "kind": "instruction",
+        "source": 288,
+        "operands": 38666240
+      },
+      {
+        "kind": "instruction",
+        "source": 292,
+        "operands": 9371648
+      },
+      {
+        "kind": "gpr-copy",
+        "source_register": 14,
+        "destination": 18
+      },
+      {
+        "kind": "instruction",
+        "source": 296,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 300,
+        "operands": 31465472
+      },
+      {
+        "kind": "instruction",
+        "source": 304,
+        "operands": 1280
+      },
+      {
+        "kind": "instruction",
+        "source": 308,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 312,
+        "operands": 35913728
+      },
+      {
+        "kind": "instruction",
+        "source": 316,
+        "operands": 38010880
+      },
+      {
+        "kind": "instruction",
+        "source": 320,
+        "operands": 9961472
+      },
+      {
+        "kind": "instruction",
+        "source": 324,
+        "operands": 1408
+      },
+      {
+        "kind": "instruction",
+        "source": 328,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 332,
+        "operands": 50339840
+      },
+      {
+        "kind": "instruction",
+        "source": 336,
+        "operands": 1536
+      },
+      {
+        "kind": "instruction",
+        "source": 340,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 344,
+        "operands": 38010880
+      },
+      {
+        "kind": "instruction",
+        "source": 348,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 352,
+        "operands": 1664
+      },
+      {
+        "kind": "instruction",
+        "source": 356,
+        "operands": 33947648
+      },
+      {
+        "kind": "instruction",
+        "source": 360,
+        "operands": 34209792
+      },
+      {
+        "kind": "instruction",
+        "source": 364,
+        "operands": 34603008
+      },
+      {
+        "kind": "instruction",
+        "source": 368,
+        "operands": 393344
+      },
+      {
+        "kind": "instruction",
+        "source": 372,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 376,
+        "operands": 1708800
+      },
+      {
+        "kind": "instruction",
+        "source": 380,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 384,
+        "operands": 1335808
+      },
+      {
+        "kind": "instruction",
+        "source": 388,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 392,
+        "operands": 1578112
+      },
+      {
+        "kind": "instruction",
+        "source": 396,
+        "operands": 546688
+      },
+      {
+        "kind": "instruction",
+        "source": 400,
+        "operands": 1467008
+      },
+      {
+        "kind": "instruction",
+        "source": 404,
+        "operands": 1212672
+      },
+      {
+        "kind": "instruction",
+        "source": 408,
+        "operands": 262144
+      },
+      {
+        "kind": "instruction",
+        "source": 412,
+        "operands": 33947648
+      },
+      {
+        "kind": "instruction",
+        "source": 416,
+        "operands": 668160
+      },
+      {
+        "kind": "instruction",
+        "source": 420,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 424,
+        "operands": 524288
+      },
+      {
+        "kind": "instruction",
+        "source": 428,
+        "operands": 5832704
+      },
+      {
+        "kind": "instruction",
+        "source": 432,
+        "operands": 52428800,
+        "target": 464
+      },
+      {
+        "kind": "instruction",
+        "source": 436,
+        "operands": 524288
+      },
+      {
+        "kind": "instruction",
+        "source": 440,
+        "operands": 17367040
+      },
+      {
+        "kind": "instruction",
+        "source": 444,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 448,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 452,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 456,
+        "operands": 4849664
+      },
+      {
+        "kind": "instruction",
+        "source": 460,
+        "operands": 20971520,
+        "target": 492
+      },
+      {
+        "kind": "instruction",
+        "source": 464,
+        "operands": 720896
+      },
+      {
+        "kind": "instruction",
+        "source": 468,
+        "operands": 23855104
+      },
+      {
+        "kind": "instruction",
+        "source": 472,
+        "operands": 786432
+      },
+      {
+        "kind": "instruction",
+        "source": 476,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 480,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 484,
+        "operands": 34406400
+      },
+      {
+        "kind": "instruction",
+        "source": 488,
+        "operands": 35127296
+      },
+      {
+        "kind": "instruction",
+        "source": 492,
+        "operands": 28180480
+      },
+      {
+        "kind": "instruction",
+        "source": 496,
+        "operands": 5111808
+      },
+      {
+        "kind": "instruction",
+        "source": 500,
+        "operands": 30720
+      },
+      {
+        "kind": "instruction",
+        "source": 504,
+        "operands": 33081344
+      },
+      {
+        "kind": "instruction",
+        "source": 508,
+        "operands": 29360128,
+        "target": 536
+      },
+      {
+        "kind": "instruction",
+        "source": 512,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 516,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 520,
+        "operands": 1638400
+      },
+      {
+        "kind": "instruction",
+        "source": 524,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 528,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 532,
+        "operands": 34078720
+      },
+      {
+        "kind": "instruction",
+        "source": 536,
+        "operands": 983040
+      },
+      {
+        "kind": "instruction",
+        "source": 540,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 544,
+        "operands": 17367040
+      },
+      {
+        "kind": "instruction",
+        "source": 548,
+        "operands": 4784128
+      },
+      {
+        "kind": "instruction",
+        "source": 552,
+        "operands": 20480
+      },
+      {
+        "kind": "instruction",
+        "source": 556,
+        "operands": 44957696
+      },
+      {
+        "kind": "instruction",
+        "source": 560,
+        "operands": 34275328
+      },
+      {
+        "kind": "instruction",
+        "source": 564,
+        "operands": 51314688
+      },
+      {
+        "kind": "instruction",
+        "source": 568,
+        "operands": 51200
+      },
+      {
+        "kind": "instruction",
+        "source": 572,
+        "operands": 21702656
+      },
+      {
+        "kind": "instruction",
+        "source": 576,
+        "operands": 18874368,
+        "target": 604
+      },
+      {
+        "kind": "instruction",
+        "source": 580,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 584,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 588,
+        "operands": 30998528
+      },
+      {
+        "kind": "instruction",
+        "source": 592,
+        "operands": 352256
+      },
+      {
+        "kind": "instruction",
+        "source": 596,
+        "operands": 813056
+      },
+      {
+        "kind": "instruction",
+        "source": 600,
+        "operands": 27273216
+      },
+      {
+        "kind": "instruction",
+        "source": 604,
+        "operands": 31457280,
+        "target": 632
+      },
+      {
+        "kind": "instruction",
+        "source": 608,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 612,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 616,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 620,
+        "operands": 31522816,
+        "target": 656
+      },
+      {
+        "kind": "instruction",
+        "source": 624,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 628,
+        "operands": 50397184,
+        "target": 656
+      },
+      {
+        "kind": "instruction",
+        "source": 632,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 636,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 640,
+        "operands": 16384
+      },
+      {
+        "kind": "instruction",
+        "source": 644,
+        "operands": 524288
+      },
+      {
+        "kind": "instruction",
+        "source": 648,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 740,
+        "operands": 458752
+      },
+      {
+        "kind": "instruction",
+        "source": 652,
+        "operands": 598016
+      },
+      {
+        "kind": "instruction",
+        "source": 656,
+        "operands": 19156992
+      },
+      {
+        "kind": "instruction",
+        "source": 660,
+        "operands": 677888
+      },
+      {
+        "kind": "instruction",
+        "source": 664,
+        "operands": 745472
+      },
+      {
+        "kind": "instruction",
+        "source": 668,
+        "operands": 19687424
+      },
+      {
+        "kind": "instruction",
+        "source": 672,
+        "operands": 42795008
+      },
+      {
+        "kind": "instruction",
+        "source": 676,
+        "operands": 595968
+      },
+      {
+        "kind": "instruction",
+        "source": 680,
+        "operands": 196608
+      },
+      {
+        "kind": "instruction",
+        "source": 684,
+        "operands": 983040
+      },
+      {
+        "kind": "instruction",
+        "source": 688,
+        "operands": 49152
+      },
+      {
+        "kind": "instruction",
+        "source": 776,
+        "operands": 655360
+      },
+      {
+        "kind": "instruction",
+        "source": 696,
+        "operands": 19886080
+      },
+      {
+        "kind": "instruction",
+        "source": 700,
+        "operands": 11403264
+      },
+      {
+        "kind": "instruction",
+        "source": 704,
+        "operands": 51200
+      },
+      {
+        "kind": "instruction",
+        "source": 692,
+        "operands": 278528
+      },
+      {
+        "kind": "instruction",
+        "source": 708,
+        "operands": 544768
+      },
+      {
+        "kind": "instruction",
+        "source": 716,
+        "operands": 42598400
+      },
+      {
+        "kind": "instruction",
+        "source": 720,
+        "operands": 22528
+      },
+      {
+        "kind": "instruction",
+        "source": 712,
+        "operands": 208896
+      },
+      {
+        "kind": "instruction",
+        "source": 724,
+        "operands": 417792
+      },
+      {
+        "kind": "instruction",
+        "source": 764,
+        "operands": 11272192
+      },
+      {
+        "kind": "instruction",
+        "source": 772,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 780,
+        "operands": 1638400
+      },
+      {
+        "kind": "instruction",
+        "source": 788,
+        "operands": 262144
+      },
+      {
+        "kind": "instruction",
+        "source": 792,
+        "operands": 720896
+      },
+      {
+        "kind": "instruction",
+        "source": 796,
+        "operands": 196608
+      },
+      {
+        "kind": "instruction",
+        "source": 804,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 808,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 728,
+        "operands": 27262976,
+        "target": 796
+      },
+      {
+        "kind": "instruction",
+        "source": 732,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 736,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 828,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 744,
+        "operands": 27328512,
+        "target": 820
+      },
+      {
+        "kind": "instruction",
+        "source": 748,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 752,
+        "operands": 42008576,
+        "target": 820
+      },
+      {
+        "kind": "instruction",
+        "source": 756,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 760,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 768,
+        "operands": 26624
+      },
+      {
+        "kind": "instruction",
+        "source": 800,
+        "operands": 851968
+      },
+      {
+        "kind": "instruction",
+        "source": 812,
+        "operands": 34603008
+      },
+      {
+        "kind": "instruction",
+        "source": 816,
+        "operands": 29360128,
+        "target": 844
+      },
+      {
+        "kind": "instruction",
+        "source": 820,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 824,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 868,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 832,
+        "operands": 29425664,
+        "target": 868
+      },
+      {
+        "kind": "instruction",
+        "source": 836,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 840,
+        "operands": 10551296,
+        "target": 868
+      },
+      {
+        "kind": "instruction",
+        "source": 844,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 848,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 852,
+        "operands": 33920
+      },
+      {
+        "kind": "instruction",
+        "source": 896,
+        "operands": 25178112
+      },
+      {
+        "kind": "instruction",
+        "source": 856,
+        "operands": 20971520,
+        "target": 888
+      },
+      {
+        "kind": "instruction",
+        "source": 860,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 864,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 912,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 872,
+        "operands": 21037056,
+        "target": 912
+      },
+      {
+        "kind": "instruction",
+        "source": 876,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 880,
+        "operands": 42008576,
+        "target": 912
+      },
+      {
+        "kind": "instruction",
+        "source": 884,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 888,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 892,
+        "operands": 626688
+      },
+      {
+        "kind": "instruction",
+        "source": 900,
+        "operands": 12582912,
+        "target": 928
+      },
+      {
+        "kind": "instruction",
+        "source": 904,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 908,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1040,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 916,
+        "operands": 12648448,
+        "target": 952
+      },
+      {
+        "kind": "instruction",
+        "source": 920,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 924,
+        "operands": 10551296,
+        "target": 952
+      },
+      {
+        "kind": "instruction",
+        "source": 928,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 932,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 936,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 940,
+        "operands": 33816576
+      },
+      {
+        "kind": "instruction",
+        "source": 944,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 948,
+        "operands": 10240
+      },
+      {
+        "kind": "instruction",
+        "source": 952,
+        "operands": 8576
+      },
+      {
+        "kind": "instruction",
+        "source": 956,
+        "operands": 46145536
+      },
+      {
+        "kind": "instruction",
+        "source": 964,
+        "operands": 929792
+      },
+      {
+        "kind": "instruction",
+        "source": 968,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 972,
+        "operands": 917504
+      },
+      {
+        "kind": "instruction",
+        "source": 976,
+        "operands": 34209792
+      },
+      {
+        "kind": "instruction",
+        "source": 980,
+        "operands": 20992
+      },
+      {
+        "kind": "instruction",
+        "source": 984,
+        "operands": 540672
+      },
+      {
+        "kind": "instruction",
+        "source": 988,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 992,
+        "operands": 524288
+      },
+      {
+        "kind": "instruction",
+        "source": 996,
+        "operands": 34603008
+      },
+      {
+        "kind": "instruction",
+        "source": 1000,
+        "operands": 1868928
+      },
+      {
+        "kind": "instruction",
+        "source": 1004,
+        "operands": 37120
+      },
+      {
+        "kind": "instruction",
+        "source": 1008,
+        "operands": 794624
+      },
+      {
+        "kind": "instruction",
+        "source": 1012,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1016,
+        "operands": 786432
+      },
+      {
+        "kind": "instruction",
+        "source": 1020,
+        "operands": 33947648
+      },
+      {
+        "kind": "instruction",
+        "source": 1024,
+        "operands": 1847936
+      },
+      {
+        "kind": "instruction",
+        "source": 1028,
+        "operands": 77824
+      },
+      {
+        "kind": "instruction",
+        "source": 1032,
+        "operands": 20992
+      },
+      {
+        "kind": "instruction",
+        "source": 1036,
+        "operands": 413696
+      },
+      {
+        "kind": "instruction",
+        "source": 960,
+        "operands": 393216
+      },
+      {
+        "kind": "instruction",
+        "source": 1044,
+        "operands": 606208
+      },
+      {
+        "kind": "instruction",
+        "source": 1048,
+        "operands": 20992
+      },
+      {
+        "kind": "instruction",
+        "source": 1052,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 1056,
+        "operands": 34603008
+      },
+      {
+        "kind": "instruction",
+        "source": 784,
+        "operands": 196608
+      },
+      {
+        "kind": "instruction",
+        "source": 1060,
+        "operands": 536576
+      },
+      {
+        "kind": "instruction",
+        "source": 1064,
+        "operands": 524288
+      },
+      {
+        "kind": "instruction",
+        "source": 1068,
+        "operands": 1868928
+      },
+      {
+        "kind": "instruction",
+        "source": 1072,
+        "operands": 37120
+      },
+      {
+        "kind": "fpr-copy",
+        "source_register": 0,
+        "destination": 12
+      },
+      {
+        "kind": "instruction",
+        "source": 1076,
+        "operands": 1646592
+      },
+      {
+        "kind": "instruction",
+        "source": 1080,
+        "operands": 262144
+      },
+      {
+        "kind": "instruction",
+        "source": 1084,
+        "operands": 1638400
+      },
+      {
+        "kind": "instruction",
+        "source": 1088,
+        "operands": 34603008
+      },
+      {
+        "kind": "instruction",
+        "source": 1092,
+        "operands": 34209792
+      },
+      {
+        "kind": "instruction",
+        "source": 1096,
+        "operands": 1111168
+      },
+      {
+        "kind": "instruction",
+        "source": 1100,
+        "operands": 34603008
+      },
+      {
+        "kind": "instruction",
+        "source": 1104,
+        "operands": 663936
+      },
+      {
+        "kind": "instruction",
+        "source": 1108,
+        "operands": 37760
+      },
+      {
+        "kind": "instruction",
+        "source": 1112,
+        "operands": 1066112
+      },
+      {
+        "kind": "instruction",
+        "source": 1116,
+        "operands": 12288
+      },
+      {
+        "kind": "instruction",
+        "source": 1120,
+        "operands": 28928
+      },
+      {
+        "kind": "instruction",
+        "source": 1124,
+        "operands": 823424
+      },
+      {
+        "kind": "instruction",
+        "source": 1128,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1132,
+        "operands": 1864192
+      },
+      {
+        "kind": "instruction",
+        "source": 1136,
+        "operands": 663552
+      },
+      {
+        "kind": "instruction",
+        "source": 1140,
+        "operands": 1836160
+      },
+      {
+        "kind": "instruction",
+        "source": 1144,
+        "operands": 655360
+      },
+      {
+        "kind": "instruction",
+        "source": 1148,
+        "operands": 640
+      },
+      {
+        "kind": "instruction",
+        "source": 1152,
+        "operands": 4480
+      },
+      {
+        "kind": "instruction",
+        "source": 1156,
+        "operands": 806912
+      },
+      {
+        "kind": "instruction",
+        "source": 1160,
+        "operands": 1839744
+      },
+      {
+        "kind": "instruction",
+        "source": 1164,
+        "operands": 17408
+      },
+      {
+        "kind": "instruction",
+        "source": 1168,
+        "operands": 1585152
+      },
+      {
+        "kind": "instruction",
+        "source": 1172,
+        "operands": 786432
+      },
+      {
+        "kind": "instruction",
+        "source": 1176,
+        "operands": 1015808
+      },
+      {
+        "kind": "instruction",
+        "source": 1180,
+        "operands": 37120
+      },
+      {
+        "kind": "instruction",
+        "source": 1184,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 1188,
+        "operands": 32374784
+      },
+      {
+        "kind": "instruction",
+        "source": 1192,
+        "operands": 20864
+      },
+      {
+        "kind": "instruction",
+        "source": 1196,
+        "operands": 532480
+      },
+      {
+        "kind": "instruction",
+        "source": 1200,
+        "operands": 917504
+      },
+      {
+        "kind": "instruction",
+        "source": 1204,
+        "operands": 798720
+      },
+      {
+        "kind": "instruction",
+        "source": 1208,
+        "operands": 17432576
+      },
+      {
+        "kind": "instruction",
+        "source": 1212,
+        "operands": 655360
+      },
+      {
+        "kind": "instruction",
+        "source": 1216,
+        "operands": 26017792
+      },
+      {
+        "kind": "instruction",
+        "source": 1220,
+        "operands": 851968
+      },
+      {
+        "kind": "instruction",
+        "source": 1224,
+        "operands": 41418752
+      },
+      {
+        "kind": "instruction",
+        "source": 1228,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 1232,
+        "operands": 40435712
+      },
+      {
+        "kind": "instruction",
+        "source": 1236,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1240,
+        "operands": 589824
+      },
+      {
+        "kind": "instruction",
+        "source": 1244,
+        "operands": 4194304,
+        "target": 1284
+      },
+      {
+        "kind": "instruction",
+        "source": 1248,
+        "operands": 4456448
+      },
+      {
+        "kind": "instruction",
+        "source": 1252,
+        "operands": 48244736
+      },
+      {
+        "kind": "instruction",
+        "source": 1256,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1260,
+        "operands": 393216
+      },
+      {
+        "kind": "instruction",
+        "source": 1264,
+        "operands": 65536
+      },
+      {
+        "kind": "instruction",
+        "source": 1268,
+        "operands": 98304
+      },
+      {
+        "kind": "instruction",
+        "source": 1272,
+        "operands": 34078720
+      },
+      {
+        "kind": "literal-copy",
+        "producer": 1284
+      },
+      {
+        "kind": "instruction",
+        "source": 1276,
+        "operands": 73728
+      },
+      {
+        "kind": "instruction",
+        "source": 1280,
+        "operands": 1066112
+      },
+      {
+        "kind": "instruction",
+        "source": 1284,
+        "operands": 34734080
+      },
+      {
+        "kind": "instruction",
+        "source": 1288,
+        "operands": 34209792
+      },
+      {
+        "kind": "instruction",
+        "source": 1292,
+        "operands": 663552
+      },
+      {
+        "kind": "instruction",
+        "source": 1296,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1300,
+        "operands": 0,
+        "target": 268
+      },
+      {
+        "kind": "instruction",
+        "source": 1304,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1308,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1312,
+        "operands": 1310720
+      },
+      {
+        "kind": "instruction",
+        "source": 1316,
+        "operands": 1441792
+      },
+      {
+        "kind": "instruction",
+        "source": 1320,
+        "operands": 1572864
+      },
+      {
+        "kind": "instruction",
+        "source": 1324,
+        "operands": 1703936
+      },
+      {
+        "kind": "instruction",
+        "source": 1328,
+        "operands": 1835008
+      },
+      {
+        "kind": "instruction",
+        "source": 1332,
+        "operands": 1966080
+      },
+      {
+        "kind": "instruction",
+        "source": 1336,
+        "operands": 1048576
+      },
+      {
+        "kind": "instruction",
+        "source": 1340,
+        "operands": 1114112
+      },
+      {
+        "kind": "instruction",
+        "source": 1344,
+        "operands": 1179648
+      },
+      {
+        "kind": "instruction",
+        "source": 1348,
+        "operands": 1245184
+      },
+      {
+        "kind": "instruction",
+        "source": 1352,
+        "operands": 1310720
+      },
+      {
+        "kind": "instruction",
+        "source": 1356,
+        "operands": 1376256
+      },
+      {
+        "kind": "instruction",
+        "source": 1360,
+        "operands": 1441792
+      },
+      {
+        "kind": "instruction",
+        "source": 1364,
+        "operands": 1507328
+      },
+      {
+        "kind": "instruction",
+        "source": 1368,
+        "operands": 0
+      },
+      {
+        "kind": "instruction",
+        "source": 1372,
+        "operands": 0
+      }
+    ]
+  },
+  "symbols": {
+    "func_150ADA20": 353032736,
+    "func_150ADA68": 353032808,
+    "func_151423D8": 353641432,
+    "func_15167D84": 353795460,
+    "memcpy": 268578496,
+    "D_800BE9A4": 2148264356,
+    "D_80090B60": 2148076384,
+    "D_80090D34": 2148076852
+  }
+}
