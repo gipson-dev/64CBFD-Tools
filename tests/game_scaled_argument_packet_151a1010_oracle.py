@@ -41,9 +41,9 @@ def reference(c):
  a,b,d,e=n16(70,c.rate),n16(30,c.rate),n16(1500,c.scale),n16(100,c.scale)
  return (bits(c.x),bits(c.y),bits(c.value),product(250,c.scale),bits(1.0),a,b,d,e,18,bits(1.0),n32(90,c.rate),n32(20,c.rate),d,e,old.u32(clamped),16,bits(1.0),a,b,d,e,n32(15,c.scale),n32(10,c.scale),18,old.u32(adjusted+16),c.variant&255,old.u32(c.flags))
 def main():
- record=json.loads((o/'production-baseline/fingerprints.json').read_text())
+ record=json.loads((m.FROZEN/'fingerprints.json').read_text())
  def immutable():
-  for n,h in record['inputs'].items():assert hashlib.sha256((r/n).read_bytes()).hexdigest()==h,n
+  m.check_inputs()
  immutable();programs=m.programs()
  elf=(r/'conker/build/conker.us.elf').read_bytes();at=elf_slot_offset(elf,CALLEE,24);assert list(struct.unpack_from('>6I',elf,at))==original(CALLEE,6)
  spans=(-32768,-32767,-1,0,1,15,16,31,32,33,63,64,32735,32736,32767,0x12340020,0xFFFF8020)
@@ -57,6 +57,6 @@ def main():
    q=Machine(words,c).run();assert q.calls_seen==[expected],(i,label,[(n,hex(a),hex(b))for n,(a,b)in enumerate(zip(q.calls_seen[0],expected))if a!=b])
    assert [q.r[n]for n in(*range(16,24),28,29,30,31)]==[q.before[n]for n in(*range(16,24),28,29,30,31)] and q.f[20:]==q.before_f[20:]
    seen[label].update(q.visits)
- immutable();report=dict(private_only=True,c_match_credit=0,cases_per_stream=len(cases),streams=3,all28_outgoing_arguments=True,real_retail_callee_words=6,callee_production_exact=True,all256_variant_bytes=True,signed16_wrap_and_clamp_boundaries=True,full32_vs_narrow16_float_outputs=True,visited_target_words={label:len([pc for pc in values if ENTRY<=pc<ENTRY+4*len(programs[label])])for label,values in seen.items()},return_type_void_is_still_hypothesis=True,ordered_FP_checked_separately=True,native_checked_separately=True,production_inputs_unchanged=len(record['inputs']))
+ immutable();report=dict(private_only=True,c_match_credit=0,cases_per_stream=len(cases),streams=3,all28_outgoing_arguments=True,real_retail_callee_words=6,callee_production_exact=True,all256_variant_bytes=True,signed16_wrap_and_clamp_boundaries=True,full32_vs_narrow16_float_outputs=True,visited_target_words={label:len([pc for pc in values if ENTRY<=pc<ENTRY+4*len(programs[label])])for label,values in seen.items()},return_type_void_is_still_hypothesis=True,ordered_FP_checked_separately=True,native_checked_separately=True,production_state_matches_audited_inputs=len(record['inputs']))
  (o/'guest-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()

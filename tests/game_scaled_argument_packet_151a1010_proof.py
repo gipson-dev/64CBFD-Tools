@@ -108,12 +108,12 @@ def prove(raw,retail):
  return dict(paths_by_provider=results,reachable_words=coverage,all28_call_arguments=True,ordered_FP_and_FCSR=True,original_caller_homes_preserved=True,saved_ABI_and_return_custody=True,raw_frame=(-raw[0])&65535,retail_frame=(-retail[0])&65535,private_frame_identity=False,c_match_credit=0)
 
 def main():
- record=json.loads((p/'production-baseline/fingerprints.json').read_text())
+ record=json.loads((m.FROZEN/'fingerprints.json').read_text())
  def immutable():
-  for name,h in record['inputs'].items():assert hashlib.sha256((r/name).read_bytes()).hexdigest()==h,name
- immutable();raw,refs=payload(p/'inline-updateformal.o','func_151A1010');words=bound_blob(raw,refs,{'D_800A8D28':CONST,'func_151A11CC':CALLEE});image=(r/'conker/conker.us.bin').read_bytes();retail=list(struct.unpack_from('>111I',image,0x1CE4C0));assert list(struct.unpack_from('>6I',image,0x1CE67C))==STUB
+  m.check_inputs()
+ immutable();raw,refs=payload(p/'qualified.o','func_151A1010');words=bound_blob(raw,refs,{'D_800A8D28':CONST,'func_151A11CC':CALLEE});image=(r/'conker/conker.us.bin').read_bytes();retail=list(struct.unpack_from('>111I',image,0x1CE4C0));assert list(struct.unpack_from('>6I',image,0x1CE67C))==STUB
  report=prove(words,retail);controls=[]
- # Independent saved-register rename is accepted without a schedule template.
+ # Independent caller-register rename is accepted without a schedule template.
  alternative=words[:]
  for i,w in enumerate(alternative):
   op,fmt,fn=w>>26,w>>21&31,w&63
@@ -125,7 +125,7 @@ def main():
   else:assert op in(9,35,36,43);shifts=(21,16)
   for shift in shifts:
    reg=w>>shift&31
-   if reg in(16,17):w=(w&~(31<<shift))|((33-reg)<<shift)
+   if reg in(8,9):w=(w&~(31<<shift))|((17-reg)<<shift)
   alternative[i]=w
  assert alternative!=words and prove(alternative,retail)==report
  for label,index,change in (
@@ -141,5 +141,5 @@ def main():
   except AssertionError as error:
    reason=str(error);assert not any(v in reason for v in('unsupported','unbounded proof','escaped code')),('invalid control',label,reason);controls.append(dict(name=label,rejected=reason[:200]))
   else:raise AssertionError(('ineffective control',label))
- report['independent_saved_register_rename_positive']=True;report['effective_corruptions']=controls;report['raw_sha256']=hashlib.sha256(raw).hexdigest();report['production_inputs_unchanged']=len(record['inputs']);immutable();(p/'whole-proof-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
+ report['independent_register_allocation_positive']=True;report['effective_corruptions']=controls;report['raw_sha256']=hashlib.sha256(raw).hexdigest();report['production_state_matches_audited_inputs']=len(record['inputs']);immutable();(p/'whole-proof-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()

@@ -8,9 +8,9 @@ from tools.tests import game_scaled_argument_packet_151a1010_oracle as g
 p,r=m.OUT,m.ROOT
 
 def main():
- record=json.loads((p/'production-baseline/fingerprints.json').read_text())
+ record=json.loads((m.FROZEN/'fingerprints.json').read_text())
  def immutable():
-  for name,h in record['inputs'].items():assert hashlib.sha256((r/name).read_bytes()).hexdigest()==h,name
+  m.check_inputs()
  immutable();spans=(-32768,-32767,-1,0,1,15,16,31,32,33,63,64,32735,32736,32767);factors=((0.0,-0.0),(1.0,1.0),(-1.0,2.0),(0.125,0.75),(22.0,819.5),(100.0,512.25),(5000.0,2048.5),(-5000.0,-2048.5))
  cases=[g.Case(span=a,scale=b,rate=c,variant=v,flags=g.old.u32(0x87654321+i*0x10203))for i,(a,(b,c),v)in enumerate(itertools.product(spans,factors,(0,255)))]
  cases += [g.Case(span=spans[i%len(spans)],scale=factors[i%len(factors)][0],rate=factors[i%len(factors)][1],variant=i,flags=g.old.u32(i*0x1020304))for i in range(256)]
@@ -49,20 +49,20 @@ def main():
   path=p/(label+'.c');path.write_text(prefix+body+harness);exe=p/label
   done=subprocess.run([*flags,*options,'-o',str(exe),str(path)],capture_output=True,text=True);assert done.returncode==0 and not done.stderr,(label,done.stderr)
   return subprocess.run([str(exe)],capture_output=True,text=True,env=dict(os.environ,UBSAN_OPTIONS='halt_on_error=1:print_stacktrace=1'))
- bodies={'original-frame':m.PIN['original_frame_source'],'ordered-FP':m.PIN['ordered_source']}
+ bodies={'fitted':m.PIN['fitted_source']}
  for label,body in bodies.items():
   for opt in('-O0','-O2','-O3'):
    for alias in('-fstrict-aliasing','-fno-strict-aliasing'):
     done=run('native-'+label+opt+alias,body,[opt,alias]);assert done.returncode==0 and not done.stdout and not done.stderr,(label,opt,alias,done.returncode,done.stderr);profiles.append(dict(source=label,options=[opt,alias],cases=len(cases)+65536))
- body=bodies['ordered-FP'];controls={
+ body=bodies['fitted'];controls={
  'direct-float-to-short':body.replace('(s16)(s32)','(s16)'),
- 'clamped-final-span':body.replace('(s32)span + 16','(s32)clampedSpan + 16'),
+ 'clamped-final-span':body.replace('    finalSpan = (s32)span + 16;\n    if (clampedSpan <= 0) clampedSpan = 1;','    if (clampedSpan <= 0) clampedSpan = 1;\n    finalSpan = (s32)clampedSpan + 16;'),
  'narrow-full32-output':body.replace('(s32)(90.0f * rate)','(s16)(s32)(90.0f * rate)'),
  'signed-variant':body.replace('variant, flags','(s8)variant, flags'),
  }
  negatives=[]
  for label,changed in controls.items():
   assert changed!=body;done=run('native-negative-'+label,changed,['-O2','-fstrict-aliasing']);assert done.returncode!=0,('ineffective negative',label);negatives.append(dict(name=label,exit=done.returncode))
- immutable();report=dict(private_only=True,c_match_credit=0,native32=True,guest_derived_vectors=len(cases),exhaustive_short_inputs=65536,cases_per_profile=len(cases)+65536,profiles=profiles,UBSan_and_float_cast_traps=True,effective_controls=negatives,domain='finite values and products inside s32 truncation range; integer narrowing uses target two-complement semantics',production_inputs_unchanged=len(record['inputs']))
+ immutable();report=dict(private_only=True,c_match_credit=0,native32=True,guest_derived_vectors=len(cases),exhaustive_short_inputs=65536,cases_per_profile=len(cases)+65536,profiles=profiles,UBSan_and_float_cast_traps=True,effective_controls=negatives,domain='finite values and products inside s32 truncation range; integer narrowing uses target two-complement semantics',production_state_matches_audited_inputs=len(record['inputs']))
  (p/'native-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
 if __name__=='__main__':main()
