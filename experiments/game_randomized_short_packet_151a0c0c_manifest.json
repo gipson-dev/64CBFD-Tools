@@ -1,0 +1,964 @@
+{
+  "raw_sha256": "06b4d5ef32108ce47cd693d1abd1a705f4795c08e242510f2264371cc5bbdcba",
+  "raw_refs": {
+    "24": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "88": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "112": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D14"
+      ]
+    ],
+    "132": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D14"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D18"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D18"
+      ]
+    ],
+    "220": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_HI16",
+        "D_8008F8D0"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_LO16",
+        "D_8008F8D0"
+      ]
+    ],
+    "472": [
+      [
+        "R_MIPS_HI16",
+        "D_800918A0"
+      ]
+    ],
+    "476": [
+      [
+        "R_MIPS_LO16",
+        "D_800918A0"
+      ]
+    ],
+    "460": [
+      [
+        "R_MIPS_HI16",
+        "D_8009187C"
+      ]
+    ],
+    "488": [
+      [
+        "R_MIPS_LO16",
+        "D_8009187C"
+      ]
+    ],
+    "532": [
+      [
+        "R_MIPS_26",
+        "func_15167D84"
+      ]
+    ]
+  },
+  "normal_sha256": "9326b8d321ef0152c3b78a285f0454a59a49d0db28c4b851d607105d105c44f3",
+  "normal_refs": {
+    "24": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "88": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "112": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D14"
+      ]
+    ],
+    "132": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D14"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D18"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D18"
+      ]
+    ],
+    "220": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_HI16",
+        "D_8008F8D0"
+      ]
+    ],
+    "332": [
+      [
+        "R_MIPS_LO16",
+        "D_8008F8D0"
+      ]
+    ],
+    "476": [
+      [
+        "R_MIPS_HI16",
+        "D_800918A0"
+      ]
+    ],
+    "480": [
+      [
+        "R_MIPS_LO16",
+        "D_800918A0"
+      ]
+    ],
+    "464": [
+      [
+        "R_MIPS_HI16",
+        "D_8009187C"
+      ]
+    ],
+    "492": [
+      [
+        "R_MIPS_LO16",
+        "D_8009187C"
+      ]
+    ],
+    "536": [
+      [
+        "R_MIPS_26",
+        "func_15167D84"
+      ]
+    ]
+  },
+  "order": [
+    {
+      "kind": "instruction",
+      "source": 0,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 4,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 8,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 12,
+      "operands": 327680
+    },
+    {
+      "kind": "instruction",
+      "source": 16,
+      "operands": 393216
+    },
+    {
+      "kind": "instruction",
+      "source": 20,
+      "operands": 458752
+    },
+    {
+      "kind": "instruction",
+      "source": 24,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 28,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 32,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 36,
+      "operands": 4259840
+    },
+    {
+      "kind": "instruction",
+      "source": 40,
+      "operands": 6144
+    },
+    {
+      "kind": "instruction",
+      "source": 44,
+      "operands": 7208960
+    },
+    {
+      "kind": "instruction",
+      "source": 48,
+      "operands": 917504
+    },
+    {
+      "kind": "instruction",
+      "source": 52,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 56,
+      "operands": 29622272
+    },
+    {
+      "kind": "instruction",
+      "source": 60,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 64,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 68,
+      "operands": 8650752
+    },
+    {
+      "kind": "instruction",
+      "source": 72,
+      "operands": 9961472
+    },
+    {
+      "kind": "instruction",
+      "source": 76,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 80,
+      "operands": 50339840
+    },
+    {
+      "kind": "instruction",
+      "source": 84,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 88,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 92,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 96,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 100,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 104,
+      "operands": 8650752
+    },
+    {
+      "kind": "instruction",
+      "source": 108,
+      "operands": 10027008
+    },
+    {
+      "kind": "instruction",
+      "source": 112,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 116,
+      "operands": 52436992
+    },
+    {
+      "kind": "instruction",
+      "source": 120,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 124,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 128,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 132,
+      "operands": 2097152
+    },
+    {
+      "kind": "instruction",
+      "source": 136,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 140,
+      "operands": 2097152
+    },
+    {
+      "kind": "instruction",
+      "source": 144,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 148,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 152,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 156,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 160,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 164,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 168,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 172,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 176,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 180,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 184,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 188,
+      "operands": 589824
+    },
+    {
+      "kind": "instruction",
+      "source": 192,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 196,
+      "operands": 589824
+    },
+    {
+      "kind": "instruction",
+      "source": 200,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 204,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 208,
+      "operands": 720896
+    },
+    {
+      "kind": "instruction",
+      "source": 212,
+      "operands": 851968
+    },
+    {
+      "kind": "instruction",
+      "source": 216,
+      "operands": 720896
+    },
+    {
+      "kind": "instruction",
+      "source": 220,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 224,
+      "operands": 851968
+    },
+    {
+      "kind": "instruction",
+      "source": 228,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 232,
+      "operands": 4259840
+    },
+    {
+      "kind": "instruction",
+      "source": 236,
+      "operands": 28672
+    },
+    {
+      "kind": "instruction",
+      "source": 240,
+      "operands": 30343168
+    },
+    {
+      "kind": "instruction",
+      "source": 244,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 248,
+      "operands": 983040
+    },
+    {
+      "kind": "instruction",
+      "source": 252,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 256,
+      "operands": 4259840
+    },
+    {
+      "kind": "instruction",
+      "source": 260,
+      "operands": 49152
+    },
+    {
+      "kind": "instruction",
+      "source": 264,
+      "operands": 51970048
+    },
+    {
+      "kind": "instruction",
+      "source": 268,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 272,
+      "operands": 1638400
+    },
+    {
+      "kind": "instruction",
+      "source": 276,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 280,
+      "operands": 4259840
+    },
+    {
+      "kind": "instruction",
+      "source": 284,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 288,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 292,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 296,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 300,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 304,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 308,
+      "operands": 393216
+    },
+    {
+      "kind": "instruction",
+      "source": 312,
+      "operands": 720896
+    },
+    {
+      "kind": "instruction",
+      "source": 316,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 320,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 328,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 336,
+      "operands": 8790016
+    },
+    {
+      "kind": "instruction",
+      "source": 344,
+      "operands": 8650752
+    },
+    {
+      "kind": "instruction",
+      "source": 360,
+      "operands": 10240
+    },
+    {
+      "kind": "instruction",
+      "source": 340,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 364,
+      "operands": 11010048
+    },
+    {
+      "kind": "instruction",
+      "source": 348,
+      "operands": 851968
+    },
+    {
+      "kind": "instruction",
+      "source": 352,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 356,
+      "operands": 983040
+    },
+    {
+      "kind": "split-result-copy",
+      "source": 364,
+      "producer": 344,
+      "destination": 5
+    },
+    {
+      "kind": "instruction",
+      "source": 324,
+      "operands": 524288
+    },
+    {
+      "kind": "instruction",
+      "source": 368,
+      "operands": 1638400
+    },
+    {
+      "kind": "instruction",
+      "source": 372,
+      "operands": 589824
+    },
+    {
+      "kind": "instruction",
+      "source": 376,
+      "operands": 327680
+    },
+    {
+      "kind": "instruction",
+      "source": 380,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 384,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 388,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 332,
+      "operands": 524288
+    },
+    {
+      "kind": "instruction",
+      "source": 392,
+      "operands": 589824
+    },
+    {
+      "kind": "instruction",
+      "source": 396,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 400,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 404,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 408,
+      "operands": 327680
+    },
+    {
+      "kind": "instruction",
+      "source": 412,
+      "operands": 720896
+    },
+    {
+      "kind": "instruction",
+      "source": 424,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 416,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 420,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 428,
+      "operands": 851968
+    },
+    {
+      "kind": "instruction",
+      "source": 432,
+      "operands": 983040
+    },
+    {
+      "kind": "instruction",
+      "source": 448,
+      "operands": 1638400
+    },
+    {
+      "kind": "instruction",
+      "source": 436,
+      "operands": 1638400
+    },
+    {
+      "kind": "instruction",
+      "source": 444,
+      "operands": 12582912,
+      "target": 476
+    },
+    {
+      "kind": "instruction",
+      "source": 440,
+      "operands": 1638400
+    },
+    {
+      "kind": "instruction",
+      "source": 452,
+      "operands": 65536
+    },
+    {
+      "kind": "instruction",
+      "source": 456,
+      "operands": 12648448,
+      "target": 492
+    },
+    {
+      "kind": "instruction",
+      "source": 460,
+      "operands": 720896
+    },
+    {
+      "kind": "instruction",
+      "source": 464,
+      "operands": 0,
+      "target": 504
+    },
+    {
+      "kind": "instruction",
+      "source": 468,
+      "operands": 851968
+    },
+    {
+      "kind": "instruction",
+      "source": 472,
+      "operands": 655360
+    },
+    {
+      "kind": "instruction",
+      "source": 476,
+      "operands": 21626880
+    },
+    {
+      "kind": "instruction",
+      "source": 480,
+      "operands": 0,
+      "target": 500
+    },
+    {
+      "kind": "instruction",
+      "source": 484,
+      "operands": 655360
+    },
+    {
+      "kind": "instruction",
+      "source": 488,
+      "operands": 23789568
+    },
+    {
+      "kind": "instruction",
+      "source": 492,
+      "operands": 720896
+    },
+    {
+      "kind": "instruction",
+      "source": 496,
+      "operands": 851968
+    },
+    {
+      "kind": "instruction",
+      "source": 500,
+      "operands": 786432
+    },
+    {
+      "kind": "instruction",
+      "source": 504,
+      "operands": 917504
+    },
+    {
+      "kind": "instruction",
+      "source": 508,
+      "operands": 786432
+    },
+    {
+      "kind": "instruction",
+      "source": 512,
+      "operands": 917504
+    },
+    {
+      "kind": "instruction",
+      "source": 516,
+      "operands": 262144
+    },
+    {
+      "kind": "instruction",
+      "source": 524,
+      "operands": 10240
+    },
+    {
+      "kind": "instruction",
+      "source": 520,
+      "operands": 12288
+    },
+    {
+      "kind": "instruction",
+      "source": 528,
+      "operands": 458752
+    },
+    {
+      "kind": "instruction",
+      "source": 532,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 536,
+      "operands": 851968
+    },
+    {
+      "kind": "instruction",
+      "source": 540,
+      "operands": 131072
+    },
+    {
+      "kind": "instruction",
+      "source": 544,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 548,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 552,
+      "operands": 0
+    },
+    {
+      "kind": "instruction",
+      "source": 556,
+      "operands": 0
+    }
+  ],
+  "source": "/* Submit one randomized short-form particle through the shared callback ABI. */\ns32 func_151A0C0C(s32 first, s32 ordinal, f32 x, f32 y, f32 z,\n    f32 originX, f32 originY, f32 originZ, s32 heading, u8 startAngle,\n    f32 radius, s32 style, f32 intensity, void *user, u8 mode) {\n    RandomShortPacket151A0C0C packet;\n    s16 angle;\n    f32 firstPrimary, firstQuarter, headingPrimary, headingQuarter;\n    f32 speed;\n    s32 size;\n    angle = (u32)func_150ADA20() % 15U - 63;\n    firstPrimary = func_151423D8((u8)angle);\n    firstQuarter = func_151423D8((u8)(angle - 64));\n    headingPrimary = func_151423D8((u8)heading);\n    headingQuarter = func_151423D8((u8)(heading - 64));\n    speed = func_150ADA68() * D_800A8D14 + D_800A8D18;\n    packet.directionX = (s16)((speed * firstPrimary) * headingQuarter);\n    packet.directionY = (s16)((-speed) * firstQuarter);\n    packet.directionZ = (s16)((speed * firstPrimary) * headingPrimary);\n    packet.field22 = (u32)func_150ADA20() % 41U - 130;\n    packet.field2A = (u32)func_150ADA20() % 3U + 6;\n    size = (u32)func_150ADA20() % 451U + 250;\n    packet.field24 = size;\n    packet.zero30 = 0;\n    packet.zero31 = 0;\n    packet.zero32 = 0;\n    packet.alpha = 255;\n    packet.fixed1F = -1;\n    packet.fixed34 = 0;\n    packet.zero0C = 0;\n    packet.fixed0E = 0;\n    packet.field26 = size;\n    packet.positionX = (s16)x;\n    packet.positionY = (s16)y;\n    packet.positionZ = (s16)z;\n    packet.color0 = D_8008F8D0[style];\n    packet.color1 = packet.color0;\n    packet.color2 = packet.color0;\n    /* All three fractional bytes intentionally come from x in retail. */\n    packet.scaledX = (s8)(s32)(x * 256.0f);\n    packet.scaledY = packet.scaledX;\n    packet.scaledZ = packet.scaledX;\n    switch (style) {\n    case 0: packet.template = D_800918A0; break;\n    case 1: packet.template = D_8009187C; break;\n    }\n    packet.magnitude = 200;\n    func_15167D84(&packet, 0, 0, -1, mode, 1);\n    return 1;\n}\n",
+  "declarations": "typedef struct {\n    const void *template;\n    u8 private04[8];\n    s16 zero0C;\n    s16 fixed0E;\n    s16 positionX;\n    s16 positionY;\n    s16 positionZ;\n    s16 directionX;\n    s16 directionZ;\n    u8 private1A[2];\n    s8 scaledX;\n    s8 scaledY;\n    s8 scaledZ;\n    s8 fixed1F;\n    s16 directionY;\n    s16 field22;\n    s16 field24;\n    s16 field26;\n    s16 magnitude;\n    s8 field2A;\n    u8 private2B;\n    u8 color0;\n    u8 color1;\n    u8 color2;\n    u8 alpha;\n    s8 zero30;\n    s8 zero31;\n    s8 zero32;\n    u8 private33;\n    u16 fixed34;\n    u8 privateTail36[2];\n} RandomShortPacket151A0C0C;\nextern u8 D_800918A0[], D_8009187C[], D_8008F8D0[];\nvoid func_15167D84(void *, s32, s32, s8, u8, s32);\nextern const f32 D_800A8D14, D_800A8D18;\n",
+  "prior_source": "/* Submit one randomized short-form particle through the shared callback ABI. */\ns32 func_151A0C0C(s32 first, s32 ordinal, f32 x, f32 y, f32 z,\n    f32 originX, f32 originY, f32 originZ, s32 heading, u8 startAngle,\n    f32 radius, s32 style, f32 intensity, void *user, u8 mode) {\n    RandomShortPacket151A0C0C packet;\n    f32 speed, product;\n    f32 firstPrimary, firstQuarter, headingPrimary, headingQuarter;\n    s16 angle;\n    angle = (u32)func_150ADA20() % 15U - 63;\n    firstPrimary = func_151423D8((u8)angle);\n    firstQuarter = func_151423D8((u8)(angle - 64));\n    headingPrimary = func_151423D8((u8)heading);\n    headingQuarter = func_151423D8((u8)(heading - 64));\n    speed = func_150ADA68() * 503.0f + 801.0f;\n    product = speed * firstPrimary;\n    packet.directionX = (s16)(product * headingQuarter);\n    packet.directionY = (s16)((-speed) * firstQuarter);\n    packet.directionZ = (s16)(product * headingPrimary);\n    packet.field22 = (u32)func_150ADA20() % 41U - 130;\n    packet.field2A = (u32)func_150ADA20() % 3U + 6;\n    packet.field24 = (u32)func_150ADA20() % 451U + 250;\n    packet.field26 = packet.field24;\n    packet.zero30 = packet.zero31 = packet.zero32 = 0;\n    packet.alpha = 255;\n    packet.fixed1F = -1;\n    packet.fixed34 = 0;\n    packet.zero0C = packet.fixed0E = 0;\n    packet.positionX = (s16)x;\n    packet.positionY = (s16)y;\n    packet.positionZ = (s16)z;\n    packet.color0 = packet.color1 = packet.color2 = D_8008F8D0[style];\n    /* All three fractional bytes intentionally come from x in retail. */\n    packet.scaledX = packet.scaledY = packet.scaledZ = (s8)(s32)(x * 256.0f);\n    if (style == 0) packet.template = D_800918A0;\n    else if (style == 1) packet.template = D_8009187C;\n    packet.magnitude = 200;\n    func_15167D84(&packet, 0, 0, -1, mode, 1);\n    return 1;\n}\n",
+  "prior_declarations": "typedef struct {\n    const void *template;\n    u8 private04[8];\n    s16 zero0C;\n    s16 fixed0E;\n    s16 positionX;\n    s16 positionY;\n    s16 positionZ;\n    s16 directionX;\n    s16 directionZ;\n    u8 private1A[2];\n    s8 scaledX;\n    s8 scaledY;\n    s8 scaledZ;\n    s8 fixed1F;\n    s16 directionY;\n    s16 field22;\n    s16 field24;\n    s16 field26;\n    s16 magnitude;\n    s8 field2A;\n    u8 private2B;\n    u8 color0;\n    u8 color1;\n    u8 color2;\n    u8 alpha;\n    s8 zero30;\n    s8 zero31;\n    s8 zero32;\n    u8 private33;\n    u16 fixed34;\n    u8 privateTail36[2];\n} RandomShortPacket151A0C0C;\nextern u8 D_800918A0[], D_8009187C[], D_8008F8D0[];\nvoid func_15167D84(void *, s32, s32, s8, u8, s32);\n"
+}
