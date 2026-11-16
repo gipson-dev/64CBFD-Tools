@@ -1,0 +1,75 @@
+{
+  "name": "func_151A3390",
+  "source": "conker/src/game/generated_1D0840.c",
+  "entry": 354038672,
+  "rom": 1902656,
+  "words": 93,
+  "frame": 152,
+  "replacement": "typedef struct {\n    u8 *owner;\n    u8 identity, attachment, reserved06[2];\n    f32 vector[3];\n    f32 value14;\n    s16 value18, value1A, value1C;\n    u8 reserved1E[2];\n    f32 value20, value24;\n    u8 value28, value29, value2A, value2B, value2C, value2D, value2E;\n    u8 reserved2F;\n} OwnerSetupDescriptor151A3390;\nextern f32 D_800A8D50, D_800A8D54;\nu8 *func_151A3504(void *, u8);\nvoid func_151A4590(u8 * volatile, u8);\nvoid func_151A499C(void *, u8);\ns32 func_10010154(u16, void *, u16, s16, u16);\nstruct225 *func_15160A58(u8 *, u8, void *, u8, s16, s32, s32, s32, s32, s32, s32, s8, s32, u8, u8, s32);\n\n/* Submit the owner descriptor, companion presets, sound and vector effect. */\nvoid func_151A3390(u8 *owner, u8 channel) {\n    OwnerSetupDescriptor151A3390 descriptor;\n    f32 position[3];\n\n    descriptor.owner = owner;\n    descriptor.identity = owner[0x3B];\n    descriptor.attachment = 1;\n    descriptor.vector[0] = 0.0f;\n    descriptor.vector[1] = 0.0f;\n    descriptor.vector[2] = 0.0f;\n    descriptor.value2B = 1;\n    descriptor.value2C = 255;\n    descriptor.value2D = 8;\n    descriptor.value2E = 31;\n    descriptor.value18 = 170;\n    descriptor.value1A = 40;\n    descriptor.value1C = 7;\n    descriptor.value28 = 2;\n    descriptor.value29 = 4;\n    descriptor.value2A = 1;\n    descriptor.value14 = D_800A8D50;\n    descriptor.value20 = 30.0f;\n    descriptor.value24 = D_800A8D54;\n    func_151A3504(&descriptor, channel);\n    func_151A4590(owner, channel);\n    func_151A499C(owner, channel);\n    func_10010154(0x1AA, owner, 0x55F0, 1000, 4000);\n    position[0] = 0.0f;\n    position[1] = 0.0f;\n    position[2] = 0.0f;\n    func_15160A58(owner, 1, position, 2, 300, 80, 255, 255, 117, 255, 0, -1, 0, 0, channel, 1);\n}",
+  "raw_sha256": "120d894aa5167c19938303605bd695cb012345da3d6e4d826561fc226b11b2db",
+  "refs": {
+    "36": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D50"
+      ]
+    ],
+    "40": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D50"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D54"
+      ]
+    ],
+    "56": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D54"
+      ]
+    ],
+    "176": [
+      [
+        "R_MIPS_26",
+        "func_151A3504"
+      ]
+    ],
+    "188": [
+      [
+        "R_MIPS_26",
+        "func_151A4590"
+      ]
+    ],
+    "200": [
+      [
+        "R_MIPS_26",
+        "func_151A499C"
+      ]
+    ],
+    "228": [
+      [
+        "R_MIPS_26",
+        "func_10010154"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_26",
+        "func_15160A58"
+      ]
+    ]
+  },
+  "symbols": {
+    "D_800A8D50": 2148175184,
+    "D_800A8D54": 2148175188,
+    "func_151A3504": 354039044,
+    "func_151A4590": 354043280,
+    "func_151A499C": 354044316,
+    "func_10010154": 268501332,
+    "func_15160A58": 353765976
+  }
+}
