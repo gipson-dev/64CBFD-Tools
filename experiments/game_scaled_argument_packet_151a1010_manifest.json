@@ -1,0 +1,14 @@
+{
+  "original_frame_source": "/* Submit the scaled 28-argument packet to its original retail stub. */\nvoid func_151A1010(f32 x, f32 y, f32 value, s16 span, f32 scale, f32 rate,\n    u8 variant, s32 flags) {\n    s16 adjustedSpan;\n    s16 clampedSpan;\n    f32 scaledValue;\n    s16 extent70, extent30, extent1500, extent100;\n    s32 extent90, extent20, extent15, extent10;\n    adjustedSpan = (s16)(span - 32);\n    clampedSpan = adjustedSpan;\n    if (clampedSpan <= 0) clampedSpan = 1;\n    scaledValue = 250.0f * scale;\n    extent70 = (s16)(s32)(70.0f * rate);\n    extent30 = (s16)(s32)(30.0f * rate);\n    extent1500 = (s16)(s32)(D_800A8D28 * scale);\n    extent100 = (s16)(s32)(100.0f * scale);\n    extent90 = (s32)(90.0f * rate);\n    extent20 = (s32)(20.0f * rate);\n    extent15 = (s32)(15.0f * scale);\n    extent10 = (s32)(10.0f * scale);\n    func_151A11CC(x, y, value, scaledValue, 1.0f,\n        extent70, extent30, extent1500, extent100, 18, 1.0f,\n        extent90, extent20, extent1500, extent100, clampedSpan, 16, 1.0f,\n        extent70, extent30, extent1500, extent100, extent15, extent10,\n        18, (s32)adjustedSpan + 16, variant, flags);\n}\n",
+  "ordered_source": "/* Submit the scaled 28-argument packet to its original retail stub. */\nvoid func_151A1010(f32 x, f32 y, f32 value, s16 span, f32 scale, f32 rate,\n    u8 variant, s32 flags) {\n    s16 clampedSpan;\n    span -= 32;\n    clampedSpan = span;\n    if (clampedSpan <= 0) clampedSpan = 1;\n    func_151A11CC(x, y, value, (250.0f * scale), 1.0f,\n        ((s16)(s32)(70.0f * rate)), ((s16)(s32)(30.0f * rate)), ((s16)(s32)(D_800A8D28 * scale)), ((s16)(s32)(100.0f * scale)), 18, 1.0f,\n        ((s32)(90.0f * rate)), ((s32)(20.0f * rate)), ((s16)(s32)(D_800A8D28 * scale)), ((s16)(s32)(100.0f * scale)), clampedSpan, 16, 1.0f,\n        ((s16)(s32)(70.0f * rate)), ((s16)(s32)(30.0f * rate)), ((s16)(s32)(D_800A8D28 * scale)), ((s16)(s32)(100.0f * scale)), ((s32)(15.0f * scale)), ((s32)(10.0f * scale)),\n        18, (s32)span + 16, variant, flags);\n}\n",
+  "declarations": "extern const f32 D_800A8D28;\n",
+  "raw_sha256": {
+    "original-frame": "43b4a0fc8bfa77b038f2fdd7b1e7222b02b10f594eff0e1547cde05740482086",
+    "ordered": "805a4775e6c8c266ecdee864535c46d0be42e336a92258501a53de3d5ccdd809"
+  },
+  "production_consumer": "ebff7c5f9c1037d64137abb8186b641e008fb0e7",
+  "production_tools": "04135f783813cb178d9b1c873c46ddefda59bf12",
+  "retail_words": 111,
+  "retail_frame": 120,
+  "c_match_credit": 0
+}
