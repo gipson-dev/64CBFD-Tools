@@ -1,0 +1,695 @@
+{
+  "name": "func_151A2F0C",
+  "source": "conker/src/game/generated_1CC440.c",
+  "entry": 354037516,
+  "rom": 1901500,
+  "raw_words": 145,
+  "retail_words": 145,
+  "frame": 144,
+  "replacement": "typedef struct {\n    f32 x, y, z;\n} CompositeEffectPosition;\n\ntypedef struct {\n    s32 baseCount;\n    s32 countRange;\n    CompositeEffectPosition position;\n    f32 field14Base;\n    f32 field18Range;\n    f32 field1CBase;\n    f32 field20Range;\n    f32 radiusBase;\n    f32 radiusRange;\n    s16 firstBase;\n    s16 firstRange;\n    s16 secondBase;\n    s16 secondRange;\n    s32 headerByteBase;\n    s32 headerByteRange;\n    s16 headerShortBase;\n    s16 headerShortRange;\n    u16 field40;\n    u8 fixed42;\n    u8 fixed43;\n    u8 fixed44;\n    u8 byteBase45;\n    u8 byteBase46;\n    u8 byteBase47;\n    u8 byteBase48;\n    u8 byteRange49;\n    u8 byteRange4A;\n    u8 byteRange4B;\n    u8 byteRange4C;\n    u8 byteBase4D;\n    u8 byteBase4E;\n    u8 byteBase4F;\n    u8 byteBase50;\n    u8 byteRange51;\n    u8 byteRange52;\n    u8 byteRange53;\n    u8 byteRange54;\n    u8 byteBase55;\n    u8 byteRange56;\n    u8 fixed57;\n    u8 fixed58;\n    u8 padding59[3];\n    s32 field5C;\n    s32 field60;\n    s16 field64;\n    s16 field66;\n    s16 field68;\n    u8 field6A;\n    u8 padding6B;\n    f32 field6C;\n    s8 field70;\n    s8 field71;\n    u8 privateTail72[2];\n} CompositeEffectInput;\nextern f32 D_800A8D30, D_800A8D34, D_800A8D38;\nvoid func_15152B38(CompositeEffectInput *, u8, s32);\n\n/* Submit the timed composite burst, optionally offset by the record vector. */\nvoid func_151A2F0C(u8 *record) {\n    CompositeEffectInput packet;\n\n    packet.baseCount = 8;\n    packet.countRange = 6;\n    packet.position = *(CompositeEffectPosition *)(record + 0x40);\n    if (*(u32 *)(record + 0x68) & 0x1000) {\n        packet.position.x += *(f32 *)(record + 0x4C);\n        packet.position.y += *(f32 *)(record + 0x50);\n        packet.position.z += *(f32 *)(record + 0x54);\n    }\n    packet.field14Base = ((*(f32 *)(record + 0x3C) + *(f32 *)(record + 0x38)) * 0.5f) * D_800A8D30;\n    packet.field18Range = ((*(f32 *)(record + 0x3C) + *(f32 *)(record + 0x38)) * 0.5f) * D_800A8D34;\n    packet.firstRange = 255;\n    packet.secondBase = -64;\n    packet.headerByteRange = 1;\n    packet.headerShortBase = 17;\n    packet.secondRange = 86;\n    packet.headerByteBase = 3;\n    packet.headerShortRange = 18;\n    packet.field40 = 1;\n    packet.fixed42 = 4;\n    packet.fixed43 = 2;\n    packet.fixed44 = 3;\n    packet.byteBase48 = 255;\n    packet.byteRange4A = 55;\n    packet.byteBase45 = 255;\n    packet.byteBase46 = 200;\n    packet.byteBase47 = 200;\n    packet.byteRange4B = 55;\n    packet.byteBase4D = 255;\n    packet.byteBase4E = 255;\n    packet.byteBase4F = 255;\n    packet.byteBase50 = 255;\n    packet.byteBase55 = 255;\n    packet.firstBase = 0;\n    packet.byteRange49 = 0;\n    packet.byteRange4C = 0;\n    packet.byteRange51 = 0;\n    packet.byteRange52 = 0;\n    packet.byteRange53 = 0;\n    packet.byteRange54 = 0;\n    packet.byteRange56 = 0;\n    packet.fixed57 = 1;\n    packet.fixed58 = 36;\n    packet.field5C = 0x200005;\n    packet.field60 = 0x60600;\n    packet.field64 = 7;\n    packet.field66 = 36;\n    packet.field68 = 1;\n    packet.field6A = 0;\n    packet.field70 = -1;\n    packet.field71 = 0;\n    ((s8 *)packet.privateTail72)[0] = -1;\n    ((s8 *)packet.privateTail72)[1] = -1;\n    packet.field1CBase = D_800A8D38;\n    packet.field20Range = 0.0f;\n    packet.radiusBase = 8.0f;\n    packet.radiusRange = 10.0f;\n    packet.field6C = 1.0f;\n    func_15152B38(&packet, record[0xC], record[1]);\n}",
+  "symbols": {
+    "D_800A8D30": 2148175152,
+    "D_800A8D34": 2148175156,
+    "D_800A8D38": 2148175160,
+    "func_15152B38": 353708856
+  },
+  "normal_refs": {
+    "136": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D30"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D30"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D34"
+      ]
+    ],
+    "188": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D34"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D38"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D38"
+      ]
+    ],
+    "556": [
+      [
+        "R_MIPS_26",
+        "func_15152B38"
+      ]
+    ]
+  },
+  "schedule": {
+    "raw_sha256": "abd7629ea2ef251e5294b936f34d3aa4c8a9ac62d8a5d4a30a2fb777ed37b624",
+    "raw_refs": {
+      "136": [
+        [
+          "R_MIPS_HI16",
+          "D_800A8D30"
+        ]
+      ],
+      "144": [
+        [
+          "R_MIPS_LO16",
+          "D_800A8D30"
+        ]
+      ],
+      "148": [
+        [
+          "R_MIPS_HI16",
+          "D_800A8D34"
+        ]
+      ],
+      "188": [
+        [
+          "R_MIPS_LO16",
+          "D_800A8D34"
+        ]
+      ],
+      "192": [
+        [
+          "R_MIPS_HI16",
+          "D_800A8D38"
+        ]
+      ],
+      "236": [
+        [
+          "R_MIPS_LO16",
+          "D_800A8D38"
+        ]
+      ],
+      "556": [
+        [
+          "R_MIPS_26",
+          "func_15152B38"
+        ]
+      ]
+    },
+    "raw_words": 145,
+    "retail_words": 145,
+    "order": [
+      {
+        "source": 0,
+        "operands": 0
+      },
+      {
+        "source": 4,
+        "operands": 0
+      },
+      {
+        "source": 8,
+        "operands": 8402944
+      },
+      {
+        "source": 12,
+        "operands": 917504
+      },
+      {
+        "source": 16,
+        "operands": 983040
+      },
+      {
+        "source": 20,
+        "operands": 917504
+      },
+      {
+        "source": 24,
+        "operands": 983040
+      },
+      {
+        "source": 28,
+        "operands": 14745600
+      },
+      {
+        "source": 32,
+        "operands": 1572864
+      },
+      {
+        "source": 36,
+        "operands": 50397184
+      },
+      {
+        "source": 40,
+        "operands": 15269888
+      },
+      {
+        "source": 44,
+        "operands": 50921472
+      },
+      {
+        "source": 48,
+        "operands": 14745600
+      },
+      {
+        "source": 52,
+        "operands": 50397184
+      },
+      {
+        "source": 56,
+        "operands": 15335424
+      },
+      {
+        "source": 60,
+        "operands": 262144
+      },
+      {
+        "source": 64,
+        "operands": 65536
+      },
+      {
+        "source": 68,
+        "operands": 21692416
+      },
+      {
+        "source": 72,
+        "operands": 23068672,
+        "target": 128
+      },
+      {
+        "source": 76,
+        "operands": 15335424
+      },
+      {
+        "source": 80,
+        "operands": 15073280
+      },
+      {
+        "source": 84,
+        "operands": 655360
+      },
+      {
+        "source": 88,
+        "operands": 401920
+      },
+      {
+        "source": 92,
+        "operands": 262144
+      },
+      {
+        "source": 96,
+        "operands": 524288
+      },
+      {
+        "source": 100,
+        "operands": 15728640
+      },
+      {
+        "source": 104,
+        "operands": 1070208
+      },
+      {
+        "source": 108,
+        "operands": 1179648
+      },
+      {
+        "source": 112,
+        "operands": 15073280
+      },
+      {
+        "source": 116,
+        "operands": 401920
+      },
+      {
+        "source": 120,
+        "operands": 524288
+      },
+      {
+        "source": 124,
+        "operands": 15335424
+      },
+      {
+        "source": 128,
+        "operands": 15728640
+      },
+      {
+        "source": 132,
+        "operands": 65536
+      },
+      {
+        "source": 136,
+        "operands": 65536
+      },
+      {
+        "source": 140,
+        "operands": 1070208
+      },
+      {
+        "source": 144,
+        "operands": 2490368
+      },
+      {
+        "source": 148,
+        "operands": 65536
+      },
+      {
+        "source": 152,
+        "operands": 786432
+      },
+      {
+        "source": 156,
+        "operands": 37120
+      },
+      {
+        "source": 160,
+        "operands": 851968
+      },
+      {
+        "source": 172,
+        "operands": 524288
+      },
+      {
+        "source": 176,
+        "operands": 1638400
+      },
+      {
+        "source": 164,
+        "operands": 917504
+      },
+      {
+        "source": 168,
+        "operands": 983040
+      },
+      {
+        "source": 180,
+        "operands": 1572864
+      },
+      {
+        "source": 184,
+        "operands": 401920
+      },
+      {
+        "source": 188,
+        "operands": 2490368
+      },
+      {
+        "source": 192,
+        "operands": 65536
+      },
+      {
+        "source": 196,
+        "operands": 589824
+      },
+      {
+        "source": 200,
+        "operands": 655360
+      },
+      {
+        "source": 204,
+        "operands": 720896
+      },
+      {
+        "source": 208,
+        "operands": 262144
+      },
+      {
+        "source": 212,
+        "operands": 524288
+      },
+      {
+        "source": 216,
+        "operands": 15728640
+      },
+      {
+        "source": 220,
+        "operands": 15335424
+      },
+      {
+        "source": 224,
+        "operands": 786432
+      },
+      {
+        "source": 228,
+        "operands": 851968
+      },
+      {
+        "source": 232,
+        "operands": 1070208
+      },
+      {
+        "source": 236,
+        "operands": 2752512
+      },
+      {
+        "source": 240,
+        "operands": 65536
+      },
+      {
+        "source": 268,
+        "operands": 524288
+      },
+      {
+        "source": 248,
+        "operands": 37120
+      },
+      {
+        "source": 252,
+        "operands": 102400
+      },
+      {
+        "source": 256,
+        "operands": 65536
+      },
+      {
+        "source": 272,
+        "operands": 1638400
+      },
+      {
+        "source": 264,
+        "operands": 786432
+      },
+      {
+        "source": 244,
+        "operands": 917504
+      },
+      {
+        "source": 260,
+        "operands": 983040
+      },
+      {
+        "source": 276,
+        "operands": 401920
+      },
+      {
+        "source": 280,
+        "operands": 73728
+      },
+      {
+        "source": 284,
+        "operands": 1572864
+      },
+      {
+        "source": 288,
+        "operands": 589824
+      },
+      {
+        "source": 292,
+        "operands": 655360
+      },
+      {
+        "source": 296,
+        "operands": 720896
+      },
+      {
+        "source": 300,
+        "operands": 786432
+      },
+      {
+        "source": 304,
+        "operands": 851968
+      },
+      {
+        "source": 332,
+        "operands": 524288
+      },
+      {
+        "source": 328,
+        "operands": 1638400
+      },
+      {
+        "source": 316,
+        "operands": 65536
+      },
+      {
+        "source": 320,
+        "operands": 32768
+      },
+      {
+        "source": 324,
+        "operands": 77824
+      },
+      {
+        "source": 308,
+        "operands": 917504
+      },
+      {
+        "source": 312,
+        "operands": 983040
+      },
+      {
+        "source": 364,
+        "operands": 524288
+      },
+      {
+        "source": 368,
+        "operands": 1638400
+      },
+      {
+        "source": 344,
+        "operands": 1572864
+      },
+      {
+        "source": 348,
+        "operands": 589824
+      },
+      {
+        "source": 352,
+        "operands": 655360
+      },
+      {
+        "source": 356,
+        "operands": 720896
+      },
+      {
+        "source": 360,
+        "operands": 786432
+      },
+      {
+        "source": 372,
+        "operands": 851968
+      },
+      {
+        "source": 336,
+        "operands": 917504
+      },
+      {
+        "source": 340,
+        "operands": 983040
+      },
+      {
+        "source": 376,
+        "operands": 1572864
+      },
+      {
+        "source": 380,
+        "operands": 589824
+      },
+      {
+        "source": 384,
+        "operands": 655360
+      },
+      {
+        "source": 388,
+        "operands": 720896
+      },
+      {
+        "source": 392,
+        "operands": 786432
+      },
+      {
+        "source": 396,
+        "operands": 851968
+      },
+      {
+        "source": 400,
+        "operands": 524288
+      },
+      {
+        "source": 404,
+        "operands": 1638400
+      },
+      {
+        "source": 408,
+        "operands": 917504
+      },
+      {
+        "source": 412,
+        "operands": 983040
+      },
+      {
+        "source": 416,
+        "operands": 17301504
+      },
+      {
+        "source": 420,
+        "operands": 54067200
+      },
+      {
+        "source": 424,
+        "operands": 1572864
+      },
+      {
+        "source": 428,
+        "operands": 589824
+      },
+      {
+        "source": 432,
+        "operands": 655360
+      },
+      {
+        "source": 436,
+        "operands": 720896
+      },
+      {
+        "source": 440,
+        "operands": 786432
+      },
+      {
+        "source": 444,
+        "operands": 851968
+      },
+      {
+        "source": 448,
+        "operands": 524288
+      },
+      {
+        "source": 452,
+        "operands": 0
+      },
+      {
+        "source": 456,
+        "operands": 0
+      },
+      {
+        "source": 460,
+        "operands": 0
+      },
+      {
+        "source": 464,
+        "operands": 0
+      },
+      {
+        "source": 468,
+        "operands": 0
+      },
+      {
+        "source": 472,
+        "operands": 0
+      },
+      {
+        "source": 476,
+        "operands": 0
+      },
+      {
+        "source": 480,
+        "operands": 0
+      },
+      {
+        "source": 484,
+        "operands": 917504
+      },
+      {
+        "source": 488,
+        "operands": 983040
+      },
+      {
+        "source": 492,
+        "operands": 524288
+      },
+      {
+        "source": 496,
+        "operands": 1638400
+      },
+      {
+        "source": 500,
+        "operands": 1572864
+      },
+      {
+        "source": 504,
+        "operands": 589824
+      },
+      {
+        "source": 508,
+        "operands": 655360
+      },
+      {
+        "source": 512,
+        "operands": 0
+      },
+      {
+        "source": 516,
+        "operands": 720896
+      },
+      {
+        "source": 520,
+        "operands": 0
+      },
+      {
+        "source": 524,
+        "operands": 786432
+      },
+      {
+        "source": 528,
+        "operands": 851968
+      },
+      {
+        "source": 532,
+        "operands": 655360
+      },
+      {
+        "source": 536,
+        "operands": 1179648
+      },
+      {
+        "source": 540,
+        "operands": 262144
+      },
+      {
+        "source": 544,
+        "operands": 1048576
+      },
+      {
+        "source": 548,
+        "operands": 393216
+      },
+      {
+        "source": 552,
+        "operands": 15073280
+      },
+      {
+        "source": 556,
+        "operands": 0
+      },
+      {
+        "source": 560,
+        "operands": 15007744
+      },
+      {
+        "source": 564,
+        "operands": 0
+      },
+      {
+        "source": 568,
+        "operands": 0
+      },
+      {
+        "source": 572,
+        "operands": 0
+      },
+      {
+        "source": 576,
+        "operands": 0
+      }
+    ],
+    "insertions": 0,
+    "omissions": 0,
+    "CSV_rows_are_carriers": true
+  }
+}
