@@ -92,7 +92,7 @@ def main():
  __attribute__((force_align_arg_pointer,noreturn)) void _start(void){s32 code=check();__asm__ volatile("int $0x80"::"a"(1),"b"(code):"memory");__builtin_unreachable();}
  '''.replace('RECORD_OFFSET',str(offsets[o.RECORD]))
  body=source.PIN['body']
- forms=[('positive',body,'-O0'),('positive',body,'-O2'),('positive',body,'-O3'),('force-Z-score',body.replace('fabsf(velocity[2])','fabsf(force[2])'),'-O2'),('wrong-decay',body.replace('r->time *= D_800A927C;','r->time *= 0.5f;'),'-O2'),('signed-countdown',body.replace('effect[0xAD] - 1','(s8)effect[0xAD] - 1'),'-O2'),('wrong-smoothing',body.replace('smoothingScale = D_800A9288;','smoothingScale = 1.0;'),'-O2')]
+ forms=[('positive',body,'-O0'),('positive',body,'-O2'),('positive',body,'-O3'),('force-Z-score',body.replace('fabsf(velocity[2])','fabsf(force[2])'),'-O2'),('wrong-decay',body.replace('time *= D_800A927C;','time *= 0.5f;'),'-O2'),('signed-countdown',body.replace('effect[0xAD] - 1','(s8)effect[0xAD] - 1'),'-O2'),('wrong-smoothing',body.replace('smoothingScale = D_800A9288;','smoothingScale = 1.0;'),'-O2')]
  rows=[]
  for tag,text,opt in forms:
   if tag!='positive':assert text!=body,tag

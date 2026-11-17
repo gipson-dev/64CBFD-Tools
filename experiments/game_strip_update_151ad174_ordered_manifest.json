@@ -1,0 +1,147 @@
+{
+  "body": "/* Advance strip samples, constrain adjacent positions and submit movement audio. */\nvoid func_151AD174(u8 *record) {\n    f32 gravitySquared;\n    u8 *owner, *effect;\n    s32 last, selected;\n    f32 position[3], velocity[3];\n    f32 positions[20][3], velocities[20][3];\n    f32 amplitude, trig;\n    f32 smoothing[3], force[3];\n    f32 movement = 0.0f;\n    f32 dx, dy, dz, length;\n    f32 damping, ceiling;\n    f64 smoothingScale;\n    s32 sample, angle;\n\n    if (*(s16 *)(record + 0x52) != 0) {\n        *(s16 *)(record + 0x52) = (s16)((u32)*(s16 *)(record + 0x52) - (u32)D_800BE9E4);\n        if (*(s16 *)(record + 0x52) < 0) {\n            *(s16 *)(record + 0x52) = 0;\n        }\n    }\n    last = ((StripRecord151ACBD4 *)record)->count - 1;\n    owner = (u8 *)((StripRecord151ACBD4 *)record)->state;\n    if (owner != NULL) {\n        effect = *(u8 **)(owner + 0x31C);\n        selected = effect[0xAE];\n        angle = (effect[0xAC] + (*(u16 *)(owner + 0x76) >> 8)) & 255;\n        amplitude = *(f32 *)(effect + 0xA8) * D_800A9278;\n        trig = func_150489B0(angle);\n        ((StripRecord151ACBD4 *)record)->points[selected].velocity[0] += amplitude * trig;\n        trig = func_15048A40(angle);\n        ((StripRecord151ACBD4 *)record)->points[selected].velocity[2] -= amplitude * trig;\n        owner = (u8 *)((StripRecord151ACBD4 *)record)->state;\n        angle = (*(u16 *)(owner + 0x76) >> 8) & 255;\n        amplitude = *(f32 *)(owner + 0x3C) * 19.0f;\n        trig = func_150489B0(angle);\n        ((StripRecord151ACBD4 *)record)->points[selected].velocity[0] += amplitude * trig;\n        trig = func_15048A40(angle);\n        ((StripRecord151ACBD4 *)record)->points[selected].velocity[2] -= amplitude * trig;\n        ((StripRecord151ACBD4 *)record)->points[selected].velocity[1] -= 1000.0f;\n        effect = *(u8 **)((u8 *)((StripRecord151ACBD4 *)record)->state + 0x31C);\n        angle = effect[0xAD] - 1;\n        if (angle <= 0) {\n            *(f32 *)(effect + 0xA8) = 0.0f;\n            angle = 0;\n            effect = *(u8 **)((u8 *)((StripRecord151ACBD4 *)record)->state + 0x31C);\n        }\n        effect[0xAD] = angle;\n    }\n    if (((StripRecord151ACBD4 *)record)->time != 0.0f) {\n        trig = func_150489B0(record[0x50]);\n        ((StripRecord151ACBD4 *)record)->points[record[0x51]].velocity[0] -= ((StripRecord151ACBD4 *)record)->time * trig;\n        trig = func_15048A40(record[0x50]);\n        ((StripRecord151ACBD4 *)record)->points[record[0x51]].velocity[2] += ((StripRecord151ACBD4 *)record)->time * trig;\n        ((StripRecord151ACBD4 *)record)->time *= D_800A927C;\n    }\n    for (sample = 0; sample < last + 1; sample++) {\n        for (angle = 0; angle < 3; angle++) {\n            positions[sample][angle] = ((StripRecord151ACBD4 *)record)->points[sample].position[angle];\n            velocities[sample][angle] = ((StripRecord151ACBD4 *)record)->points[sample].velocity[angle];\n        }\n    }\n    sample = last - 1;\n    if (sample >= 0) {\n    f32 square;\n    amplitude = 9.0f;\n    gravitySquared = amplitude * amplitude;\n    damping = D_800A9280;\n    ceiling = D_800A9284;\n    smoothingScale = D_800A9288;\n    do {\n        for (angle = 0; angle < 3; angle++) {\n            position[angle] = positions[sample][angle];\n            force[angle] = position[angle] - positions[sample + 1][angle];\n            velocity[angle] = ((StripRecord151ACBD4 *)record)->points[sample].velocity[angle];\n        }\n        dx = position[0] - positions[sample + 1][0];\n        dy = position[1] - positions[sample + 1][1];\n        dz = position[2] - positions[sample + 1][2];\n        length = sqrtf((dx * dx + dy * dy) + dz * dz);\n        trig = sqrtf(dx * dx + dz * dz);\n        if (length == 0.0f) length = 1.0f;\n        trig /= length;\n        trig = amplitude * trig;\n        square = trig * trig;\n        trig = gravitySquared - square;\n        if (square <= gravitySquared) trig = sqrtf(trig);\n        else trig = 0.0f;\n        length = trig / length;\n        dx = dx * length;\n        dy = dy * length;\n        dz = dz * length;\n        dx = 0.0f - dx;\n        dy = -amplitude - dy;\n        dz = 0.0f - dz;\n        force[0] = dx;\n        force[1] = dy;\n        force[2] = dz;\n        for (angle = 0; angle < 3; angle++) {\n            velocity[angle] += force[angle];\n            velocity[angle] *= damping;\n            if (sample != 0) {\n                smoothing[angle] = (positions[sample - 1][angle] + positions[sample + 1][angle]) * 0.5f - position[angle];\n                velocity[angle] += (f64)smoothing[angle] * smoothingScale;\n            }\n            position[angle] += velocity[angle];\n            if (D_800BE9F0 == 0x39 && ceiling < position[0]) position[0] = ceiling;\n        }\n        dz = position[2] - ((StripRecord151ACBD4 *)record)->points[sample + 1].position[2];\n        dx = position[0] - ((StripRecord151ACBD4 *)record)->points[sample + 1].position[0];\n        dy = position[1] - ((StripRecord151ACBD4 *)record)->points[sample + 1].position[1];\n        dx = dx * dx;\n        movement += fabsf(velocity[0]);\n        dy = dy * dy;\n        dz = dz * dz;\n        movement += fabsf(velocity[2]);\n        length = dx + dy;\n        length = dz + length;\n        length = sqrtf(length);\n        if (length != 0.0f) length = ((StripRecord151ACBD4 *)record)->spacing / length;\n        else length = 1.0f;\n        for (angle = 0; angle < 3; angle++) {\n            trig = position[angle] - ((StripRecord151ACBD4 *)record)->points[sample + 1].position[angle];\n            trig *= length;\n            trig += ((StripRecord151ACBD4 *)record)->points[sample + 1].position[angle];\n            ((StripRecord151ACBD4 *)record)->points[sample].position[angle] = trig;\n            ((StripRecord151ACBD4 *)record)->points[sample].velocity[angle] = ((StripRecord151ACBD4 *)record)->points[sample].position[angle] - positions[sample][angle];\n        }\n    } while (--sample >= 0);\n    }\n    if (movement > 250.0f && (*(u16 *)(record + 0x54) == 0 || func_1000F3D0(*(u16 *)(record + 0x54)) == 0)) {\n        *(u16 *)(record + 0x54) = func_10010E78(0, (u32)func_150ADA20() % 9U + 0x507,\n            30000, 0, 0, 0, (s32)position[0], (s32)position[1], (s32)position[2], 250, -0x7E0C);\n    }\n}\n",
+  "raw_sha256": "d3408ea6ebd5cbbbf188e34aecbf49e0c6ea6b39ab389091e7ad4d20ddaf8c9b",
+  "refs": {
+    "64": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9E4"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9E4"
+      ]
+    ],
+    "132": [
+      [
+        "R_MIPS_HI16",
+        "D_800A9278"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_LO16",
+        "D_800A9278"
+      ]
+    ],
+    "176": [
+      [
+        "R_MIPS_26",
+        "func_150489B0"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_15048A40"
+      ]
+    ],
+    "288": [
+      [
+        "R_MIPS_26",
+        "func_150489B0"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_15048A40"
+      ]
+    ],
+    "444": [
+      [
+        "R_MIPS_26",
+        "func_150489B0"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_26",
+        "func_15048A40"
+      ]
+    ],
+    "524": [
+      [
+        "R_MIPS_HI16",
+        "D_800A927C"
+      ]
+    ],
+    "552": [
+      [
+        "R_MIPS_LO16",
+        "D_800A927C"
+      ]
+    ],
+    "704": [
+      [
+        "R_MIPS_HI16",
+        "D_800A9280"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_LO16",
+        "D_800A9280"
+      ]
+    ],
+    "728": [
+      [
+        "R_MIPS_HI16",
+        "D_800A9284"
+      ]
+    ],
+    "732": [
+      [
+        "R_MIPS_LO16",
+        "D_800A9284"
+      ]
+    ],
+    "736": [
+      [
+        "R_MIPS_HI16",
+        "D_800A9288"
+      ]
+    ],
+    "740": [
+      [
+        "R_MIPS_LO16",
+        "D_800A9288"
+      ]
+    ],
+    "1124": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9F0"
+      ]
+    ],
+    "1128": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9F0"
+      ]
+    ],
+    "1780": [
+      [
+        "R_MIPS_26",
+        "func_1000F3D0"
+      ]
+    ],
+    "1796": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1900": [
+      [
+        "R_MIPS_26",
+        "func_10010E78"
+      ]
+    ]
+  },
+  "frozen_input_count": 1517,
+  "source_installed": false,
+  "c_match_credit": 0
+}
