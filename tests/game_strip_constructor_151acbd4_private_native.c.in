@@ -1,0 +1,62 @@
+#include <ultra64.h>
+@DECLARATIONS@
+void *func_15167A68(s32,s32,s32,s32,u8,s32);
+void *memcpy(void *,const void *,u32);
+struct Event {u32 target,count,args[6];};
+struct Memory {u8 record[88],descriptor[36],points[480],vertices[2560],table[768];u32 category,marker;};
+struct Row {u32 seed,outcome,category,mutation,phase,extra,coords,scale;struct Memory initial,final;u32 count;struct Event calls[4];};
+extern const struct Row fixture_rows[];
+static StripRecord151ACBD4 record;static StripPoint151ACBD4 points[20];static Vtx vertices[160];static u8 descriptor[36];
+StripTexture151ACBD4 D_80090B60[64];s32 D_800BE9F0;
+typedef char CheckSizes[sizeof(StripRecord151ACBD4)==88&&sizeof(StripPoint151ACBD4)==24&&sizeof(StripTexture151ACBD4)==12&&sizeof(Vtx)==16?1:-1];
+static const struct Row *row;static u32 callno,allocno,marker;static s32 bad;
+static void cp(void *d,const void *s,u32 n){u8 *a=d;const u8 *b=s;for(u32 i=0;i<n;i++)a[i]=b[i];}
+static u32 word(f32 f){u32 w;cp(&w,&f,4);return w;}static f32 real(u32 w){f32 f;cp(&f,&w,4);return f;}
+static u32 be(const u8 *p){return((u32)p[0]<<24)|((u32)p[1]<<16)|((u32)p[2]<<8)|p[3];}
+static void setBE(u8 *p,u32 w){for(u32 i=0;i<4;i++)p[i]=(u8)(w>>(24-8*i));}
+static void setReal(u8 *p,f32 value){cp(p,&value,4);}
+static void reverse(u8 *d,const u8 *s,u32 at,u32 size){for(u32 i=0;i<size;i++)d[at+i]=s[at+size-1-i];}
+static void descriptorCodec(u8 *d,const u8 *s){cp(d,s,36);for(u32 i=4;i<=28;i+=4)reverse(d,s,i,4);}
+static void recordCodec(u8 *d,const u8 *s){cp(d,s,88);for(u32 i=20;i<=44;i+=4)reverse(d,s,i,4);for(u32 i=52;i<=60;i+=4)reverse(d,s,i,4);reverse(d,s,64,2);for(u32 i=68;i<=76;i+=4)reverse(d,s,i,4);reverse(d,s,82,2);}
+static void pointCodec(u8 *d,const u8 *s){for(u32 i=0;i<480;i+=4)reverse(d,s,i,4);}
+static void vertexCodec(u8 *d,const u8 *s){cp(d,s,2560);for(u32 i=0;i<160;i++)for(u32 j=0;j<12;j+=2)reverse(d,s,i*16+j,2);}
+static void tableCodec(u8 *d,const u8 *s){cp(d,s,768);for(u32 i=0;i<64;i++){reverse(d,s,12*i+6,2);reverse(d,s,12*i+8,2);}}
+static void effect(u32 t,u32 n){
+ if(t==@COPY@)return;
+ if(t==@CREATE@){
+  if(row->mutation&1){setReal(descriptor+4,31.75f);setReal(descriptor+8,-100.25f);setReal(descriptor+12,20.5f);setReal(descriptor+20,300.75f);setReal(descriptor+28,2.5f);}
+  if(row->mutation&16)D_800BE9F0=57;
+ }else if(allocno==0){
+  if(row->mutation&2){record.startX=-13.75f;record.startY=34.25f;record.startZ=23.5f;record.endY=-41.25f;record.scale=4.f;}
+ }else{
+  if(row->mutation&4){record.count=7;record.spacing=99.5f;}
+  if(row->mutation&8){D_80090B60[54].width=D_80090B60[55].width=127;D_80090B60[54].height=D_80090B60[55].height=513;}
+  if(row->mutation&16)D_800BE9F0=row->seed&1?11:57;
+ }
+ marker=0x13579bdfu+n*0x10203u+t;
+}
+static void check(u32 t,const u32 *a,u32 count){
+ if(callno>=4){bad=1;return;}const struct Event *e=&row->calls[callno];if(e->target!=t||e->count!=count)bad=1;
+ for(u32 i=0;i<count;i++)if(e->args[i]!=a[i])bad=1;effect(t,callno++);
+}
+void *func_15167A68(s32 kind,s32 mode,s32 size,s32 active,u8 priority,s32 context){u32 a[]={(u32)kind,(u32)mode,(u32)size,(u32)active,priority,(u32)context};check(@CREATE@,a,6);return row->outcome?&record:0;}
+void *allocate_memory(s32 size,s32 alignment,s32 flags,s32 context){u32 a[]={(u32)size,(u32)alignment,(u32)flags,(u32)context};check(@ALLOC@,a,4);return allocno++==0?(void*)points:(void*)vertices;}
+void *memcpy(void *destination,const void *source,u32 size){if(destination!=(u8*)&record+16||source!=descriptor||size!=36)bad=1;u32 a[]={0x30010,0x50000,size};check(@COPY@,a,3);cp(destination,source,size);return destination;}
+static void setup(void){
+ u8 b[2560];recordCodec(b,row->initial.record);cp(&record,b,88);descriptorCodec(descriptor,row->initial.descriptor);pointCodec(b,row->initial.points);cp(points,b,480);vertexCodec(b,row->initial.vertices);cp(vertices,b,2560);tableCodec(b,row->initial.table);cp(D_80090B60,b,768);D_800BE9F0=(s32)row->initial.category;marker=row->initial.marker;callno=allocno=bad=0;
+}
+static int failure(u32 stage,u32 index){u32 v[]={(u32)(row-fixture_rows),stage,index,callno};__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(v),"d"(16):"memory");return 3;}
+@BODY@
+static int run(void){
+ for(u32 k=0;k<@COUNT@;k++){
+  row=&fixture_rows[k];setup();s32 result=invoke(descriptor,(s32)row->extra);if(bad||callno!=row->count||marker!=row->final.marker)return failure(1,bad);
+  if((u32)result!=(row->outcome?(u32)&record:0))return failure(2,(u32)result);
+  u8 b[2560];recordCodec(b,(const u8*)&record);if(row->outcome){if(record.points!=points||record.vertices!=vertices)return failure(3,0);setBE(b+56,0x60000);setBE(b+72,0x80000);}
+  for(u32 i=0;i<88;i++)if(b[i]!=row->final.record[i])return failure(4,i);
+  descriptorCodec(b,descriptor);for(u32 i=0;i<36;i++)if(b[i]!=row->final.descriptor[i])return failure(5,i);
+  pointCodec(b,(const u8*)points);for(u32 i=0;i<480;i++)if(b[i]!=row->final.points[i])return failure(6,i);
+  vertexCodec(b,(const u8*)vertices);for(u32 i=0;i<2560;i++)if(b[i]!=row->final.vertices[i])return failure(7,i);
+  tableCodec(b,(const u8*)D_80090B60);for(u32 i=0;i<768;i++)if(b[i]!=row->final.table[i])return failure(8,i);
+  if((u32)D_800BE9F0!=row->final.category)return failure(9,(u32)D_800BE9F0);
+ }return 0;
+}
