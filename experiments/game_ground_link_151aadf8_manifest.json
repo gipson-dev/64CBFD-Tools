@@ -1,0 +1,766 @@
+{
+  "name": "func_151AADF8",
+  "source": "conker/src/game/generated_1D6E80.c",
+  "owner": "generated_1D6E80",
+  "entry": 354070008,
+  "rom": 1933992,
+  "raw_sha256": "4dec087dfca51cb62d484617f6868d4f7e5b9eea93edcd92bbf1ef15fd668dec",
+  "retail_sha256": "3d88584dae34894b92b32e118466c9fdc699aaafe7a6ac05eef7f067af4bff39",
+  "refs": {
+    "56": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FE0"
+      ]
+    ],
+    "60": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FE0"
+      ]
+    ],
+    "176": [
+      [
+        "R_MIPS_26",
+        "func_15045800"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_26",
+        "func_151D8E20"
+      ]
+    ],
+    "208": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FE4"
+      ]
+    ],
+    "248": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FE4"
+      ]
+    ],
+    "252": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FE8"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FE8"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_HI16",
+        "D_800AB414"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_LO16",
+        "D_800AB414"
+      ]
+    ],
+    "472": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "480": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "488": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "604": [
+      [
+        "R_MIPS_26",
+        "func_1513C73C"
+      ]
+    ],
+    "632": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x018",
+      "expected": "0x51C00007",
+      "replacement": "0x51C00008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x02C",
+      "expected": "0x10000094",
+      "replacement": "0xA04F0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x030",
+      "expected": "0xA04F0004",
+      "replacement": "0x10000095",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "0x8FBF0044",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0D8",
+      "expected": "0x3C014700",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_800A8FE4",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0DC",
+      "expected": "0x44816000",
+      "replacement": "0xC4220000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8FE4",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0E0",
+      "expected": "0x3C0141F0",
+      "replacement": "0x3C014700",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0E4",
+      "expected": "0x44812000",
+      "replacement": "0x44816000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0E8",
+      "expected": "0x3C014248",
+      "replacement": "0x3C0141F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0EC",
+      "expected": "0x44814000",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0F0",
+      "expected": "0x46040182",
+      "replacement": "0x3C014248",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0F4",
+      "expected": "0x3C010000",
+      "replacement": "0x44814000",
+      "expected_relocations": "R_MIPS_HI16:D_800A8FE4",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x0F8",
+      "expected": "0xC4220000",
+      "replacement": "0x46040182",
+      "expected_relocations": "R_MIPS_LO16:D_800A8FE4",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x10C",
+      "expected": "0x46083280",
+      "replacement": "0x24180001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x110",
+      "expected": "0x24180001",
+      "replacement": "0xA3B80064",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x114",
+      "expected": "0x46046182",
+      "replacement": "0x46083280",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x118",
+      "expected": "0xA3B80064",
+      "replacement": "0x46046182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x120",
+      "expected": "0xE7AA005C",
+      "replacement": "0x2419000A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x124",
+      "expected": "0x2419000A",
+      "replacement": "0xE7AA005C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x130",
+      "expected": "0x46023200",
+      "replacement": "0xA7A80078",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x134",
+      "expected": "0xA7A80078",
+      "replacement": "0x46023200",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x140",
+      "expected": "0x4600428D",
+      "replacement": "0x25080000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800AB414",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x144",
+      "expected": "0x25080000",
+      "replacement": "0x4600428D",
+      "expected_relocations": "R_MIPS_LO16:D_800AB414",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x14C",
+      "expected": "0x3C090006",
+      "replacement": "0x03281021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x150",
+      "expected": "0x440D5000",
+      "replacement": "0x240B0038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x154",
+      "expected": "0x03281021",
+      "replacement": "0x440A5000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x158",
+      "expected": "0x35290300",
+      "replacement": "0x3C0C0006",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x15C",
+      "expected": "0x240A012C",
+      "replacement": "0x240D012C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x160",
+      "expected": "0x240B0038",
+      "replacement": "0xA3AB0086",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x164",
+      "expected": "0x240E0096",
+      "replacement": "0x358C0300",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x168",
+      "expected": "0xAFA90080",
+      "replacement": "0xA7AD0084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x16C",
+      "expected": "0xA7AA0084",
+      "replacement": "0x240E0096",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x170",
+      "expected": "0xA3AB0086",
+      "replacement": "0xAFAA008C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x174",
+      "expected": "0xA3AE0090",
+      "replacement": "0x44808000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x178",
+      "expected": "0x44808000",
+      "replacement": "0x90490000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x17C",
+      "expected": "0x90490000",
+      "replacement": "0x904A0001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x180",
+      "expected": "0x904A0001",
+      "replacement": "0x904B0002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x184",
+      "expected": "0x904B0002",
+      "replacement": "0xAFAC0080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x188",
+      "expected": "0x3C0E0044",
+      "replacement": "0xA3AE0090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x18C",
+      "expected": "0xAFAD008C",
+      "replacement": "0x3C0D0044",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x198",
+      "expected": "0x240D0006",
+      "replacement": "0x35AD0001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x19C",
+      "expected": "0x35CE0001",
+      "replacement": "0x240E0006",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1B4",
+      "expected": "0xA3A00096",
+      "replacement": "0xAFAD0098",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1B8",
+      "expected": "0xA3AD0097",
+      "replacement": "0xA3A00096",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1BC",
+      "expected": "0xAFAE0098",
+      "replacement": "0xA3AE0097",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1C0",
+      "expected": "0xE7AC006C",
+      "replacement": "0xE7A20068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1C4",
+      "expected": "0xE7A20068",
+      "replacement": "0xE7AC006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1E4",
+      "expected": "0xAFA20050",
+      "replacement": "0xAFA2004C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1EC",
+      "expected": "0xAFA20054",
+      "replacement": "0xAFA20050",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1F0",
+      "expected": "0x8FA90054",
+      "replacement": "0x8FA90050",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AADF8",
+      "offset": "0x1F4",
+      "expected": "0x8FAF0050",
+      "replacement": "0x8FAF004C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved ground-link early return, private homes and initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "declarations": "typedef struct {\n    u8 *owner;\n    u8 enabled, pad05[3];\n    f32 base, range, zero;\n    s16 zero14, count0, count1;\n    u8 pad1a[2];\n    f32 rate;\n} GroundLinkPayload151AADF8;\ntypedef struct {\n    u32 flags;\n    s16 duration;\n    u8 kind, pad07;\n    u32 zero08;\n    s32 angle;\n    u8 opacity, alpha, red, green, blue, alpha2, zero16, mode;\n    u32 flags18;\n    u8 untouched1c[12];\n} GroundLinkDescriptor151AADF8;\nextern f32 D_800A8FE0, D_800A8FE4, D_800A8FE8;\nextern u8 D_800AB414[];\nf32 func_150ADA68(void);\ns32 func_150ADA20(void);\nu8 *func_1513C73C(s32, u8, u8, s32, f32, f32, f32, f32, f32, u8, u8, s32, u8, s32);\nvoid *memcpy(void *, const void *, u32);\ntypedef struct { u8 opaque0[0x18]; u8 *effect; } GroundLinkSlot151AADF8;\n",
+  "body": "/* Notify the existing ground effect, or create it and attach its oscillator. */\nvoid func_151AADF8(u8 *owner) {\n    u8 *actor;\n    GroundLinkSlot151AADF8 *links;\n    u8 *oscillator;\n    f32 position[3];\n    GroundLinkDescriptor151AADF8 descriptor;\n    GroundLinkPayload151AADF8 payload;\n    f32 scale;\n    u8 selector;\n    u32 second;\n    u32 first;\n\n    actor = *(u8 **)(owner + 0x18);\n    if (*(u32 *)(owner + 0x70) != 0) {\n        oscillator = *(u8 **)(owner + 0x70) + 0xB0;\n        oscillator[4] = 1;\n    } else {\n        position[0] = *(f32 *)(actor + 0x14);\n        if (D_800A8FE0 < *(f32 *)(actor + 0x118)) {\n            position[1] = *(f32 *)(actor + 0x118) + 100.0f;\n        } else {\n            position[1] = *(f32 *)(actor + 0x18) + 150.0f;\n        }\n        position[2] = *(f32 *)(actor + 0x1C);\n        if (func_15045800(position, 0, position[1] - 300.0f, owner + 0x34)) {\n            selector = func_151D8E20();\n            position[1] = *(f32 *)(owner + 0x34);\n            scale = func_150ADA68() * 30.0f + 50.0f;\n            payload.owner = owner;\n            payload.enabled = 1;\n            payload.base = D_800A8FE4;\n            payload.range = 32768.0f;\n            payload.zero = 0.0f;\n            payload.zero14 = 0;\n            payload.count0 = 10;\n            payload.count1 = 10;\n            payload.rate = D_800A8FE8;\n            descriptor.flags = 0x60300;\n            descriptor.duration = 300;\n            descriptor.kind = 0x38;\n            descriptor.zero08 = 0;\n            descriptor.angle = (s32)(payload.range * 0.5f + payload.base);\n            descriptor.opacity = 150;\n            descriptor.alpha = 255;\n            actor = D_800AB414 + selector * 3;\n            descriptor.red = actor[0];\n            descriptor.green = actor[1];\n            descriptor.blue = actor[2];\n            descriptor.alpha2 = 255;\n            descriptor.zero16 = 0;\n            descriptor.mode = 6;\n            descriptor.flags18 = 0x440001;\n            first = (u32)func_150ADA20();\n            second = (u32)func_150ADA20();\n            links = (GroundLinkSlot151AADF8 *)(owner + 0x58);\n            links->effect = func_1513C73C((s32)&descriptor, 7, 1, (s32)(owner + 0x38),\n                position[0], position[1], position[2], scale, scale,\n                first & 255, (((u32)func_150ADA20() & 1) << 1) + (second & 1),\n                32, 255, 1);\n            if (links->effect != NULL) memcpy(links->effect + 0xB0, &payload, 32);\n        }\n    }\n}",
+  "variants": {
+    "v48": {
+      "body": "/* Notify the existing ground effect, or create it and attach its oscillator. */\nvoid func_151AADF8(u8 *owner) {\n    u8 *actor;\n    GroundLinkSlot151AADF8 *links;\n    u8 *oscillator;\n    f32 position[3];\n    GroundLinkDescriptor151AADF8 descriptor;\n    GroundLinkPayload151AADF8 payload;\n    f32 scale;\n    u8 selector;\n\n    actor = *(u8 **)(owner + 0x18);\n    if (*(u32 *)(owner + 0x70) != 0) {\n        oscillator = *(u8 **)(owner + 0x70) + 0xB0;\n        oscillator[4] = 1;\n    } else {\n        position[0] = *(f32 *)(actor + 0x14);\n        if (D_800A8FE0 < *(f32 *)(actor + 0x118)) {\n            position[1] = *(f32 *)(actor + 0x118) + 100.0f;\n        } else {\n            position[1] = *(f32 *)(actor + 0x18) + 150.0f;\n        }\n        position[2] = *(f32 *)(actor + 0x1C);\n        if (func_15045800(position, 0, position[1] - 300.0f, owner + 0x34)) {\n            selector = func_151D8E20();\n            position[1] = *(f32 *)(owner + 0x34);\n            scale = func_150ADA68() * 30.0f + 50.0f;\n            payload.owner = owner;\n            payload.enabled = 1;\n            payload.base = D_800A8FE4;\n            payload.range = 32768.0f;\n            payload.zero = 0.0f;\n            payload.zero14 = 0;\n            payload.count0 = 10;\n            payload.count1 = 10;\n            payload.rate = D_800A8FE8;\n            descriptor.flags = 0x60300;\n            descriptor.duration = 300;\n            descriptor.kind = 0x38;\n            descriptor.zero08 = 0;\n            descriptor.angle = (s32)(payload.range * 0.5f + payload.base);\n            descriptor.opacity = 150;\n            descriptor.alpha = 255;\n            actor = D_800AB414 + selector * 3;\n            descriptor.red = actor[0];\n            descriptor.green = actor[1];\n            descriptor.blue = actor[2];\n            descriptor.alpha2 = 255;\n            descriptor.zero16 = 0;\n            descriptor.mode = 6;\n            descriptor.flags18 = 0x440001;\n            links = (GroundLinkSlot151AADF8 *)(owner + 0x58);\n            links->effect = func_1513C73C((s32)&descriptor, 7, 1, (s32)(owner + 0x38),\n                position[0], position[1], position[2], scale, scale,\n                (u32)func_150ADA20() & 255, ((u32)func_150ADA20() & 1) + (((u32)func_150ADA20() & 1) << 1),\n                32, 255, 1);\n            if (links->effect != NULL) memcpy(links->effect + 0xB0, &payload, 32);\n        }\n    }\n}"
+    }
+  }
+}
