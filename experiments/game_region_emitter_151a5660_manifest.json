@@ -1,0 +1,1077 @@
+{
+  "name": "func_151A5660",
+  "source": "conker/src/game/generated_1D2B10.c",
+  "entry": 354047584,
+  "rom": 1911568,
+  "retail_sha256": "d899dd1968e9cfb89b1c45972a413f119da2d41f03c06eb0ad10a63cc021205a",
+  "symbols": {
+    "D_800A8D80": 2148175232,
+    "D_800A8D84": 2148175236,
+    "D_800A8D88": 2148175240,
+    "D_800A8D8C": 2148175244,
+    "D_800A8D90": 2148175248,
+    "D_800A8D94": 2148175252,
+    "D_800BE9A4": 2148264356,
+    "func_15046C80": 352611456,
+    "func_150ADA20": 353032736,
+    "func_150ADA68": 353032808,
+    "func_151423D8": 353641432,
+    "func_151464B8": 353658040,
+    "func_15149550": 353670480
+  },
+  "declarations": "typedef struct {\n    f32 height;\n    s16 vertices[9], reserved16;\n    u32 metadata;\n    u8 flags, state;\n    u16 reserved1E;\n    s32 value;\n} RegionHeight151A5660;\ntypedef struct { f32 x, y, z; } RegionPosition151A5660;\n/* Partial source view: the producer also reads flags/index through +0x1B. */\ntypedef struct {\n    s16 x, y, z, radius, height, secondRadius;\n    u8 reserved0C[4];\n    f32 angle;\n    u8 disabled, mode, reserved16[2];\n} RegionSource151A5660;\ntypedef struct {\n    RegionSource151A5660 *source;\n    f32 rate, scale, accumulator, value10;\n    f32 horizontalBase, horizontalRange, verticalBase, verticalRange;\n    s16 lifetimeBase, lifetimeRange;\n    f32 value28, range2C, value30, range34, value38, range3C;\n    u8 queryHeight, byteBase, byteRange, reserved43;\n    u8 reserved44[4];\n    RegionHeight151A5660 heightResult;\n    s16 *viewMask;\n} RegionState151A5660;\ntypedef struct {\n    RegionPosition151A5660 position;\n    f32 value0C, value10, value14, value18, value1C;\n    u16 field20, field22;\n    s16 lifetime;\n    u8 field26, field27, field28, field29;\n    s16 field2A;\n    u8 value2C, field2D, field2E, field2F;\n    u32 field30;\n    u8 field34, reserved35[3];\n    f32 value38, value3C, value40, value44;\n} RegionPacket151A5660;\nextern f32 D_800BE9A4, D_800A8D80, D_800A8D84, D_800A8D88;\nextern f32 D_800A8D8C, D_800A8D90, D_800A8D94;\nu8 func_151464B8(s16 *);\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nf32 func_151423D8(u8);\ns32 func_15046C80(RegionPosition151A5660 *, u16, f32, RegionHeight151A5660 *);\nvoid *func_15149550(RegionPacket151A5660 *, u8, u8, s32, u8, s32);\n\n",
+  "body": "/* Sample a region and emit repeatedly while its accumulator exceeds one. */\nvoid func_151A5660(u8 *owner) {\n    u8 heightAccepted;\n    RegionPacket151A5660 packet;\n    RegionState151A5660 *state = (RegionState151A5660 *)(owner + 0x28);\n    f32 lower, upper, cosine2, sine2, firstOffset2, secondOffset;\n    f32 cosine0, sine0, radius0, cosine1, sine1, radius1;\n    f32 horizontal, vertical;\n    u8 angle;\n    s32 mode;\n    RegionPosition151A5660 query;\n\n    if (state->source == NULL) {\n        *(s16 *)(owner + 0xE) = -1;\n        return;\n    }\n    if (state->source->disabled == 1) return;\n    if (state->viewMask != NULL && func_151464B8(state->viewMask)) return;\n    state->accumulator += (state->scale * state->rate) * D_800BE9A4;\n    if (1.0f < state->accumulator) {\n        packet.field20 = 0x6231;\n        packet.field22 = 0x1A4D;\n        packet.field26 = 0;\n        packet.field27 = 0;\n        packet.field28 = 0;\n        packet.field29 = 255;\n        packet.field2A = 1;\n        packet.field2D = 255;\n        packet.field30 = 0;\n        packet.field2E = 0;\n        packet.field2F = 0;\n        packet.field34 = 16;\n        packet.value3C = state->value10;\n        do {\n            mode = state->source->mode & 3;\n            switch (mode) {\n            case 2:\n                angle = (u8)(u32)(state->source->angle * D_800A8D80);\n                cosine2 = func_151423D8((u8)(angle - 64));\n                sine2 = func_151423D8((u8)angle);\n                firstOffset2 = func_150ADA68();\n                firstOffset2 = firstOffset2 * ((f32)state->source->radius + (f32)state->source->radius) + (f32)-state->source->radius;\n                secondOffset = func_150ADA68();\n                secondOffset = secondOffset * ((f32)state->source->secondRadius + (f32)state->source->secondRadius) + (f32)-state->source->secondRadius;\n                packet.position.x = (f32)state->source->x + (firstOffset2 * sine2 + secondOffset * cosine2);\n                packet.position.z = (f32)state->source->z + (secondOffset * sine2 - firstOffset2 * cosine2);\n                upper = (f32)(state->source->y + state->source->height);\n                lower = (f32)(state->source->y - state->source->height);\n                mode = state->queryHeight;\n                goto sampledQuery;\n            case 0:\n                angle = (u32)func_150ADA20();\n                cosine0 = func_151423D8((u8)(angle - 64));\n                sine0 = func_151423D8((u8)angle);\n                radius0 = func_150ADA68() * (f32)state->source->radius;\n                packet.position.x = (f32)state->source->x + radius0 * sine0;\n                packet.position.z = (f32)state->source->z - radius0 * cosine0;\n                lower = (f32)state->source->y;\n                upper = (f32)(state->source->y + state->source->height);\n                mode = state->queryHeight;\n                goto sampledQuery;\n            case 1:\n                angle = (u32)func_150ADA20();\n                cosine1 = func_151423D8((u8)(angle - 64));\n                sine1 = func_151423D8((u8)angle);\n                radius1 = func_150ADA68() * (f32)state->source->radius;\n                packet.position.x = (f32)state->source->x + radius1 * sine1;\n                packet.position.z = (f32)state->source->z - radius1 * cosine1;\n                upper = (f32)(state->source->y + state->source->height);\n                lower = (f32)(state->source->y - state->source->height);\n                break;\n            default:\n                packet.position.x = (f32)state->source->x;\n                packet.position.z = (f32)state->source->z;\n                lower = (f32)(state->source->y - state->source->height);\n                upper = (f32)(state->source->y + state->source->height);\n                break;\n            }\n            mode = state->queryHeight;\n        sampledQuery:\n            if (mode) {\n                query.x = packet.position.x;\n                query.y = upper;\n                query.z = packet.position.z;\n                heightAccepted = func_15046C80(&query, 0, lower, &state->heightResult);\n                if (heightAccepted) {\n                    packet.position.y = state->heightResult.height;\n                } else {\n                    packet.position.y = lower;\n                }\n            } else {\n                packet.position.y = lower;\n            }\n            horizontal = func_150ADA68() * state->horizontalRange + state->horizontalBase;\n            vertical = func_150ADA68() * state->verticalRange + state->verticalBase;\n            packet.value0C = D_800A8D84 * horizontal;\n            packet.value14 = D_800A8D88 * horizontal;\n            packet.value10 = D_800A8D8C * vertical;\n            packet.value18 = D_800A8D90 * vertical;\n            packet.value1C = D_800A8D94 * vertical;\n            /* The completed selector now holds the full random word. */\n            mode = func_150ADA20();\n            packet.lifetime = (u32)mode % (state->lifetimeRange + 1) + state->lifetimeBase;\n            packet.value38 = func_150ADA68() * state->range2C + state->value28;\n            packet.value40 = func_150ADA68() * state->range34 + state->value30;\n            packet.value44 = func_150ADA68() * state->range3C + state->value38;\n            mode = func_150ADA20();\n            packet.value2C = (u32)mode % (state->byteRange + 1) + state->byteBase;\n            func_15149550(&packet, 10, 0, 0, owner[0xC], owner[1]);\n            state->accumulator -= 1.0f;\n        } while (1.0f < state->accumulator);\n    }\n}\n",
+  "replacement": "typedef struct {\n    f32 height;\n    s16 vertices[9], reserved16;\n    u32 metadata;\n    u8 flags, state;\n    u16 reserved1E;\n    s32 value;\n} RegionHeight151A5660;\ntypedef struct { f32 x, y, z; } RegionPosition151A5660;\n/* Partial source view: the producer also reads flags/index through +0x1B. */\ntypedef struct {\n    s16 x, y, z, radius, height, secondRadius;\n    u8 reserved0C[4];\n    f32 angle;\n    u8 disabled, mode, reserved16[2];\n} RegionSource151A5660;\ntypedef struct {\n    RegionSource151A5660 *source;\n    f32 rate, scale, accumulator, value10;\n    f32 horizontalBase, horizontalRange, verticalBase, verticalRange;\n    s16 lifetimeBase, lifetimeRange;\n    f32 value28, range2C, value30, range34, value38, range3C;\n    u8 queryHeight, byteBase, byteRange, reserved43;\n    u8 reserved44[4];\n    RegionHeight151A5660 heightResult;\n    s16 *viewMask;\n} RegionState151A5660;\ntypedef struct {\n    RegionPosition151A5660 position;\n    f32 value0C, value10, value14, value18, value1C;\n    u16 field20, field22;\n    s16 lifetime;\n    u8 field26, field27, field28, field29;\n    s16 field2A;\n    u8 value2C, field2D, field2E, field2F;\n    u32 field30;\n    u8 field34, reserved35[3];\n    f32 value38, value3C, value40, value44;\n} RegionPacket151A5660;\nextern f32 D_800BE9A4, D_800A8D80, D_800A8D84, D_800A8D88;\nextern f32 D_800A8D8C, D_800A8D90, D_800A8D94;\nu8 func_151464B8(s16 *);\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nf32 func_151423D8(u8);\ns32 func_15046C80(RegionPosition151A5660 *, u16, f32, RegionHeight151A5660 *);\nvoid *func_15149550(RegionPacket151A5660 *, u8, u8, s32, u8, s32);\n\n/* Sample a region and emit repeatedly while its accumulator exceeds one. */\nvoid func_151A5660(u8 *owner) {\n    u8 heightAccepted;\n    RegionPacket151A5660 packet;\n    RegionState151A5660 *state = (RegionState151A5660 *)(owner + 0x28);\n    f32 lower, upper, cosine2, sine2, firstOffset2, secondOffset;\n    f32 cosine0, sine0, radius0, cosine1, sine1, radius1;\n    f32 horizontal, vertical;\n    u8 angle;\n    s32 mode;\n    RegionPosition151A5660 query;\n\n    if (state->source == NULL) {\n        *(s16 *)(owner + 0xE) = -1;\n        return;\n    }\n    if (state->source->disabled == 1) return;\n    if (state->viewMask != NULL && func_151464B8(state->viewMask)) return;\n    state->accumulator += (state->scale * state->rate) * D_800BE9A4;\n    if (1.0f < state->accumulator) {\n        packet.field20 = 0x6231;\n        packet.field22 = 0x1A4D;\n        packet.field26 = 0;\n        packet.field27 = 0;\n        packet.field28 = 0;\n        packet.field29 = 255;\n        packet.field2A = 1;\n        packet.field2D = 255;\n        packet.field30 = 0;\n        packet.field2E = 0;\n        packet.field2F = 0;\n        packet.field34 = 16;\n        packet.value3C = state->value10;\n        do {\n            mode = state->source->mode & 3;\n            switch (mode) {\n            case 2:\n                angle = (u8)(u32)(state->source->angle * D_800A8D80);\n                cosine2 = func_151423D8((u8)(angle - 64));\n                sine2 = func_151423D8((u8)angle);\n                firstOffset2 = func_150ADA68();\n                firstOffset2 = firstOffset2 * ((f32)state->source->radius + (f32)state->source->radius) + (f32)-state->source->radius;\n                secondOffset = func_150ADA68();\n                secondOffset = secondOffset * ((f32)state->source->secondRadius + (f32)state->source->secondRadius) + (f32)-state->source->secondRadius;\n                packet.position.x = (f32)state->source->x + (firstOffset2 * sine2 + secondOffset * cosine2);\n                packet.position.z = (f32)state->source->z + (secondOffset * sine2 - firstOffset2 * cosine2);\n                upper = (f32)(state->source->y + state->source->height);\n                lower = (f32)(state->source->y - state->source->height);\n                mode = state->queryHeight;\n                goto sampledQuery;\n            case 0:\n                angle = (u32)func_150ADA20();\n                cosine0 = func_151423D8((u8)(angle - 64));\n                sine0 = func_151423D8((u8)angle);\n                radius0 = func_150ADA68() * (f32)state->source->radius;\n                packet.position.x = (f32)state->source->x + radius0 * sine0;\n                packet.position.z = (f32)state->source->z - radius0 * cosine0;\n                lower = (f32)state->source->y;\n                upper = (f32)(state->source->y + state->source->height);\n                mode = state->queryHeight;\n                goto sampledQuery;\n            case 1:\n                angle = (u32)func_150ADA20();\n                cosine1 = func_151423D8((u8)(angle - 64));\n                sine1 = func_151423D8((u8)angle);\n                radius1 = func_150ADA68() * (f32)state->source->radius;\n                packet.position.x = (f32)state->source->x + radius1 * sine1;\n                packet.position.z = (f32)state->source->z - radius1 * cosine1;\n                upper = (f32)(state->source->y + state->source->height);\n                lower = (f32)(state->source->y - state->source->height);\n                break;\n            default:\n                packet.position.x = (f32)state->source->x;\n                packet.position.z = (f32)state->source->z;\n                lower = (f32)(state->source->y - state->source->height);\n                upper = (f32)(state->source->y + state->source->height);\n                break;\n            }\n            mode = state->queryHeight;\n        sampledQuery:\n            if (mode) {\n                query.x = packet.position.x;\n                query.y = upper;\n                query.z = packet.position.z;\n                heightAccepted = func_15046C80(&query, 0, lower, &state->heightResult);\n                if (heightAccepted) {\n                    packet.position.y = state->heightResult.height;\n                } else {\n                    packet.position.y = lower;\n                }\n            } else {\n                packet.position.y = lower;\n            }\n            horizontal = func_150ADA68() * state->horizontalRange + state->horizontalBase;\n            vertical = func_150ADA68() * state->verticalRange + state->verticalBase;\n            packet.value0C = D_800A8D84 * horizontal;\n            packet.value14 = D_800A8D88 * horizontal;\n            packet.value10 = D_800A8D8C * vertical;\n            packet.value18 = D_800A8D90 * vertical;\n            packet.value1C = D_800A8D94 * vertical;\n            /* The completed selector now holds the full random word. */\n            mode = func_150ADA20();\n            packet.lifetime = (u32)mode % (state->lifetimeRange + 1) + state->lifetimeBase;\n            packet.value38 = func_150ADA68() * state->range2C + state->value28;\n            packet.value40 = func_150ADA68() * state->range34 + state->value30;\n            packet.value44 = func_150ADA68() * state->range3C + state->value38;\n            mode = func_150ADA20();\n            packet.value2C = (u32)mode % (state->byteRange + 1) + state->byteBase;\n            func_15149550(&packet, 10, 0, 0, owner[0xC], owner[1]);\n            state->accumulator -= 1.0f;\n        } while (1.0f < state->accumulator);\n    }\n}\n",
+  "normalized_refs": {
+    "104": [
+      [
+        "R_MIPS_26",
+        "func_151464B8"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D80"
+      ]
+    ],
+    "392": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D80"
+      ]
+    ],
+    "552": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "572": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "616": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "788": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "812": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "824": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "832": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "960": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "984": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "996": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1004": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1168": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "1212": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1232": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1244": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D84"
+      ]
+    ],
+    "1248": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D84"
+      ]
+    ],
+    "1260": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D88"
+      ]
+    ],
+    "1268": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D88"
+      ]
+    ],
+    "1272": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D8C"
+      ]
+    ],
+    "1284": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D8C"
+      ]
+    ],
+    "1288": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D90"
+      ]
+    ],
+    "1292": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D90"
+      ]
+    ],
+    "1304": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D94"
+      ]
+    ],
+    "1312": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D94"
+      ]
+    ],
+    "1332": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1380": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1404": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1428": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1452": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1528": [
+      [
+        "R_MIPS_26",
+        "func_15149550"
+      ]
+    ]
+  },
+  "raw_sha256": "02fc65e9c06e740bd1e5dc1bce5dad2062dfbcab08e0a7c2ce546bdd38f597dc",
+  "normalized_sha256": "614d1f0bf6e5d53e52aa9adc1dfa5dfae5864b2826b3bf790ae0ec901e17d465",
+  "refs": {
+    "104": [
+      [
+        "R_MIPS_26",
+        "func_151464B8"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D80"
+      ]
+    ],
+    "392": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D80"
+      ]
+    ],
+    "552": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "572": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "616": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "788": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "812": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "824": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "832": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "960": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "984": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "996": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1004": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1168": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "1212": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1232": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1244": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D84"
+      ]
+    ],
+    "1248": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D84"
+      ]
+    ],
+    "1260": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D88"
+      ]
+    ],
+    "1268": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D88"
+      ]
+    ],
+    "1272": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D8C"
+      ]
+    ],
+    "1284": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D8C"
+      ]
+    ],
+    "1288": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D90"
+      ]
+    ],
+    "1292": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D90"
+      ]
+    ],
+    "1304": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8D94"
+      ]
+    ],
+    "1312": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8D94"
+      ]
+    ],
+    "1332": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1380": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1404": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1428": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1452": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1528": [
+      [
+        "R_MIPS_26",
+        "func_15149550"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x110",
+      "expected": "0x90460015",
+      "replacement": "0x90430015",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x114",
+      "expected": "0x30CE0003",
+      "replacement": "0x306E0003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x168",
+      "expected": "0x00644023",
+      "replacement": "0x00644021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x16C",
+      "expected": "0x00644821",
+      "replacement": "0x00644823",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x178",
+      "expected": "0x468043A0",
+      "replacement": "0x46804520",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x180",
+      "expected": "0x46803520",
+      "replacement": "0x468033A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x264",
+      "expected": "0x46004282",
+      "replacement": "0x46080282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore ordered region-offset multiply operands",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x298",
+      "expected": "0x46003202",
+      "replacement": "0x46060202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Restore ordered region-offset multiply operands",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x2EC",
+      "expected": "0x92060040",
+      "replacement": "0x84430002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x2F0",
+      "expected": "0x84430002",
+      "replacement": "0x84440008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x2F4",
+      "expected": "0x84440008",
+      "replacement": "0x00644821",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x2F8",
+      "expected": "0x00644821",
+      "replacement": "0x00645023",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x2FC",
+      "expected": "0x00645023",
+      "replacement": "0x44898000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x300",
+      "expected": "0x44898000",
+      "replacement": "0x448A2000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x304",
+      "expected": "0x448A2000",
+      "replacement": "0x468083A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x308",
+      "expected": "0x468083A0",
+      "replacement": "0x46802520",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x310",
+      "expected": "0x46802520",
+      "replacement": "0x920F0040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x320",
+      "expected": "0x2484FFC0",
+      "replacement": "0x309100FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x324",
+      "expected": "0x308B00FF",
+      "replacement": "0x2484FFC0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x328",
+      "expected": "0x305100FF",
+      "replacement": "0x308B00FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x39C",
+      "expected": "0x92060040",
+      "replacement": "0x84430002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3A0",
+      "expected": "0x84430002",
+      "replacement": "0x84580008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3A4",
+      "expected": "0x84580008",
+      "replacement": "0x44832000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3A8",
+      "expected": "0x44838000",
+      "replacement": "0x0078C821",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3AC",
+      "expected": "0x0078C821",
+      "replacement": "0x44998000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3B0",
+      "expected": "0x44992000",
+      "replacement": "0x46802520",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3B4",
+      "expected": "0x46808520",
+      "replacement": "0x468083A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3BC",
+      "expected": "0x468023A0",
+      "replacement": "0x920F0040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3CC",
+      "expected": "0x2484FFC0",
+      "replacement": "0x309100FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3D0",
+      "expected": "0x308800FF",
+      "replacement": "0x2484FFC0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x3D4",
+      "expected": "0x305100FF",
+      "replacement": "0x308800FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x468",
+      "expected": "0x92060040",
+      "replacement": "0x920F0040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x46C",
+      "expected": "0x10C00012",
+      "replacement": "0xC7A800BC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x470",
+      "expected": "0xC7A800BC",
+      "replacement": "0x27A4006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x474",
+      "expected": "0xC7A600C4",
+      "replacement": "0x11E00010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x478",
+      "expected": "0x4406A000",
+      "replacement": "0x00002825",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x47C",
+      "expected": "0xE7A8006C",
+      "replacement": "0xC7A600C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x480",
+      "expected": "0xE7AE0070",
+      "replacement": "0x4406A000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x484",
+      "expected": "0x27A4006C",
+      "replacement": "0xE7A8006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x488",
+      "expected": "0x00002825",
+      "replacement": "0xE7AE0070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize region-sampling register roles and independent schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x498",
+      "expected": "0x304F00FF",
+      "replacement": "0x50400005",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved binary height-result test and branch-delay fallback",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x49C",
+      "expected": "0x11E00004",
+      "replacement": "0xE7B400C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved binary height-result test and branch-delay fallback",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x4A0",
+      "expected": "0x00000000",
+      "replacement": "0xC6120048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved binary height-result test and branch-delay fallback",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x4A4",
+      "expected": "0xC6120048",
+      "replacement": "0x10000005",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved binary height-result test and branch-delay fallback",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x4A8",
+      "expected": "0x10000004",
+      "replacement": "0xE7B200C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved binary height-result test and branch-delay fallback",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x4AC",
+      "expected": "0xE7B200C0",
+      "replacement": "0xE7B400C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved binary height-result test and branch-delay fallback",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D2B10",
+      "function": "func_151A5660",
+      "offset": "0x4B4",
+      "expected": "0xE7B400C0",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved binary height-result test and branch-delay fallback",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "source_label": "v39"
+}
