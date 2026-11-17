@@ -1,0 +1,170 @@
+{
+  "name": "func_151A4A38",
+  "source": "conker/src/game/generated_1D0840.c",
+  "entry": 354044472,
+  "rom": 1908456,
+  "retail_sha256": "f41b09eb4c95e95843178a26d2721f252aa7a73ac83c68d176e49441b0501cf5",
+  "raw_sha256": "7c48d7c5cb95e62daa343033f7c361dec6bd0c9bf9c374c52fe7d8a6ed607bbc",
+  "refs": {
+    "124": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "548": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "576": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "652": [
+      [
+        "R_MIPS_26",
+        "func_15153634"
+      ]
+    ]
+  },
+  "normalized_sha256": "a7e4f979d337a917de087967f4c5b77c4a080b05006250ac15ff30a393037a7d",
+  "normalized_refs": {
+    "124": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "548": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "576": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "652": [
+      [
+        "R_MIPS_26",
+        "func_15153634"
+      ]
+    ]
+  },
+  "symbols": {
+    "D_800BE9A4": 2148264356,
+    "func_150ADA20": 353032736,
+    "func_15143134": 353644852,
+    "func_15153634": 353711668
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4A38",
+      "offset": "0x1d0",
+      "expected": "0x87B9002A",
+      "replacement": "0x44818000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve the proved independent angle-load and floating constant schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D0840",
+      "function": "func_151A4A38",
+      "offset": "0x1d4",
+      "expected": "0x44818000",
+      "replacement": "0x87B9002A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve the proved independent angle-load and floating constant schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "declarations": "typedef struct {\n    u8 *source;\n    u8 identity, reserved05[3];\n    f32 rate, accumulator;\n    u8 matrixIndex, reserved11[3];\n    f32 point[3];\n} AttachedEmissionPayload151A4A38;\ntypedef struct {\n    s16 count, countRange;\n    u8 kind, reserved05;\n    u16 field06;\n    u32 header, field0C;\n    s16 field10, field12;\n    u32 field14, field18;\n    u8 field1C, field1D, field1E, field1F;\n    u8 field20, field21, field22, field23, field24, field25;\n    s16 field26, field28, field2A;\n    f32 field2C, field30, field34;\n    RingPosition151A361C position;\n    s16 field44, field46, field48, field4A;\n    f32 field4C, field50, field54, field58;\n    u32 flags;\n    s8 field60, field61;\n    u8 field62, field63, field64;\n    u8 reserved65[7];\n} AttachedEmissionDescriptor151A4A38;\nextern f32 D_800BE9A4;\nvoid func_15153634(void *, u8, u8, u8);\n\n",
+  "body": "/* Emit at the attached actor's transformed point when its accumulator exceeds one. */\nvoid func_151A4A38(u8 *owner) {\n    AttachedEmissionPayload151A4A38 *state = (AttachedEmissionPayload151A4A38 *)(owner + 0x28);\n    RingPosition151A361C position;\n    AttachedEmissionDescriptor151A4A38 packet;\n    s16 angle;\n\n    if (*(s32 *)state->source == 0 || *(s32 *)state->source == 8 ||\n        state->identity != ((u8 *)state->source)[0x3B]) {\n        *(s16 *)(owner + 0xE) = -1;\n        owner[0xD] |= 1;\n        return;\n    }\n    if (*(s32 *)((u8 *)state->source + 0x1D4) == 0 || (((u8 *)state->source)[0x74] & 15) == 15) return;\n    state->accumulator += state->rate * D_800BE9A4;\n    if (1.0f < state->accumulator) {\n        angle = (*(u16 *)((u8 *)state->source + 0x76) >> 8) - 64;\n        func_15143134(state->point, &position,\n            *(s32 *)((u8 *)state->source + 0x1D4) + (state->matrixIndex << 6));\n        packet.count = state->accumulator;\n        packet.countRange = 0;\n        state->accumulator -= packet.count;\n        packet.kind = 40;\n        packet.field06 = 0xC01;\n        packet.header = 0x200005;\n        packet.field0C = 0;\n        packet.field10 = 23;\n        packet.field12 = 13;\n        packet.field14 = 0;\n        packet.field18 = 0;\n        packet.field1C = 0;\n        packet.field1D = 0;\n        packet.field1E = 0;\n        packet.field1F = 255;\n        packet.field20 = 0;\n        packet.field21 = 0;\n        packet.field22 = 0;\n        packet.field30 = 300.0f;\n        packet.field34 = 400.0f;\n        packet.position = position;\n        packet.field26 = 1;\n        packet.field28 = 0;\n        packet.field2A = 1;\n        packet.field64 = 0;\n        packet.field44 = angle - 25;\n        packet.field46 = -44;\n        packet.field48 = 50;\n        packet.field4A = 50;\n        packet.flags = 7;\n        packet.field62 = 1;\n        packet.field63 = 0;\n        packet.field54 = -0.5f;\n        packet.field58 = -0.5f;\n        packet.field2C = 1.0f;\n        packet.field4C = 0.0f;\n        packet.field50 = 15.0f;\n        if (func_150ADA20() & 1) packet.flags |= 0x40;\n        if (func_150ADA20() & 1) packet.flags |= 0x80;\n        packet.field23 = 255;\n        packet.field24 = 0;\n        packet.field25 = 255;\n        packet.field60 = -1;\n        packet.field61 = -1;\n        func_15153634(&packet, 255, owner[0xC], owner[1]);\n    }\n}\n",
+  "replacement": "typedef struct {\n    u8 *source;\n    u8 identity, reserved05[3];\n    f32 rate, accumulator;\n    u8 matrixIndex, reserved11[3];\n    f32 point[3];\n} AttachedEmissionPayload151A4A38;\ntypedef struct {\n    s16 count, countRange;\n    u8 kind, reserved05;\n    u16 field06;\n    u32 header, field0C;\n    s16 field10, field12;\n    u32 field14, field18;\n    u8 field1C, field1D, field1E, field1F;\n    u8 field20, field21, field22, field23, field24, field25;\n    s16 field26, field28, field2A;\n    f32 field2C, field30, field34;\n    RingPosition151A361C position;\n    s16 field44, field46, field48, field4A;\n    f32 field4C, field50, field54, field58;\n    u32 flags;\n    s8 field60, field61;\n    u8 field62, field63, field64;\n    u8 reserved65[7];\n} AttachedEmissionDescriptor151A4A38;\nextern f32 D_800BE9A4;\nvoid func_15153634(void *, u8, u8, u8);\n\n/* Emit at the attached actor's transformed point when its accumulator exceeds one. */\nvoid func_151A4A38(u8 *owner) {\n    AttachedEmissionPayload151A4A38 *state = (AttachedEmissionPayload151A4A38 *)(owner + 0x28);\n    RingPosition151A361C position;\n    AttachedEmissionDescriptor151A4A38 packet;\n    s16 angle;\n\n    if (*(s32 *)state->source == 0 || *(s32 *)state->source == 8 ||\n        state->identity != ((u8 *)state->source)[0x3B]) {\n        *(s16 *)(owner + 0xE) = -1;\n        owner[0xD] |= 1;\n        return;\n    }\n    if (*(s32 *)((u8 *)state->source + 0x1D4) == 0 || (((u8 *)state->source)[0x74] & 15) == 15) return;\n    state->accumulator += state->rate * D_800BE9A4;\n    if (1.0f < state->accumulator) {\n        angle = (*(u16 *)((u8 *)state->source + 0x76) >> 8) - 64;\n        func_15143134(state->point, &position,\n            *(s32 *)((u8 *)state->source + 0x1D4) + (state->matrixIndex << 6));\n        packet.count = state->accumulator;\n        packet.countRange = 0;\n        state->accumulator -= packet.count;\n        packet.kind = 40;\n        packet.field06 = 0xC01;\n        packet.header = 0x200005;\n        packet.field0C = 0;\n        packet.field10 = 23;\n        packet.field12 = 13;\n        packet.field14 = 0;\n        packet.field18 = 0;\n        packet.field1C = 0;\n        packet.field1D = 0;\n        packet.field1E = 0;\n        packet.field1F = 255;\n        packet.field20 = 0;\n        packet.field21 = 0;\n        packet.field22 = 0;\n        packet.field30 = 300.0f;\n        packet.field34 = 400.0f;\n        packet.position = position;\n        packet.field26 = 1;\n        packet.field28 = 0;\n        packet.field2A = 1;\n        packet.field64 = 0;\n        packet.field44 = angle - 25;\n        packet.field46 = -44;\n        packet.field48 = 50;\n        packet.field4A = 50;\n        packet.flags = 7;\n        packet.field62 = 1;\n        packet.field63 = 0;\n        packet.field54 = -0.5f;\n        packet.field58 = -0.5f;\n        packet.field2C = 1.0f;\n        packet.field4C = 0.0f;\n        packet.field50 = 15.0f;\n        if (func_150ADA20() & 1) packet.flags |= 0x40;\n        if (func_150ADA20() & 1) packet.flags |= 0x80;\n        packet.field23 = 255;\n        packet.field24 = 0;\n        packet.field25 = 255;\n        packet.field60 = -1;\n        packet.field61 = -1;\n        func_15153634(&packet, 255, owner[0xC], owner[1]);\n    }\n}\n",
+  "descriptor_bytes": 108,
+  "defined_descriptor_bytes": 100,
+  "indeterminate_C_bytes": 8,
+  "parent": {
+    "table": "D_8008A4E8[5]",
+    "slot_VA": "0x8008A4FC",
+    "slot_ROM": "0x22EFBC",
+    "parent": "func_15149264",
+    "argument": "A0=owner",
+    "result_ignored": true,
+    "functions": [
+      {
+        "name": "caller",
+        "entry": "0x15149264",
+        "end": "0x15149318",
+        "ROM": "0x176714",
+        "words": 45,
+        "frame": 24,
+        "retail_sha256": "4cfc140490b4c95c636a176d64996f45c074ff01c20ddf825dc854cf4fc4ee79",
+        "production_sha256": "4cfc140490b4c95c636a176d64996f45c074ff01c20ddf825dc854cf4fc4ee79",
+        "literal_production_match": true
+      },
+      {
+        "name": "transform",
+        "entry": "0x15143134",
+        "end": "0x151432bc",
+        "ROM": "0x1705e4",
+        "words": 98,
+        "frame": 120,
+        "retail_sha256": "b848f699d7cae4cc984acdde51a3e9139b6bf78750dea8248c453cb796ca196e",
+        "production_sha256": "b848f699d7cae4cc984acdde51a3e9139b6bf78750dea8248c453cb796ca196e",
+        "literal_production_match": true
+      },
+      {
+        "name": "emitter",
+        "entry": "0x15153634",
+        "end": "0x151539b4",
+        "ROM": "0x180ae4",
+        "words": 224,
+        "frame": 256,
+        "retail_sha256": "8a081d58b3db75000752a55f44825201427e58280823a39a5d3a5a0541914570",
+        "production_sha256": "8a081d58b3db75000752a55f44825201427e58280823a39a5d3a5a0541914570",
+        "literal_production_match": true
+      }
+    ],
+    "source_installed": false,
+    "c_match_credit": 0
+  }
+}
