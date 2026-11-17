@@ -1,0 +1,625 @@
+{
+  "raw_sha256": "374f77d57d574b0c8f17cf39320aff3f4a93f9cbbc52ac0685be609c48ad3585",
+  "normalized_sha256": "75fb3019dde70eaf91e9e827ad55f229b829135bb20d57833497be32703e3c17",
+  "refs": {
+    "36": [
+      [
+        "R_MIPS_26",
+        "func_151D8E20"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8F70"
+      ]
+    ],
+    "64": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8F70"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_26",
+        "func_15142314"
+      ]
+    ],
+    "84": [
+      [
+        "R_MIPS_26",
+        "func_1504715C"
+      ]
+    ],
+    "152": [
+      [
+        "R_MIPS_26",
+        "func_1504697C"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_151DBCBC"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FCC"
+      ]
+    ],
+    "296": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FCC"
+      ]
+    ],
+    "300": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FD0"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FD0"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FD4"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FD4"
+      ]
+    ],
+    "316": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FD8"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FD8"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FDC"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FDC"
+      ]
+    ],
+    "480": [
+      [
+        "R_MIPS_26",
+        "func_15153F18"
+      ]
+    ]
+  },
+  "normalized_refs": {
+    "36": [
+      [
+        "R_MIPS_26",
+        "func_151D8E20"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8F70"
+      ]
+    ],
+    "64": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8F70"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_26",
+        "func_15142314"
+      ]
+    ],
+    "84": [
+      [
+        "R_MIPS_26",
+        "func_1504715C"
+      ]
+    ],
+    "152": [
+      [
+        "R_MIPS_26",
+        "func_1504697C"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_151DBCBC"
+      ]
+    ],
+    "296": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FCC"
+      ]
+    ],
+    "300": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FCC"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FD0"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FD0"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FD4"
+      ]
+    ],
+    "316": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FD4"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FD8"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FD8"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_HI16",
+        "D_800A8FDC"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_LO16",
+        "D_800A8FDC"
+      ]
+    ],
+    "480": [
+      [
+        "R_MIPS_26",
+        "func_15153F18"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x0E8",
+      "expected": "0x27A90078",
+      "replacement": "0x27A50034",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x0EC",
+      "expected": "0x8D210000",
+      "replacement": "0x27A90078",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x0F0",
+      "expected": "0x27A50034",
+      "replacement": "0x8D210000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x0F8",
+      "expected": "0xACA10000",
+      "replacement": "0x240D0003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x0FC",
+      "expected": "0x8D2C0004",
+      "replacement": "0xACA10000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x100",
+      "expected": "0x240D0003",
+      "replacement": "0x8D2C0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x108",
+      "expected": "0xACAC0004",
+      "replacement": "0x2418FFC0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x10C",
+      "expected": "0x8D210008",
+      "replacement": "0xACAC0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x110",
+      "expected": "0x2418FFC0",
+      "replacement": "0x8D210008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x118",
+      "expected": "0xACA10008",
+      "replacement": "0x24080003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x11C",
+      "expected": "0x3C014020",
+      "replacement": "0xACA10008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x120",
+      "expected": "0x44815000",
+      "replacement": "0x3C014020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x124",
+      "expected": "0x3C010000",
+      "replacement": "0x44815000",
+      "expected_relocations": "R_MIPS_HI16:D_800A8FCC",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x128",
+      "expected": "0xC4300000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_800A8FCC",
+      "replacement_relocations": "R_MIPS_HI16:D_800A8FCC",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x12C",
+      "expected": "0x3C010000",
+      "replacement": "0xC4300000",
+      "expected_relocations": "R_MIPS_HI16:D_800A8FD0",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8FCC",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x130",
+      "expected": "0xC4320000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_800A8FD0",
+      "replacement_relocations": "R_MIPS_HI16:D_800A8FD0",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x134",
+      "expected": "0x3C010000",
+      "replacement": "0xC4320000",
+      "expected_relocations": "R_MIPS_HI16:D_800A8FD4",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8FD0",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x138",
+      "expected": "0xC4240000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_800A8FD4",
+      "replacement_relocations": "R_MIPS_HI16:D_800A8FD4",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x13C",
+      "expected": "0x3C010000",
+      "replacement": "0xC4240000",
+      "expected_relocations": "R_MIPS_HI16:D_800A8FD8",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8FD4",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x140",
+      "expected": "0xC4260000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_800A8FD8",
+      "replacement_relocations": "R_MIPS_HI16:D_800A8FD8",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x144",
+      "expected": "0xA7AE005A",
+      "replacement": "0xC4260000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8FD8",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x14C",
+      "expected": "0xE7AA0040",
+      "replacement": "0xA7AE005A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x150",
+      "expected": "0xC4280000",
+      "replacement": "0xE7AA0040",
+      "expected_relocations": "R_MIPS_LO16:D_800A8FDC",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x154",
+      "expected": "0x93AE0087",
+      "replacement": "0xC4280000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800A8FDC",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x158",
+      "expected": "0x44805000",
+      "replacement": "0x93AE0087",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x15C",
+      "expected": "0xA7AD0058",
+      "replacement": "0x44805000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x160",
+      "expected": "0xA7AF002E",
+      "replacement": "0xA7AD0058",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x164",
+      "expected": "0xA7B80030",
+      "replacement": "0xA7AF002E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x168",
+      "expected": "0xA7B90032",
+      "replacement": "0xA7B80030",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1D6E80",
+      "function": "func_151AABC4",
+      "offset": "0x16C",
+      "expected": "0x24080003",
+      "replacement": "0xA7B90032",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private bone-hit descriptor initialization schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "source_label": "v13",
+  "name": "func_151AABC4",
+  "source": "conker/src/game/generated_1D6E80.c",
+  "entry": 354069444,
+  "rom": 1933428,
+  "size": 504,
+  "declarations": "typedef struct { f32 xyz[3]; } BoneHitPosition151AABC4;\ntypedef struct HeightResult71820 {\n    f32 height;\n    s16 vertices[9];\n    s16 pad16;\n    u32 metadata;\n    u8 flags;\n    u8 state;\n    u16 pad1E;\n    s32 value;\n} HeightResult71820;\ntypedef struct HeightActor71820 HeightActor71820;\ntypedef struct {\n    BoneHitPosition151AABC4 position;\n    f32 timeBase;\n    f32 timeRange;\n    f32 scaleBase;\n    f32 scaleRange;\n    f32 radiusBase;\n    f32 radiusRange;\n    s16 countBase;\n    s16 countRange;\n    s16 requestSelectorBase;\n    s16 requestSelectorRange;\n    s16 durationBase;\n    s16 durationRange;\n    s16 modeBase;\n    s16 modeRange;\n    u8 selector;\n    u8 private35[3];\n    f32 opaqueChance;\n    s16 firstValue;\n    s16 secondValue;\n    s32 requestValue;\n} BoneHitTrail151AABC4;\ntypedef struct { s16 firstAngleBase, firstAngleRange, secondAngleBase, secondAngleRange; } BoneHitAngles151AABC4;\nextern u8 D_800A8F70[];\nextern f32 D_800A8FCC, D_800A8FD0, D_800A8FD4, D_800A8FD8, D_800A8FDC;\nu8 func_151D8E20(void);\nvoid func_15142314(u8 *, s32, f32 *);\nvoid func_1504715C(HeightResult71820 *, HeightActor71820 *);\ns32 func_1504697C(f32 *, u16, f32, HeightResult71820 *);\nvoid func_151DBCBC(u8, f32, s16, s32, void *, u8, s32);\nvoid func_15153F18(void *, void *, s32, s32, s32);\n",
+  "body": "/* Query the selected actor bone, then emit the hit and its angular trails. */\nvoid func_151AABC4(u8 *actor, u8 bone) {\n    BoneHitPosition151AABC4 bonePosition;\n    HeightResult71820 surface;\n    f32 upper;\n    BoneHitPosition151AABC4 query;\n    u8 selector;\n    BoneHitPosition151AABC4 position;\n    BoneHitTrail151AABC4 trail;\n    BoneHitAngles151AABC4 angles;\n\n    if (actor != NULL && *(u8 **)(actor + 0x1D4) != NULL) {\n        selector = func_151D8E20();\n        func_15142314(*(u8 **)(actor + 0x1D4), D_800A8F70[bone], bonePosition.xyz);\n        func_1504715C(&surface, (HeightActor71820 *)actor);\n        query.xyz[0] = bonePosition.xyz[0];\n        upper = bonePosition.xyz[1] + 50.0f;\n        query.xyz[1] = upper;\n        query.xyz[2] = bonePosition.xyz[2];\n        if (func_1504697C(query.xyz, 0, upper - 100.0f, &surface)) {\n            position.xyz[0] = bonePosition.xyz[0];\n            position.xyz[1] = surface.height;\n            position.xyz[2] = bonePosition.xyz[2];\n            func_151DBCBC(selector, 40.0f, 150, (s32)surface.vertices, &position, 255, 1);\n            /* The first emitter may update the exposed hit position. */\n            trail.position = position;\n            trail.countBase = 3;\n            trail.countRange = 3;\n            angles.firstAngleBase = 0;\n            angles.firstAngleRange = 255;\n            angles.secondAngleBase = -64;\n            angles.secondAngleRange = 26;\n            trail.requestSelectorBase = 3;\n            trail.timeBase = 2.5f;\n            trail.timeRange = D_800A8FCC;\n            trail.scaleBase = D_800A8FD0;\n            trail.scaleRange = D_800A8FD4;\n            trail.radiusBase = D_800A8FD8;\n            trail.radiusRange = D_800A8FDC;\n            trail.requestSelectorRange = 1;\n            trail.durationBase = 30;\n            trail.durationRange = 20;\n            trail.modeBase = 155;\n            trail.modeRange = 100;\n            trail.selector = selector;\n            trail.opaqueChance = 0.0f;\n            trail.firstValue = 16;\n            trail.secondValue = 15;\n            trail.requestValue = 0;\n            func_15153F18(&angles, &trail, (s32)&surface, 255, 1);\n        }\n    }\n}",
+  "retail_sha256": "cccebe7380a2790a430ef60eb9d5566f3624395a7810d4c67d7b2c0e6140610c"
+}
