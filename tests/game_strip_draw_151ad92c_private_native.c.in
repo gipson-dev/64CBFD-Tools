@@ -1,0 +1,77 @@
+#include <ultra64.h>
+f32 sqrtf(f32);
+@VIEWS@
+@DECLARATIONS@
+typedef struct {u32 fields[10];u8 image[2][14600];u32 args[11],answer;} NativeCase;
+extern const NativeCase fixture_rows[];
+static const NativeCase *current;
+static struct {StripRecord151ACBD4 record;u8 tail[40];} holder;
+static StripPoint151ACBD4 points[20];
+static Vtx vertices[160],otherVertices[160];
+static Gfx commands[512],otherCommands[512];
+StripTexture151ACBD4 D_80090B60[56];u8 D_800BE9C0;u32 D_800D2C9C;
+static u32 ordinal;
+_Static_assert(sizeof(void*)==4&&sizeof(NativeCase)==29288&&sizeof(holder)==128,"native sizes");
+_Static_assert(sizeof(StripRecord151ACBD4)==88&&sizeof(StripPoint151ACBD4)==24&&sizeof(StripTexture151ACBD4)==12&&sizeof(Gfx)==8&&sizeof(Vtx)==16,"SDK sizes");
+_Static_assert(__builtin_offsetof(StripRecord151ACBD4,points)==56&&__builtin_offsetof(StripRecord151ACBD4,texture)==64&&__builtin_offsetof(StripRecord151ACBD4,count)==66&&__builtin_offsetof(StripRecord151ACBD4,vertices)==72,"record offsets");
+__attribute__((noreturn))static void quit(int code){__asm__ volatile(".byte 0xcd,0x80"::"a"(1),"b"(code):"memory");__builtin_unreachable();}
+static void check(int value){if(!value)quit(3);}
+static void copy(u8*d,const u8*s,u32 n){for(u32 i=0;i<n;i++)((volatile u8*)d)[i]=((const volatile u8*)s)[i];}
+static int same(const u8*a,const u8*b,u32 n){for(u32 i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static u32 get32(const u8*p){return(u32)p[0]<<24|(u32)p[1]<<16|(u32)p[2]<<8|p[3];}
+static u32 get16(const u8*p){return(u32)p[0]<<8|p[1];}
+static void put32(u8*p,u32 n){p[0]=n>>24;p[1]=n>>16;p[2]=n>>8;p[3]=n;}
+static void put16(u8*p,u32 n){p[0]=n>>8;p[1]=n;}
+static f32 number(u32 n){union{u32 n;f32 f;}v;v.n=n;return v.f;}
+static u32 bits(f32 f){union{u32 n;f32 f;}v;v.f=f;return v.n;}
+f32 sqrtf(f32 x){f32 y;__asm__("sqrtss %1,%0":"=x"(y):"x"(x));return y;}
+static u32 gfxAddress(const void*p){u32 n=(u32)p;
+ if(n>=(u32)commands&&n<=(u32)commands+4096)return 0x90000+n-(u32)commands;
+ check(n>=(u32)otherCommands&&n<=(u32)otherCommands+4096);return 0x94000+n-(u32)otherCommands;}
+static u32 vertexAddress(const void*p){u32 n=(u32)p;
+ if(n>=(u32)vertices&&n<(u32)vertices+2560)return 0x80000+n-(u32)vertices;
+ check(n>=(u32)otherVertices&&n<(u32)otherVertices+2560);return 0x82000+n-(u32)otherVertices;}
+s32 func_15094FE8(s32 output,structC1D70Source*source,s32 a2,u8*a3,s32 a4,s32 a5,s32 a6,s32 a7,s32 a8,s32 a9,s32 a10){
+ check(ordinal++==0);u32 index=((u32)source-(u32)D_80090B60)/12;check(index<56&&(u32)source==(u32)D_80090B60+index*12);
+ u32 args[]={gfxAddress((void*)output),0x80090B60+index*12,a2,(u32)a3,a4,a5,a6,a7,a8,a9,a10};
+ for(u32 i=0;i<11;i++)check(args[i]==current->args[i]);
+ Gfx*out=(Gfx*)output;out[0].words.w0=0xE7000000u;out[0].words.w1=0;out[1].words.w0=0xFA000000u;out[1].words.w1=0x102030FFu+current->fields[0];
+ u32 mutation=current->fields[9];
+ if(mutation&1){holder.record.vertices=otherVertices;D_800BE9C0^=1;holder.record.count=1;holder.record.texture=current->fields[3]==54?55:54;}
+ if(mutation&4){D_80090B60[current->fields[3]].width=999;D_80090B60[current->fields[3]].height=1001;D_800D2C9C=0x001234AB;}
+ if(mutation&8){points[0].position[0]=99.f;((u8*)vertices)[12]=0xA7;((u8*)otherVertices)[12]=0xC3;}
+ return(s32)(mutation&2?otherCommands+3:out+2);
+}
+@BODY@
+static void loadVertices(Vtx*v,const u8*b){copy((u8*)v,b,2560);for(u32 i=0;i<160;i++){
+ for(u32 j=0;j<3;j++)v[i].v.ob[j]=get16(b+i*16+j*2);
+ v[i].v.flag=get16(b+i*16+6);v[i].v.tc[0]=get16(b+i*16+8);v[i].v.tc[1]=get16(b+i*16+10);}}
+static void saveVertices(u8*b,const Vtx*v){copy(b,(const u8*)v,2560);for(u32 i=0;i<160;i++){
+ for(u32 j=0;j<3;j++)put16(b+i*16+j*2,v[i].v.ob[j]);
+ put16(b+i*16+6,v[i].v.flag);put16(b+i*16+8,v[i].v.tc[0]);put16(b+i*16+10,v[i].v.tc[1]);}}
+static void loadCommands(Gfx*v,const u8*b){for(u32 i=0;i<512;i++){v[i].words.w0=get32(b+i*8);v[i].words.w1=get32(b+i*8+4);}}
+static void saveCommands(u8*b,const Gfx*v){for(u32 i=0;i<512;i++){u32 w0=v[i].words.w0,w1=v[i].words.w1;
+ if(w0==0x01008010)w1=vertexAddress((void*)w1);put32(b+i*8,w0);put32(b+i*8+4,w1);}}
+static void setup(const u8*b){
+ copy((u8*)&holder,b,128);holder.record.points=points;holder.record.texture=get16(b+64);holder.record.vertices=vertices;b+=128;
+ copy((u8*)points,b,480);for(u32 i=0;i<20;i++)for(u32 j=0;j<3;j++)points[i].position[j]=number(get32(b+i*24+j*4));b+=480;
+ loadVertices(vertices,b);b+=2560;loadVertices(otherVertices,b);b+=2560;
+ loadCommands(commands,b);b+=4096;loadCommands(otherCommands,b);b+=4096;
+ copy((u8*)D_80090B60,b,672);for(u32 i=0;i<56;i++){D_80090B60[i].width=get16(b+i*12+6);D_80090B60[i].height=get16(b+i*12+8);}b+=672;
+ D_800BE9C0=get32(b);D_800D2C9C=get32(b+4);ordinal=0;
+}
+static void snapshot(u8*b){
+ copy(b,(const u8*)&holder,128);check(holder.record.points==points);put32(b+56,0x50000);put16(b+64,holder.record.texture);put32(b+72,vertexAddress(holder.record.vertices));b+=128;
+ copy(b,(const u8*)points,480);for(u32 i=0;i<20;i++)for(u32 j=0;j<3;j++)put32(b+i*24+j*4,bits(points[i].position[j]));b+=480;
+ saveVertices(b,vertices);b+=2560;saveVertices(b,otherVertices);b+=2560;
+ saveCommands(b,commands);b+=4096;saveCommands(b,otherCommands);b+=4096;
+ copy(b,(u8*)D_80090B60,672);for(u32 i=0;i<56;i++){put16(b+i*12+6,D_80090B60[i].width);put16(b+i*12+8,D_80090B60[i].height);}b+=672;
+ put32(b,D_800BE9C0);put32(b+4,D_800D2C9C);
+}
+static Gfx*(*volatile invoke)(Gfx*,u8*,s32)=func_151AD92C;
+static u8 observed[14600];
+static int run(void){for(u32 i=0;i<@COUNT@;i++){
+ current=fixture_rows+i;setup(current->image[0]);Gfx*answer=invoke(commands,(u8*)&holder.record,current->fields[8]);
+ check(ordinal==1&&gfxAddress(answer)==current->answer);snapshot(observed);check(same(observed,current->image[1],14600));
+ }return 0;}
+__attribute__((force_align_arg_pointer))void _start(void){int result=run();quit(result);}

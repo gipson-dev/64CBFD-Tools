@@ -1,0 +1,73 @@
+{
+  "name": "func_151AD92C",
+  "source": "conker/src/game/generated_1D92F0.c",
+  "entry": 354081068,
+  "rom": 1945052,
+  "size": 1856,
+  "raw_words": 458,
+  "retail_words": 464,
+  "frame": 304,
+  "raw_sha256": "50f6c44ae94b1ee17226e3e1c0666b518d1cb119641fd7fa70ae583daaae15eb",
+  "retail_sha256": "72a8cdf5977e0c3b2707740be96c40bd2e106f962ef484205b26063614b94d7f",
+  "refs": {
+    "8": [
+      [
+        "R_MIPS_HI16",
+        "D_80090B60"
+      ]
+    ],
+    "12": [
+      [
+        "R_MIPS_LO16",
+        "D_80090B60"
+      ]
+    ],
+    "164": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9C0"
+      ]
+    ],
+    "176": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9C0"
+      ]
+    ],
+    "1216": [
+      [
+        "R_MIPS_26",
+        "func_15094FE8"
+      ]
+    ],
+    "1224": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9C0"
+      ]
+    ],
+    "1228": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9C0"
+      ]
+    ],
+    "1260": [
+      [
+        "R_MIPS_HI16",
+        "D_800D2C9C"
+      ]
+    ],
+    "1264": [
+      [
+        "R_MIPS_LO16",
+        "D_800D2C9C"
+      ]
+    ]
+  },
+  "body": "/* Build each sample's crossed quad, then emit the textured strip display list. */\nGfx *func_151AD92C(Gfx *output, u8 *record, s32 viewport) {\n    u32 width;\n    u8 count;\n    s32 heightMinusOne, textureShift;\n    s32 sample, startT;\n    f32 x, y, z, dx, dy, dz;\n    f32 negativeY, squareY, length, reciprocal;\n    f32 normalX, normalY, normalZ;\n\n    count = ((StripRecord151ACBD4 *)record)->count;\n    heightMinusOne = D_80090B60[((StripRecord151ACBD4 *)record)->texture].height - 1;\n    width = D_80090B60[((StripRecord151ACBD4 *)record)->texture].width;\n    if (((StripRecord151ACBD4 *)record)->texture == 0x36) textureShift = 5;\n    else textureShift = 4;\n    if (count > 0) {\n        sample = 0;\n        do {\n            x = ((StripRecord151ACBD4 *)record)->points[sample].position[0];\n            y = ((StripRecord151ACBD4 *)record)->points[sample].position[1];\n            z = ((StripRecord151ACBD4 *)record)->points[sample].position[2];\n            if (count != sample + 1) {\n                dx = ((StripRecord151ACBD4 *)record)->points[sample + 1].position[0] - x;\n                dy = ((StripRecord151ACBD4 *)record)->points[sample + 1].position[1] - y;\n                dz = ((StripRecord151ACBD4 *)record)->points[sample + 1].position[2] - z;\n            } else {\n                dx = 0.0f;\n                dy = 1.0f;\n                dz = 0.0f;\n            }\n            negativeY = -dy;\n            squareY = negativeY * negativeY;\n            length = sqrtf(dz * dz + squareY);\n            if (length != 0.0f) {\n                normalX = 0.0f;\n                reciprocal = 1.0f / length;\n                normalY = dz * reciprocal;\n                normalZ = negativeY * reciprocal;\n            } else {\n                normalX = 100.0f;\n                normalY = 0.0f;\n                normalZ = 0.0f;\n            }\n            normalX *= 4.0f;\n            normalY *= 4.0f;\n            normalZ *= 4.0f;\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4].v.ob[0] = (s16)(s32)(x + normalX);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4].v.ob[1] = (s16)(s32)(y + normalY);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4].v.ob[2] = (s16)(s32)(z + normalZ);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 2].v.ob[0] = (s16)(s32)(x - normalX);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 2].v.ob[1] = (s16)(s32)(y - normalY);\n            length = sqrtf(squareY + dx * dx);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 2].v.ob[2] = (s16)(s32)(z - normalZ);\n            if (length != 0.0f) {\n                normalZ = 0.0f;\n                reciprocal = 1.0f / length;\n                normalX = negativeY * reciprocal;\n                normalY = dx * reciprocal;\n            } else {\n                normalX = 1.0f;\n                normalZ = 1.0f;\n                normalY = 0.0f;\n            }\n            normalX *= 4.0f;\n            normalY *= 4.0f;\n            normalZ *= 4.0f;\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 1].v.ob[0] = (s16)(s32)(x + normalX);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 1].v.ob[1] = (s16)(s32)(y + normalY);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 1].v.ob[2] = (s16)(s32)(z + normalZ);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 3].v.ob[0] = (s16)(s32)(x - normalX);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 3].v.ob[1] = (s16)(s32)(y - normalY);\n            ((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4 + 3].v.ob[2] = (s16)(s32)(z - normalZ);\n        } while (++sample != count);\n    }\n    gSPSetGeometryMode(output++, G_CULL_BACK);\n    gSPClearGeometryMode(output++, G_CULL_FRONT);\n    gSPTexture(output++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);\n    gDPPipeSync(output++);\n    output = (Gfx *)func_15094FE8((s32)output,\n        (structC1D70Source *)&D_80090B60[((StripRecord151ACBD4 *)record)->texture],\n        0, NULL, 0, 0, 0, 0, 0x100, 0x100, 0x3E);\n    gDPSetCombineMode(output++, G_CC_MODULATEIA, G_CC_MODULATEIA);\n    gDPSetOtherMode(output++, D_800D2C9C | 0x80000 | 0x2C0F, 0x552078);\n    if (count - 1 > 0) {\n        width = (u32)(width + 0x100) << 21;\n        startT = 0x100;\n        for (sample = 0; sample < count - 1; sample++) {\n            gSPVertex(output++, &((StripRecord151ACBD4 *)record)->vertices[((s32)D_800BE9C0 * count + sample) * 4], 8, 0);\n            gSP1Triangle(output++, 0, 1, 4, 0);\n            gSP1Triangle(output++, 1, 5, 4, 0);\n            gSP1Triangle(output++, 1, 2, 5, 0);\n            gSP1Triangle(output++, 2, 6, 5, 0);\n            gSP1Triangle(output++, 2, 3, 7, 0);\n            gSP1Triangle(output++, 2, 7, 6, 0);\n            gSPModifyVertex(output++, 0, G_MWO_POINT_ST, width | ((u32)startT << textureShift));\n            gSPModifyVertex(output++, 4, G_MWO_POINT_ST, width | ((u32)(startT + heightMinusOne) << textureShift));\n            gSP1Triangle(output++, 3, 0, 7, 0);\n            gSP1Triangle(output++, 0, 4, 7, 0);\n            if (sample == 0) {\n                gSP1Triangle(output++, 2, 1, 0, 0);\n                gSP1Triangle(output++, 3, 2, 0, 0);\n            }\n            startT += heightMinusOne;\n        }\n    }\n    return output;\n}\n",
+  "declarations": "extern u8 D_800BE9C0;\nextern u32 D_800D2C9C;\n/* The texture helper's complete 12-byte source and eleven-word o32 interface. */\ntypedef struct {\n    u32 unk0;\n    u8 unk4, pad5;\n    u16 unk6, unk8;\n    u8 unkA, unkB;\n} structC1D70Source;\ns32 func_15094FE8(s32, structC1D70Source *, s32, u8 *,\n                  s32, s32, s32, s32, s32, s32, s32);\n",
+  "frozen_input_count": 1525,
+  "source_installed": false,
+  "c_match_credit": 0
+}
