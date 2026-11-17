@@ -1,0 +1,66 @@
+#include <ultra64.h>
+@VIEWS@
+typedef struct {u8 reserved00[0x38];void *knots;u8 reserved3C[6];u8 count;} CurveProgress1D92F0;
+struct LookupNode1D92F0;
+typedef struct {u32 fields[10];u8 image[2][15476];u32 args[12],calls;} NativeCase;
+extern const NativeCase fixture_rows[];
+static const NativeCase *current;
+static u8 actor[0x400] __attribute__((aligned(16))),child[192] __attribute__((aligned(16))),otherChild[192] __attribute__((aligned(16))),packet[64];
+static StripRecord151ACBD4 record,otherRecord;
+static StripPoint151ACBD4 points[288],otherPoints[288];
+static u32 calls;
+f32 D_800A9290;
+_Static_assert(sizeof(void*)==4&&sizeof(NativeCase)==31044&&sizeof(StripRecord151ACBD4)==88&&sizeof(StripPoint151ACBD4)==24,"native layouts");
+__attribute__((noreturn))static void quit(int code){__asm__ volatile(".byte 0xcd,0x80"::"a"(1),"b"(code):"memory");__builtin_unreachable();}
+static void check(int v){if(!v)quit(3);}
+static void copy(u8*d,const u8*s,u32 n){for(u32 i=0;i<n;i++)((volatile u8*)d)[i]=((const volatile u8*)s)[i];}
+static int same(const u8*a,const u8*b,u32 n){for(u32 i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static u32 get32(const u8*p){return(u32)p[0]<<24|(u32)p[1]<<16|(u32)p[2]<<8|p[3];}
+static void put32(u8*p,u32 n){p[0]=n>>24;p[1]=n>>16;p[2]=n>>8;p[3]=n;}
+static void put16(u8*p,u32 n){p[0]=n>>8;p[1]=n;}
+static f32 number(u32 n){union{u32 n;f32 f;}v;v.n=n;return v.f;}
+static u32 bits(f32 f){union{u32 n;f32 f;}v;v.f=f;return v.n;}
+static u32 canonical(const void*p){
+ if(p==actor)return 0x30000;if(p==&record)return 0x40000;if(p==&otherRecord)return 0x41000;
+ if(p==child)return 0x60000;if(p==otherChild)return 0x61000;
+ if(p==child+0xA0)return 0x600A0;if(p==otherChild+0xA0)return 0x610A0;
+ if(p==points+32)return 0x50000;if(p==otherPoints+32)return 0x54000;
+ check(0);return 0;
+}
+static void call(u32 target,const u32*args,u32 count){check(calls<current->calls);const u32*expected=current->args+calls*6;check(expected[0]==target);for(u32 i=0;i<count;i++)check(expected[i+1]==args[i]);calls++;}
+__attribute__((noinline))struct LookupNode1D92F0 *func_151AE590(u8 key){
+ u32 args[]={key};call(0x151AE590,args,1);
+ if(current->fields[6]&1){*(u8**)(actor+0x31C)=otherChild;*(f32*)(actor+0x14)+=.25f;}
+ return(struct LookupNode1D92F0*)(current->fields[0]&1?&otherRecord:&record);
+}
+__attribute__((noinline))void func_151AE2BC(f32*out,CurveProgress1D92F0*curve,f32 x,f32 y,f32 z){
+ u32 args[]={canonical(out),canonical(curve),bits(x),bits(y),bits(z)};call(0x151AE2BC,args,5);
+ *out=number(current->fields[4]);StripRecord151ACBD4*r=(StripRecord151ACBD4*)curve;u32 mutation=current->fields[6];
+ if(mutation&2){r->count=(current->fields[2]+1)&255;r->spacing=280.f;r->points=otherPoints+32;}
+ if(mutation&4){u8*p=*(u8**)(actor+0x31C)==otherChild?child:otherChild;*(u8**)(actor+0x31C)=p;*(f32*)(p+0xA0)=1.f-number(current->fields[4]);}
+ if(mutation&8){actor[0x1CA]=0;actor[0x104]=0xA5;r->status=1;*(f32*)(actor+0x18)+=.5f;D_800A9290=9.f;}
+}
+@BODY@
+static void loadRecord(StripRecord151ACBD4*r,const u8*b){copy((u8*)r,b,88);r->points=points+32;r->spacing=number(get32(b+0x3C));r->state=get32(b+0x44);r->status=(s16)((u32)b[0x52]<<8|b[0x53]);}
+static void saveRecord(u8*b,StripRecord151ACBD4*r){copy(b,(const u8*)r,88);put32(b+0x38,canonical(r->points));put32(b+0x3C,bits(r->spacing));put32(b+0x44,r->state==(u32)actor?0x30000:r->state);put16(b+0x52,r->status);}
+static void setup(const u8*b){
+ copy(actor,b,1024);for(u32 j=0;j<3;j++)*(f32*)(actor+0x14+j*4)=number(get32(b+0x14+j*4));*(u8**)(actor+0x31C)=child;b+=1024;
+ loadRecord(&record,b);b+=88;loadRecord(&otherRecord,b);b+=88;
+ for(u32 k=0;k<2;k++){u8*p=k?otherChild:child;copy(p,b,192);*(StripRecord151ACBD4**)(p+0x9C)=&otherRecord;*(f32*)(p+0xA0)=number(get32(b+0xA0));b+=192;}
+ copy(packet,b,64);b+=64;
+ for(u32 k=0;k<2;k++){StripPoint151ACBD4*p=k?otherPoints:points;copy((u8*)p,b,6912);for(u32 i=0;i<288;i++)for(u32 j=0;j<3;j++)p[i].position[j]=number(get32(b+i*24+j*4));b+=6912;}
+ D_800A9290=number(get32(b));calls=0;
+}
+static void snapshot(u8*b){
+ copy(b,actor,1024);for(u32 j=0;j<3;j++)put32(b+0x14+j*4,bits(*(f32*)(actor+0x14+j*4)));put32(b+0x31C,canonical(*(u8**)(actor+0x31C)));b+=1024;
+ saveRecord(b,&record);b+=88;saveRecord(b,&otherRecord);b+=88;
+ for(u32 k=0;k<2;k++){u8*p=k?otherChild:child;copy(b,p,192);put32(b+0x9C,canonical(*(StripRecord151ACBD4**)(p+0x9C)));put32(b+0xA0,bits(*(f32*)(p+0xA0)));b+=192;}
+ copy(b,packet,64);b+=64;
+ for(u32 k=0;k<2;k++){StripPoint151ACBD4*p=k?otherPoints:points;copy(b,(u8*)p,6912);for(u32 i=0;i<288;i++)for(u32 j=0;j<3;j++)put32(b+i*24+j*4,bits(p[i].position[j]));b+=6912;}
+ put32(b,bits(D_800A9290));
+}
+static void(*volatile invoke)(u8*,u8)=func_151AE0E4;
+static u8 observed[15476];
+__attribute__((force_align_arg_pointer))void _start(void){for(u32 i=0;i<@COUNT@;i++){
+ current=fixture_rows+i;setup(current->image[0]);invoke(actor,current->fields[1]);check(calls==current->calls);snapshot(observed);check(same(observed,current->image[1],15476));
+ }quit(0);}
