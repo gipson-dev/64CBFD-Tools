@@ -1,0 +1,251 @@
+{
+  "raw_sha256": "0418af51e8fc3f1b5c9632de208a59f57b41e57a8844f365c690a2e47ebbb6c1",
+  "words": 469,
+  "frame": 304,
+  "frozen_input_count": 1542,
+  "second_region_sha256": "7570e17dca97d59e3e3a46524fd26cff84c0602ea4a6cd00213ab22a55db2b83",
+  "derivation": {
+    "previous": {
+      "home_edits": [
+        {
+          "index": 33,
+          "expected_word": 2948071716,
+          "replacement_word": 2948071708,
+          "source_home": 292,
+          "destination_home": 284
+        },
+        {
+          "index": 36,
+          "expected_word": 2948137248,
+          "replacement_word": 2948137240,
+          "source_home": 288,
+          "destination_home": 280
+        },
+        {
+          "index": 38,
+          "expected_word": 2947416352,
+          "replacement_word": 2947416344,
+          "source_home": 288,
+          "destination_home": 280
+        },
+        {
+          "index": 408,
+          "expected_word": 2411266336,
+          "replacement_word": 2411266328,
+          "source_home": 288,
+          "destination_home": 280
+        },
+        {
+          "index": 416,
+          "expected_word": 2411266340,
+          "replacement_word": 2411266332,
+          "source_home": 292,
+          "destination_home": 284
+        },
+        {
+          "index": 417,
+          "expected_word": 2411200800,
+          "replacement_word": 2411200792,
+          "source_home": 288,
+          "destination_home": 280
+        }
+      ],
+      "moved_source_instructions": true,
+      "removed_vacated_nops": [
+        124,
+        135
+      ],
+      "norm_add_operand_order": [
+        1176125440,
+        1174982656
+      ],
+      "arithmetic_and_transfer_inventory_preserved": true,
+      "all_branch_words_and_positions_unchanged": true
+    },
+    "FP_allocation": {
+      "12": 18,
+      "14": 16,
+      "16": 12,
+      "18": 14
+    },
+    "operand_edits": [
+      {
+        "index": 210,
+        "expected_word": 3349545220,
+        "replacement_word": 3350200580,
+        "reason": "retain current Y in dead reciprocal register"
+      },
+      {
+        "index": 223,
+        "expected_word": 3349414144,
+        "replacement_word": 3349152000,
+        "reason": "retain current Z in dead norm register"
+      },
+      {
+        "index": 213,
+        "expected_word": 1175204352,
+        "replacement_word": 1175224704,
+        "reason": "Y plus"
+      },
+      {
+        "index": 214,
+        "expected_word": 1174422157,
+        "replacement_word": 1174417933,
+        "reason": "truncate Y plus"
+      },
+      {
+        "index": 226,
+        "expected_word": 1175331200,
+        "replacement_word": 1175323264,
+        "reason": "Z plus"
+      },
+      {
+        "index": 227,
+        "expected_word": 1174598273,
+        "replacement_word": 1174598017,
+        "reason": "X minus"
+      },
+      {
+        "index": 228,
+        "expected_word": 1174417933,
+        "replacement_word": 1174425869,
+        "reason": "truncate Z plus"
+      },
+      {
+        "index": 237,
+        "expected_word": 1174425869,
+        "replacement_word": 1174417933,
+        "reason": "truncate X minus"
+      },
+      {
+        "index": 251,
+        "expected_word": 1175204353,
+        "replacement_word": 1175224961,
+        "reason": "Y minus"
+      },
+      {
+        "index": 252,
+        "expected_word": 1174422157,
+        "replacement_word": 1174425869,
+        "reason": "truncate Y minus"
+      },
+      {
+        "index": 264,
+        "expected_word": 1175331201,
+        "replacement_word": 1175323009,
+        "reason": "Z minus"
+      },
+      {
+        "index": 215,
+        "expected_word": 1141788672,
+        "replacement_word": 1141784576,
+        "reason": "consume relocated truncated coordinate"
+      },
+      {
+        "index": 231,
+        "expected_word": 1142505472,
+        "replacement_word": 1142497280,
+        "reason": "consume relocated truncated coordinate"
+      },
+      {
+        "index": 240,
+        "expected_word": 1141841920,
+        "replacement_word": 1141850112,
+        "reason": "consume relocated truncated coordinate"
+      },
+      {
+        "index": 253,
+        "expected_word": 1142444032,
+        "replacement_word": 1142431744,
+        "reason": "consume relocated truncated coordinate"
+      }
+    ],
+    "source_instruction_order": [
+      7644,
+      7648,
+      7652,
+      7768,
+      7672,
+      7716,
+      7656,
+      7676,
+      7664,
+      7688,
+      7680,
+      7692,
+      7696,
+      7700,
+      7684,
+      7704,
+      7728,
+      7708,
+      7712,
+      7720,
+      7732,
+      7724,
+      7780,
+      7736,
+      7784,
+      7788,
+      7740,
+      7744,
+      7748,
+      7752,
+      7756,
+      7760,
+      7764,
+      7772,
+      7800,
+      7776,
+      7824,
+      7880,
+      7932,
+      7792,
+      7796,
+      7804,
+      7808,
+      7812,
+      7816,
+      7820,
+      7828,
+      7836,
+      7832,
+      7884,
+      7936,
+      7840,
+      7844,
+      7848,
+      7852,
+      7856,
+      7860,
+      7864,
+      7872,
+      7888,
+      7876,
+      7892,
+      7896,
+      7900,
+      7904,
+      7908,
+      7912,
+      7916,
+      7924,
+      7940,
+      7928,
+      7944,
+      7948,
+      7952,
+      7956,
+      7960,
+      7964
+    ],
+    "redundant_private_loads": [
+      248,
+      261
+    ],
+    "trailing_vacant_slots": 4,
+    "words": 469,
+    "all_branch_words_and_positions_unchanged": true,
+    "checked_source_region_sha256": "7570e17dca97d59e3e3a46524fd26cff84c0602ea4a6cd00213ab22a55db2b83"
+  }
+}
