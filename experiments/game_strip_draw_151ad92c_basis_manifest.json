@@ -1,0 +1,63 @@
+{
+  "raw_sha256": "0418af51e8fc3f1b5c9632de208a59f57b41e57a8844f365c690a2e47ebbb6c1",
+  "words": 469,
+  "frame": 304,
+  "frozen_input_count": 1536,
+  "derivation": {
+    "home_edits": [
+      {
+        "index": 33,
+        "expected_word": 2948071716,
+        "replacement_word": 2948071708,
+        "source_home": 292,
+        "destination_home": 284
+      },
+      {
+        "index": 36,
+        "expected_word": 2948137248,
+        "replacement_word": 2948137240,
+        "source_home": 288,
+        "destination_home": 280
+      },
+      {
+        "index": 38,
+        "expected_word": 2947416352,
+        "replacement_word": 2947416344,
+        "source_home": 288,
+        "destination_home": 280
+      },
+      {
+        "index": 408,
+        "expected_word": 2411266336,
+        "replacement_word": 2411266328,
+        "source_home": 288,
+        "destination_home": 280
+      },
+      {
+        "index": 416,
+        "expected_word": 2411266340,
+        "replacement_word": 2411266332,
+        "source_home": 292,
+        "destination_home": 284
+      },
+      {
+        "index": 417,
+        "expected_word": 2411200800,
+        "replacement_word": 2411200792,
+        "source_home": 288,
+        "destination_home": 280
+      }
+    ],
+    "moved_source_instructions": true,
+    "removed_vacated_nops": [
+      124,
+      135
+    ],
+    "norm_add_operand_order": [
+      1176125440,
+      1174982656
+    ],
+    "arithmetic_and_transfer_inventory_preserved": true,
+    "all_branch_words_and_positions_unchanged": true
+  }
+}
