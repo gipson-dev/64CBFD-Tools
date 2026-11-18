@@ -1,0 +1,632 @@
+{
+  "name": "func_151B09BC",
+  "frozen_inputs": 1630,
+  "declarations": "typedef struct {\n    u8 *owner;\n    u8 identity, private05[3];\n} OwnerBinding151B09BC;\ntypedef struct {\n    u8 *owner;\n    u8 identity, private05[3];\n    u32 zeroed[10];\n    u32 groups[8][3];\n    f32 zero90;\n    u8 selector, private95[3];\n} OwnerRecord151B09BC;\nextern u8 D_800A3FE6[];\nvoid func_151494E0(void *, u8);\nvoid *func_151491F4(s16, s8, s8, u8, u8, s32, u8, s32);\nvoid *memcpy(void *, const void *, u32);\n",
+  "body": "/* Register the owner and create its effect record with the captured selector. */\nu8 *func_151B09BC(u8 *owner, u8 *source, s16 duration, u8 channel, s32 context) {\n    u8 *created;\n    OwnerRecord151B09BC record;\n    OwnerBinding151B09BC binding;\n    s32 type;\n    s16 chosenDuration;\n    u8 countdown;\n    s32 i;\n\n    if (owner == NULL) return NULL;\n    type = source != NULL ? ((source[4] == 0x53 || source[4] == 0xA5) ? 4 : func_15134070(source)) : 4;\n    if (type == 99) return NULL;\n    type = D_800A3FE6[type * 16]; /* Category replaces the consumed table index. */\n    if (type == 2) return NULL;\n    if (type == 1) record.selector = 1;\n    else record.selector = 0;\n    binding.owner = owner;\n    binding.identity = owner[0x3B];\n    func_151494E0(&binding, 19);\n    countdown = 0;\n    if (duration == -1) chosenDuration = 300;\n    else { chosenDuration = duration; countdown = 1; }\n    record.owner = owner;\n    record.identity = owner[0x3B];\n    record.zero90 = 0.0f;\n    record.zeroed[0] = 0;\n    record.zeroed[1] = 0;\n    record.zeroed[2] = 0;\n    record.zeroed[3] = 0;\n    record.zeroed[4] = 0;\n    record.zeroed[5] = 0;\n    record.zeroed[6] = 0;\n    record.zeroed[7] = 0;\n    record.zeroed[8] = 0;\n    record.zeroed[9] = 0;\n    for (i = 0; i < 8; i++) {\n        record.groups[i][0] = 0;\n        record.groups[i][1] = 0;\n        record.groups[i][2] = 0;\n    }\n    created = func_151491F4(chosenDuration, -1, 19, countdown, 15, sizeof(record), channel, context);\n    if (created != NULL) memcpy(created + 0x28, &record, sizeof(record));\n    return created;\n}",
+  "raw_sha256": "07881fff70cb75f360d496d5cd6cdba0a6decf5aef8fefb50f6eac766fb59ba3",
+  "retail_sha256": "a920a92e6d5afde9ec6b37f928b844bbaf00dc240130be42a83102d7a9ce02c9",
+  "refs": {
+    "80": [
+      [
+        "R_MIPS_26",
+        "func_15134070"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_HI16",
+        "D_800A3FE6"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_LO16",
+        "D_800A3FE6"
+      ]
+    ],
+    "196": [
+      [
+        "R_MIPS_26",
+        "func_151494E0"
+      ]
+    ],
+    "400": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "retail_refs": {
+    "80": [
+      [
+        "R_MIPS_26",
+        "func_15134070"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_HI16",
+        "D_800A3FE6"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_LO16",
+        "D_800A3FE6"
+      ]
+    ],
+    "196": [
+      [
+        "R_MIPS_26",
+        "func_151494E0"
+      ]
+    ],
+    "400": [
+      [
+        "R_MIPS_26",
+        "func_151491F4"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x078",
+      "expected": "0x3C020000",
+      "replacement": "0x3C030000",
+      "expected_relocations": "R_MIPS_HI16:D_800A3FE6",
+      "replacement_relocations": "R_MIPS_HI16:D_800A3FE6",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x07C",
+      "expected": "0x004F1021",
+      "replacement": "0x006F1821",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x080",
+      "expected": "0x90420000",
+      "replacement": "0x90630000",
+      "expected_relocations": "R_MIPS_LO16:D_800A3FE6",
+      "replacement_relocations": "R_MIPS_LO16:D_800A3FE6",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x088",
+      "expected": "0x54410004",
+      "replacement": "0x54610004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x09C",
+      "expected": "0x14410003",
+      "replacement": "0x14610003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x0B4",
+      "expected": "0x27A4003C",
+      "replacement": "0x27A40034",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x0BC",
+      "expected": "0xAFB9003C",
+      "replacement": "0xAFB90034",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x0C8",
+      "expected": "0xA3A80040",
+      "replacement": "0xA3A80038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x100",
+      "expected": "0xAFA00050",
+      "replacement": "0xA3AB0048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x104",
+      "expected": "0xAFA00054",
+      "replacement": "0xE7A400D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x108",
+      "expected": "0xAFA00058",
+      "replacement": "0xAFA00050",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x10C",
+      "expected": "0xAFA0005C",
+      "replacement": "0xAFA00054",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x110",
+      "expected": "0xAFA00060",
+      "replacement": "0xAFA00058",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x114",
+      "expected": "0xAFA00064",
+      "replacement": "0xAFA0005C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x118",
+      "expected": "0xAFA00068",
+      "replacement": "0xAFA00060",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x11C",
+      "expected": "0xAFA0006C",
+      "replacement": "0xAFA00064",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x120",
+      "expected": "0xAFA00070",
+      "replacement": "0xAFA00068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x124",
+      "expected": "0x27A20044",
+      "replacement": "0xAFA0006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x128",
+      "expected": "0x27A300A4",
+      "replacement": "0xAFA00070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x12C",
+      "expected": "0xA3AB0048",
+      "replacement": "0x27A20068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x130",
+      "expected": "0xE7A400D4",
+      "replacement": "0x27A300C8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x138",
+      "expected": "0xAC40000C",
+      "replacement": "0xAC40FFE8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x13C",
+      "expected": "0xAC400010",
+      "replacement": "0xAC40FFEC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x140",
+      "expected": "0xAC400014",
+      "replacement": "0xAC40FFF0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x144",
+      "expected": "0xAC400018",
+      "replacement": "0xAC40FFF4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x148",
+      "expected": "0xAC40001C",
+      "replacement": "0xAC40FFF8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x14C",
+      "expected": "0xAC400020",
+      "replacement": "0xAC40FFFC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x150",
+      "expected": "0xAC400024",
+      "replacement": "0xAC400000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x154",
+      "expected": "0xAC400028",
+      "replacement": "0xAC400004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x158",
+      "expected": "0xAC40002C",
+      "replacement": "0xAC400008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x15C",
+      "expected": "0xAC400000",
+      "replacement": "0xAC40FFDC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x160",
+      "expected": "0xAC400004",
+      "replacement": "0xAC40FFE0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B09BC",
+      "offset": "0x168",
+      "expected": "0xAC400008",
+      "replacement": "0xAC40FFE4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved owner record category role and binding home and clear schedule and closed cursor bias",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "bound_source_words": [
+    666763040,
+    2948530212,
+    2946760928,
+    2946892008,
+    2946957548,
+    2410545376,
+    364904451,
+    0,
+    268435558,
+    4133,
+    278921230,
+    604110852,
+    2426535940,
+    604045395,
+    272695299,
+    604045477,
+    339804163,
+    0,
+    268435462,
+    604110852,
+    222613532,
+    10493989,
+    4200485,
+    268435457,
+    6295589,
+    604045411,
+    339804163,
+    162048,
+    268435538,
+    4133,
+    1006796810,
+    5181473,
+    2420260838,
+    604045314,
+    1413545988,
+    604045313,
+    268435530,
+    4133,
+    604045313,
+    339804163,
+    605552641,
+    268435458,
+    2746745048,
+    2745172184,
+    2411266272,
+    665059388,
+    604307475,
+    2948137020,
+    2468872251,
+    222635320,
+    2745696320,
+    2275999978,
+    604110847,
+    14373,
+    354484227,
+    2410283232,
+    268435459,
+    604242220,
+    2275672298,
+    604438529,
+    2947153988,
+    2437611579,
+    1149247488,
+    2946498636,
+    2946498640,
+    2946498644,
+    2946498648,
+    2946498652,
+    2946498656,
+    2946498660,
+    2946498664,
+    2946498668,
+    2946498672,
+    664928324,
+    664993956,
+    2745892936,
+    3886285012,
+    608305200,
+    2889875468,
+    2889875472,
+    2889875476,
+    2889875480,
+    2889875484,
+    2889875488,
+    2889875492,
+    2889875496,
+    2889875500,
+    2889875456,
+    2889875460,
+    340000755,
+    2889875464,
+    2477654255,
+    2410610928,
+    604766223,
+    604831896,
+    2947350548,
+    2947285008,
+    604372991,
+    604373011,
+    2947416088,
+    222635133,
+    2947481628,
+    272629767,
+    4200485,
+    608436264,
+    665124932,
+    604373144,
+    201362352,
+    2946629852,
+    2409824476,
+    6295589,
+    2411659300,
+    666697952,
+    65011720,
+    0
+  ]
+}

@@ -1,0 +1,67 @@
+#include <ultra64.h>
+@DECLARATIONS@
+typedef struct {u8 owner[512],source[32],other[512],output[256],table[320],marker[4];} RecordImage;
+typedef struct {u32 target,count,args[8];u8 observed[152];} RecordEvent;
+typedef struct {u32 seed,route,identity,kind,category,duration,channel,context,outcome,mutation,phase,source_null,alias,out_alias;RecordImage initial,final;u32 answer,count;RecordEvent calls[4];} RecordRow;
+extern const RecordRow fixture_rows[];
+_Static_assert(sizeof(void*)==4&&sizeof(OwnerRecord151B09BC)==152&&sizeof(OwnerBinding151B09BC)==8&&sizeof(RecordRow)==4104,"native32 record layout");
+static u8 owner[512],other[512],sourceData[32],output[256];
+u8 D_800A3FE6[320];
+static u32 marker,callno;
+static const RecordRow *row;
+static OwnerBinding151B09BC *retainedBinding;
+static void quit(int status){__asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory");__builtin_unreachable();}
+static void check(int ok){if(!ok)quit(3);}
+static void cp(void *dst,const void *src,u32 n){u8 *d=dst;const u8 *s=src;for(u32 i=0;i<n;i++)d[i]=s[i];}
+static int same(const u8*a,const u8*b,u32 n){for(u32 i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static u32 be(const u8*b){return(u32)b[0]<<24|(u32)b[1]<<16|(u32)b[2]<<8|b[3];}
+static u32 le(const u8*b){return(u32)b[3]<<24|(u32)b[2]<<16|(u32)b[1]<<8|b[0];}
+static void put(u8*b,u32 v,u32 n){for(u32 i=0;i<n;i++)b[i]=(u8)(v>>(8*(n-i-1)));}
+static u8 *sourcePointer(void){return row->alias?owner:sourceData;}
+static u8 *outputPointer(void){return row->out_alias?owner:output;}
+static u32 logical(u32 p){if(p==(u32)owner)return 0x30000;if(p==(u32)other)return 0x50000;if(p==(u32)output)return 0x60000;if(p==0)return 0;return 0xDEAD0000;}
+static int hole(u32 i){return i==5||i==6||i==7||i==149||i==150||i==151;}
+static void payloadBytes(u8*out,const void*record){
+ const u8 *p=record;for(u32 i=0;i<152;i++)out[i]=hole(i)?0:p[i];
+ put(out,logical(le(p)),4);for(u32 i=8;i<=144;i+=4)put(out+i,le(p+i),4);
+}
+static void effects(u32 target,u32 ordinal){
+ if(target==0x10022ec0)return;
+ marker=0x13579bdfu+ordinal*0x10203u+target;
+ if((row->mutation&1)&&target==0x15134070)owner[0x3B]^=0x33;
+ if((row->mutation&2)&&retainedBinding){retainedBinding->owner=other;retainedBinding->identity=(u8)(row->seed+ordinal*7);for(u32 i=5;i<8;i++)((u8*)retainedBinding)[i]=(u8)(0x50+ordinal+i);}
+ if((row->mutation&4)&&target==0x151494e0)for(u32 i=0;i<20;i++)D_800A3FE6[16*i]=(u8)((row->seed+1)%3);
+ if((row->mutation&8)&&target==0x151494e0)owner[0x3B]=(u8)(owner[0x3B]+0x51);
+ if((row->mutation&16)&&target==0x151491f4)owner[0x3B]^=0xA7;
+}
+static void event(u32 target,const u32 *args,u32 n,const u8 *observed,u32 bytes){
+ check(callno<row->count);const RecordEvent *ev=&row->calls[callno];check(target==ev->target&&n==ev->count);
+ for(u32 i=0;i<n;i++)check(args[i]==ev->args[i]);check(same(observed,ev->observed,bytes));effects(target,callno++);
+}
+s32 func_15134070(u8 *source){check(source==sourcePointer());u32 args[]={0xffffffe0};event(0x15134070,args,1,0,0);return(s32)row->kind;}
+void func_151494E0(void *binding,u8 kind){
+ retainedBinding=binding;u8 observed[8];put(observed,logical((u32)retainedBinding->owner),4);observed[4]=retainedBinding->identity;observed[5]=observed[6]=observed[7]=0;
+ u32 args[]={0xffffffe1,kind};event(0x151494e0,args,2,observed,8);
+}
+void *func_151491F4(s16 duration,s8 first,s8 kind,u8 countdown,u8 group,s32 size,u8 channel,s32 context){
+ u32 args[]={(u32)(s32)duration,(u32)(s32)first,(u32)(s32)kind,countdown,group,(u32)size,channel,(u32)context};event(0x151491f4,args,8,0,0);
+ if(!row->outcome)return 0;u8 *out=outputPointer();put(out+14,(u16)duration,2);out[13]=countdown;out[16]=255;out[17]=(u8)kind;out[18]=255;out[19]=group;for(u32 i=0;i<16;i++)out[20+i]=0;return out;
+}
+void *memcpy(void *destination,const void *record,u32 size){
+ check(destination==outputPointer()+40);u8 observed[152];payloadBytes(observed,record);
+ u32 args[]={0xffffffe2,0xffffffe3,size};event(0x10022ec0,args,3,observed,152);
+ u8*d=destination;const u8*s=record;for(u32 i=0;i<size;i++)d[i]=s[i];return destination;
+}
+@BODY@
+static void setup(const RecordImage*im){
+ cp(owner,im->owner,512);cp(sourceData,im->source,32);cp(other,im->other,512);cp(output,im->output,256);cp(D_800A3FE6,im->table,320);marker=be(im->marker);callno=0;retainedBinding=0;
+}
+static void snapshot(RecordImage*im){
+ cp(im->owner,owner,512);cp(im->source,sourceData,32);cp(im->other,other,512);cp(im->output,output,256);cp(im->table,D_800A3FE6,320);put(im->marker,marker,4);
+ if(row->answer)payloadBytes((row->out_alias?im->owner:im->output)+40,outputPointer()+40);
+}
+static int run(void){for(u32 i=0;i<@COUNT@;i++){
+ row=fixture_rows+i;setup(&row->initial);u8 *created=invoke(row->route==1?0:owner,row->source_null?0:sourcePointer(),(s16)row->duration,(u8)row->channel,(s32)row->context);
+ check(logical((u32)created)==row->answer&&callno==row->count);RecordImage final;snapshot(&final);check(same((u8*)&final,(u8*)&row->final,sizeof(final)));
+ }return 0;}
+__attribute__((force_align_arg_pointer)) void _start(void){quit(run());}
