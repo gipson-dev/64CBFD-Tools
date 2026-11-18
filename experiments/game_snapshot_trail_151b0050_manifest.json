@@ -1,0 +1,316 @@
+{
+  "name": "func_151B0050",
+  "frozen_inputs": 1612,
+  "declarations": "typedef struct { f32 x, y, z; } TrailPoint151B0050;\nextern f32 D_800AA28C, D_800AA290, D_800AA294, D_800AA298, D_800AA29C;\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nvoid func_15143794(s16, s16, f32, TrailPoint151B0050 *);\nu8 *func_151DA6F8(void *, void *, f32, s16, u8, f32, s32, u8,\n    f32, f32, u8, u8, s32, s16, s16, s32, u8, s32);\n",
+  "body": "/* Snapshot position before the providers and submit all captured trail fields. */\ns32 func_151B0050(s32 kind, s16 index, f32 x, f32 y, f32 z,\n    f32 unused5, f32 unused6, f32 unused7, s16 pitch, s16 heading,\n    f32 unused10, s32 unused11, f32 unused12, s32 unused13, u8 slot) {\n    TrailPoint151B0050 position;\n    TrailPoint151B0050 direction;\n    struct { f32 extentSample; u32 durationSample, colorSample; f32 timeSample; } captures;\n\n    position.x = x;\n    position.y = y;\n    position.z = z;\n    func_15143794(heading, pitch,\n        func_150ADA68() * D_800AA28C + D_800AA290, &direction);\n    captures.extentSample = func_150ADA68();\n    captures.durationSample = (u32)func_150ADA20();\n    captures.colorSample = (u32)func_150ADA20();\n    captures.timeSample = func_150ADA68();\n    func_151DA6F8(&position, &direction,\n        captures.extentSample * (f32)(s32)0 + D_800AA294, /* Retain the explicit zero multiply. */\n        (s16)(captures.durationSample % 20U + 31), (u8)(captures.colorSample % 101U + 155),\n        captures.timeSample * D_800AA298 + D_800AA29C,\n        ((u32)func_150ADA20() & 1) + 3, 1, 1.0f, 1.0f,\n        0, 0, 0, 16, 15, 0, slot, 1);\n    return 1;\n}",
+  "raw_sha256": "ed0bc9a3b8520bd11d4217f34acafb085e0c2c058b66f7d60a2367d1fb5f4aff",
+  "retail_sha256": "0146f31b70734bb10d7800d50bcaac47e8c96c2dad3d7db8000f5aea01ada4fb",
+  "refs": {
+    "36": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "44": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA28C"
+      ]
+    ],
+    "48": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA28C"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA290"
+      ]
+    ],
+    "56": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA290"
+      ]
+    ],
+    "84": [
+      [
+        "R_MIPS_26",
+        "func_15143794"
+      ]
+    ],
+    "92": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "100": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "108": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "116": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "124": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA294"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA294"
+      ]
+    ],
+    "188": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA298"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA298"
+      ]
+    ],
+    "200": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA29C"
+      ]
+    ],
+    "216": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA29C"
+      ]
+    ],
+    "332": [
+      [
+        "R_MIPS_26",
+        "func_151DA6F8"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x068",
+      "expected": "0xE7A00058",
+      "replacement": "0xE7A00050",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x070",
+      "expected": "0xAFA2005C",
+      "replacement": "0xAFA20054",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x078",
+      "expected": "0xAFA20060",
+      "replacement": "0xAFA20058",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x080",
+      "expected": "0xE7A00064",
+      "replacement": "0xE7A0005C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x08C",
+      "expected": "0x8FA7005C",
+      "replacement": "0x8FA70054",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x0A8",
+      "expected": "0x8FB90060",
+      "replacement": "0x8FB90058",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x0AC",
+      "expected": "0xC7B20058",
+      "replacement": "0xC7B20050",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B0050",
+      "offset": "0x0C4",
+      "expected": "0xC7B00064",
+      "replacement": "0xC7B0005C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved private trail capture homes without changing exposed vectors",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "bound_source_words": [
+    666763136,
+    1149657088,
+    1149726720,
+    2948530252,
+    2946760832,
+    2946826372,
+    3349414032,
+    3886809204,
+    3886940280,
+    222475930,
+    3886284924,
+    1006731275,
+    3290866316,
+    1006731275,
+    3291128464,
+    1174798850,
+    2275672230,
+    2275737762,
+    665256040,
+    1175077888,
+    1141276672,
+    222629349,
+    0,
+    222475930,
+    0,
+    222475912,
+    3886022744,
+    222475912,
+    2946629724,
+    222475930,
+    2946629728,
+    222475912,
+    3886022756,
+    1006714752,
+    1149304832,
+    2410086492,
+    1006731275,
+    3290997396,
+    604045332,
+    14745627,
+    604045413,
+    28688,
+    2411266144,
+    3350331480,
+    1149247488,
+    52494363,
+    1174704514,
+    1006731275,
+    3291652760,
+    3350200420,
+    1006731275,
+    633798687,
+    1175617794,
+    1174942336,
+    3290866332,
+    490496,
+    998403,
+    2477719739,
+    16400,
+    1174807040,
+    810156033,
+    625672195,
+    621346971,
+    1141264384,
+    604897295,
+    604766209,
+    604831760,
+    605552641,
+    2948071492,
+    2947350580,
+    2947285020,
+    2947416120,
+    2947088400,
+    2947219480,
+    3886546964,
+    665059444,
+    665124968,
+    2946498600,
+    2946498604,
+    2946498608,
+    2946498620,
+    3886022688,
+    3886022692,
+    222783934,
+    2947481664,
+    604110849,
+    2411659340,
+    666697856,
+    65011720,
+    0
+  ]
+}
