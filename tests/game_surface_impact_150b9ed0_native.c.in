@@ -1,0 +1,145 @@
+#include <ultra64.h>
+@DECLARATIONS@
+
+typedef char burst_size_is_40[(sizeof(SurfaceBurstE7380)==40)?1:-1];
+typedef char spray_size_is_116[(sizeof(SurfaceSprayE7380)==116)?1:-1];
+typedef char context_size_is_18[(sizeof(SurfaceContextE7380)==18)?1:-1];
+typedef struct { u8 reserved[20]; f32 x,y,z; } InputPoint;
+typedef union { u32 word; f32 real; } FloatWord;
+static u32 word(f32 v) { FloatWord x; x.real=v; return x.word; }
+u8 D_80084060;
+f32 D_8009FE10,D_8009FE14,D_8009FE18,D_8009FE1C,D_8009FE20,D_8009FE24,D_8009FE28;
+u32 checksum_words[26];
+__asm__(".globl func_151E7EF8\n.set func_151E7EF8,checksum_words\n"
+        ".globl func_151E7F60\n.set func_151E7F60,checksum_words+104\n");
+static const u32 code_words[26]={@CODE_WORDS@};
+static const f32 coords[8][3]={
+ {0.,-0.,0.},{-0.,0.,-0.},{17.75,-91.5,255.25},{-17.75,91.5,-255.25},
+ {32768.75,-32769.75,65535.5},{-65536.5,1000000.25,-1000000.25},
+ {1.25,-2.5,3.75},{100.,200.,300.}};
+static InputPoint input;
+static u32 path,corrupt,mutation,coord,mode_value,tag_value,seed,initial_flag;
+static u32 ri,fi,gi,events_left;
+static SurfaceContextE7380 *escaped_context;
+static f32 *escaped_position;
+static s32 *escaped_hit;
+static const u8 *reader;
+static u32 case_index,check_index,wanted_value,actual_value;
+extern const u8 fixture_rows[],fixture_end[];
+static void die(void) __attribute__((noreturn));
+static void die(void) {
+ char msg[36];u32 v[4]={case_index,check_index,wanted_value,actual_value},i,j;
+ for(i=0;i<4;i++) { for(j=0;j<8;j++)msg[i*9+j]="0123456789abcdef"[(v[i]>>(28-4*j))&15];msg[i*9+8]=i==3?'\n':' '; }
+ __asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(msg),"d"(36):"memory");
+ __asm__ volatile("int $0x80"::"a"(1),"b"(3):"memory");__builtin_unreachable();
+}
+static u32 next(void) {
+ u32 v; if(reader+4>fixture_end)die();
+ v=(u32)reader[0]|((u32)reader[1]<<8)|((u32)reader[2]<<16)|((u32)reader[3]<<24);reader+=4;return v;
+}
+static void check(u32 v) { wanted_value=next();actual_value=v;check_index++;if(wanted_value!=actual_value)die(); }
+static u32 ptr(void *v,u32 role) {
+ if(role==1)return 0xffff1000u;
+ if(role==2) { if(v!=escaped_context)die();return 0xffff2000u; }
+ if(role==3) {
+  u32 d=(u32)v-(u32)escaped_position;if(d>8)die();return 0xffff3000u+d;
+ }
+ if(role==4) { if(v!=escaped_hit)die();return 0xffff4000u; }
+ if(role==5)return 0xffff5000u;
+ die();
+}
+static u32 listed(u32 v,const u8 *a,u32 n) { u32 i;for(i=0;i<n;i++)if(a[i]==v)return 1;return 0; }
+static u8 packet_byte(const void *packet,u32 i,u32 spray) {
+ static const u8 burst_words[]={0,8,12,24};
+ static const u8 burst_halves[]={4,34,36};
+ static const u8 spray_words[]={4,8,12,16,20,24,48,60,64,68,76,80,84,88,96,100,108,112};
+ static const u8 spray_halves[]={0,2,28,30,32,34,36,38,40,42,44,54,56,58,104,106};
+ const u8 *raw=(const u8 *)packet;u32 base=i&~3u;
+ if(listed(base,spray?spray_words:burst_words,spray?sizeof(spray_words):sizeof(burst_words)))return raw[base+3-(i-base)];
+ base=i&~1u;
+ if(listed(base,spray?spray_halves:burst_halves,spray?sizeof(spray_halves):sizeof(burst_halves)))return raw[base+1-(i-base)];
+ return raw[i];
+}
+static void event(u32 target,u32 n,const u32 *args,const void *packet,u32 spray) {
+ u32 i,k,len;if(!events_left--)die();check(target);check(n);len=next();
+ for(i=0;i<n;i++)check(args[i]);
+ if(!packet) { if(len)die();return; }
+ if(len!=(spray?110u:32u))die();
+ for(i=0,k=0;i<(spray?116u:40u);i++) {
+  if(spray?(i==46||i==47||i==74||i==75||i==94||i==95):(i>=28&&i<34)||(i>=38))continue;
+  if(reader>=fixture_end||*reader++!=packet_byte(packet,i,spray))die();k++;
+ }
+ if(k!=len)die();
+}
+static void point_effect(u32 stage) {
+ if(mutation&1) { input.x=10.25f+stage;input.y=-20.5f-stage;input.z=30.75f+stage; }
+}
+static void escaped_effect(u32 stage) {
+ u32 i;u8 *p;
+ if(mutation&2) { escaped_position[0]=-7.25f-stage;escaped_position[1]=8.5f+stage;escaped_position[2]=-9.75f-stage; }
+ if(mutation&4) {
+  p=(u8*)escaped_context;
+  for(i=0;i<18;i+=2) { p[i]=(u8)((i+1)*37+seed+stage);p[i+1]=(u8)(i*37+seed+stage); }
+ }
+ if(mutation&8) {
+  D_8009FE10=.5f+stage;D_8009FE14=1.f+stage;D_8009FE18=1.5f+stage;
+  D_8009FE1C=2.f+stage;D_8009FE20=2.5f+stage;D_8009FE24=3.f+stage;D_8009FE28=3.5f+stage;
+ }
+}
+s32 func_150A3058(s32 subtype,s16 x,s16 y,s16 z) {
+ u32 a[4]={(u32)subtype,(u32)(s32)x,(u32)(s32)y,(u32)(s32)z};
+ event(0x150a3058,4,a,0,0);gi++;point_effect(gi);return path==gi;
+}
+s32 func_150AC9C0(f32 x,f32 y,f32 z,f32 dx,f32 dy,f32 dz,s32 zero,void *context,
+ f32 *px,f32 *py,f32 *pz,f32 *unused,s32 *hit,s32 zero2,f32 last) {
+ u32 i,a[15];u8 *p=(u8*)context;
+ escaped_context=(SurfaceContextE7380*)context;escaped_position=px;escaped_hit=hit;
+ a[0]=word(x);a[1]=word(y);a[2]=word(z);a[3]=word(dx);a[4]=word(dy);a[5]=word(dz);
+ a[6]=(u32)zero;a[7]=ptr(context,2);a[8]=ptr(px,3);a[9]=ptr(py,3);a[10]=ptr(pz,3);
+ a[11]=(u32)unused;a[12]=ptr(hit,4);a[13]=(u32)zero2;a[14]=word(last);
+ event(0x150ac9c0,15,a,0,0);*px=1.25f;*py=-2.5f;*pz=3.75f;
+ /* Convert the nine query halfwords from the guest's big-endian fixture. */
+ for(i=0;i<18;i+=2) { p[i]=(u8)((i+1)*29+seed+0x31);p[i+1]=(u8)(i*29+seed+0x31); }
+ *hit=(s32)0x87654321;point_effect(3);return path!=3;
+}
+u8 func_15145C90(s32 hit) { u32 a[1]={(u32)hit};event(0x15145c90,1,a,0,0);escaped_effect(4);return path==5; }
+u32 func_150ADA20(void) {
+ u32 answer;event(0x150ada20,0,0,0,0);
+ switch(ri) {case 0:answer=0xffffffffu^seed;break;case 1:answer=seed*0x1020304u;break;
+ case 2:answer=0x80000000u+seed;break;case 3:answer=0x7fffffffu-seed;break;
+ case 4:answer=seed*0x1234567u;break;default:die();}
+ escaped_effect(ri<2?5+ri:7+ri);ri++;return answer;
+}
+f32 func_150ADA68(void) {
+ static const f32 v[2][4]={{.25f,.5f,.75f,-.5f},{.75f,.25f,1.f,0.f}};f32 answer;
+ event(0x150ada68,0,0,0,0);if(fi>1)die();answer=v[fi][seed%4];escaped_effect(7+fi);fi++;return answer;
+}
+void *func_1513C650(void *burst,u8 a1,u8 a2,void *context,f32 x,f32 y,f32 z,f32 scale1,f32 scale2,
+ u8 random,u8 flags,s32 a11,s32 a12,s32 a13,u8 mode,s32 tag) {
+ u32 a[16]={ptr(burst,1),a1,a2,ptr(context,2),word(x),word(y),word(z),word(scale1),word(scale2),
+ random,flags,(u32)a11,(u32)a12,(u32)a13,mode,(u32)tag};
+ event(0x1513c650,16,a,burst,0);escaped_effect(12);return 0;
+}
+void func_151511FC(void *spray,u8 mode,s32 tag) {
+ u32 a[3]={ptr(spray,5),mode,(u32)tag};event(0x151511fc,3,a,spray,1);
+}
+
+@BODY@
+
+__attribute__((force_align_arg_pointer)) void _start(void) {
+ u32 count,i,j;reader=fixture_rows;count=next();
+ for(i=0;i<count;i++) {
+  case_index=i;check_index=0;
+  path=next();corrupt=next();mutation=next();coord=next();mode_value=next();tag_value=next();seed=next();initial_flag=next();
+  input.x=coords[coord][0];input.y=coords[coord][1];input.z=coords[coord][2];D_80084060=(u8)initial_flag;
+  D_8009FE10=.25f;D_8009FE14=.5f;D_8009FE18=.75f;D_8009FE1C=1.f;D_8009FE20=1.25f;D_8009FE24=1.5f;D_8009FE28=1.75f;
+  for(j=0;j<26;j++)checksum_words[j]=code_words[j]^(corrupt&&j==7?1u:0u);
+  ri=fi=gi=0;escaped_context=0;escaped_position=0;escaped_hit=0;events_left=next();
+  func_150B9ED0(path?(u8*)&input:0,1.25f,-3.75f,(u8)mode_value,(s32)tag_value);
+  if(events_left)die();check(D_80084060);check(word(input.x));check(word(input.y));check(word(input.z));
+  check(word(D_8009FE10));check(word(D_8009FE14));check(word(D_8009FE18));check(word(D_8009FE1C));
+  check(word(D_8009FE20));check(word(D_8009FE24));check(word(D_8009FE28));
+  for(j=0;j<26;j++)if(checksum_words[j]!=(code_words[j]^(corrupt&&j==7?1u:0u)))die();
+ }
+ if(reader!=fixture_end)die();__asm__ volatile("int $0x80"::"a"(1),"b"(0):"memory");__builtin_unreachable();
+}

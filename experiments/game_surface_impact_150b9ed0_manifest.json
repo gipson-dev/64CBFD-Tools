@@ -1,0 +1,218 @@
+{
+  "body": "/* Check the position gates, query the surface, and submit impact descriptors. */\nvoid func_150B9ED0(u8 *point, f32 oldX, f32 oldZ, u8 mode, s32 tag) {\n    f32 dx, dy, dz;\n    SurfacePointE7380 position;\n    SurfaceContextE7380 context;\n    s32 hit;\n    SurfaceBurstE7380 burst;\n    SurfaceSprayE7380 spray;\n    f32 firstScale, secondScale;\n    u32 firstRandom, secondRandom, thirdRandom;\n    u32 *limit;\n    u32 *cursor;\n    u32 checksum;\n    if (point == NULL) return;\n    limit = (u32 *)func_151E7F60;\n    cursor = (u32 *)func_151E7EF8;\n    checksum = 0;\n    while (cursor < limit) {\n        checksum += ~*cursor++;\n    }\n    if (checksum != 0x3843095EU) D_80084060 = 255;\n\n    if (func_150A3058(2, (s16)(s32)*(f32 *)(point + 0x14),\n            (s16)(s32)*(f32 *)(point + 0x18), (s16)(s32)*(f32 *)(point + 0x1C))) return;\n    if (func_150A3058(1, (s16)(s32)*(f32 *)(point + 0x14),\n            (s16)(s32)*(f32 *)(point + 0x18), (s16)(s32)*(f32 *)(point + 0x1C))) return;\n\n    dy = 0.0f;\n    dx = -(*(f32 *)(point + 0x14) - oldX);\n    dz = -(*(f32 *)(point + 0x1C) - oldZ);\n    if (!func_150AC9C0(*(f32 *)(point + 0x14), *(f32 *)(point + 0x18) + 80.0f,\n            *(f32 *)(point + 0x1C), dx, dy, dz, 0, &context,\n            &position.x, &position.y, &position.z, NULL, &hit, 0, 0.0f)) return;\n\n    if (func_15145C90(hit)) {\n        burst.category = 6;\n        burst.field07 = 0;\n        burst.flags = 0x9F01;\n        burst.duration = func_150ADA20() % 51U + 100;\n        burst.field08 = 0;\n        burst.field0C = 0;\n        burst.color[0] = func_150ADA20() % 101U + 155;\n        burst.color[1] = 255;\n        burst.color[2] = 255;\n        burst.color[3] = 255;\n        burst.field14 = 255;\n        burst.field15 = 255;\n        burst.field18 = 0x3B0002;\n        burst.field16 = 0;\n        burst.field17 = 7;\n        burst.field22 = 25;\n        burst.field24 = 10;\n        firstScale = func_150ADA68();\n        secondScale = func_150ADA68();\n        firstRandom = func_150ADA20();\n        secondRandom = func_150ADA20();\n        thirdRandom = func_150ADA20();\n        func_1513C650(&burst, 0, 0, &context, position.x, position.y, position.z,\n            firstScale * 20.0f + 40.0f, secondScale * 20.0f + 40.0f,\n            firstRandom & 255, (thirdRandom & 1) + ((secondRandom & 1) << 1),\n            3, 255, 0, mode, tag);\n    }\n\n    spray.field00 = 15;\n    spray.field02 = 10;\n    spray.position = position;\n    spray.direction.x = -dx;\n    spray.direction.y = -dy;\n    spray.direction.z = -dz;\n    spray.context = context;\n    spray.field30 = D_8009FE10;\n    spray.category = 7;\n    spray.field35 = 0;\n    spray.field36 = 0x3B01;\n    spray.field38 = 26;\n    spray.field3A = 20;\n    spray.field3C = 7.0f;\n    spray.field40 = 10.0f;\n    spray.flags = 0x5C0001;\n    spray.field48 = 100;\n    spray.field49 = 155;\n    spray.field4C = D_8009FE14;\n    spray.field50 = D_8009FE18;\n    spray.field54 = D_8009FE1C;\n    spray.field58 = D_8009FE20;\n    spray.field5C = 0;\n    spray.field5D = 7;\n    spray.field60 = 3;\n    spray.field64 = 255;\n    spray.field68 = 10;\n    spray.field6A = 25;\n    spray.field6C = D_8009FE24;\n    spray.field70 = D_8009FE28;\n    func_151511FC(&spray, mode, tag);\n}\n",
+  "declarations": "typedef struct { f32 x, y, z; } SurfacePointE7380;\n/* The query supplies nine halfwords; their individual meanings are unrecovered. */\ntypedef struct { s16 field[9]; } SurfaceContextE7380;\ntypedef struct {\n    u32 flags;\n    u16 duration;\n    u8 category, field07;\n    u32 field08, field0C;\n    u8 color[4], field14, field15, field16, field17;\n    u32 field18;\n    u8 reserved1C[6];\n    s16 field22, field24;\n    u8 reserved26[2];\n} SurfaceBurstE7380;\ntypedef struct {\n    s16 field00, field02;\n    SurfacePointE7380 position, direction;\n    SurfaceContextE7380 context;\n    u8 reserved2E[2];\n    f32 field30;\n    u8 category, field35;\n    u16 field36;\n    s16 field38, field3A;\n    f32 field3C, field40;\n    u32 flags;\n    u8 field48, field49, reserved4A[2];\n    f32 field4C, field50, field54, field58;\n    u8 field5C, field5D, reserved5E[2];\n    u32 field60, field64;\n    s16 field68, field6A;\n    f32 field6C, field70;\n} SurfaceSprayE7380;\nextern u8 D_80084060;\nextern f32 D_8009FE10, D_8009FE14, D_8009FE18, D_8009FE1C;\nextern f32 D_8009FE20, D_8009FE24, D_8009FE28;\nvoid func_151E7EF8(void);\nvoid func_151E7F60(void);\ns32 func_150A3058(s32, s16, s16, s16);\ns32 func_150AC9C0(f32, f32, f32, f32, f32, f32, s32, void *,\n    f32 *, f32 *, f32 *, f32 *, s32 *, s32, f32);\nu8 func_15145C90(s32);\nu32 func_150ADA20(void);\nf32 func_150ADA68(void);\nvoid *func_1513C650(void *, u8, u8, void *, f32, f32, f32, f32, f32,\n    u8, u8, s32, s32, s32, u8, s32);\nvoid func_151511FC(void *, u8, s32);\n",
+  "raw_sha256": "6fea10f66b291d71da733ba9d0ec380e9261963522e5bac60a22e3c49a287e12",
+  "raw_words": 291,
+  "raw_frame": 328,
+  "retail_words": 291,
+  "retail_frame": 344,
+  "refs": {
+    "32": [
+      [
+        "R_MIPS_HI16",
+        "func_151E7F60"
+      ]
+    ],
+    "40": [
+      [
+        "R_MIPS_LO16",
+        "func_151E7F60"
+      ]
+    ],
+    "36": [
+      [
+        "R_MIPS_HI16",
+        "func_151E7EF8"
+      ]
+    ],
+    "44": [
+      [
+        "R_MIPS_LO16",
+        "func_151E7EF8"
+      ]
+    ],
+    "100": [
+      [
+        "R_MIPS_HI16",
+        "D_80084060"
+      ]
+    ],
+    "104": [
+      [
+        "R_MIPS_LO16",
+        "D_80084060"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_150A3058"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_26",
+        "func_150A3058"
+      ]
+    ],
+    "384": [
+      [
+        "R_MIPS_26",
+        "func_150AC9C0"
+      ]
+    ],
+    "400": [
+      [
+        "R_MIPS_26",
+        "func_15145C90"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "460": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "572": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "580": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "588": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "596": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "756": [
+      [
+        "R_MIPS_26",
+        "func_1513C650"
+      ]
+    ],
+    "956": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE10"
+      ]
+    ],
+    "960": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE10"
+      ]
+    ],
+    "980": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE14"
+      ]
+    ],
+    "984": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE14"
+      ]
+    ],
+    "988": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE18"
+      ]
+    ],
+    "996": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE18"
+      ]
+    ],
+    "1000": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE1C"
+      ]
+    ],
+    "1008": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE1C"
+      ]
+    ],
+    "1012": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE20"
+      ]
+    ],
+    "1020": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE20"
+      ]
+    ],
+    "1024": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE24"
+      ]
+    ],
+    "1032": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE24"
+      ]
+    ],
+    "1036": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE28"
+      ]
+    ],
+    "1044": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE28"
+      ]
+    ],
+    "1136": [
+      [
+        "R_MIPS_26",
+        "func_151511FC"
+      ]
+    ]
+  },
+  "frozen_inputs": 1785,
+  "baseline_manifest_sha256": "3f5577fe157e8278868d7124b5947b9e8ae0def33bccb8b48820e410d0a96568",
+  "source": "conker/src/game/generated_E7380.c",
+  "asm": "conker/asm/E7380.s",
+  "entry": 353083088,
+  "rom": 947072,
+  "size": 1164,
+  "source_installed": false,
+  "c_match_credit": 0
+}
