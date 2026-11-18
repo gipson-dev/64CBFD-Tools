@@ -1,0 +1,180 @@
+{
+  "name": "func_151B118C",
+  "source": "conker/src/game/generated_1DD500.c",
+  "entry": 354095500,
+  "rom": [
+    1959484,
+    1960232
+  ],
+  "retail_words": 187,
+  "frame": 152,
+  "variants": {
+    "phase-s8": {
+      "words": 187,
+      "frame": 152,
+      "differences": 126,
+      "raw_sha256": "acadbee59f7dde569bc82102e75b9817c7e4d3d385b8e3ae2114c84b39f1b03f",
+      "refs": {
+        "16": [
+          [
+            "R_MIPS_HI16",
+            "D_800BE9A4"
+          ]
+        ],
+        "24": [
+          [
+            "R_MIPS_LO16",
+            "D_800BE9A4"
+          ]
+        ],
+        "124": [
+          [
+            "R_MIPS_HI16",
+            "D_800AA2F0"
+          ]
+        ],
+        "128": [
+          [
+            "R_MIPS_LO16",
+            "D_800AA2F0"
+          ]
+        ],
+        "448": [
+          [
+            "R_MIPS_26",
+            "func_15046C80"
+          ]
+        ],
+        "552": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "580": [
+          [
+            "R_MIPS_HI16",
+            "D_800AA2F4"
+          ]
+        ],
+        "588": [
+          [
+            "R_MIPS_LO16",
+            "D_800AA2F4"
+          ]
+        ],
+        "648": [
+          [
+            "R_MIPS_26",
+            "func_151D9B8C"
+          ]
+        ],
+        "664": [
+          [
+            "R_MIPS_HI16",
+            "D_800AA2F8"
+          ]
+        ],
+        "668": [
+          [
+            "R_MIPS_LO16",
+            "D_800AA2F8"
+          ]
+        ],
+        "712": [
+          [
+            "R_MIPS_26",
+            "func_151DAB58"
+          ]
+        ]
+      },
+      "body": "/* Integrate the detached effect and emit one impact when its enabled probe hits. */\ns8 func_151B118C(u8 *effect) {\n    union { struct { f32 height, x, z; } initial; struct { f32 height, oldVertical, acceleration; } vertical; struct { f32 x, y, z; } position; } stage;\n    f32 moveZ;\n    s8 active;\n    f32 oldY;\n    f32 oldZ;\n    f32 oldX;\n    TrailPoint151B0050 probe;\n    TrailPoint151B0050 impact;\n    f32 extent;\n    u8 *parameters;\n    f32 moveX;\n    f32 moveY;\n\n    stage.initial.height = *(f32 *)(effect + 0x38);\n    oldY = stage.initial.height;\n    parameters = effect + 0x110;\n    stage.initial.x = *(f32 *)(effect + 0x110);\n    oldX = stage.initial.x;\n    stage.initial.z = *(f32 *)(effect + 0x118);\n    oldZ = stage.initial.z;\n    active = 1;\n    *(f32 *)(effect + 0x110) = stage.initial.x * (0.25f * D_800BE9A4);\n    *(f32 *)(effect + 0x118) = stage.initial.z * (0.25f * D_800BE9A4);\n    stage.vertical.height = stage.initial.height;\n    stage.vertical.oldVertical = *(f32 *)(effect + 0x114);\n    moveX = (*(f32 *)(effect + 0x110) + oldX) * 0.5f * D_800BE9A4;\n    stage.vertical.acceleration = *(f32 *)(effect + 0x11C) * D_800BE9A4;\n    moveY = stage.vertical.oldVertical * D_800BE9A4 + stage.vertical.acceleration * D_800BE9A4 * 0.5f;\n    moveZ = (*(f32 *)(effect + 0x118) + oldZ) * 0.5f * D_800BE9A4;\n    *(f32 *)(effect + 0x114) = stage.vertical.oldVertical + stage.vertical.acceleration;\n    *(f32 *)(effect + 0x38) = stage.vertical.height + moveY;\n    stage.position.y = *(f32 *)(effect + 0x38);\n    *(f32 *)(effect + 0x34) += moveX;\n    stage.position.x = *(f32 *)(effect + 0x34);\n    *(f32 *)(effect + 0x3C) += moveZ;\n    *(f32 *)(effect + 0x40) += moveX;\n    stage.position.z = *(f32 *)(effect + 0x3C);\n    *(f32 *)(effect + 0x44) += moveY;\n    *(f32 *)(effect + 0x48) += moveZ;\n    *(f32 *)(effect + 0x40) = stage.position.x + (*(f32 *)(effect + 0x40) - stage.position.x) * D_800AA2F0;\n    *(f32 *)(effect + 0x44) = stage.position.y + (*(f32 *)(effect + 0x44) - stage.position.y) * D_800AA2F0;\n    *(f32 *)(effect + 0x48) = stage.position.z + (*(f32 *)(effect + 0x48) - stage.position.z) * D_800AA2F0;\n    if (parameters[0x24] != 0) {\n        probe.x = stage.position.x;\n        probe.y = oldY - *(f32 *)(effect + 0x30);\n        probe.z = *(f32 *)(effect + 0x3C);\n        if (func_15046C80((f32 *)&probe, 0,\n            *(f32 *)(effect + 0x38) - *(f32 *)(effect + 0x30), (HeightResult71820 *)(effect + 0x78)) != 0) {\n            impact.x = probe.x;\n            impact.z = probe.z;\n            impact.y = *(f32 *)(effect + 0x78) + 5.0f;\n            extent = (*(f32 *)(parameters + 0x14) + *(f32 *)(parameters + 0x1C) * 0.5f +\n                (*(f32 *)(parameters + 0x18) + *(f32 *)(parameters + 0x20) * 0.5f)) * 0.5f;\n            if ((u32)func_150ADA20() & 1) {\n                func_151D9B8C(parameters[0x25], extent * D_800AA2F4, effect[0x5C], (s16 *)(effect + 0x7C),\n                    (f32 *)&impact, 100, 0, 1, 0, effect[0xC], effect[1]);\n            } else {\n                func_151DAB58(parameters[0x25], extent * D_800AA2F8, effect[0x5C],\n                    (f32 *)&impact, 1, effect[0xC], effect[1]);\n            }\n            active = 0;\n        }\n    }\n    return active;\n}\n"
+    },
+    "blend-oldX-ordered": {
+      "words": 184,
+      "frame": 152,
+      "differences": 169,
+      "raw_sha256": "cff706d98cc718de59cf1e4a3b5a4bfa6c0cd104d70a3e96f2cc67260457986b",
+      "refs": {
+        "16": [
+          [
+            "R_MIPS_HI16",
+            "D_800BE9A4"
+          ]
+        ],
+        "24": [
+          [
+            "R_MIPS_LO16",
+            "D_800BE9A4"
+          ]
+        ],
+        "80": [
+          [
+            "R_MIPS_HI16",
+            "D_800AA2F0"
+          ]
+        ],
+        "304": [
+          [
+            "R_MIPS_LO16",
+            "D_800AA2F0"
+          ]
+        ],
+        "436": [
+          [
+            "R_MIPS_26",
+            "func_15046C80"
+          ]
+        ],
+        "540": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "568": [
+          [
+            "R_MIPS_HI16",
+            "D_800AA2F4"
+          ]
+        ],
+        "576": [
+          [
+            "R_MIPS_LO16",
+            "D_800AA2F4"
+          ]
+        ],
+        "636": [
+          [
+            "R_MIPS_26",
+            "func_151D9B8C"
+          ]
+        ],
+        "652": [
+          [
+            "R_MIPS_HI16",
+            "D_800AA2F8"
+          ]
+        ],
+        "656": [
+          [
+            "R_MIPS_LO16",
+            "D_800AA2F8"
+          ]
+        ],
+        "700": [
+          [
+            "R_MIPS_26",
+            "func_151DAB58"
+          ]
+        ]
+      },
+      "body": "/* Integrate the detached effect and emit one impact when its enabled probe hits. */\ns8 func_151B118C(u8 *effect) {\n    union { struct { f32 height, x, z; } initial; struct { f32 height, oldVertical, acceleration; } vertical; struct { f32 x, y, z; } position; } stage;\n    f32 moveZ;\n    s8 active;\n    f32 oldY;\n    f32 oldZ;\n    union { f32 captured, blend; } sample;\n    TrailPoint151B0050 probe;\n    TrailPoint151B0050 impact;\n    f32 extent;\n    u8 *parameters;\n    f32 moveX;\n    f32 moveY;\n\n    stage.initial.height = *(f32 *)(effect + 0x38);\n    oldY = stage.initial.height;\n    parameters = effect + 0x110;\n    stage.initial.x = *(f32 *)(effect + 0x110);\n    sample.captured = stage.initial.x;\n    stage.initial.z = *(f32 *)(effect + 0x118);\n    oldZ = stage.initial.z;\n    active = 1;\n    *(f32 *)(effect + 0x110) = stage.initial.x * (0.25f * D_800BE9A4);\n    *(f32 *)(effect + 0x118) = stage.initial.z * (0.25f * D_800BE9A4);\n    stage.vertical.height = stage.initial.height;\n    stage.vertical.oldVertical = *(f32 *)(effect + 0x114);\n    moveX = (*(f32 *)(effect + 0x110) + sample.captured) * 0.5f * D_800BE9A4;\n    stage.vertical.acceleration = *(f32 *)(effect + 0x11C) * D_800BE9A4;\n    moveY = stage.vertical.oldVertical * D_800BE9A4 + stage.vertical.acceleration * D_800BE9A4 * 0.5f;\n    moveZ = (*(f32 *)(effect + 0x118) + oldZ) * 0.5f * D_800BE9A4;\n    *(f32 *)(effect + 0x114) = stage.vertical.oldVertical + stage.vertical.acceleration;\n    *(f32 *)(effect + 0x38) = stage.vertical.height + moveY;\n    stage.position.y = *(f32 *)(effect + 0x38);\n    *(f32 *)(effect + 0x34) += moveX;\n    stage.position.x = *(f32 *)(effect + 0x34);\n    *(f32 *)(effect + 0x3C) += moveZ;\n    *(f32 *)(effect + 0x40) += moveX;\n    stage.position.z = *(f32 *)(effect + 0x3C);\n    *(f32 *)(effect + 0x44) += moveY;\n    *(f32 *)(effect + 0x48) += moveZ;\n    sample.blend = D_800AA2F0;\n    *(f32 *)(effect + 0x40) = stage.position.x + (*(f32 *)(effect + 0x40) - stage.position.x) * sample.blend;\n    *(f32 *)(effect + 0x44) = stage.position.y + (*(f32 *)(effect + 0x44) - stage.position.y) * sample.blend;\n    *(f32 *)(effect + 0x48) = stage.position.z + (*(f32 *)(effect + 0x48) - stage.position.z) * sample.blend;\n    if (parameters[0x24] != 0) {\n        probe.x = stage.position.x;\n        probe.y = oldY - *(f32 *)(effect + 0x30);\n        probe.z = *(f32 *)(effect + 0x3C);\n        if (func_15046C80((f32 *)&probe, 0,\n            *(f32 *)(effect + 0x38) - *(f32 *)(effect + 0x30), (HeightResult71820 *)(effect + 0x78)) != 0) {\n            impact.x = probe.x;\n            impact.z = probe.z;\n            impact.y = *(f32 *)(effect + 0x78) + 5.0f;\n            extent = *(f32 *)(parameters + 0x14) + *(f32 *)(parameters + 0x1C) * 0.5f;\n            extent += *(f32 *)(parameters + 0x18) + *(f32 *)(parameters + 0x20) * 0.5f;\n            extent *= 0.5f;\n            if ((u32)func_150ADA20() & 1) {\n                func_151D9B8C(parameters[0x25], extent * D_800AA2F4, effect[0x5C], (s16 *)(effect + 0x7C),\n                    (f32 *)&impact, 100, 0, 1, 0, effect[0xC], effect[1]);\n            } else {\n                func_151DAB58(parameters[0x25], extent * D_800AA2F8, effect[0x5C],\n                    (f32 *)&impact, 1, effect[0xC], effect[1]);\n            }\n            active = 0;\n        }\n    }\n    return active;\n}\n"
+    }
+  },
+  "declarations": "extern f32 D_800BE9A4, D_800AA2F0, D_800AA2F4, D_800AA2F8;\ns32 func_15046C80(f32 *, u16, f32, HeightResult71820 *);\nvoid func_151D9B8C(u8, f32, u8, s16 *, f32 *, s16, u8, u8, u8, u8, s32);\nvoid func_151DAB58(u8, f32, u8, f32 *, u8, u8, u8);\n",
+  "frozen_inputs": 1652,
+  "frozen_pin_sha256": "a8ef13db033487d1ec4ef60c8dbd8df4eaaa67860e84902df8da2478b3d98d34",
+  "source_installed": false,
+  "c_match_credit": 0
+}

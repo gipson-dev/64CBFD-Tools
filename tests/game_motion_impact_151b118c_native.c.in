@@ -1,0 +1,81 @@
+#include <ultra64.h>
+typedef struct { f32 x,y,z; } TrailPoint151B0050;
+typedef struct HeightResult71820 {
+ f32 height;s16 vertices[9];s16 pad16;u32 metadata;
+ u8 flags,state;u16 pad1E;s32 value;
+} HeightResult71820;
+@DECLARATIONS@
+#define D_800BE9A4 (*(f32 *)0x800BE9A4u)
+#define D_800AA2F0 (*(f32 *)0x800AA2F0u)
+#define D_800AA2F4 (*(f32 *)0x800AA2F4u)
+#define D_800AA2F8 (*(f32 *)0x800AA2F8u)
+enum { A=0x30000,MARK=0x70000,PROBE=0x15046C80,RNG=0x150ADA20,FIRST=0x151D9B8C,SECOND=0x151DAB58 };
+static u32 seed,hit,parity,mutation,ordinal,trace;
+static f32 *retained_probe;
+static void quit(int status){__asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory");__builtin_unreachable();}
+static void fail(const char *s){u32 n=0;while(s[n])n++;__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(s),"d"(n):"memory");quit(3);}
+static void hex(u32 n){char s[11]="00000000\n";for(u32 i=0;i<8;i++)s[7-i]="0123456789ABCDEF"[(n>>(4*i))&15];__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(s),"d"(9):"memory");}
+void *memcpy(void *dest,const void *src,u32 n){u8*d=dest;const u8*s=src;for(u32 i=0;i<n;i++)d[i]=s[i];return dest;}
+static u8 *ptr(u32 address){return (u8 *)address;}
+static u32 bits(f32 v){u32 n;memcpy(&n,&v,4);return n;}
+static const u32 fields[][2]={@FIELDS@};
+static u32 mapped(u32 off){for(u32 i=0;i<sizeof(fields)/sizeof(fields[0]);i++){u32 at=fields[i][0],n=fields[i][1];if(at<=off&&off<at+n)return at+n-1-(off-at);}return off;}
+static u8 guest_byte(u32 off){return ptr(A)[mapped(off)];}
+static void guest_store(u32 off,u8 value){ptr(A)[mapped(off)]=value;}
+static void word(u32 n){trace=(trace^n)*16777619u;}
+static void big_word(u32 n,u8 *out){for(u32 j=0;j<4;j++)out[j]=(u8)(n>>(24-8*j));}
+static void vector(const f32 *v,u8 *out){for(u32 i=0;i<3;i++)big_word(bits(v[i]),out+4*i);}
+static void log_call(u32 target,const u32 *args,u32 n,const u8 *data,u32 size){
+ word(target);word(n);for(u32 i=0;i<n;i++)word(args[i]);word(size);for(u32 i=0;i<size;i++)word(data[i]);
+ ordinal++;*(u32 *)ptr(MARK)=0x13579BDFu+ordinal*0x10203u+target;
+}
+s32 func_15046C80(f32 *probe,u16 mode,f32 threshold,HeightResult71820 *surface){
+ if(mode||surface!=(HeightResult71820 *)ptr(A+0x78))fail("probe interface");
+ retained_probe=probe;u8 observed[12];vector(probe,observed);u32 args[]={0xFFFFFF01u,mode,bits(threshold),(u32)surface};log_call(PROBE,args,4,observed,12);
+ for(u32 i=0;i<36;i++)guest_store(0x78+i,(u8)(seed+i*19));surface->height=((s32)seed-75)*.375f;
+ if(mutation&1)for(u32 j=0;j<3;j++)probe[j]=((s32)seed+(s32)j-85)*.5f;
+ if(mutation&2){ptr(A)[0x135]^=0xA7;ptr(A)[0x5C]^=0x51;ptr(A)[12]^=7;ptr(A)[1]^=0x33;for(u32 j=0;j<4;j++)*(f32 *)ptr(A+0x124+4*j)=((s32)seed+(s32)j-80)*.125f;}
+ if(mutation&4){*(f32 *)ptr(A+0x30)=-125.f;*(f32 *)ptr(A+0x34)=33.f;*(f32 *)ptr(A+0x38)=-55.f;*(f32 *)ptr(A+0x3C)=75.f;D_800BE9A4=3.f;}
+ return hit;
+}
+s32 func_150ADA20(void){
+ log_call(RNG,NULL,0,NULL,0);
+ if(mutation&8){
+  for(u32 j=0;j<3;j++)retained_probe[j]=(-(s32)seed+(s32)j)*.25f;
+  for(u32 j=0;j<4;j++)*(f32 *)ptr(A+0x124+4*j)=(-(s32)(seed+j))*.125f;
+  ptr(A)[0x135]^=0x55;ptr(A)[0x5C]^=0x31;ptr(A)[12]^=0x19;ptr(A)[1]^=0xA1;
+  D_800AA2F4=.625f;D_800AA2F8=-.25f;
+  for(u32 i=0;i<18;i++)guest_store(0x7C+i,guest_byte(0x7C+i)^((i*7+seed)&255));
+ }
+ return 0xABCDEF00u|parity;
+}
+void func_151D9B8C(u8 kind,f32 amplitude,u8 alpha,s16 *vertices,f32 *impact,s16 duration,u8 mode,u8 one,u8 zero,u8 channel,s32 context){
+ if(vertices!=(s16 *)ptr(A+0x7C)||duration!=100||mode||one!=1||zero)fail("first interface");
+ u32 args[]={kind,bits(amplitude),alpha,(u32)vertices,0xFFFFFF02u,(u32)(s32)duration,mode,one,zero,channel,(u32)context};
+ u8 observed[30];vector(impact,observed);for(u32 i=0;i<18;i++)observed[12+i]=guest_byte(0x7C+i);log_call(FIRST,args,11,observed,30);
+}
+void func_151DAB58(u8 kind,f32 amplitude,u8 alpha,f32 *impact,u8 one,u8 channel,u8 context){
+ if(one!=1)fail("second interface");u32 args[]={kind,bits(amplitude),alpha,0xFFFFFF02u,one,channel,context};
+ u8 observed[12];vector(impact,observed);log_call(SECOND,args,7,observed,12);
+}
+@BODY@
+extern const u8 fixture_rows[],fixture_end[];
+static const u8 *file;
+static void exact_read(void *dest,u32 n){if(file+n>fixture_end)fail("short fixture");memcpy(dest,file,n);file+=n;}
+static u32 get32(void){u32 n;exact_read(&n,4);return n;}
+static void mapping(u32 a,u32 n){u32 args[]={a,n,3,0x100022u,0xFFFFFFFFu,0},answer;__asm__ volatile("int $0x80":"=a"(answer):"a"(90),"b"(args):"memory");if(answer!=a)fail("mapping");}
+static u8 expected[4][512],initial[512];
+static int run(void){
+ mapping(A,4096);mapping(MARK,4096);mapping(0x800A0000u,0x20000);file=fixture_rows;
+ if(sizeof(void*)!=4||sizeof(HeightResult71820)!=36)fail("native layout");
+ u32 cases=get32(),segments=get32();if(segments!=4)fail("segments");
+ for(u32 k=0;k<cases;k++){
+  seed=get32();hit=get32();parity=get32();mutation=get32();u32 wanted_trace=get32(),wanted_answer=get32(),addresses[4],lengths[4];
+  for(u32 s=0;s<segments;s++){u32 a=addresses[s]=get32(),n=lengths[s]=get32();if(n>512)fail("segment length");exact_read(initial,n);exact_read(expected[s],n);memcpy(ptr(a),initial,n);}
+  trace=2166136261u;ordinal=0;retained_probe=NULL;
+  s32 answer=func_151B118C(ptr(A));if((u32)answer!=wanted_answer)fail("answer");if(trace!=wanted_trace)fail("trace");
+  for(u32 s=0;s<segments;s++)for(u32 i=0;i<lengths[s];i++)if(ptr(addresses[s])[i]!=expected[s][i]){hex(k);hex(addresses[s]+i);hex(ptr(addresses[s])[i]);hex(expected[s][i]);fail("memory");}
+ }
+ if(file!=fixture_end)fail("fixture tail");return 0;
+}
+__attribute__((force_align_arg_pointer))void _start(void){quit(run());}
