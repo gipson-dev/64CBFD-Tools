@@ -41,7 +41,7 @@ def qualify():
   assert hashlib.sha256(raw).hexdigest()==pin['raw_sha256'] and refs=={int(k):[tuple(v)for v in rows]for k,rows in pin['refs'].items()}
   words=bound_blob(raw,refs,symbols);assert len(words)==pin['words'] and 65536-(words[0]&65535)==pin['frame']==600
   original_words=list(struct.unpack('>484I',truth));reports.append(dict(label=label,words=len(words),frame=600,retail_frame=616,differing_words=sum(x!=y for x,y in zip(words,original_words))+abs(len(words)-484),neighbors_unchanged=20,pools_unchanged=True,c_match_credit=0))
- report=dict(passes=True,variants=reports,original_assembly_and_ROM_verified=True,source_installed=False,padders_inductive_native_and_adoption_pending=True,c_match_credit=0)
+ report=dict(passes=True,variants=reports,original_assembly_and_ROM_verified=True,source_installed=False,padders_inductive_and_adoption_pending=True,native_and_caller_checks_separate=True,c_match_credit=0)
  (OUT/'source-report.json').write_text(json.dumps(report,indent=2)+'\n');check_inputs();return report
 def controls():
  from tools.tests import game_actor_bound_burst_150b7b40_oracle as g

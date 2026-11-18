@@ -32,8 +32,8 @@ def fixture(c):
  put(m,ACTOR+0x1d4,MODEL if c.model else 0);put(m,ACTOR+0x184,0x12345678);put(m,ACTOR+0x76,0x4567,2)
  elf=(f/'conker/build/conker.us.elf').read_bytes();at=elf_slot_offset(elf,0x8009FD30,0x38);m.update({0x8009FD30+i:b for i,b in enumerate(elf[at:at+0x38])});return m
 class Oracle(FactoryOracle):
- def __init__(self,words,c,entry=ENTRY):
-  super().__init__(words,fixture(c),c,entry=entry,s={},arguments=(0 if c.null else ACTOR,0xABCD0000|c.seed,0x80000000|c.seed))
+ def __init__(self,words,c,entry=ENTRY,initial=None,arguments=None,connected=None):
+  super().__init__(words,fixture(c)if initial is None else initial,c,entry=entry,s={},arguments=(0 if c.null else ACTOR,0xABCD0000|c.seed,0x80000000|c.seed)if arguments is None else arguments,connected=connected)
   self.roles={};self.calls=[];self.integers=self.reals=0;self.saved=tuple(self.r[16:24])+tuple(self.r[28:]);self.saved_fp=tuple(self.f[20:])
  def execute(self,w):
   op,fmt,fn=w>>26,w>>21&31,w&63
@@ -116,6 +116,6 @@ def main(programs=None):
    seen.update(m.visits&set(range(base,base+4*len(words),4)));count+=1;calls+=len(m.calls)
   if stream_index==0:assert seen==set(range(ENTRY,ENTRY+1936,4))-{0x150B7D60}
   row=dict(stream=label,cases=count,words=len(words),visited_words=len(seen),provider_calls=calls,full124_and136_byte_descriptors=True,hardware_runtime_unclaimed=True);reports.append(row);print(json.dumps(row),flush=True)
- report=dict(passes=True,streams=reports,private_padding_seed_coupling='uniform 0xA5 for finite guest screen only',complete_private_inductive_relation_pending=True,providers_and_both_children_modeled=True,native_portability_pending=True,c_match_credit=0)
+ report=dict(passes=True,streams=reports,private_padding_seed_coupling='uniform 0xA5 for finite guest screen only',complete_private_inductive_relation_pending=True,providers_and_both_children_modeled=True,native_qualification_separate=True,c_match_credit=0)
  (p/'guest-report.json').write_text(json.dumps(report,indent=2)+'\n');return report
 if __name__=='__main__':main()

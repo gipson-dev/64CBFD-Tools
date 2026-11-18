@@ -1,0 +1,66 @@
+#include <ultra64.h>
+typedef struct { f32 x,y,z; } MenuBurstPointE4070;
+#define D_8009FD30 (*(MenuBurstPointE4070 *)0x8009FD30u)
+#define D_8009FD3C (*(MenuBurstPointE4070 *)0x8009FD3Cu)
+#define D_8009FD48 (*(MenuBurstPointE4070 *)0x8009FD48u)
+#define D_8009FD54 (*(f32 *)0x8009FD54u)
+#define D_8009FD58 (*(f32 *)0x8009FD58u)
+#define D_8009FD5C (*(f32 *)0x8009FD5Cu)
+#define D_8009FD60 (*(f32 *)0x8009FD60u)
+#define D_8009FD64 (*(f32 *)0x8009FD64u)
+@DECLARATIONS@
+enum {ACTOR=0x60000,MODEL=0x68000,RNG=0x150ADA20,REAL=0x150ADA68,SINE=0x151423D8,POSITION=0x15142314,TRANSFORM=0x15143134,BOUNDS=0x1515C244,BURST=0x150B82D0,RADIAL=0x150B85C0,INIT=0x1504715C,QUERY=0x15046C80,FLOOR=0x1514C678,CHILD=0x15132A4C,SPRAY=0x15151A38};
+extern const u8 fixture_rows[],fixture_end[];
+static const u8 *file;
+static u32 model_case,zero_case,floor_case,profile,mutation,phase,seed,null_case,remaining,ordinal,integers,reals,roles[14];
+static const u32 spans[]={0,12,12,12,12,12,12,4,4,4,36,12,124,136};
+static void quit(int status){__asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory");__builtin_unreachable();}
+static void fail(const char*s){u32 n=0;while(s[n])n++;__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(s),"d"(n):"memory");quit(3);}
+void *memcpy(void*d,const void*s,u32 n){u8*a=d;const u8*b=s;for(u32 i=0;i<n;i++)a[i]=b[i];return d;}
+static u32 fbits(f32 x){union{f32 f;u32 u;}v;v.f=x;return v.u;}
+static f32 frombits(u32 x){union{f32 f;u32 u;}v;v.u=x;return v.f;}
+f32 fabsf(f32 x){return frombits(fbits(x)&0x7fffffffu);}
+f32 sqrtf(f32 x){f32 y;__asm__("sqrtss %1,%0":"=x"(y):"x"(x));return y;}
+static u32 get32(void){u32 n;if(file+4>fixture_end)fail("short fixture");memcpy(&n,file,4);file+=4;return n;}
+static void put32(u32 at,u32 v){u8*p=(u8*)at;for(u32 i=0;i<4;i++)p[i]=(u8)(v>>(8*i));}
+static void put16(u32 at,u32 v){u8*p=(u8*)at;p[0]=(u8)v;p[1]=(u8)(v>>8);}
+static void vector(u32 at,f32 x,f32 y,f32 z){put32(at,fbits(x));put32(at+4,fbits(y));put32(at+8,fbits(z));}
+static void role(u32 k,const void*p){u32 a=(u32)p;if(!a||(a&3))fail("role alignment");if(roles[k]&&roles[k]!=a)fail("role address");
+ for(u32 i=1;i<14;i++)if(i!=k&&roles[i]&&a<roles[i]+spans[i]&&roles[i]<a+spans[k])fail("role overlap");roles[k]=a;}
+static u32 normalized(u32 a){for(u32 i=1;i<14;i++)if(roles[i]&&roles[i]==a)return 0xffffff00u+i;return a;}
+static void begin(u32 t,const u32*a,u32 n,u32 bytes){if(!remaining)fail("unexpected call");remaining--;ordinal++;
+ if(get32()!=t||get32()!=n||get32()!=bytes)fail("call header");for(u32 i=0;i<n;i++)if(get32()!=normalized(a[i]))fail("argument");}
+static void observe(const void*p,u32 n,u32 width){const u8*a=p;if(n%width||file+n>fixture_end)fail("observation size");
+ for(u32 i=0;i<n;i++)if(a[width*(i/width)+width-1-i%width]!=*file++)fail("observation");}
+static void effects(void){
+ if(mutation&1){const u32 offsets[]={0x14,0x18,0x1c,0x3c,0x40,0xb8,0xc4,0x14c,0x150};for(u32 i=0;i<9;i++)put32(ACTOR+offsets[i],fbits((ordinal%5+i+1)/4.f));put16(ACTOR+0x76,(0x4567u+ordinal*0x1100u)&65535);put32(ACTOR+0x184,0x12340000u|ordinal);}
+ if(mutation&2)for(u32 k=1;k<14;k++)if(roles[k])for(u32 i=0;i<((k>=7&&k<=10)?1u:3u);i++)put32(roles[k]+4*i,fbits(((ordinal+k+i)%13+1)/4.f));
+}
+s32 func_150ADA20(void){const u32 bases[]={0,25,0xffffffffu,0x80000000u};begin(RNG,0,0,0);u32 answer=bases[profile]+integers*0x13579bdfu;integers++;effects();return(s32)answer;}
+f32 func_150ADA68(void){begin(REAL,0,0,0);f32 answer=.125f+.0625f*(reals%5);reals++;effects();return answer;}
+f32 func_151423D8(u8 angle){u32 a[]={angle};begin(SINE,a,1,0);f32 answer=((s32)angle-128)/128.f;effects();return answer;}
+void func_15142314(void*m,s32 index,MenuBurstPointE4070*out){role(index==4?1:index==5?2:3,out);u32 a[]={(u32)m,(u32)index,(u32)out};begin(POSITION,a,3,0);vector((u32)out,1.f+index,2.f+index,3.f+index);effects();}
+void func_15143134(MenuBurstPointE4070*in,MenuBurstPointE4070*out,void*m){u32 which=((u32)in-0x8009fd30u)/12;role(4+which,out);u32 a[]={(u32)in,(u32)out,(u32)m};begin(TRANSFORM,a,3,12);observe(in,12,4);vector((u32)out,zero_case?0.f:1.f+which*3,zero_case?0.f:2.f+which*3,zero_case?0.f:3.f+which*3);effects();}
+void func_1515C244(ActorBurstE4070*a,MenuBurstPointE4070*p,f32*r,f32*h){role(4,p);role(8,r);role(7,h);u32 v[]={(u32)a,(u32)p,(u32)r,(u32)h};begin(BOUNDS,v,4,0);vector((u32)p,1.25f,2.5f,3.75f);put32((u32)r,fbits(zero_case?0.f:4.f));put32((u32)h,fbits(zero_case?0.f:6.f));effects();}
+void func_150B82D0(MenuBurstPointE4070*p,f32*h,f32*r,f32*q,u8 slot,s32 context){role(4,p);role(7,h);role(8,r);role(9,q);u32 a[]={(u32)p,(u32)h,(u32)r,(u32)q,slot,(u32)context};begin(BURST,a,6,24);observe(p,12,4);observe(h,4,4);observe(r,4,4);observe(q,4,4);effects();}
+void *func_150B85C0(MenuBurstPointE4070*p,f32*h,f32*r,u8 slot,s32 context){role(4,p);role(7,h);role(8,r);u32 a[]={(u32)p,(u32)h,(u32)r,slot,(u32)context};begin(RADIAL,a,5,20);observe(p,12,4);observe(h,4,4);observe(r,4,4);effects();return 0;}
+void func_1504715C(ActorHeightResultE4070*p,ActorBurstE4070*actor){role(10,p);u32 a[]={(u32)p,(u32)actor};begin(INIT,a,2,0);for(u32 i=0;i<36;i++)((u8*)p)[i]=0;put32((u32)p,fbits(7.5f));effects();}
+s32 func_15046C80(MenuBurstPointE4070*p,u16 flag,f32 depth,ActorHeightResultE4070*out){role(11,p);role(10,out);u32 a[]={(u32)p,flag,fbits(depth),(u32)out};begin(QUERY,a,4,48);observe(p,12,4);observe(out,36,4);put32((u32)out,fbits(7.5f));effects();return floor_case;}
+void func_1514C678(f32 x,f32 y,f32 z,f32 size,s16 kind,s16 alpha,s16 duration,u8 mode,s32 flag,f32 rate,void*p,u8 slot){u32 a[]={fbits(x),fbits(y),fbits(z),fbits(size),(u32)(s32)kind,(u32)(s32)alpha,(u32)(s32)duration,mode,(u32)flag,fbits(rate),(u32)p,slot};begin(FLOOR,a,12,0);effects();}
+static void child_observe(const u8*p){observe(p,80,4);observe(p+0x50,4,4);observe(p+0x54,4,2);observe(p+0x58,1,1);observe(p+0x5c,4,4);observe(p+0x60,9,1);observe(p+0x6a,1,1);observe(p+0x6c,4,4);observe(p+0x70,1,1);observe(p+0x72,4,2);}
+static void spray_observe(const u8*p){observe(p,36,4);observe(p+0x24,20,2);observe(p+0x38,3,1);observe(p+0x3c,24,4);observe(p+0x54,3,1);observe(p+0x58,36,4);observe(p+0x7c,2,1);observe(p+0x80,4,2);observe(p+0x84,4,4);}
+void *func_15132A4C(void*p,s32 resource,s32 value,s32 payload,u8 slot,s32 context){role(12,p);u32 a[]={(u32)p,(u32)resource,(u32)value,(u32)payload,slot,(u32)context};begin(CHILD,a,6,112);child_observe(p);effects();return 0;}
+void func_15151A38(void*p,u8 slot,s32 context){role(13,p);u32 a[]={(u32)p,slot,(u32)context};begin(SPRAY,a,3,132);spray_observe(p);effects();}
+@BODY@
+static void mapping(u32 a){u32 args[]={a,4096,3,0x100022u,0xffffffffu,0},answer;__asm__ volatile("int $0x80":"=a"(answer):"a"(90),"b"(args):"memory");if(answer!=a)fail("mapping");}
+static u8 expected[3][0x200];
+static int run(void){mapping(ACTOR);mapping(MODEL);mapping(0x8009f000u);file=fixture_rows;
+ if(sizeof(void*)!=4||sizeof(ActorChildDescriptorE4070)!=124||sizeof(ActorSprayDescriptorE4070)!=136||sizeof(ActorHeightResultE4070)!=36||__builtin_offsetof(ActorBurstE4070,model)!=0x1d4)fail("layout");
+ u32 cases=get32();for(u32 row=0;row<cases;row++){
+  model_case=get32();zero_case=get32();floor_case=get32();profile=get32();mutation=get32();phase=get32();seed=get32();null_case=get32();u32 addresses[3],lengths[3];
+  for(u32 s=0;s<3;s++){u32 a=addresses[s]=get32(),n=lengths[s]=get32();if(n>0x200||file+2*n>fixture_end)fail("window");memcpy((void*)a,file,n);file+=n;memcpy(expected[s],file,n);file+=n;}
+  remaining=get32();ordinal=integers=reals=0;for(u32 i=0;i<14;i++)roles[i]=0;
+  func_150B7B40(null_case?0:(void*)ACTOR,(u8)seed,(s32)(0x80000000u|seed));if(remaining)fail("missing call");
+  for(u32 s=0;s<3;s++)for(u32 i=0;i<lengths[s];i++)if(((u8*)addresses[s])[i]!=expected[s][i])fail("public memory");
+ }if(file!=fixture_end)fail("fixture tail");return 0;}
+__attribute__((force_align_arg_pointer))void _start(void){quit(run());}
