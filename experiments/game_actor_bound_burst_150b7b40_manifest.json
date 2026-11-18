@@ -1,0 +1,528 @@
+{
+  "name": "func_150B7B40",
+  "declarations": "typedef struct {\n    u8 reserved00[0x14];\n    MenuBurstPointE4070 position;\n    u8 reserved20[0x1C];\n    f32 radialOffset, field40;\n    u8 reserved44[0x32];\n    u16 heading;\n    u8 reserved78[0x40];\n    f32 fieldB8;\n    u8 reservedBC[8];\n    f32 fieldC4;\n    u8 reservedC8[0x84];\n    f32 factorX, factorY;\n    u8 reserved154[0x30];\n    u32 field184;\n    u8 reserved188[0x4C];\n    void *model;\n} ActorBurstE4070;\ntypedef struct {\n    f32 field00, field04, field08, field0C;\n    f32 field10, field14, field18, field1C, field20, field24;\n    MenuBurstPointE4070 position;\n    MenuBurstPointE4070 velocity;\n    f32 field40, field44, field48, field4C;\n    u32 flags;\n    s16 field54;\n    u16 resource;\n    u8 field58, reserved59[3];\n    u32 field5C;\n    u8 field60, field61, field62, field63, field64, field65;\n    u8 field66, field67, field68, reserved69, field6A, reserved6B;\n    u32 field6C;\n    u8 field70, reserved71;\n    s16 field72, field74;\n    u8 reserved76[6];\n} ActorChildDescriptorE4070;\ntypedef struct {\n    MenuBurstPointE4070 position;\n    f32 field0C, field10, field14, field18, field1C, field20;\n    s16 field24, field26, field28, field2A, field2C, field2E;\n    s16 field30, field32, field34, field36;\n    u8 field38, field39, field3A, reserved3B;\n    u32 field3C, field40, field44, field48, field4C, field50;\n    u8 field54, field55, field56, reserved57;\n    u32 field58, field5C, field60, field64, field68;\n    u32 field6C, field70, field74, field78;\n    u8 field7C, field7D, reserved7E[2];\n    s16 field80, field82;\n    u32 field84;\n} ActorSprayDescriptorE4070;\ntypedef struct { f32 height; u8 retained04[0x20]; } ActorHeightResultE4070;\nextern MenuBurstPointE4070 D_8009FD30, D_8009FD3C, D_8009FD48;\nextern f32 D_8009FD54, D_8009FD58, D_8009FD5C, D_8009FD60, D_8009FD64;\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nf32 func_151423D8(u8);\nf32 sqrtf(f32);\nf32 fabsf(f32);\n#pragma intrinsic (fabsf)\nvoid func_15142314(void *, s32, MenuBurstPointE4070 *);\nvoid func_15143134(MenuBurstPointE4070 *, MenuBurstPointE4070 *, void *);\nvoid func_1515C244(ActorBurstE4070 *, MenuBurstPointE4070 *, f32 *, f32 *);\nvoid func_150B82D0(MenuBurstPointE4070 *, f32 *, f32 *, f32 *, u8, s32);\nvoid *func_150B85C0(MenuBurstPointE4070 *, f32 *, f32 *, u8, s32);\nvoid func_1504715C(ActorHeightResultE4070 *, ActorBurstE4070 *);\ns32 func_15046C80(MenuBurstPointE4070 *, u16, f32, ActorHeightResultE4070 *);\nvoid func_1514C678(f32, f32, f32, f32, s16, s16, s16, u8, s32, f32, void *, u8);\nvoid *func_15132A4C(void *, s32, s32, s32, u8, s32);\nvoid func_15151A38(void *, u8, s32);\n",
+  "variants": {
+    "portable-11": {
+      "body": "/* Emit the actor's bound burst, ground effect, and two endpoint sprays. */\nvoid func_150B7B40(ActorBurstE4070 *actor, u8 slot, s32 context) {\n    MenuBurstPointE4070 endpoints[2];\n    MenuBurstPointE4070 origin;\n    ActorChildDescriptorE4070 child;\n    f32 offsetX, offsetZ;\n    f32 height, radius, ratio;\n    MenuBurstPointE4070 center;\n    MenuBurstPointE4070 boundA, boundB;\n    ActorHeightResultE4070 floor;\n    MenuBurstPointE4070 probe;\n    ActorSprayDescriptorE4070 spray;\n    f32 sine, cosine, dx, dz;\n    f32 factorX, factorY, magnitude;\n    f32 headingSine, headingCosine, pitchSine, pitchCosine;\n    s16 heading, pitch;\n    s16 duration;\n    s8 index;\n    void *matrix;\n\n    if (actor == NULL) return;\n    if (actor->model != NULL) {\n        func_15142314(actor->model, 4, &endpoints[0]);\n        func_15142314(actor->model, 5, &endpoints[1]);\n        func_15142314(actor->model, 0, &origin);\n    } else {\n        origin.x = actor->position.x;\n        origin.y = actor->position.y;\n        origin.z = actor->position.z;\n        endpoints[0].x = origin.x + 20.0f;\n        endpoints[1].x = origin.x - 20.0f;\n        endpoints[0].y = endpoints[1].y = origin.y + 130.0f;\n        endpoints[0].z = endpoints[1].z = origin.z;\n    }\n    sine = func_151423D8((actor->heading >> 8) & 255);\n    cosine = func_151423D8(((actor->heading >> 8) + 64) & 255);\n    offsetX = actor->radialOffset * sine;\n    offsetZ = actor->radialOffset * cosine;\n    if (actor->model != NULL) {\n        matrix = (u8 *)actor->model + 0x80;\n        func_15143134(&D_8009FD30, &center, matrix);\n        func_15143134(&D_8009FD3C, &boundA, matrix);\n        func_15143134(&D_8009FD48, &boundB, matrix);\n        height = fabsf(center.y - boundA.y);\n        dx = boundB.x - boundA.x;\n        dz = boundB.z - boundA.z;\n        radius = sqrtf(dx * dx + dz * dz);\n    } else {\n        func_1515C244(actor, &center, &radius, &height);\n    }\n    ratio = radius != 0.0f ? height / radius : 1.0f;\n    func_150B82D0(&center, &height, &radius, &ratio, slot, context);\n    func_150B85C0(&center, &height, &radius, slot, context);\n    probe.x = center.x;\n    probe.y = center.y + 100.0f;\n    probe.z = center.z;\n    func_1504715C(&floor, actor);\n    if (func_15046C80(&probe, 0, center.y - 2000.0f, &floor)) {\n        probe.y = floor.height;\n        duration = (u32)func_150ADA20() % 11U + 30;\n        func_1514C678(probe.x, probe.y + 31.0f, probe.z, radius,\n            0, 255, duration, 25, 0, 0.0f, NULL, slot);\n    }\n    child.field04 = D_8009FD54;\n    child.field54 = 300;\n    child.resource = 0;\n    child.field10 = actor->fieldB8;\n    child.field14 = actor->field40;\n    child.field18 = actor->fieldC4;\n    child.field1C = child.field20 = child.field24 = 1.0f;\n    child.flags = 0x197D;\n    child.field58 = 0;\n    child.field5C = 0;\n    child.field60 = 255;\n    child.field61 = 1;\n    child.field62 = 0;\n    child.field63 = 1;\n    child.field64 = 0;\n    child.field65 = 1;\n    child.field66 = 0;\n    child.field67 = 0;\n    child.field68 = 0;\n    child.field6A = 0;\n    child.field6C = 0;\n    child.field70 = 0;\n    child.field72 = 1;\n    child.field74 = 255;\n    child.field48 = 0.0f;\n    child.field4C = D_8009FD58;\n    factorX = actor->factorX;\n    if (factorX > 1.0f) factorX = 1.0f;\n    if (factorX < 0.5f) factorX = 0.5f;\n    factorY = actor->factorY;\n    if (factorY > 1.0f) factorY = 1.0f;\n    if (factorY < 0.5f) factorY = 0.5f;\n    child.field00 = (28.0f * factorY + 28.0f * factorX) * 0.5f;\n    child.field08 = 3.0f * factorX;\n    child.field0C = 3.0f * factorY;\n    index = 0;\n    do {\n        magnitude = func_150ADA68();\n        magnitude = (magnitude * 30.0f) * actor->factorY + 10.0f;\n        heading = (u32)func_150ADA20() & 127;\n        pitch = -32 - ((u32)func_150ADA20() & 31);\n        headingSine = func_151423D8(heading);\n        headingCosine = func_151423D8(heading - 64);\n        pitchSine = func_151423D8(pitch);\n        pitchCosine = func_151423D8(pitch - 64);\n        child.position = endpoints[index];\n        child.velocity.x = (magnitude * pitchSine) * headingCosine + offsetX;\n        child.velocity.y = -magnitude * pitchCosine;\n        child.velocity.z = (magnitude * pitchSine) * headingSine + offsetZ;\n        child.field40 = 30.0f - func_150ADA68() * 60.0f;\n        child.field44 = 30.0f - func_150ADA68() * 60.0f;\n        func_15132A4C(&child, 3, 2, 0, slot, 0);\n        magnitude = ((actor->factorX + actor->factorY) * 0.5f) / D_8009FD5C;\n        spray.position = endpoints[index];\n        spray.field24 = 4;\n        spray.field26 = 4;\n        spray.field2A = 255;\n        spray.field2C = -63;\n        spray.field2E = 75;\n        spray.field34 = 50;\n        spray.field36 = 20;\n        spray.field30 = 3;\n        spray.field32 = 3;\n        spray.field39 = 33;\n        spray.field3A = 72;\n        spray.field3C = 1;\n        spray.field55 = 155;\n        spray.field56 = 100;\n        spray.field58 = 3;\n        spray.field0C = spray.field10 = 3.0f * magnitude;\n        spray.field1C = 15.0f * magnitude;\n        spray.field20 = 10.0f * magnitude;\n        spray.field28 = 0;\n        spray.field38 = 1;\n        spray.field40 = 0;\n        spray.field44 = 0;\n        spray.field48 = 0;\n        spray.field4C = 0;\n        spray.field50 = 0;\n        spray.field54 = 0;\n        spray.field5C = 255;\n        spray.field60 = 0;\n        spray.field64 = 0x220005;\n        spray.field68 = 0x1D0600;\n        spray.field6C = 1;\n        spray.field70 = 0x3B;\n        spray.field74 = 0x80;\n        spray.field78 = 0x20;\n        spray.field7C = 0;\n        spray.field7D = 7;\n        spray.field80 = 10;\n        spray.field82 = 25;\n        spray.field14 = D_8009FD60;\n        spray.field18 = D_8009FD64;\n        spray.field84 = actor->field184;\n        func_15151A38(&spray, slot, context);\n        index++;\n    } while (index < 2);\n}\n",
+      "raw_sha256": "b30ccee3300b04fbc031360306514ca66502e313ff4ac0da0b236eb9ab80f611",
+      "refs": {
+        "96": [
+          [
+            "R_MIPS_26",
+            "func_15142314"
+          ]
+        ],
+        "112": [
+          [
+            "R_MIPS_26",
+            "func_15142314"
+          ]
+        ],
+        "128": [
+          [
+            "R_MIPS_26",
+            "func_15142314"
+          ]
+        ],
+        "240": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "264": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "316": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD30"
+          ]
+        ],
+        "320": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD30"
+          ]
+        ],
+        "328": [
+          [
+            "R_MIPS_26",
+            "func_15143134"
+          ]
+        ],
+        "336": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD3C"
+          ]
+        ],
+        "340": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD3C"
+          ]
+        ],
+        "348": [
+          [
+            "R_MIPS_26",
+            "func_15143134"
+          ]
+        ],
+        "356": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD48"
+          ]
+        ],
+        "360": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD48"
+          ]
+        ],
+        "368": [
+          [
+            "R_MIPS_26",
+            "func_15143134"
+          ]
+        ],
+        "476": [
+          [
+            "R_MIPS_26",
+            "func_1515C244"
+          ]
+        ],
+        "568": [
+          [
+            "R_MIPS_26",
+            "func_150B82D0"
+          ]
+        ],
+        "596": [
+          [
+            "R_MIPS_26",
+            "func_150B85C0"
+          ]
+        ],
+        "648": [
+          [
+            "R_MIPS_26",
+            "func_1504715C"
+          ]
+        ],
+        "688": [
+          [
+            "R_MIPS_26",
+            "func_15046C80"
+          ]
+        ],
+        "704": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "792": [
+          [
+            "R_MIPS_26",
+            "func_1514C678"
+          ]
+        ],
+        "800": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD54"
+          ]
+        ],
+        "804": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD54"
+          ]
+        ],
+        "828": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD58"
+          ]
+        ],
+        "832": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD58"
+          ]
+        ],
+        "1148": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "1168": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "1184": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "1212": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1232": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1244": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1264": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1364": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "1392": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "1440": [
+          [
+            "R_MIPS_26",
+            "func_15132A4C"
+          ]
+        ],
+        "1468": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD5C"
+          ]
+        ],
+        "1472": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD5C"
+          ]
+        ],
+        "1528": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD60"
+          ]
+        ],
+        "1640": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD60"
+          ]
+        ],
+        "1644": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD64"
+          ]
+        ],
+        "1652": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD64"
+          ]
+        ],
+        "1848": [
+          [
+            "R_MIPS_26",
+            "func_15151A38"
+          ]
+        ]
+      },
+      "words": 485,
+      "frame": 600
+    },
+    "captured-model": {
+      "body": "/* Emit the actor's bound burst, ground effect, and two endpoint sprays. */\nvoid func_150B7B40(ActorBurstE4070 *actor, u8 slot, s32 context) {\n    MenuBurstPointE4070 endpoints[2];\n    MenuBurstPointE4070 origin;\n    ActorChildDescriptorE4070 child;\n    f32 offsetX, offsetZ;\n    f32 height, radius, ratio;\n    MenuBurstPointE4070 center;\n    MenuBurstPointE4070 boundA, boundB;\n    ActorHeightResultE4070 floor;\n    MenuBurstPointE4070 probe;\n    ActorSprayDescriptorE4070 spray;\n    f32 sine, cosine, dx, dz;\n    f32 factorX, factorY, magnitude;\n    f32 headingSine, headingCosine, pitchSine, pitchCosine;\n    s16 heading, pitch;\n    s16 duration;\n    s8 index;\n    void *matrix;\n\n    if (actor == NULL) return;\n    if (actor->model != NULL) {\n        func_15142314(actor->model, 4, &endpoints[0]);\n        func_15142314(actor->model, 5, &endpoints[1]);\n        func_15142314(actor->model, 0, &origin);\n    } else {\n        origin.x = actor->position.x;\n        origin.y = actor->position.y;\n        origin.z = actor->position.z;\n        endpoints[0].x = origin.x + 20.0f;\n        endpoints[1].x = origin.x - 20.0f;\n        endpoints[0].y = endpoints[1].y = origin.y + 130.0f;\n        endpoints[0].z = endpoints[1].z = origin.z;\n    }\n    sine = func_151423D8((actor->heading >> 8) & 255);\n    cosine = func_151423D8(((actor->heading >> 8) + 64) & 255);\n    offsetX = actor->radialOffset * sine;\n    offsetZ = actor->radialOffset * cosine;\n    matrix = actor->model;\n    if (matrix != NULL) {\n        matrix = (u8 *)matrix + 0x80;\n        func_15143134(&D_8009FD30, &center, matrix);\n        func_15143134(&D_8009FD3C, &boundA, matrix);\n        func_15143134(&D_8009FD48, &boundB, matrix);\n        height = fabsf(center.y - boundA.y);\n        dx = boundB.x - boundA.x;\n        dz = boundB.z - boundA.z;\n        radius = sqrtf(dx * dx + dz * dz);\n    } else {\n        func_1515C244(actor, &center, &radius, &height);\n    }\n    ratio = radius != 0.0f ? height / radius : 1.0f;\n    func_150B82D0(&center, &height, &radius, &ratio, slot, context);\n    func_150B85C0(&center, &height, &radius, slot, context);\n    probe.x = center.x;\n    probe.y = center.y + 100.0f;\n    probe.z = center.z;\n    func_1504715C(&floor, actor);\n    if (func_15046C80(&probe, 0, center.y - 2000.0f, &floor)) {\n        probe.y = floor.height;\n        duration = (u32)func_150ADA20() % 11U + 30;\n        func_1514C678(probe.x, probe.y + 31.0f, probe.z, radius,\n            0, 255, duration, 25, 0, 0.0f, NULL, slot);\n    }\n    child.field04 = D_8009FD54;\n    child.field54 = 300;\n    child.resource = 0;\n    child.field10 = actor->fieldB8;\n    child.field14 = actor->field40;\n    child.field18 = actor->fieldC4;\n    child.field1C = child.field20 = child.field24 = 1.0f;\n    child.flags = 0x197D;\n    child.field58 = 0;\n    child.field5C = 0;\n    child.field60 = 255;\n    child.field61 = 1;\n    child.field62 = 0;\n    child.field63 = 1;\n    child.field64 = 0;\n    child.field65 = 1;\n    child.field66 = 0;\n    child.field67 = 0;\n    child.field68 = 0;\n    child.field6A = 0;\n    child.field6C = 0;\n    child.field70 = 0;\n    child.field72 = 1;\n    child.field74 = 255;\n    child.field48 = 0.0f;\n    child.field4C = D_8009FD58;\n    factorX = actor->factorX;\n    if (factorX > 1.0f) factorX = 1.0f;\n    if (factorX < 0.5f) factorX = 0.5f;\n    factorY = actor->factorY;\n    if (factorY > 1.0f) factorY = 1.0f;\n    if (factorY < 0.5f) factorY = 0.5f;\n    child.field00 = (28.0f * factorY + 28.0f * factorX) * 0.5f;\n    child.field08 = 3.0f * factorX;\n    child.field0C = 3.0f * factorY;\n    index = 0;\n    do {\n        magnitude = func_150ADA68();\n        magnitude = (magnitude * 30.0f) * actor->factorY + 10.0f;\n        heading = (u32)func_150ADA20() & 127;\n        pitch = -32 - ((u32)func_150ADA20() & 31);\n        headingSine = func_151423D8(heading);\n        headingCosine = func_151423D8(heading - 64);\n        pitchSine = func_151423D8(pitch);\n        pitchCosine = func_151423D8(pitch - 64);\n        child.position = endpoints[index];\n        child.velocity.x = (magnitude * pitchSine) * headingCosine + offsetX;\n        child.velocity.y = -magnitude * pitchCosine;\n        child.velocity.z = (magnitude * pitchSine) * headingSine + offsetZ;\n        child.field40 = 30.0f - func_150ADA68() * 60.0f;\n        child.field44 = 30.0f - func_150ADA68() * 60.0f;\n        func_15132A4C(&child, 3, 2, 0, slot, 0);\n        magnitude = ((actor->factorX + actor->factorY) * 0.5f) / D_8009FD5C;\n        spray.position = endpoints[index];\n        spray.field24 = 4;\n        spray.field26 = 4;\n        spray.field2A = 255;\n        spray.field2C = -63;\n        spray.field2E = 75;\n        spray.field34 = 50;\n        spray.field36 = 20;\n        spray.field30 = 3;\n        spray.field32 = 3;\n        spray.field39 = 33;\n        spray.field3A = 72;\n        spray.field3C = 1;\n        spray.field55 = 155;\n        spray.field56 = 100;\n        spray.field58 = 3;\n        spray.field0C = spray.field10 = 3.0f * magnitude;\n        spray.field1C = 15.0f * magnitude;\n        spray.field20 = 10.0f * magnitude;\n        spray.field28 = 0;\n        spray.field38 = 1;\n        spray.field40 = 0;\n        spray.field44 = 0;\n        spray.field48 = 0;\n        spray.field4C = 0;\n        spray.field50 = 0;\n        spray.field54 = 0;\n        spray.field5C = 255;\n        spray.field60 = 0;\n        spray.field64 = 0x220005;\n        spray.field68 = 0x1D0600;\n        spray.field6C = 1;\n        spray.field70 = 0x3B;\n        spray.field74 = 0x80;\n        spray.field78 = 0x20;\n        spray.field7C = 0;\n        spray.field7D = 7;\n        spray.field80 = 10;\n        spray.field82 = 25;\n        spray.field14 = D_8009FD60;\n        spray.field18 = D_8009FD64;\n        spray.field84 = actor->field184;\n        func_15151A38(&spray, slot, context);\n        index++;\n    } while (index < 2);\n}\n",
+      "raw_sha256": "f6ae7b3b5be62c55a8afbfc2189a8bc6737a7c81a3c045edc5eb340904d8d9e6",
+      "refs": {
+        "92": [
+          [
+            "R_MIPS_26",
+            "func_15142314"
+          ]
+        ],
+        "108": [
+          [
+            "R_MIPS_26",
+            "func_15142314"
+          ]
+        ],
+        "124": [
+          [
+            "R_MIPS_26",
+            "func_15142314"
+          ]
+        ],
+        "236": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "260": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "312": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD30"
+          ]
+        ],
+        "316": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD30"
+          ]
+        ],
+        "324": [
+          [
+            "R_MIPS_26",
+            "func_15143134"
+          ]
+        ],
+        "332": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD3C"
+          ]
+        ],
+        "336": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD3C"
+          ]
+        ],
+        "344": [
+          [
+            "R_MIPS_26",
+            "func_15143134"
+          ]
+        ],
+        "352": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD48"
+          ]
+        ],
+        "356": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD48"
+          ]
+        ],
+        "364": [
+          [
+            "R_MIPS_26",
+            "func_15143134"
+          ]
+        ],
+        "472": [
+          [
+            "R_MIPS_26",
+            "func_1515C244"
+          ]
+        ],
+        "564": [
+          [
+            "R_MIPS_26",
+            "func_150B82D0"
+          ]
+        ],
+        "592": [
+          [
+            "R_MIPS_26",
+            "func_150B85C0"
+          ]
+        ],
+        "644": [
+          [
+            "R_MIPS_26",
+            "func_1504715C"
+          ]
+        ],
+        "684": [
+          [
+            "R_MIPS_26",
+            "func_15046C80"
+          ]
+        ],
+        "700": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "788": [
+          [
+            "R_MIPS_26",
+            "func_1514C678"
+          ]
+        ],
+        "796": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD54"
+          ]
+        ],
+        "800": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD54"
+          ]
+        ],
+        "824": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD58"
+          ]
+        ],
+        "828": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD58"
+          ]
+        ],
+        "1144": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "1164": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "1180": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "1208": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1228": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1240": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1260": [
+          [
+            "R_MIPS_26",
+            "func_151423D8"
+          ]
+        ],
+        "1360": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "1388": [
+          [
+            "R_MIPS_26",
+            "func_150ADA68"
+          ]
+        ],
+        "1436": [
+          [
+            "R_MIPS_26",
+            "func_15132A4C"
+          ]
+        ],
+        "1464": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD5C"
+          ]
+        ],
+        "1468": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD5C"
+          ]
+        ],
+        "1524": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD60"
+          ]
+        ],
+        "1636": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD60"
+          ]
+        ],
+        "1640": [
+          [
+            "R_MIPS_HI16",
+            "D_8009FD64"
+          ]
+        ],
+        "1648": [
+          [
+            "R_MIPS_LO16",
+            "D_8009FD64"
+          ]
+        ],
+        "1844": [
+          [
+            "R_MIPS_26",
+            "func_15151A38"
+          ]
+        ]
+      },
+      "words": 484,
+      "frame": 600
+    }
+  },
+  "frozen_inputs": 1696,
+  "c_match_credit": 0
+}
