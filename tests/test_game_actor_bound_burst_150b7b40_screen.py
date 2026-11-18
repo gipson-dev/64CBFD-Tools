@@ -5,6 +5,7 @@ from tools.tests import game_actor_bound_burst_150b7b40_oracle as guest
 from tools.tests import game_actor_bound_burst_150b7b40_native as native
 from tools.tests import game_actor_bound_burst_150b7b40_callers as callers
 from tools.tests import game_actor_bound_burst_150b7b40_frame as frame
+from tools.tests import game_actor_bound_burst_150b7b40_proof as proof
 class ActorBoundBurstScreen(unittest.TestCase):
  def test_01_source_and_original_assembly(self):self.assertTrue(source.qualify()['passes'])
  def test_02_complete_parent_guest(self):self.assertTrue(guest.main()['passes'])
@@ -13,6 +14,8 @@ class ActorBoundBurstScreen(unittest.TestCase):
  def test_05_genuine_actor_state_caller(self):self.assertTrue(callers.main()['passes'])
  def test_06_private_frame_ledger(self):
   report=frame.main();self.assertEqual([v['frame']for v in report['streams']],[616,600]);self.assertEqual([v['unmapped_touched_runs']for v in report['streams']],[[[-204,8]],[[-168,8]]])
+ def test_07_complete_instruction_relation(self):
+  report=proof.main();self.assertTrue(report['passes']);self.assertEqual(len(report['effective_negatives']),10)
  @classmethod
  def tearDownClass(cls):source.check_inputs()
 if __name__=='__main__':unittest.main()
