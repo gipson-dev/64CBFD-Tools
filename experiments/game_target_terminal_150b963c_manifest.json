@@ -1,0 +1,775 @@
+{
+  "raw_words": 437,
+  "raw_frame": 384,
+  "retail_words": 438,
+  "retail_frame": 384,
+  "raw_sha256": "f1ffab0d38a0b0b720674083c46e995dd85934b133ba26124b292fc53c7e3cfb",
+  "refs": {
+    "16": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "20": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "60": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "68": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE0"
+      ]
+    ],
+    "156": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE0"
+      ]
+    ],
+    "212": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "228": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "232": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "252": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE4"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE4"
+      ]
+    ],
+    "360": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "424": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "392": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE8"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE8"
+      ]
+    ],
+    "544": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "596": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "660": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "676": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDEC"
+      ]
+    ],
+    "680": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDEC"
+      ]
+    ],
+    "800": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "828": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF0"
+      ]
+    ],
+    "832": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF0"
+      ]
+    ],
+    "852": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "860": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "868": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "952": [
+      [
+        "R_MIPS_HI16",
+        "D_800A4AA0"
+      ]
+    ],
+    "980": [
+      [
+        "R_MIPS_LO16",
+        "D_800A4AA0"
+      ]
+    ],
+    "1004": [
+      [
+        "R_MIPS_26",
+        "func_1513D594"
+      ]
+    ],
+    "1024": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "1088": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1092": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1096": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1100": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1104": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1108": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1392": [
+      [
+        "R_MIPS_26",
+        "func_15151A38"
+      ]
+    ],
+    "1408": [
+      [
+        "R_MIPS_HI16",
+        "D_80088740"
+      ]
+    ],
+    "1424": [
+      [
+        "R_MIPS_LO16",
+        "D_80088740"
+      ]
+    ],
+    "1488": [
+      [
+        "R_MIPS_26",
+        "func_10010F88"
+      ]
+    ],
+    "1504": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1508": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1548": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "1556": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1560": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1564": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1568": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1576": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1584": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ],
+    "1640": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE00"
+      ]
+    ],
+    "1644": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE00"
+      ]
+    ],
+    "1624": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1628": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ]
+  },
+  "retail_sha256": "8e685932a8b23237203b87b45e54aeaa87b8d8a69637993bcf9a24f5fbb7fbf5",
+  "retail_refs": {
+    "16": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "20": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "60": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "68": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE0"
+      ]
+    ],
+    "160": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE0"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "240": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "264": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE4"
+      ]
+    ],
+    "356": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE4"
+      ]
+    ],
+    "372": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "400": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "436": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "404": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE8"
+      ]
+    ],
+    "444": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE8"
+      ]
+    ],
+    "556": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "612": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "676": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "692": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDEC"
+      ]
+    ],
+    "696": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDEC"
+      ]
+    ],
+    "816": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "844": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF0"
+      ]
+    ],
+    "848": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF0"
+      ]
+    ],
+    "868": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "876": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "884": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "968": [
+      [
+        "R_MIPS_HI16",
+        "D_800A4AA0"
+      ]
+    ],
+    "996": [
+      [
+        "R_MIPS_LO16",
+        "D_800A4AA0"
+      ]
+    ],
+    "1020": [
+      [
+        "R_MIPS_26",
+        "func_1513D594"
+      ]
+    ],
+    "1040": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "1108": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1112": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1116": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1120": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1124": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1128": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1408": [
+      [
+        "R_MIPS_26",
+        "func_15151A38"
+      ]
+    ],
+    "1424": [
+      [
+        "R_MIPS_HI16",
+        "D_80088740"
+      ]
+    ],
+    "1440": [
+      [
+        "R_MIPS_LO16",
+        "D_80088740"
+      ]
+    ],
+    "1504": [
+      [
+        "R_MIPS_26",
+        "func_10010F88"
+      ]
+    ],
+    "1520": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1524": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1564": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "1572": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1576": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1580": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1584": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1592": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1600": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ],
+    "1640": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1644": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ],
+    "1656": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE00"
+      ]
+    ],
+    "1660": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE00"
+      ]
+    ]
+  },
+  "raw_binding_count": 63,
+  "retail_binding_count": 63,
+  "differences": 414,
+  "frozen_inputs": 1763,
+  "body": "/* Steer toward cached targets, bounce on a close fast target, or submit terminal effects. */\ns32 func_150B963C(u8 *actor) {\n    f32 distance;\n    f32 targetZ;\n    f32 sine, cosine;\n    TerminalPointE5E90 position;\n    TerminalBurstE5E90 burst;\n    TerminalExtraE5E90 extra;\n    TerminalSprayE5E90 spray;\n    u32 firstRandom, secondRandom, thirdRandom;\n    u8 *target = D_80088730;\n    void *allocated;\n    f32 dx, dy, dz;\n\n    if (target == NULL || *(u32 *)target == 0 || target[0x3B] != 1) {\n        D_80088730 = func_15083E90(1);\n    }\n    target = D_80088730;\n    if (target != NULL) {\n        targetZ = *(f32 *)(target + 0x1C);\n        dx = *(f32 *)(actor + 0x38) - *(f32 *)(target + 0x14);\n        dy = *(f32 *)(actor + 0x3C) - *(f32 *)(target + 0x18);\n        dz = *(f32 *)(actor + 0x40) - targetZ;\n        distance = (dx * dx + dy * dy) + dz * dz;\n        if (distance < *(f32 *)(actor + 0x10) * *(f32 *)(actor + 0x10) + D_8009FDE0) {\n            if (*(f32 *)(target + 0x3C) > 15.0f) {\n                if (func_150ADA20() & 1) {\n                    sine = func_151423D8((u16)*(u16 *)(D_80088730 + 0x76) >> 8);\n                    cosine = func_151423D8(((u16)*(u16 *)(D_80088730 + 0x76) >> 8) + 0x40);\n                    actor[0x71] = 1;\n                    *(u32 *)(actor + 0x60) |= 0x7D;\n                    actor[0x73] = 1;\n                    actor[0x75] = 1;\n                    actor[0x78] = 0;\n                    *(f32 *)(actor + 0x44) = (*(f32 *)(D_80088730 + 0x3C) * sine) * D_8009FDE4;\n                    *(f32 *)(actor + 0x48) = func_150ADA68() * 15.0f + 10.0f;\n                    *(f32 *)(actor + 0x4C) = (*(f32 *)(D_80088730 + 0x3C) * cosine) * D_8009FDE8;\n                    *(s16 *)(actor + 0x64) = 300;\n                    *(u32 *)(actor + 0x60) |= 0x80;\n                    *(f32 *)(actor + 0x20) = 0;\n                    *(f32 *)(actor + 0x24) = 0;\n                    *(f32 *)(actor + 0x28) = 0;\n                    return 1;\n                }\n            }\n            position.x = *(f32 *)(actor + 0x38);\n            position.y = *(f32 *)(actor + 0x3C) + 100.0f;\n            position.z = *(f32 *)(actor + 0x40);\n            if (func_15046C80(&position, 0, *(f32 *)(actor + 0x3C) - 2000.0f, actor + 0x110)) {\n                position.y = *(f32 *)(actor + 0x110);\n                burst.field54 = 25;\n                burst.field56 = 10;\n                burst.category = 4;\n                burst.field01 = 0;\n                burst.field02 = 0x3B02;\n                burst.duration = func_150ADA20() % 31U + 40;\n                burst.field08 = 0;\n                burst.field0C = 0;\n                burst.color[0] = 255;\n                burst.color[1] = 255;\n                burst.color[2] = 255;\n                burst.color[3] = 255;\n                burst.field14 = burst.field18 = (func_150ADA68() * 25.0f + 25.0f) * D_8009FDEC;\n                burst.position = position;\n                burst.flags = 0xC5C0001;\n                burst.field44 = 255;\n                burst.field45 = 255;\n                burst.field46 = 0;\n                burst.field47 = 7;\n                burst.field28 = 0;\n                burst.field2C = 0;\n                burst.field30 = 0;\n                burst.field34 = 0;\n                burst.field38 = 0;\n                burst.field3C = 0;\n                extra.value = (func_150ADA68() * 80.0f + 50.0f) * D_8009FDF0;\n                burst.field50 = *(u32 *)(actor + 0x128);\n                firstRandom = func_150ADA20();\n                secondRandom = func_150ADA20();\n                thirdRandom = func_150ADA20();\n                allocated = func_1513D594(&burst, D_800A4AA0, 24, 0, 0,\n                    (secondRandom & 1) + ((firstRandom & 1) << 1), thirdRandom & 255,\n                    500.0f, 500.0f, 0, actor + 0x114, *(u32 *)(actor + 0x14C),\n                    *(u32 *)(actor + 0x168), 0, 8, actor[0xC], actor[1]);\n                if (allocated != NULL) memcpy((u8 *)allocated + 0x128, &extra, 8);\n            }\n            spray.position = *(TerminalPointE5E90 *)(actor + 0x38);\n            spray.field24 = 6;\n            spray.field26 = 6;\n            spray.field28 = 0;\n            spray.field2A = 255;\n            spray.field2C = -64;\n            spray.field2E = 30;\n            spray.field30 = 3;\n            spray.field32 = 3;\n            spray.field34 = 30;\n            spray.field36 = 20;\n            spray.field38 = 1;\n            spray.field39 = 33;\n            spray.field3A = 72;\n            spray.field3C = 1;\n            spray.field40 = 0;\n            spray.field44 = 0;\n            spray.field48 = 0;\n            spray.field4C = 0;\n            spray.field50 = 0;\n            spray.field54 = 0;\n            spray.field55 = 154;\n            spray.field56 = 101;\n            spray.field0C = 3.0f;\n            spray.field10 = D_8009FDF4;\n            spray.field14 = D_8009FDF8;\n            spray.field18 = D_8009FDFC;\n            spray.field1C = 5.0f;\n            spray.field20 = 7.0f;\n            spray.field58 = *(u32 *)(actor + 0x14C);\n            spray.field5C = *(u32 *)(actor + 0x168);\n            spray.field60 = 0;\n            spray.field64 = 0x220005;\n            spray.field68 = 0x1D0600;\n            spray.field6C = 1;\n            spray.field70 = 0x3B;\n            spray.field74 = 0x80;\n            spray.field78 = 0x20;\n            spray.field7C = 0;\n            spray.field7D = 7;\n            spray.field80 = 10;\n            spray.field82 = 25;\n            spray.field84 = *(u32 *)(actor + 0x128);\n            func_15151A38(&spray, actor[0xC], actor[1]);\n            func_10010F88(D_80088740, 25000, 0, 0, 0,\n                (s32)*(f32 *)(actor + 0x38), (s32)*(f32 *)(actor + 0x3C),\n                (s32)*(f32 *)(actor + 0x40), 1000, 4000);\n            return 0;\n        }\n    }\n    target = D_80088720;\n    if (target == NULL || *(u32 *)target == 0 || target[0x3B] != 1) {\n        D_80088720 = func_15083E90(1);\n    }\n    target = D_80088720;\n    if (target != NULL) {\n        D_80088724.x = *(f32 *)(target + 0x14);\n        D_80088724.y = *(f32 *)(target + 0x18) + 50.0f;\n        D_80088724.z = *(f32 *)(target + 0x1C);\n    }\n    dx = *(f32 *)(actor + 0x20);\n    dy = *(f32 *)(actor + 0x24);\n    dz = *(f32 *)(actor + 0x28);\n    *(f32 *)(actor + 0x20) = dx + D_8009FE00 * (D_80088724.x - dx);\n    *(f32 *)(actor + 0x24) = dy + D_8009FE00 * (D_80088724.y - dy);\n    *(f32 *)(actor + 0x28) = dz + D_8009FE00 * (D_80088724.z - dz);\n    return 1;\n}\n",
+  "declarations": "extern u8 *D_80088720, *D_80088730;\nextern TerminalPointE5E90 D_80088724;\nextern s32 D_80088740;\nextern f32 D_8009FDE0, D_8009FDE4, D_8009FDE8, D_8009FDEC, D_8009FDF0;\nextern f32 D_8009FDF4, D_8009FDF8, D_8009FDFC, D_8009FE00;\nu8 *func_15083E90(s32);\nf32 func_151423D8(u8);\ns32 func_15046C80(void *, s32, f32, void *);\n",
+  "support_declarations": "typedef struct { f32 x, y, z; } TerminalPointE5E90;\ntypedef struct {\n    u8 category, field01;\n    s16 field02, duration;\n    u8 reserved06[2];\n    u32 field08, field0C;\n    u8 color[4];\n    f32 field14, field18;\n    TerminalPointE5E90 position;\n    f32 field28, field2C, field30, field34, field38, field3C;\n    u32 flags;\n    u8 field44, field45, field46, field47, reserved48[8];\n    u32 field50;\n    s16 field54, field56;\n} TerminalBurstE5E90;\ntypedef struct { f32 value; u8 retained04[4]; } TerminalExtraE5E90;\ntypedef struct {\n    TerminalPointE5E90 position;\n    f32 field0C, field10, field14, field18, field1C, field20;\n    s16 field24, field26, field28, field2A, field2C, field2E;\n    s16 field30, field32, field34, field36;\n    u8 field38, field39, field3A, reserved3B;\n    u32 field3C, field40, field44, field48, field4C, field50;\n    u8 field54, field55, field56, reserved57;\n    u32 field58, field5C, field60, field64, field68;\n    u32 field6C, field70, field74, field78;\n    u8 field7C, field7D, reserved7E[2];\n    s16 field80, field82;\n    u32 field84;\n} TerminalSprayE5E90;\n"
+}
