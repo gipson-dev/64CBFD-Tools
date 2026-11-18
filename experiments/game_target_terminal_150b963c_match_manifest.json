@@ -1,0 +1,3525 @@
+{
+  "raw_words": 434,
+  "raw_frame": 392,
+  "retail_words": 438,
+  "retail_frame": 384,
+  "raw_sha256": "c3c0be295122110c29af380a567ed76002e484d0d4c397d62208f62a182a141f",
+  "refs": {
+    "16": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "20": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "60": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "68": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE0"
+      ]
+    ],
+    "156": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE0"
+      ]
+    ],
+    "212": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "228": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "232": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "252": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE4"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE4"
+      ]
+    ],
+    "360": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "424": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "392": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE8"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE8"
+      ]
+    ],
+    "544": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "596": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "660": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "676": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDEC"
+      ]
+    ],
+    "680": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDEC"
+      ]
+    ],
+    "800": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "828": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF0"
+      ]
+    ],
+    "832": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF0"
+      ]
+    ],
+    "852": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "860": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "868": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "952": [
+      [
+        "R_MIPS_HI16",
+        "D_800A4AA0"
+      ]
+    ],
+    "980": [
+      [
+        "R_MIPS_LO16",
+        "D_800A4AA0"
+      ]
+    ],
+    "1004": [
+      [
+        "R_MIPS_26",
+        "func_1513D594"
+      ]
+    ],
+    "1024": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "1088": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1092": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1096": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1100": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1104": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1108": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1392": [
+      [
+        "R_MIPS_26",
+        "func_15151A38"
+      ]
+    ],
+    "1408": [
+      [
+        "R_MIPS_HI16",
+        "D_80088740"
+      ]
+    ],
+    "1424": [
+      [
+        "R_MIPS_LO16",
+        "D_80088740"
+      ]
+    ],
+    "1488": [
+      [
+        "R_MIPS_26",
+        "func_10010F88"
+      ]
+    ],
+    "1504": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1508": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1548": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "1556": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1560": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1564": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1568": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1576": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1584": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ],
+    "1624": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1628": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ],
+    "1640": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE00"
+      ]
+    ],
+    "1644": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE00"
+      ]
+    ]
+  },
+  "retail_sha256": "4c858c2bbafaba21bf04bc85916c6cffce6e3cb751900b6783716d0367e1c93d",
+  "retail_refs": {
+    "16": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "20": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "60": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "68": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE0"
+      ]
+    ],
+    "160": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE0"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "240": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "264": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE4"
+      ]
+    ],
+    "356": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE4"
+      ]
+    ],
+    "372": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "400": [
+      [
+        "R_MIPS_HI16",
+        "D_80088730"
+      ]
+    ],
+    "436": [
+      [
+        "R_MIPS_LO16",
+        "D_80088730"
+      ]
+    ],
+    "404": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDE8"
+      ]
+    ],
+    "444": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDE8"
+      ]
+    ],
+    "556": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "612": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "676": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "692": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDEC"
+      ]
+    ],
+    "696": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDEC"
+      ]
+    ],
+    "816": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "844": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF0"
+      ]
+    ],
+    "848": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF0"
+      ]
+    ],
+    "868": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "876": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "884": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "968": [
+      [
+        "R_MIPS_HI16",
+        "D_800A4AA0"
+      ]
+    ],
+    "996": [
+      [
+        "R_MIPS_LO16",
+        "D_800A4AA0"
+      ]
+    ],
+    "1020": [
+      [
+        "R_MIPS_26",
+        "func_1513D594"
+      ]
+    ],
+    "1040": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "1108": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1112": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF4"
+      ]
+    ],
+    "1116": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1120": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDF8"
+      ]
+    ],
+    "1124": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1128": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDFC"
+      ]
+    ],
+    "1408": [
+      [
+        "R_MIPS_26",
+        "func_15151A38"
+      ]
+    ],
+    "1424": [
+      [
+        "R_MIPS_HI16",
+        "D_80088740"
+      ]
+    ],
+    "1440": [
+      [
+        "R_MIPS_LO16",
+        "D_80088740"
+      ]
+    ],
+    "1504": [
+      [
+        "R_MIPS_26",
+        "func_10010F88"
+      ]
+    ],
+    "1520": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1524": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1564": [
+      [
+        "R_MIPS_26",
+        "func_15083E90"
+      ]
+    ],
+    "1572": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1576": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1580": [
+      [
+        "R_MIPS_HI16",
+        "D_80088720"
+      ]
+    ],
+    "1584": [
+      [
+        "R_MIPS_LO16",
+        "D_80088720"
+      ]
+    ],
+    "1592": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1600": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ],
+    "1640": [
+      [
+        "R_MIPS_HI16",
+        "D_80088724"
+      ]
+    ],
+    "1644": [
+      [
+        "R_MIPS_LO16",
+        "D_80088724"
+      ]
+    ],
+    "1656": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE00"
+      ]
+    ],
+    "1660": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE00"
+      ]
+    ]
+  },
+  "raw_binding_count": 63,
+  "retail_binding_count": 63,
+  "differences": 414,
+  "frozen_inputs": 1763,
+  "body": "/* Steer toward cached targets, bounce on a close fast target, or submit terminal effects. */\ns32 func_150B963C(u8 *actor) {\n    f32 distance;\n    f32 targetZ;\n    f32 sine, cosine;\n    TerminalPointE5E90 position;\n    TerminalBurstE5E90 burst;\n    TerminalExtraE5E90 extra;\n    TerminalSprayE5E90 spray;\n    u32 firstRandom, secondRandom, thirdRandom;\n    u8 *target = D_80088730;\n    void *allocated;\n    f32 dx, dy, dz;\n\n    if (target == NULL || *(u32 *)target == 0 || target[0x3B] != 1) {\n        D_80088730 = func_15083E90(1);\n    }\n    target = D_80088730;\n    if (target != NULL) {\n        targetZ = *(f32 *)(target + 0x1C);\n        dx = *(f32 *)(actor + 0x38) - *(f32 *)(target + 0x14);\n        dy = *(f32 *)(actor + 0x3C) - *(f32 *)(target + 0x18);\n        dz = *(f32 *)(actor + 0x40) - targetZ;\n        distance = (dx * dx + dy * dy) + dz * dz;\n        if (distance < *(f32 *)(actor + 0x10) * *(f32 *)(actor + 0x10) + D_8009FDE0) {\n            if (*(f32 *)(target + 0x3C) > 15.0f) {\n                if (func_150ADA20() & 1) {\n                    sine = func_151423D8((u16)*(u16 *)(D_80088730 + 0x76) >> 8);\n                    cosine = func_151423D8(((u16)*(u16 *)(D_80088730 + 0x76) >> 8) + 0x40);\n                    actor[0x71] = 1;\n                    *(u32 *)(actor + 0x60) |= 0x7D;\n                    actor[0x73] = 1;\n                    actor[0x75] = 1;\n                    actor[0x78] = 0;\n                    *(f32 *)(actor + 0x44) = (*(f32 *)(D_80088730 + 0x3C) * sine) * D_8009FDE4;\n                    *(f32 *)(actor + 0x48) = func_150ADA68() * 15.0f + 10.0f;\n                    *(f32 *)(actor + 0x4C) = (*(f32 *)(D_80088730 + 0x3C) * cosine) * D_8009FDE8;\n                    *(s16 *)(actor + 0x64) = 300;\n                    *(u32 *)(actor + 0x60) |= 0x80;\n                    *(f32 *)(actor + 0x20) = 0;\n                    *(f32 *)(actor + 0x24) = 0;\n                    *(f32 *)(actor + 0x28) = 0;\n                    return 1;\n                }\n            }\n            position.x = *(f32 *)(actor + 0x38);\n            position.y = *(f32 *)(actor + 0x3C) + 100.0f;\n            position.z = *(f32 *)(actor + 0x40);\n            if (func_15046C80(&position, 0, *(f32 *)(actor + 0x3C) - 2000.0f, actor + 0x110)) {\n                position.y = *(f32 *)(actor + 0x110);\n                burst.field54 = 25;\n                burst.field56 = 10;\n                burst.category = 4;\n                burst.field01 = 0;\n                burst.field02 = 0x3B02;\n                burst.duration = func_150ADA20() % 31U + 40;\n                burst.field08 = 0;\n                burst.field0C = 0;\n                burst.color[0] = 255;\n                burst.color[1] = 255;\n                burst.color[2] = 255;\n                burst.color[3] = 255;\n                burst.field14 = burst.field18 = (func_150ADA68() * 25.0f + 25.0f) * D_8009FDEC;\n                burst.position = position;\n                burst.flags = 0xC5C0001;\n                burst.field44 = 255;\n                burst.field45 = 255;\n                burst.field46 = 0;\n                burst.field47 = 7;\n                burst.field28 = 0;\n                burst.field2C = 0;\n                burst.field30 = 0;\n                burst.field34 = 0;\n                burst.field38 = 0;\n                burst.field3C = 0;\n                extra.value = (func_150ADA68() * 80.0f + 50.0f) * D_8009FDF0;\n                burst.field50 = *(u32 *)(actor + 0x128);\n                firstRandom = func_150ADA20();\n                secondRandom = func_150ADA20();\n                thirdRandom = func_150ADA20();\n                allocated = func_1513D594(&burst, D_800A4AA0, 24, 0, 0,\n                    (secondRandom & 1) + ((firstRandom & 1) << 1), thirdRandom & 255,\n                    500.0f, 500.0f, 0, actor + 0x114, *(u32 *)(actor + 0x14C),\n                    *(u32 *)(actor + 0x168), 0, 8, actor[0xC], actor[1]);\n                if (allocated != NULL) memcpy((u8 *)allocated + 0x128, &extra, 8);\n            }\n            spray.position = *(TerminalPointE5E90 *)(actor + 0x38);\n            spray.field24 = 6;\n            spray.field26 = 6;\n            spray.field28 = 0;\n            spray.field2A = 255;\n            spray.field2C = -64;\n            spray.field2E = 30;\n            spray.field30 = 3;\n            spray.field32 = 3;\n            spray.field34 = 30;\n            spray.field36 = 20;\n            spray.field38 = 1;\n            spray.field39 = 33;\n            spray.field3A = 72;\n            spray.field3C = 1;\n            spray.field40 = 0;\n            spray.field44 = 0;\n            spray.field48 = 0;\n            spray.field4C = 0;\n            spray.field50 = 0;\n            spray.field54 = 0;\n            spray.field55 = 154;\n            spray.field56 = 101;\n            spray.field0C = 3.0f;\n            spray.field10 = D_8009FDF4;\n            spray.field14 = D_8009FDF8;\n            spray.field18 = D_8009FDFC;\n            spray.field1C = 5.0f;\n            spray.field20 = 7.0f;\n            spray.field58 = *(u32 *)(actor + 0x14C);\n            spray.field5C = *(u32 *)(actor + 0x168);\n            spray.field60 = 0;\n            spray.field64 = 0x220005;\n            spray.field68 = 0x1D0600;\n            spray.field6C = 1;\n            spray.field70 = 0x3B;\n            spray.field74 = 0x80;\n            spray.field78 = 0x20;\n            spray.field7C = 0;\n            spray.field7D = 7;\n            spray.field80 = 10;\n            spray.field82 = 25;\n            spray.field84 = *(u32 *)(actor + 0x128);\n            func_15151A38(&spray, actor[0xC], actor[1]);\n            func_10010F88(D_80088740, 25000, 0, 0, 0,\n                (s32)*(f32 *)(actor + 0x38), (s32)*(f32 *)(actor + 0x3C),\n                (s32)*(f32 *)(actor + 0x40), 1000, 4000);\n            return 0;\n        }\n    }\n    target = D_80088720;\n    if (target == NULL || *(u32 *)target == 0 || target[0x3B] != 1) {\n        D_80088720 = func_15083E90(1);\n    }\n    target = D_80088720;\n    if (target != NULL) {\n        D_80088724.x = *(f32 *)(target + 0x14);\n        D_80088724.y = *(f32 *)(target + 0x18) + 50.0f;\n        D_80088724.z = *(f32 *)(target + 0x1C);\n    }\n    {\n    f32 steeringFactor = D_8009FE00;\n    dx = *(f32 *)(actor + 0x20);\n    dy = *(f32 *)(actor + 0x24);\n    dz = *(f32 *)(actor + 0x28);\n    *(f32 *)(actor + 0x20) = dx + steeringFactor * (D_80088724.x - dx);\n    *(f32 *)(actor + 0x24) = dy + steeringFactor * (D_80088724.y - dy);\n    *(f32 *)(actor + 0x28) = dz + steeringFactor * (D_80088724.z - dz);\n    return 1;\n    }\n}\n",
+  "declarations": "extern u8 *D_80088720, *D_80088730;\nextern TerminalPointE5E90 D_80088724;\nextern s32 D_80088740;\nextern f32 D_8009FDE0, D_8009FDE4, D_8009FDE8, D_8009FDEC, D_8009FDF0;\nextern f32 D_8009FDF4, D_8009FDF8, D_8009FDFC, D_8009FE00;\nu8 *func_15083E90(s32);\nf32 func_151423D8(u8);\ns32 func_15046C80(void *, s32, f32, void *);\n",
+  "support_declarations": "typedef struct { f32 x, y, z; } TerminalPointE5E90;\ntypedef struct {\n    u8 category, field01;\n    s16 field02, duration;\n    u8 reserved06[2];\n    u32 field08, field0C;\n    u8 color[4];\n    f32 field14, field18;\n    TerminalPointE5E90 position;\n    f32 field28, field2C, field30, field34, field38, field3C;\n    u32 flags;\n    u8 field44, field45, field46, field47, reserved48[8];\n    u32 field50;\n    s16 field54, field56;\n} TerminalBurstE5E90;\ntypedef struct { f32 value; u8 retained04[4]; } TerminalExtraE5E90;\ntypedef struct {\n    TerminalPointE5E90 position;\n    f32 field0C, field10, field14, field18, field1C, field20;\n    s16 field24, field26, field28, field2A, field2C, field2E;\n    s16 field30, field32, field34, field36;\n    u8 field38, field39, field3A, reserved3B;\n    u32 field3C, field40, field44, field48, field4C, field50;\n    u8 field54, field55, field56, reserved57;\n    u32 field58, field5C, field60, field64, field68;\n    u32 field6C, field70, field74, field78;\n    u8 field7C, field7D, reserved7E[2];\n    s16 field80, field82;\n    u32 field84;\n} TerminalSprayE5E90;\n",
+  "source_origin": "named block-local cached steering factor",
+  "retail_unbound_sha256": "8e685932a8b23237203b87b45e54aeaa87b8d8a69637993bcf9a24f5fbb7fbf5",
+  "guard_rows": [
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x000",
+      "expected": "0x27BDFE78",
+      "replacement": "0x27BDFE80",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x054",
+      "expected": "0x10600162",
+      "replacement": "0x10600166",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x05C",
+      "expected": "0xC6040038",
+      "replacement": "0xC464001C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x060",
+      "expected": "0xC4660014",
+      "replacement": "0xC4700014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x064",
+      "expected": "0xC608003C",
+      "replacement": "0xC4720018",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "0xE7A40178",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x068",
+      "expected": "0xC46A0018",
+      "replacement": "0xC6060038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x06C",
+      "expected": "0x46062081",
+      "replacement": "0xC608003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "0xC7A40178",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x070",
+      "expected": "0xC470001C",
+      "replacement": "0x46103001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x074",
+      "expected": "0xC6120040",
+      "replacement": "0xC60A0040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x078",
+      "expected": "0x460A4301",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FDE0",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x07C",
+      "expected": "0x46021102",
+      "replacement": "0x46124081",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x080",
+      "expected": "0xC6000010",
+      "replacement": "0x46000182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x084",
+      "expected": "0x46109381",
+      "replacement": "0x46045301",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x088",
+      "expected": "0x460C6182",
+      "replacement": "0x46021202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x08C",
+      "expected": "0x3C010000",
+      "replacement": "0x46083280",
+      "expected_relocations": "R_MIPS_HI16:D_8009FDE0",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x090",
+      "expected": "0x460E7282",
+      "replacement": "0x460C6102",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x094",
+      "expected": "0x46062200",
+      "replacement": "0x46045180",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x098",
+      "expected": "0x46000102",
+      "replacement": "0xC42A0000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDE0",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x09C",
+      "expected": "0xC4260000",
+      "replacement": "0x3C014170",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDE0",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "0xE7A6017C",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0A0",
+      "expected": "0x3C014170",
+      "replacement": "0xC60E0010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0A4",
+      "expected": "0x460A4480",
+      "replacement": "0x460E7202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0A8",
+      "expected": "0x46062200",
+      "replacement": "0x460A4100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0AC",
+      "expected": "0x4608903C",
+      "replacement": "0x4604303C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0B4",
+      "expected": "0x4500014A",
+      "replacement": "0x4500014B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0BC",
+      "expected": "0x44815000",
+      "replacement": "0x44814000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0C0",
+      "expected": "0xC464003C",
+      "replacement": "0xC46A003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0C4",
+      "expected": "0x4604503C",
+      "replacement": "0x460A403C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x0D0",
+      "expected": "0xC6040038",
+      "replacement": "0xC6080038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x104",
+      "expected": "0xE7A0017C",
+      "replacement": "0xE7A0016C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x120",
+      "expected": "0xE7A00178",
+      "replacement": "0xE7A00168",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x14C",
+      "expected": "0xC7B2017C",
+      "replacement": "0xC7A4016C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x15C",
+      "expected": "0x46123202",
+      "replacement": "0x46043202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x164",
+      "expected": "0x460A4102",
+      "replacement": "0x460A4182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x16C",
+      "expected": "0xE6040044",
+      "replacement": "0xE6060044",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x174",
+      "expected": "0x44813000",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x17C",
+      "expected": "0x44814000",
+      "replacement": "0x44815000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x180",
+      "expected": "0x46060482",
+      "replacement": "0x46040202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x19C",
+      "expected": "0x46089280",
+      "replacement": "0x460A4180",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1A4",
+      "expected": "0xE60A0048",
+      "replacement": "0xE6060048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1AC",
+      "expected": "0xC7A60178",
+      "replacement": "0xC7A80168",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1B0",
+      "expected": "0xC4280000",
+      "replacement": "0xC4260000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDE8",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDE8",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1C0",
+      "expected": "0x46062482",
+      "replacement": "0x46082282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1D0",
+      "expected": "0x46089282",
+      "replacement": "0x46065102",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1D4",
+      "expected": "0x10000137",
+      "replacement": "0x10000138",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1D8",
+      "expected": "0xE60A004C",
+      "replacement": "0xE604004C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1DC",
+      "expected": "0xC6040038",
+      "replacement": "0xC6080038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1E4",
+      "expected": "0x44819000",
+      "replacement": "0x44813000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1E8",
+      "expected": "0xE7A4016C",
+      "replacement": "0xE7A8015C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1EC",
+      "expected": "0xC606003C",
+      "replacement": "0xC60A003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1F4",
+      "expected": "0x27A4016C",
+      "replacement": "0x27A4015C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x1F8",
+      "expected": "0x46123200",
+      "replacement": "0x46065100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x208",
+      "expected": "0xE7A80170",
+      "replacement": "0xE7A40160",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x20C",
+      "expected": "0xC60A0040",
+      "replacement": "0xC6080040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x210",
+      "expected": "0xE7AA0174",
+      "replacement": "0xE7A80164",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x214",
+      "expected": "0xC604003C",
+      "replacement": "0xC60A003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x218",
+      "expected": "0x46062481",
+      "replacement": "0x46065101",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x21C",
+      "expected": "0x44069000",
+      "replacement": "0x44062000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x228",
+      "expected": "0x10400077",
+      "replacement": "0x50400079",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "0x27A40074",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x22C",
+      "expected": "0x240A0019",
+      "replacement": "0xC6080110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x230",
+      "expected": "0xC6080110",
+      "replacement": "0x240A0019",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x238",
+      "expected": "0x240C0004",
+      "replacement": "0xE7A80160",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x23C",
+      "expected": "0x240D3B02",
+      "replacement": "0x240C0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x240",
+      "expected": "0xA7AA0168",
+      "replacement": "0x240D3B02",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x244",
+      "expected": "0xA7AB016A",
+      "replacement": "0xA7AA0158",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x248",
+      "expected": "0xA3AC0114",
+      "replacement": "0xA7AB015A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x24C",
+      "expected": "0xA3A00115",
+      "replacement": "0xA3AC0104",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x250",
+      "expected": "0xA7AD0116",
+      "replacement": "0xA3A00105",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x258",
+      "expected": "0xE7A80170",
+      "replacement": "0xA7AD0106",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x27C",
+      "expected": "0xA7AF0118",
+      "replacement": "0xA7AF0108",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x280",
+      "expected": "0xAFA0011C",
+      "replacement": "0xAFA0010C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x284",
+      "expected": "0xAFA00120",
+      "replacement": "0xAFA00110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x288",
+      "expected": "0xA3B80124",
+      "replacement": "0xA3B80114",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x28C",
+      "expected": "0xA3B90125",
+      "replacement": "0xA3B90115",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x290",
+      "expected": "0xA3A80126",
+      "replacement": "0xA3A80116",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x298",
+      "expected": "0xA3A90127",
+      "replacement": "0xA3A90117",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2A8",
+      "expected": "0xC4260000",
+      "replacement": "0xC4240000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDEC",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDEC",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2B0",
+      "expected": "0x27AB016C",
+      "replacement": "0x27AB015C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2B4",
+      "expected": "0x27AA0130",
+      "replacement": "0x27AA0120",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2C8",
+      "expected": "0x460C5100",
+      "replacement": "0x460C5180",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2D4",
+      "expected": "0x46062482",
+      "replacement": "0x46043202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2D8",
+      "expected": "0xE7B2012C",
+      "replacement": "0xE7A8011C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2DC",
+      "expected": "0xE7B20128",
+      "replacement": "0xE7A80118",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2F8",
+      "expected": "0xAFAF0154",
+      "replacement": "0xAFAF0144",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x2FC",
+      "expected": "0xA3B80158",
+      "replacement": "0xA3B80148",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x300",
+      "expected": "0xA3B90159",
+      "replacement": "0xA3B90149",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x304",
+      "expected": "0xA3A0015A",
+      "replacement": "0xA3A0014A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x308",
+      "expected": "0xA3A8015B",
+      "replacement": "0xA3A8014B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x30C",
+      "expected": "0xE7A2013C",
+      "replacement": "0xE7A2012C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x310",
+      "expected": "0xE7A20140",
+      "replacement": "0xE7A20130",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x314",
+      "expected": "0xE7A20144",
+      "replacement": "0xE7A20134",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x318",
+      "expected": "0xE7A20148",
+      "replacement": "0xE7A20138",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x31C",
+      "expected": "0xE7A2014C",
+      "replacement": "0xE7A2013C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x324",
+      "expected": "0xE7A20150",
+      "replacement": "0xE7A20140",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x32C",
+      "expected": "0x44814000",
+      "replacement": "0x44815000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x338",
+      "expected": "0x46080282",
+      "replacement": "0x460A0182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x340",
+      "expected": "0xC4320000",
+      "replacement": "0xC42A0000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDF0",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDF0",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x344",
+      "expected": "0x46045180",
+      "replacement": "0x46043200",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x348",
+      "expected": "0x46123202",
+      "replacement": "0x460A4182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x34C",
+      "expected": "0xE7A8010C",
+      "replacement": "0xE7A600FC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x358",
+      "expected": "0xAFA90164",
+      "replacement": "0xAFA90154",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x360",
+      "expected": "0xAFA20080",
+      "replacement": "0xAFA20068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x368",
+      "expected": "0xAFA2007C",
+      "replacement": "0xAFA2006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x36C",
+      "expected": "0x8FAA0080",
+      "replacement": "0x8FAA0068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x370",
+      "expected": "0x8FAD007C",
+      "replacement": "0x8FAD006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x3D8",
+      "expected": "0x27A40114",
+      "replacement": "0x27A40104",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x3FC",
+      "expected": "0x27A5010C",
+      "replacement": "0x27A500FC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x408",
+      "expected": "0x8E010038",
+      "replacement": "0x27A40074",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x40C",
+      "expected": "0x27A40084",
+      "replacement": "0x8E010038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x414",
+      "expected": "0xAC810000",
+      "replacement": "0x24180006",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x418",
+      "expected": "0x8E0E003C",
+      "replacement": "0xAC810000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x41C",
+      "expected": "0x24180006",
+      "replacement": "0x8E0E003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x424",
+      "expected": "0xAC8E0004",
+      "replacement": "0x2408FFC0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x428",
+      "expected": "0x8E010040",
+      "replacement": "0xAC8E0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x42C",
+      "expected": "0x2408FFC0",
+      "replacement": "0x8E010040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x434",
+      "expected": "0xAC810008",
+      "replacement": "0x240D0003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x438",
+      "expected": "0x3C014040",
+      "replacement": "0xAC810008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x43C",
+      "expected": "0x44815000",
+      "replacement": "0x3C014040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x440",
+      "expected": "0x3C010000",
+      "replacement": "0x44812000",
+      "expected_relocations": "R_MIPS_HI16:D_8009FDF4",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x444",
+      "expected": "0xC4240000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDF4",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FDF4",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x448",
+      "expected": "0x3C010000",
+      "replacement": "0xC4280000",
+      "expected_relocations": "R_MIPS_HI16:D_8009FDF8",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDF4",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x44C",
+      "expected": "0xC4260000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDF8",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FDF8",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x450",
+      "expected": "0x3C010000",
+      "replacement": "0xC42A0000",
+      "expected_relocations": "R_MIPS_HI16:D_8009FDFC",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDF8",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x454",
+      "expected": "0xC4320000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDFC",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FDFC",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x458",
+      "expected": "0x3C0140A0",
+      "replacement": "0xC4260000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDFC",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x45C",
+      "expected": "0x44814000",
+      "replacement": "0x3C0140A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x460",
+      "expected": "0x3C0140E0",
+      "replacement": "0xE7A40080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x464",
+      "expected": "0xE7AA0090",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x468",
+      "expected": "0x44815000",
+      "replacement": "0x3C0140E0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x46C",
+      "expected": "0xA7AF00A8",
+      "replacement": "0xE7A80084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x470",
+      "expected": "0xA7B800AA",
+      "replacement": "0x44814000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x474",
+      "expected": "0xA7B900AE",
+      "replacement": "0xA7AF0098",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x478",
+      "expected": "0xA7A800B0",
+      "replacement": "0xA7B8009A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x47C",
+      "expected": "0xA7A900B2",
+      "replacement": "0xA7B9009E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x480",
+      "expected": "0x240D0003",
+      "replacement": "0xA7A800A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x484",
+      "expected": "0x240A0003",
+      "replacement": "0xA7A900A2",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x488",
+      "expected": "0x240B001E",
+      "replacement": "0x240A0003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x48C",
+      "expected": "0x240C0014",
+      "replacement": "0x240B001E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x490",
+      "expected": "0x240E0001",
+      "replacement": "0x240C0014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x494",
+      "expected": "0x240F0021",
+      "replacement": "0x240E0001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x498",
+      "expected": "0x24180048",
+      "replacement": "0x240F0021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x49C",
+      "expected": "0x24190001",
+      "replacement": "0x24180048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4A0",
+      "expected": "0x2408009A",
+      "replacement": "0x24190001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4A4",
+      "expected": "0x24090065",
+      "replacement": "0x2408009A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4A8",
+      "expected": "0xA7A000AC",
+      "replacement": "0x24090065",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4AC",
+      "expected": "0xA7AD00B4",
+      "replacement": "0xA7A0009C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4B0",
+      "expected": "0xA7AA00B6",
+      "replacement": "0xA7AD00A4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4B4",
+      "expected": "0xA7AB00B8",
+      "replacement": "0xA7AA00A6",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4B8",
+      "expected": "0xA7AC00BA",
+      "replacement": "0xA7AB00A8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4BC",
+      "expected": "0xA3AE00BC",
+      "replacement": "0xA7AC00AA",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4C0",
+      "expected": "0xA3AF00BD",
+      "replacement": "0xA3AE00AC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4C4",
+      "expected": "0xA3B800BE",
+      "replacement": "0xA3AF00AD",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4C8",
+      "expected": "0xAFB900C0",
+      "replacement": "0xA3B800AE",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4CC",
+      "expected": "0xAFA000C4",
+      "replacement": "0xAFB900B0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4D0",
+      "expected": "0xAFA000C8",
+      "replacement": "0xAFA000B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4D4",
+      "expected": "0xAFA000CC",
+      "replacement": "0xAFA000B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4D8",
+      "expected": "0xAFA000D0",
+      "replacement": "0xAFA000BC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4DC",
+      "expected": "0xAFA000D4",
+      "replacement": "0xAFA000C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4E0",
+      "expected": "0xA3A000D8",
+      "replacement": "0xAFA000C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4E4",
+      "expected": "0xA3A800D9",
+      "replacement": "0xA3A000C8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4E8",
+      "expected": "0xA3A900DA",
+      "replacement": "0xA3A800C9",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4EC",
+      "expected": "0xE7A40094",
+      "replacement": "0xA3A900CA",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4F0",
+      "expected": "0xE7A60098",
+      "replacement": "0xE7AA0088",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4F4",
+      "expected": "0xE7B2009C",
+      "replacement": "0xE7A6008C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4F8",
+      "expected": "0xE7A800A0",
+      "replacement": "0xE7A40090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x4FC",
+      "expected": "0xE7AA00A4",
+      "replacement": "0xE7A80094",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x50C",
+      "expected": "0xAFAD00DC",
+      "replacement": "0xAFAD00CC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x534",
+      "expected": "0xAFA000E4",
+      "replacement": "0xAFA000D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x538",
+      "expected": "0xAFAB00E8",
+      "replacement": "0xAFAB00D8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x53C",
+      "expected": "0xAFAC00EC",
+      "replacement": "0xAFAC00DC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x540",
+      "expected": "0xAFAE00F0",
+      "replacement": "0xAFAE00E0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x544",
+      "expected": "0xAFAF00F4",
+      "replacement": "0xAFAF00E4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x548",
+      "expected": "0xAFB800F8",
+      "replacement": "0xAFB800E8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x54C",
+      "expected": "0xAFB900FC",
+      "replacement": "0xAFB900EC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x550",
+      "expected": "0xA3A00100",
+      "replacement": "0xA3A000F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x554",
+      "expected": "0xA3A80101",
+      "replacement": "0xA3A800F1",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x558",
+      "expected": "0xA7A90104",
+      "replacement": "0xA7A900F4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x55C",
+      "expected": "0xA7AD0106",
+      "replacement": "0xA7AD00F6",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x560",
+      "expected": "0xAFAA00E0",
+      "replacement": "0xAFAA00D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x568",
+      "expected": "0xAFAA0108",
+      "replacement": "0xAFAA00F8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x57C",
+      "expected": "0xC6040038",
+      "replacement": "0xC60A0038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x588",
+      "expected": "0x4600218D",
+      "replacement": "0x4600518D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x5A8",
+      "expected": "0xC612003C",
+      "replacement": "0xC604003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x5AC",
+      "expected": "0x4600920D",
+      "replacement": "0x4600220D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x5C8",
+      "expected": "0x4600510D",
+      "replacement": "0x4600518D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x5CC",
+      "expected": "0x44192000",
+      "replacement": "0x44193000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x62C",
+      "expected": "0xC4660014",
+      "replacement": "0xC4640014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x638",
+      "expected": "0xE4860000",
+      "replacement": "0xE4840000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x63C",
+      "expected": "0xC4720018",
+      "replacement": "0xC4680018",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x640",
+      "expected": "0x44814000",
+      "replacement": "0x44815000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x648",
+      "expected": "0x46089280",
+      "replacement": "0x460A4180",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x64C",
+      "expected": "0xE48A0004",
+      "replacement": "0xE4860004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x660",
+      "expected": "0xC6020020",
+      "replacement": "0xC4880000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x664",
+      "expected": "0xC4860000",
+      "replacement": "0xC6000020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x66C",
+      "expected": "0xC4200000",
+      "replacement": "0xC42E0000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FE00",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FE00",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x670",
+      "expected": "0x46023481",
+      "replacement": "0x46004281",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x674",
+      "expected": "0xC60C0024",
+      "replacement": "0xC6020024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x678",
+      "expected": "0xC60E0028",
+      "replacement": "0xC60C0028",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x680",
+      "expected": "0x46009202",
+      "replacement": "0x460A7182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x684",
+      "expected": "0x46024280",
+      "replacement": "0x46060100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x688",
+      "expected": "0xE60A0020",
+      "replacement": "0xE6040020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x68C",
+      "expected": "0xC4840004",
+      "replacement": "0xC4880004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x690",
+      "expected": "0x460C2181",
+      "replacement": "0x46024281",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x694",
+      "expected": "0x46003482",
+      "replacement": "0x460A7182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x698",
+      "expected": "0x460C9200",
+      "replacement": "0x46061100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x69C",
+      "expected": "0xE6080024",
+      "replacement": "0xE6040024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x6A0",
+      "expected": "0xC48A0008",
+      "replacement": "0xC4880008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x6A4",
+      "expected": "0x460E5101",
+      "replacement": "0x460C4281",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x6A8",
+      "expected": "0x46002182",
+      "replacement": "0x460A7182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x6AC",
+      "expected": "0x460E3480",
+      "replacement": "0x46066100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x6B0",
+      "expected": "0xE6120028",
+      "replacement": "0xE6040028",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E5E90",
+      "function": "func_150B963C",
+      "offset": "0x6BC",
+      "expected": "0x27BD0188",
+      "replacement": "0x27BD0180",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved cached-target callback private layout, FP allocation, spill histories and delay-slot setup",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "guards": 211,
+  "relocated_guards": 15,
+  "insertions": 4
+}
