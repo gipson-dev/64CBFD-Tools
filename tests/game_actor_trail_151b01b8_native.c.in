@@ -1,0 +1,92 @@
+#include <ultra64.h>
+@DECLARATIONS@
+typedef struct { u8 actor[512], source[32], table[320], point[12], coef[20], marker[4]; } TrailImage;
+typedef struct { u32 target, count, args[5]; u8 observed[112]; } Event;
+typedef struct { u32 seed,route,identity,kind,category,mutation,phase,source_null,alias,heading; TrailImage initial, final; u32 count; Event calls[4]; } Row;
+typedef struct { u8 retained00[0x7A]; u16 heading; u8 retained7C[0x158]; u8 *matrix; u8 retained1D8[0x28]; } NativeActor;
+extern const Row fixture_rows[];
+_Static_assert(sizeof(void*)==4 && sizeof(Row)==2404 && sizeof(NativeActor)==512,"native32 layout");
+static NativeActor actor;
+static u8 other[32], matrix1[512], matrix2[512];
+static u32 marker,callno;
+static const Row *row;
+static HeightResult71820 *surfaceOutput;
+static f32 *positionOutput;
+u8 D_800A3FD8[320];
+f32 D_800AA120[3],D_800AA2A0,D_800AA2A4,D_800AA2A8,D_800AA2AC,D_800AA2B0;
+static f32 *coefficients[5]={&D_800AA2A0,&D_800AA2A4,&D_800AA2A8,&D_800AA2AC,&D_800AA2B0};
+static void quit(int status) { __asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory"); __builtin_unreachable(); }
+static void check(int ok) { if(!ok) quit(3); }
+static void cp(void *d,const void *s,u32 n) { u8 *a=d;const u8 *b=s;for(u32 i=0;i<n;i++)a[i]=b[i]; }
+static int same(const u8 *a,const u8 *b,u32 n) { for(u32 i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1; }
+static u32 be(const u8 *b) { return (u32)b[0]<<24|(u32)b[1]<<16|(u32)b[2]<<8|b[3]; }
+static u16 half(const u8 *b) { return (u16)((u32)b[0]<<8|b[1]); }
+static void put(u8 *b,u32 v,u32 n) { for(u32 i=0;i<n;i++)b[i]=(u8)(v>>(8*(n-i-1))); }
+static u32 word(f32 v) { union { f32 f;u32 u; } a;a.f=v;return a.u; }
+static f32 real(u32 v) { union { f32 f;u32 u; } a;a.u=v;return a.f; }
+static u8 *sourcePointer(void) { return row->alias?(u8*)&actor:other; }
+static void positionBytes(u8 *out,f32 *v) { for(u32 i=0;i<3;i++)put(out+4*i,word(v[i]),4); }
+static void surfaceBytes(u8 *out,HeightResult71820 *v) {
+ put(out,word(v->height),4);for(u32 i=0;i<9;i++)put(out+4+2*i,(u16)v->vertices[i],2);
+ put(out+22,(u16)v->pad16,2);put(out+24,v->metadata,4);out[28]=v->flags;out[29]=v->state;
+ put(out+30,v->pad1E,2);put(out+32,(u32)v->value,4);
+}
+static void fillSurface(HeightResult71820 *v,u32 ordinal) {
+ u8 b[36];for(u32 i=0;i<36;i++)b[i]=(u8)(i*11+row->seed+ordinal*7);
+ v->height=((s32)row->seed-128)*.25f+(f32)ordinal*2.0f;for(u32 i=0;i<9;i++)v->vertices[i]=(s16)half(b+4+2*i);
+ v->pad16=(s16)half(b+22);v->metadata=be(b+24);v->flags=b[28];v->state=b[29];v->pad1E=half(b+30);v->value=(s32)be(b+32);
+}
+static void trailBytes(u8 *out,void *packet) {
+ const u8 *b=packet;for(u32 i=0;i<68;i++)out[i]=(53<=i&&i<56)?0:b[i];
+ for(u32 i=0;i<=32;i+=4)put(out+i,word(*(f32*)(b+i)),4);
+ for(u32 i=36;i<=50;i+=2)put(out+i,*(u16*)(b+i),2);
+ put(out+56,word(*(f32*)(b+56)),4);put(out+60,*(u16*)(b+60),2);put(out+62,*(u16*)(b+62),2);put(out+64,*(u32*)(b+64),4);
+}
+static void effects(u32 target,u32 ordinal) {
+ marker=0x13579bdfu+ordinal*0x10203u+target;
+ if((row->mutation&1)&&target==0x1504715c) {
+  actor.matrix=matrix2;actor.heading=0xC8A5;((u8*)&actor)[0x74]=0xAF;sourcePointer()[4]=(row->seed&1)?0x53:0x87;
+ }
+ if((row->mutation&2)&&target==0x15134070) { actor.matrix=matrix2;actor.heading=0xF4A5; }
+ if((row->mutation&4)&&target==0x15143134)for(u32 i=0;i<20;i++)D_800A3FD8[16*i+14]=(u8)(row->seed%4);
+ if((row->mutation&8)&&surfaceOutput)fillSurface(surfaceOutput,ordinal+11);
+ if((row->mutation&16)&&target==0x15143134)for(u32 i=0;i<5;i++)*coefficients[i]=((s32)ordinal+(s32)i-5)*.125f;
+}
+static void event(u32 target,const u32 *args,u32 n,const u8 *observed,u32 bytes) {
+ check(callno<row->count);const Event *ev=&row->calls[callno];check(ev->target==target&&ev->count==n);
+ for(u32 i=0;i<n;i++)check(args[i]==ev->args[i]);check(same(observed,ev->observed,bytes));effects(target,callno++);
+}
+void func_1504715C(HeightResult71820 *output,HeightActor71820 *owner) {
+ check((void*)owner==(void*)&actor);surfaceOutput=output;fillSurface(output,callno);
+ u32 args[]={0xffffffe2,0xffffffe3};event(0x1504715c,args,2,0,0);
+}
+s32 func_15134070(u8 *owner) { check(owner==sourcePointer());u32 args[]={0xffffffe4};event(0x15134070,args,1,0,0);return(s32)row->kind; }
+void func_15143134(f32 *point,f32 *output,u8 *matrix) {
+ check(point==D_800AA120&&(matrix==matrix1+0x180||matrix==matrix2+0x180));positionOutput=output;
+ u8 observed[12];positionBytes(observed,point);
+ for(u32 i=0;i<3;i++)output[i]=((s32)row->seed+(s32)i-70)*.375f;
+ u32 args[]={0xffffffe5,0xffffffe6,matrix==matrix1+0x180?0xffffffe0:0xffffffe1};event(0x15143134,args,3,observed,12);
+}
+void func_15153F18(void *angles,void *trail,s32 surface,s32 slot,s32 context) {
+ check(trail==positionOutput&&(void*)(u32)surface==(void*)surfaceOutput);
+ u8 observed[112];for(u32 i=0;i<4;i++)put(observed+2*i,((u16*)angles)[i],2);
+ trailBytes(observed+8,trail);surfaceBytes(observed+76,surfaceOutput);
+ u32 args[]={0xffffffe7,0xffffffe8,0xffffffe2,(u32)slot,(u32)context};event(0x15153f18,args,5,observed,112);
+}
+@BODY@
+static void setup(const TrailImage *im) {
+ cp(&actor,im->actor,512);actor.heading=half(im->actor+0x7A);actor.matrix=be(im->actor+0x1D4)==0x50000?matrix1:0;
+ cp(other,im->source,32);cp(D_800A3FD8,im->table,320);
+ for(u32 i=0;i<3;i++)D_800AA120[i]=real(be(im->point+4*i));for(u32 i=0;i<5;i++)*coefficients[i]=real(be(im->coef+4*i));
+ marker=be(im->marker);callno=0;surfaceOutput=0;positionOutput=0;
+}
+static void snapshot(TrailImage *im) {
+ cp(im->actor,&actor,512);put(im->actor+0x7A,actor.heading,2);put(im->actor+0x1D4,actor.matrix==matrix1?0x50000:actor.matrix==matrix2?0x60000:0,4);
+ cp(im->source,other,32);cp(im->table,D_800A3FD8,320);positionBytes(im->point,D_800AA120);
+ for(u32 i=0;i<5;i++)put(im->coef+4*i,word(*coefficients[i]),4);put(im->marker,marker,4);
+}
+static int run(void) { for(u32 i=0;i<@COUNT@;i++) {
+ row=fixture_rows+i;setup(&row->initial);invoke(row->route==1?0:(u8*)&actor,row->source_null?0:sourcePointer());
+ check(callno==row->count);TrailImage image;snapshot(&image);check(same((u8*)&image,(u8*)&row->final,sizeof(TrailImage)));
+ }return 0; }
+__attribute__((force_align_arg_pointer)) void _start(void) { quit(run()); }

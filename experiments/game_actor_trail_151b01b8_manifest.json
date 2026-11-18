@@ -1,0 +1,1010 @@
+{
+  "name": "func_151B01B8",
+  "frozen_inputs": 1621,
+  "declarations": "typedef struct HeightResult71820 {\n    f32 height; s16 vertices[9]; s16 pad16; u32 metadata;\n    u8 flags, state; u16 pad1E; s32 value;\n} HeightResult71820;\ntypedef struct HeightActor71820 HeightActor71820;\ntypedef struct { s16 firstAngleBase, firstAngleRange, secondAngleBase, secondAngleRange; } ActorTrailAngles151B01B8;\ntypedef struct {\n    f32 position[3], timeBase, timeRange, scaleBase, scaleRange, radiusBase, radiusRange;\n    s16 countBase, countRange, requestSelectorBase, requestSelectorRange;\n    s16 durationBase, durationRange, modeBase, modeRange;\n    u8 selector, private35[3]; f32 opaqueChance; s16 firstValue, secondValue; s32 requestValue;\n} ActorTrail151B01B8;\nextern u8 D_800A3FD8[];\nextern f32 D_800AA120[], D_800AA2A0, D_800AA2A4, D_800AA2A8, D_800AA2AC, D_800AA2B0;\nvoid func_1504715C(HeightResult71820 *, HeightActor71820 *);\ns32 func_15134070(u8 *);\nvoid func_15143134(f32 *, f32 *, u8 *);\nvoid func_15153F18(void *, void *, s32, s32, s32);\n",
+  "body": "/* Build an angular trail for the actor unless its selected type is disabled. */\nvoid func_151B01B8(u8 *actor, u8 *source) {\n    ActorTrail151B01B8 trail;\n    ActorTrailAngles151B01B8 angles;\n    u8 heading;\n    HeightResult71820 surface;\n    union { s32 type; u8 *record; } selected;\n\n    if (actor != NULL && *(u8 **)(actor + 0x1D4) != NULL && (actor[0x74] & 15) != 15) {\n        func_1504715C(&surface, (HeightActor71820 *)actor);\n        selected.type = source != NULL ?\n            ((source[4] == 0x53 || source[4] == 0xA5) ? 4 : func_15134070(source)) : 4;\n        if (selected.type != 99) {\n            selected.record = &D_800A3FD8[selected.type * 16];\n            if (selected.record[14] != 2) {\n                heading = (*(u16 *)(actor + 0x7A) >> 8) + 64;\n                func_15143134(D_800AA120, trail.position, *(u8 **)(actor + 0x1D4) + 0x180);\n                angles.firstAngleBase = heading - 104;\n                trail.timeBase = D_800AA2A0;\n                trail.countBase = 10;\n                trail.countRange = 20;\n                angles.firstAngleRange = 208;\n                angles.secondAngleBase = -27;\n                angles.secondAngleRange = 54;\n                trail.requestSelectorBase = 3;\n                trail.requestSelectorRange = 2;\n                trail.durationBase = 30;\n                trail.durationRange = 40;\n                trail.modeBase = 155;\n                trail.modeRange = 100;\n                trail.timeRange = D_800AA2A4;\n                trail.scaleBase = D_800AA2A8;\n                trail.scaleRange = D_800AA2AC;\n                trail.radiusBase = 6.0f;\n                trail.radiusRange = D_800AA2B0;\n                trail.opaqueChance = 0.5f;\n                if (selected.record[14] == 1) trail.selector = 1;\n                else trail.selector = 0;\n                trail.firstValue = 16;\n                trail.secondValue = 15;\n                trail.requestValue = 0;\n                func_15153F18(&angles, &trail, (s32)&surface, 255, 1);\n            }\n        }\n    }\n}",
+  "raw_sha256": "27ef3eece975c7bb0385a688d6711ae9ed3a8450a34b2e83afdc77b2de482114",
+  "retail_sha256": "a90836585e44bade9aa06afdd5023793100ede7f90409175573ca66279c83611",
+  "refs": {
+    "64": [
+      [
+        "R_MIPS_26",
+        "func_1504715C"
+      ]
+    ],
+    "124": [
+      [
+        "R_MIPS_26",
+        "func_15134070"
+      ]
+    ],
+    "160": [
+      [
+        "R_MIPS_HI16",
+        "D_800A3FD8"
+      ]
+    ],
+    "164": [
+      [
+        "R_MIPS_LO16",
+        "D_800A3FD8"
+      ]
+    ],
+    "180": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA120"
+      ]
+    ],
+    "196": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA120"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "232": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2A0"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2A0"
+      ]
+    ],
+    "240": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2A4"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2A4"
+      ]
+    ],
+    "248": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2A8"
+      ]
+    ],
+    "252": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2A8"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2AC"
+      ]
+    ],
+    "260": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2AC"
+      ]
+    ],
+    "276": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2B0"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2B0"
+      ]
+    ],
+    "488": [
+      [
+        "R_MIPS_26",
+        "func_15153F18"
+      ]
+    ]
+  },
+  "retail_refs": {
+    "64": [
+      [
+        "R_MIPS_26",
+        "func_1504715C"
+      ]
+    ],
+    "124": [
+      [
+        "R_MIPS_26",
+        "func_15134070"
+      ]
+    ],
+    "160": [
+      [
+        "R_MIPS_HI16",
+        "D_800A3FD8"
+      ]
+    ],
+    "164": [
+      [
+        "R_MIPS_LO16",
+        "D_800A3FD8"
+      ]
+    ],
+    "180": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA120"
+      ]
+    ],
+    "196": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA120"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "232": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2A0"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2A0"
+      ]
+    ],
+    "240": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2A4"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2A4"
+      ]
+    ],
+    "248": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2A8"
+      ]
+    ],
+    "252": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2A8"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2AC"
+      ]
+    ],
+    "260": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2AC"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2B0"
+      ]
+    ],
+    "284": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2B0"
+      ]
+    ],
+    "488": [
+      [
+        "R_MIPS_26",
+        "func_15153F18"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x0A8",
+      "expected": "0x03281021",
+      "replacement": "0x03281821",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x0AC",
+      "expected": "0x9049000E",
+      "replacement": "0x9069000E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x0DC",
+      "expected": "0xAFA20028",
+      "replacement": "0xAFA30020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x108",
+      "expected": "0x3C0140C0",
+      "replacement": "0x93AF0053",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x10C",
+      "expected": "0x93AD0053",
+      "replacement": "0x3C0140C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x114",
+      "expected": "0x3C010000",
+      "replacement": "0x8FA30020",
+      "expected_relocations": "R_MIPS_HI16:D_800AA2B0",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x118",
+      "expected": "0xC4320000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_800AA2B0",
+      "replacement_relocations": "R_MIPS_HI16:D_800AA2B0",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x11C",
+      "expected": "0x3C013F00",
+      "replacement": "0xC4320000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_800AA2B0",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x120",
+      "expected": "0xE7A40068",
+      "replacement": "0x25F8FF98",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x124",
+      "expected": "0x25AEFF98",
+      "replacement": "0xA7B80054",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x128",
+      "expected": "0x44812000",
+      "replacement": "0x3C013F00",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x12C",
+      "expected": "0x240F000A",
+      "replacement": "0xE7A40068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x130",
+      "expected": "0x8FA20028",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x134",
+      "expected": "0xA7AE0054",
+      "replacement": "0x9078000E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x138",
+      "expected": "0xA7AF0080",
+      "replacement": "0x240D000A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x13C",
+      "expected": "0x24180014",
+      "replacement": "0x240E0014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x140",
+      "expected": "0x241900D0",
+      "replacement": "0xA7AD0080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x144",
+      "expected": "0x2408FFE5",
+      "replacement": "0xA7AE0082",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x148",
+      "expected": "0x24090036",
+      "replacement": "0x241900D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x14C",
+      "expected": "0x240A0003",
+      "replacement": "0x2408FFE5",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x150",
+      "expected": "0x240B0002",
+      "replacement": "0x24090036",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x154",
+      "expected": "0x240C001E",
+      "replacement": "0x240A0003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x158",
+      "expected": "0x240D0028",
+      "replacement": "0x240B0002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x15C",
+      "expected": "0x240E009B",
+      "replacement": "0x240C001E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x160",
+      "expected": "0x240F0064",
+      "replacement": "0x240D0028",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x164",
+      "expected": "0xA7B80082",
+      "replacement": "0x240E009B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x168",
+      "expected": "0xA7B90056",
+      "replacement": "0x240F0064",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x16C",
+      "expected": "0xA7A80058",
+      "replacement": "0x24010001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x170",
+      "expected": "0xA7A9005A",
+      "replacement": "0xA7B90056",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x174",
+      "expected": "0xA7AA0084",
+      "replacement": "0xA7A80058",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x178",
+      "expected": "0xA7AB0086",
+      "replacement": "0xA7A9005A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x17C",
+      "expected": "0xA7AC0088",
+      "replacement": "0xA7AA0084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x180",
+      "expected": "0xA7AD008A",
+      "replacement": "0xA7AB0086",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x184",
+      "expected": "0xA7AE008C",
+      "replacement": "0xA7AC0088",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x188",
+      "expected": "0xA7AF008E",
+      "replacement": "0xA7AD008A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x18C",
+      "expected": "0xE7A6006C",
+      "replacement": "0xA7AE008C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x190",
+      "expected": "0xE7A80070",
+      "replacement": "0xA7AF008E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x194",
+      "expected": "0xE7AA0074",
+      "replacement": "0xE7A6006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x198",
+      "expected": "0xE7B00078",
+      "replacement": "0xE7A80070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x19C",
+      "expected": "0xE7B2007C",
+      "replacement": "0xE7AA0074",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1A0",
+      "expected": "0xE7A40094",
+      "replacement": "0xE7B00078",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1A4",
+      "expected": "0x9058000E",
+      "replacement": "0xE7B2007C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1A8",
+      "expected": "0x24010001",
+      "replacement": "0x17010004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1AC",
+      "expected": "0x24080010",
+      "replacement": "0xE7A40094",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1B0",
+      "expected": "0x17010004",
+      "replacement": "0x24190001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1B4",
+      "expected": "0x2409000F",
+      "replacement": "0x10000002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1B8",
+      "expected": "0x24190001",
+      "replacement": "0xA3B90090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1BC",
+      "expected": "0x10000002",
+      "replacement": "0xA3A00090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1C0",
+      "expected": "0xA3B90090",
+      "replacement": "0x24080010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DD500",
+      "function": "func_151B01B8",
+      "offset": "0x1C4",
+      "expected": "0xA3A00090",
+      "replacement": "0x2409000F",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor trail temporary roles and private pointer home and instruction schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "bound_source_words": [
+    666763104,
+    2948530204,
+    8402981,
+    10498085,
+    1356857464,
+    2411659292,
+    2364408276,
+    1371537525,
+    2411659292,
+    2431582324,
+    604045327,
+    665059372,
+    838336527,
+    318832750,
+    14690341,
+    2946891940,
+    222370903,
+    2946957472,
+    2410021028,
+    2410086560,
+    604110852,
+    281018383,
+    0,
+    2428633092,
+    604045395,
+    272695299,
+    604045477,
+    339804163,
+    12591141,
+    268435463,
+    604110852,
+    222613532,
+    2946957472,
+    2410086560,
+    4200485,
+    268435457,
+    6295589,
+    604045411,
+    272695381,
+    182528,
+    1007190026,
+    621297624,
+    52957217,
+    2420703246,
+    604045314,
+    1006927883,
+    1361117262,
+    2411659292,
+    2498363514,
+    612671776,
+    665124956,
+    678403,
+    627834944,
+    2745958483,
+    2363883988,
+    2946629672,
+    222628941,
+    616956288,
+    1006731275,
+    3290735264,
+    1006731275,
+    3290866340,
+    1006731275,
+    3290997416,
+    1006731275,
+    3291128492,
+    1006715072,
+    2477588563,
+    1149337600,
+    1006731275,
+    3291652784,
+    1006714624,
+    3886284904,
+    632225688,
+    1149313024,
+    604962826,
+    2409758760,
+    2813198420,
+    2813264000,
+    605552660,
+    605618384,
+    604569573,
+    604569654,
+    604635139,
+    604700674,
+    604766238,
+    604831784,
+    604897435,
+    604962916,
+    2813853826,
+    2813919318,
+    2812805208,
+    2812870746,
+    2812936324,
+    2813001862,
+    2813067400,
+    2813132938,
+    2813198476,
+    2813264014,
+    3886415980,
+    3886547056,
+    3886678132,
+    3887071352,
+    3887202428,
+    3886284948,
+    2421686286,
+    604045313,
+    604504080,
+    385941508,
+    604569615,
+    605618177,
+    268435458,
+    2746810512,
+    2745172112,
+    604635137,
+    2812805272,
+    2812870810,
+    2946498716,
+    2947153936,
+    665059412,
+    665124956,
+    665190444,
+    222646214,
+    604438783,
+    2411659292,
+    666697888,
+    65011720,
+    0
+  ]
+}
