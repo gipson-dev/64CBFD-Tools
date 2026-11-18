@@ -1,0 +1,387 @@
+{
+  "name": "func_151AFC88",
+  "frozen_inputs": 1599,
+  "declarations": "typedef struct { f32 x, y, z; } EffectPoint151AFC88;\ntypedef struct RadialPacket151AFC88 {\n    u32 field00, field04;\n    s16 field08, field0A;\n    u32 field0C, field10;\n    u8 field14, field15, field16, field17;\n    u8 field18, field19, field1A, field1B;\n    u8 field1C, field1D;\n    s16 field1E, field20, field22;\n    f32 field24, field28, field2C;\n    f32 position[3];\n    f32 field3C, field40, field44;\n    EffectPoint151AFC88 direction;\n    f32 field54;\n    u32 flags;\n    u8 reserved5C[4];\n    u8 field60, field61, field62;\n    s8 field63;\n    u8 reserved64[16];\n} RadialPacket151AFC88;\nextern f32 D_800AA110, D_800AA114, D_800AA118, D_800AA11C;\nvoid func_15143794(s16, s16, f32, EffectPoint151AFC88 *);\nvoid *func_15130374(void *, u8, s32, u8, s32);\nvoid *memcpy(void *, const void *, size_t);\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\n",
+  "body": "/* Submit the randomized radial descriptor and retain its damping value. */\ns32 func_151AFC88(s32 kind, s16 index, f32 x, f32 y, f32 z,\n                    f32 unused5, f32 unused6, f32 unused7, s16 heading, u8 unused9,\n                    f32 unused10, s32 unused11, f32 unused12, s32 unused13, u8 slot) {\n    RadialPacket151AFC88 packet;\n    f32 sample;\n    f32 bonus;\n    void *allocated;\n    u32 random;\n    packet.field1D = 41;\n    packet.field08 = 0xE03;\n    packet.field00 = 0x200005;\n    packet.field04 = 0;\n    packet.field0A = ((u32)func_150ADA20() & 15) + 25;\n    packet.field0C = 0;\n    packet.field10 = 0;\n    packet.field18 = 176;\n    packet.field19 = 160;\n    packet.field1A = 42;\n    packet.field14 = 64;\n    packet.field15 = 11;\n    packet.field16 = 106;\n    packet.field17 = 255;\n    packet.field1B = (u32)func_150ADA20() % 156U + 100;\n    packet.field1C = 255;\n    packet.field60 = 3;\n    packet.field61 = 3;\n    sample = func_150ADA68();\n    packet.position[0] = x;\n    packet.position[1] = y;\n    packet.position[2] = z;\n    packet.field28 = packet.field2C = sample * 202.0f + 101.0f;\n    random = func_150ADA20();\n    sample = func_150ADA68();\n    func_15143794(heading, (s16)(random % 21U - 20), (sample * D_800AA110 + 500.0f) * D_800AA114, &packet.direction);\n    packet.flags = 0xE05;\n    packet.field54 = 0.0f;\n    if (func_150ADA20() & 1) packet.flags |= 0x40;\n    if (func_150ADA20() & 1) packet.flags |= 0x80;\n    packet.field62 = 6;\n    packet.field63 = -1;\n    packet.field1E = 15;\n    packet.field20 = 17;\n    packet.field22 = 25;\n    packet.field24 = D_800AA118;\n    bonus = D_800AA11C;\n    allocated = func_15130374(&packet, 1, 4, slot, 1);\n    if (allocated != NULL) memcpy((u8 *)allocated + 0xA8, &bonus, 4);\n    return 1;\n}",
+  "raw_sha256": "5934de46b69a65cf140b11b3588b1ebc81cfa4e795857ed0927ab76ea8812882",
+  "retail_sha256": "971362ded269c09fc3985f40a8ff3cd346b250577113aed1b109a61feb217072",
+  "refs": {
+    "52": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "132": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "180": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "240": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "248": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "276": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA110"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA110"
+      ]
+    ],
+    "296": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA114"
+      ]
+    ],
+    "300": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA114"
+      ]
+    ],
+    "332": [
+      [
+        "R_MIPS_26",
+        "func_15143794"
+      ]
+    ],
+    "352": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "380": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "412": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA118"
+      ]
+    ],
+    "416": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA118"
+      ]
+    ],
+    "420": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA11C"
+      ]
+    ],
+    "424": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA11C"
+      ]
+    ],
+    "492": [
+      [
+        "R_MIPS_26",
+        "func_15130374"
+      ]
+    ],
+    "512": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0C0",
+      "expected": "0x44815000",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0C8",
+      "expected": "0x44819000",
+      "replacement": "0x44814000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0CC",
+      "expected": "0x460A0402",
+      "replacement": "0x46040182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0D0",
+      "expected": "0xC7A400B0",
+      "replacement": "0xC7AA00B0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0D4",
+      "expected": "0xC7A600B4",
+      "replacement": "0xC7B000B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0D8",
+      "expected": "0xC7A800B8",
+      "replacement": "0xC7B200B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0DC",
+      "expected": "0xE7A40064",
+      "replacement": "0xE7AA0064",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0E0",
+      "expected": "0xE7A60068",
+      "replacement": "0xE7B00068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0E4",
+      "expected": "0xE7A8006C",
+      "replacement": "0xE7B2006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_1DCA70",
+      "function": "func_151AFC88",
+      "offset": "0x0E8",
+      "expected": "0x46128080",
+      "replacement": "0x46083080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved temporary FPR allocation in captured scale and position loads",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "bound_source_words": [
+    666763096,
+    2948530204,
+    2946760872,
+    2946826412,
+    2946891952,
+    2946957492,
+    1008205856,
+    604897321,
+    604966403,
+    924319749,
+    2746089553,
+    2813263932,
+    2948071476,
+    222475912,
+    2946498616,
+    811139087,
+    656932889,
+    604569776,
+    604635296,
+    604700714,
+    604766272,
+    604831755,
+    604897386,
+    604963071,
+    2812805182,
+    2946498624,
+    2946498628,
+    2745761868,
+    2745827405,
+    2745892942,
+    2745958472,
+    2746024009,
+    2746089546,
+    222475912,
+    2746155083,
+    604045468,
+    4259867,
+    49168,
+    655949924,
+    604504319,
+    604569603,
+    604635139,
+    2746810447,
+    2745696336,
+    2745761940,
+    222475930,
+    2745827477,
+    1006715722,
+    1149325312,
+    1006715594,
+    1149341696,
+    1175061506,
+    3349414064,
+    3349545140,
+    3349676216,
+    3886284900,
+    3886415976,
+    3886547052,
+    1175617664,
+    3886153820,
+    222475912,
+    3886153824,
+    222475930,
+    2946629668,
+    604045333,
+    2409955364,
+    2275672266,
+    665256060,
+    10551323,
+    1006731275,
+    3290734864,
+    1006715898,
+    1149321216,
+    1174667650,
+    1006731275,
+    3291521300,
+    22544,
+    627441644,
+    353280,
+    797699,
+    1174942336,
+    1175475330,
+    1141280768,
+    222629349,
+    0,
+    1149247488,
+    604900869,
+    2947416204,
+    222475912,
+    3886284936,
+    810483713,
+    299892739,
+    2411200652,
+    924385344,
+    2948137100,
+    222475912,
+    0,
+    810024961,
+    285212676,
+    604700678,
+    2410217612,
+    891945088,
+    2947154060,
+    1006731275,
+    3290865944,
+    1006731275,
+    3290997020,
+    604831743,
+    604831759,
+    604897297,
+    604962841,
+    605552641,
+    2745893014,
+    2745958551,
+    2813132882,
+    2813198420,
+    2813263958,
+    2948071440,
+    665059380,
+    604307457,
+    604372996,
+    2477195491,
+    3886415960,
+    222609629,
+    3886546988,
+    272629764,
+    608436392,
+    665124908,
+    201362352,
+    604372996,
+    604110849,
+    2411659292,
+    666697896,
+    65011720,
+    0
+  ]
+}
