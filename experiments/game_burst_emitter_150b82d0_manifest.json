@@ -1,0 +1,832 @@
+{
+  "name": "func_150B82D0",
+  "source": "conker/src/game/generated_E4070.c",
+  "body": "/* Emit a randomized burst around the caller's position and scaled dimensions. */\nvoid func_150B82D0(MenuBurstPointE4070 *center, f32 *unusedHeight, f32 *radius,\n                    f32 *ratio, u8 unusedSlot, s32 unusedContext) {\n    MenuBurstPointE4070 position;\n    MenuBurstPointE4070 rotation;\n    MenuBurstPointE4070 velocity;\n    MenuBurstPointE4070 acceleration;\n    s32 remaining;\n    s16 heading;\n    s16 pitch;\n    f32 firstSample, secondSample;\n\n    remaining = (u32)func_150ADA20() % 26U + 35;\n    if (remaining > 0) {\n        do {\n            heading = (u32)func_150ADA20() & 255;\n            pitch = (u32)func_150ADA20() % 61U - 63;\n            func_15143794(heading, pitch, *radius, &position);\n            position.y *= *ratio;\n            position.x += center->x;\n            position.y += center->y;\n            position.z += center->z;\n            rotation.x = func_150ADA68() * 360.0f;\n            rotation.y = func_150ADA68() * 360.0f;\n            rotation.z = func_150ADA68() * 360.0f;\n            func_15143794(heading, pitch,\n                (func_150ADA68() * 1221.0f + 1806.0f) * 0.01f,\n                &velocity);\n            acceleration.x = (func_150ADA68() * 3140.0f + -1570.0f) * 0.01f;\n            acceleration.y = 0.0f;\n            acceleration.z = (func_150ADA68() * 3140.0f + -1570.0f) * 0.01f;\n            firstSample = func_150ADA68();\n            secondSample = func_150ADA68();\n            func_1518A3C0(&position, &rotation,\n                (firstSample * 104.0f + 78.0f) * 0.001f, &velocity,\n                &acceleration, (secondSample * 633.0f + -1064.0f) * 0.001f,\n                0.9425339698791504f, 1, (u32)func_150ADA20() % 51U + 75, 0, 0, 255, 1);\n            remaining--;\n        } while (remaining != 0);\n    }\n}\n",
+  "declarations": "s32 func_150ADA20(void);\nf32 func_150ADA68(void);\nvoid func_15143794(s16, s16, f32, MenuBurstPointE4070 *);\nvoid *func_1518A3C0(MenuBurstPointE4070 *, MenuBurstPointE4070 *, f32,\n    MenuBurstPointE4070 *, MenuBurstPointE4070 *, f32, f32, u8, s16, u8,\n    s32, u8, s32);\n",
+  "raw_sha256": "f48099632d71a9a3d4dbe7a3bb0d2d127fc486bb2792ad3cfc4ac6b0460b8b27",
+  "refs": {
+    "84": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "112": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "116": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "124": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "132": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "164": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "180": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "func_15143794"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "360": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "368": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "372": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "376": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "380": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_26",
+        "func_15143794"
+      ]
+    ],
+    "436": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "468": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "488": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "504": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "512": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "516": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "540": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "544": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "560": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "568": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "660": [
+      [
+        "R_MIPS_26",
+        "func_1518A3C0"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x000",
+      "expected": "0x27BDFF18",
+      "replacement": "0x27BDFF20",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x048",
+      "expected": "0xAFA500EC",
+      "replacement": "0xAFA500E4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x04C",
+      "expected": "0xAFA600F0",
+      "replacement": "0xAFA600E8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x050",
+      "expected": "0xAFA700F4",
+      "replacement": "0xAFA700EC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x070",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD68",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x074",
+      "expected": "0xC43E0028",
+      "replacement": "0xC43E0000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD68",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x078",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD6C",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x07C",
+      "expected": "0xC43C002C",
+      "replacement": "0xC43C0000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD6C",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x080",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD70",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x084",
+      "expected": "0xC43A0030",
+      "replacement": "0xC43A0000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD70",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x090",
+      "expected": "0x27BE00B8",
+      "replacement": "0x27BE00AC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x094",
+      "expected": "0x27B700D0",
+      "replacement": "0x27B700C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x09C",
+      "expected": "0x27B500C4",
+      "replacement": "0x27B500B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x0A0",
+      "expected": "0x27B400DC",
+      "replacement": "0x27B400D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x0C8",
+      "expected": "0x8FA900F0",
+      "replacement": "0x8FA900E8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x108",
+      "expected": "0x8FAA00F4",
+      "replacement": "0x8FAA00EC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x10C",
+      "expected": "0xC7A400E0",
+      "replacement": "0xC7A400D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x110",
+      "expected": "0xC7AA00DC",
+      "replacement": "0xC7AA00D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x11C",
+      "expected": "0xE7A800E0",
+      "replacement": "0xE7A800D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x128",
+      "expected": "0xC7AA00E4",
+      "replacement": "0xC7AA00D8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x12C",
+      "expected": "0xE7B200DC",
+      "replacement": "0xE7B200D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x138",
+      "expected": "0xE7A600E0",
+      "replacement": "0xE7A600D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x148",
+      "expected": "0xE7B200E4",
+      "replacement": "0xE7B200D8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x154",
+      "expected": "0xE7A800D0",
+      "replacement": "0xE7A800C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x160",
+      "expected": "0xE7A400D4",
+      "replacement": "0xE7A400C8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x16C",
+      "expected": "0xE7A600D8",
+      "replacement": "0xE7A600CC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x170",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD74",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x174",
+      "expected": "0xC42A0034",
+      "replacement": "0xC42A0000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD74",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x178",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD78",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x17C",
+      "expected": "0xC4320038",
+      "replacement": "0xC4320000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD78",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x1C8",
+      "expected": "0xE7B200BC",
+      "replacement": "0xE7B200B0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x1D8",
+      "expected": "0xE7B000B8",
+      "replacement": "0xE7B000AC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x1EC",
+      "expected": "0xE7A600C0",
+      "replacement": "0xE7A600B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x1F4",
+      "expected": "0x46000506",
+      "replacement": "0x46000586",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x1FC",
+      "expected": "0x46000586",
+      "replacement": "0x46000506",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x200",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD7C",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x204",
+      "expected": "0xC432003C",
+      "replacement": "0xC4320000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD7C",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x218",
+      "expected": "0x4610A402",
+      "replacement": "0x4610B402",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x21C",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD80",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x220",
+      "expected": "0xC42C0040",
+      "replacement": "0xC42C0000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD80",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x22C",
+      "expected": "0x460CB302",
+      "replacement": "0x460CA302",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x230",
+      "expected": "0x3C010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_HI16:.rodata",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD84",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x238",
+      "expected": "0xC4300044",
+      "replacement": "0xC4300000",
+      "expected_relocations": "R_MIPS_LO16:.rodata",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD84",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B82D0",
+      "offset": "0x2EC",
+      "expected": "0x27BD00E8",
+      "replacement": "0x27BD00E0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Rebind verified immutable literal identities and rotate the closed vector homes",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "literal_pairs": [
+    [
+      28,
+      29,
+      40
+    ],
+    [
+      30,
+      31,
+      44
+    ],
+    [
+      32,
+      33,
+      48
+    ],
+    [
+      92,
+      93,
+      52
+    ],
+    [
+      94,
+      95,
+      56
+    ],
+    [
+      128,
+      129,
+      60
+    ],
+    [
+      135,
+      136,
+      64
+    ],
+    [
+      140,
+      142,
+      68
+    ]
+  ],
+  "literal_bits": [
+    3301195776,
+    1162100736,
+    1008981770,
+    1150853120,
+    1155645440,
+    981668463,
+    1142833152,
+    1064389096
+  ],
+  "retail_sha256": "471b4d110d26b3e5ed68e42e2fc8bfc682867d9db339b09582afd23d64260dbf",
+  "frozen_inputs": 1688,
+  "profile": [
+    "-O2",
+    "-g3",
+    "-Wo,-loopunroll,0"
+  ],
+  "raw_frame_bytes": 232,
+  "retail_frame_bytes": 224,
+  "source_only_unused_gap_bytes": 8,
+  "slot_words": 188
+}

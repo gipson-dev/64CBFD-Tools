@@ -1,0 +1,52 @@
+#include <ultra64.h>
+typedef struct { f32 x,y,z; } MenuBurstPointE4070;
+enum {INPUT=0x30000,OUTPUT=0x50000,MARK=0x70000,RNG=0x150ADA20,REAL=0x150ADA68,DIRECTION=0x15143794,SUBMIT=0x1518A3C0};
+static u32 seed,initial_value,mutation,success,ordinal,trace,integers,reals,directions,submits,argv[6];
+static MenuBurstPointE4070 *retained[4];
+static void quit(int status){__asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory");__builtin_unreachable();}
+static void fail(const char*s){u32 n=0;while(s[n])n++;__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(s),"d"(n):"memory");quit(3);}
+void *memcpy(void*d,const void*s,u32 n){u8*a=d;const u8*b=s;for(u32 i=0;i<n;i++)a[i]=b[i];return d;}
+static u32 fbits(f32 f){union{f32 f;u32 u;}v;v.f=f;return v.u;}
+static void word(u32 v){trace=(trace^v)*16777619u;}
+static void log_call(u32 t,const u32*a,u32 n,int vectors){
+ word(t);word(n);for(u32 i=0;i<n;i++)word(a[i]);word(vectors?48:0);
+ if(vectors)for(u32 k=0;k<4;k++){const u8*b=(const u8*)retained[k];for(u32 i=0;i<12;i++)word(b[4*(i/4)+3-i%4]);}
+ *(u32 *)MARK=0x13579BDFu+ordinal*0x10203u+t;
+}
+static void effects(void){
+ if(mutation&1){MenuBurstPointE4070*c=(void*)argv[0];c->x=(ordinal%17)*.125f;c->y=(ordinal%17)*.125f+1;c->z=(ordinal%17)*.125f+2;*(f32*)argv[2]=(ordinal%7)*.25f+.5f;*(f32*)argv[3]=(ordinal%5)*.125f+.25f;}
+ if(mutation&2)for(u32 i=0;i<4;i++)if(retained[i]){retained[i]->x=(ordinal%19)*.125f+i;retained[i]->y=(ordinal%19)*.125f+i+.25f;retained[i]->z=(ordinal%19)*.125f+i+.5f;}
+}
+s32 func_150ADA20(void){log_call(RNG,0,0,0);effects();u32 answer=integers?seed*0x9E3779B9u+integers*0x13579BDFu:initial_value;integers++;ordinal++;return(s32)answer;}
+f32 func_150ADA68(void){log_call(REAL,0,0,0);effects();f32 answer=((seed+reals*7)%17)/16.f;reals++;ordinal++;return answer;}
+void func_15143794(s16 h,s16 p,f32 magnitude,MenuBurstPointE4070*v){
+ u32 index=(directions&1)?2:0;if(retained[index]&&retained[index]!=v)fail("direction address");retained[index]=v;
+ u32 a[]={(u32)(s32)h,(u32)(s32)p,fbits(magnitude),0xFFFFFF00u+index};log_call(DIRECTION,a,4,0);effects();
+ u32 q=((h&255)+(p&255)+((fbits(magnitude)>>16)&255))&511;v->x=q/128.f;v->y=(q+17)/128.f;v->z=(q+34)/128.f;directions++;ordinal++;
+}
+void *func_1518A3C0(MenuBurstPointE4070*p,MenuBurstPointE4070*r,f32 size,MenuBurstPointE4070*v,MenuBurstPointE4070*a,f32 rate,f32 factor,u8 kind,s16 life,u8 flag,s32 value,u8 alpha,s32 context){
+ if(retained[0]!=p||retained[2]!=v)fail("submit address");retained[1]=r;retained[3]=a;
+ u32 args[]={0xFFFFFF00u,0xFFFFFF01u,fbits(size),0xFFFFFF02u,0xFFFFFF03u,fbits(rate),fbits(factor),kind,(u32)(s32)life,flag,(u32)value,alpha,(u32)context};
+ log_call(SUBMIT,args,13,1);effects();submits++;*(u32*)OUTPUT=0x98760000u+submits;ordinal++;return success?(void*)OUTPUT:0;
+}
+@BODY@
+extern const u8 fixture_rows[],fixture_end[];
+static const u8 *file;
+static void exact_read(void*d,u32 n){if(file+n>fixture_end)fail("short fixture");memcpy(d,file,n);file+=n;}
+static u32 get32(void){u32 n;exact_read(&n,4);return n;}
+static void mapping(u32 a,u32 n){u32 args[]={a,n,3,0x100022u,0xFFFFFFFFu,0},answer;__asm__ volatile("int $0x80":"=a"(answer):"a"(90),"b"(args):"memory");if(answer!=a)fail("mapping");}
+static u8 expected[3][0x120],initial[0x120];
+static int run(void){
+ mapping(INPUT,4096);mapping(OUTPUT,4096);mapping(MARK,4096);file=fixture_rows;
+ if(sizeof(void*)!=4||sizeof(MenuBurstPointE4070)!=12)fail("layout");u32 cases=get32(),segments=get32();if(segments!=3)fail("segments");
+ for(u32 k=0;k<cases;k++){
+  seed=get32();initial_value=get32();mutation=get32();success=get32();for(u32 i=0;i<6;i++)argv[i]=get32();u32 wanted_trace=get32(),wanted_submits=get32(),addresses[3],lengths[3];
+  for(u32 s=0;s<3;s++){u32 a=addresses[s]=get32(),n=lengths[s]=get32();if(n>0x120)fail("length");exact_read(initial,n);exact_read(expected[s],n);memcpy((void*)a,initial,n);}
+  trace=2166136261u;ordinal=integers=reals=directions=submits=0;for(u32 i=0;i<4;i++)retained[i]=0;
+  func_150B82D0((void*)argv[0],(void*)argv[1],(void*)argv[2],(void*)argv[3],argv[4],argv[5]);
+  if(trace!=wanted_trace)fail("trace");if(submits!=wanted_submits||integers!=1+3*submits||reals!=8*submits||directions!=2*submits)fail("counts");
+  for(u32 s=0;s<3;s++)for(u32 i=0;i<lengths[s];i++)if(((u8*)addresses[s])[i]!=expected[s][i])fail("memory");
+ }
+ if(file!=fixture_end)fail("fixture tail");return 0;
+}
+__attribute__((force_align_arg_pointer))void _start(void){quit(run());}
