@@ -1,0 +1,1563 @@
+{
+  "body": "/* Check the position gates, query the surface, and submit impact descriptors. */\nvoid func_150B9ED0(u8 *point, f32 oldX, f32 oldZ, u8 mode, s32 tag) {\n    f32 dx, dy, dz;\n    SurfacePointE7380 position;\n    SurfaceContextE7380 context;\n    s32 hit;\n    SurfaceBurstE7380 burst;\n    SurfaceSprayE7380 spray;\n    f32 firstScale, secondScale;\n    u32 firstRandom, secondRandom, thirdRandom;\n    u32 *limit;\n    u32 *cursor;\n    u32 checksum;\n    if (point == NULL) return;\n    limit = (u32 *)func_151E7F60;\n    cursor = (u32 *)func_151E7EF8;\n    checksum = 0;\n    while (cursor < limit) {\n        checksum += ~*cursor++;\n    }\n    if (checksum != 0x3843095EU) D_80084060 = 255;\n\n    if (func_150A3058(2, (s16)(s32)*(f32 *)(point + 0x14),\n            (s16)(s32)*(f32 *)(point + 0x18), (s16)(s32)*(f32 *)(point + 0x1C))) return;\n    if (func_150A3058(1, (s16)(s32)*(f32 *)(point + 0x14),\n            (s16)(s32)*(f32 *)(point + 0x18), (s16)(s32)*(f32 *)(point + 0x1C))) return;\n\n    dy = 0.0f;\n    dx = -(*(f32 *)(point + 0x14) - oldX);\n    dz = -(*(f32 *)(point + 0x1C) - oldZ);\n    if (!func_150AC9C0(*(f32 *)(point + 0x14), *(f32 *)(point + 0x18) + 80.0f,\n            *(f32 *)(point + 0x1C), dx, dy, dz, 0, &context,\n            &position.x, &position.y, &position.z, NULL, &hit, 0, 0.0f)) return;\n\n    if (func_15145C90(hit)) {\n        burst.category = 6;\n        burst.field07 = 0;\n        burst.flags = 0x9F01;\n        burst.duration = func_150ADA20() % 51U + 100;\n        burst.field08 = 0;\n        burst.field0C = 0;\n        burst.color[0] = func_150ADA20() % 101U + 155;\n        burst.color[1] = 255;\n        burst.color[2] = 255;\n        burst.color[3] = 255;\n        burst.field14 = 255;\n        burst.field15 = 255;\n        burst.field18 = 0x3B0002;\n        burst.field16 = 0;\n        burst.field17 = 7;\n        burst.field22 = 25;\n        burst.field24 = 10;\n        firstScale = func_150ADA68();\n        secondScale = func_150ADA68();\n        firstRandom = func_150ADA20();\n        secondRandom = func_150ADA20();\n        thirdRandom = func_150ADA20();\n        func_1513C650(&burst, 0, 0, &context, position.x, position.y, position.z,\n            firstScale * 20.0f + 40.0f, secondScale * 20.0f + 40.0f,\n            firstRandom & 255, (thirdRandom & 1) + ((secondRandom & 1) << 1),\n            3, 255, 0, mode, tag);\n    }\n\n    spray.field00 = 15;\n    spray.field02 = 10;\n    spray.position = position;\n    spray.direction.x = -dx;\n    spray.direction.y = -dy;\n    spray.direction.z = -dz;\n    spray.context = context;\n    spray.field30 = D_8009FE10;\n    spray.category = 7;\n    spray.field35 = 0;\n    spray.field36 = 0x3B01;\n    spray.field38 = 26;\n    spray.field3A = 20;\n    spray.field3C = 7.0f;\n    spray.field40 = 10.0f;\n    spray.flags = 0x5C0001;\n    spray.field48 = 100;\n    spray.field49 = 155;\n    spray.field4C = D_8009FE14;\n    spray.field50 = D_8009FE18;\n    spray.field54 = D_8009FE1C;\n    spray.field58 = D_8009FE20;\n    spray.field5C = 0;\n    spray.field5D = 7;\n    spray.field60 = 3;\n    spray.field64 = 255;\n    spray.field68 = 10;\n    spray.field6A = 25;\n    spray.field6C = D_8009FE24;\n    spray.field70 = D_8009FE28;\n    func_151511FC(&spray, mode, tag);\n}\n",
+  "declarations": "typedef struct { f32 x, y, z; } SurfacePointE7380;\n/* The query supplies nine halfwords; their individual meanings are unrecovered. */\ntypedef struct { s16 field[9]; } SurfaceContextE7380;\ntypedef struct {\n    u32 flags;\n    u16 duration;\n    u8 category, field07;\n    u32 field08, field0C;\n    u8 color[4], field14, field15, field16, field17;\n    u32 field18;\n    u8 reserved1C[6];\n    s16 field22, field24;\n    u8 reserved26[2];\n} SurfaceBurstE7380;\ntypedef struct {\n    s16 field00, field02;\n    SurfacePointE7380 position, direction;\n    SurfaceContextE7380 context;\n    u8 reserved2E[2];\n    f32 field30;\n    u8 category, field35;\n    u16 field36;\n    s16 field38, field3A;\n    f32 field3C, field40;\n    u32 flags;\n    u8 field48, field49, reserved4A[2];\n    f32 field4C, field50, field54, field58;\n    u8 field5C, field5D, reserved5E[2];\n    u32 field60, field64;\n    s16 field68, field6A;\n    f32 field6C, field70;\n} SurfaceSprayE7380;\nextern u8 D_80084060;\nextern f32 D_8009FE10, D_8009FE14, D_8009FE18, D_8009FE1C;\nextern f32 D_8009FE20, D_8009FE24, D_8009FE28;\nvoid func_151E7EF8(void);\nvoid func_151E7F60(void);\ns32 func_150A3058(s32, s16, s16, s16);\ns32 func_150AC9C0(f32, f32, f32, f32, f32, f32, s32, void *,\n    f32 *, f32 *, f32 *, f32 *, s32 *, s32, f32);\nu8 func_15145C90(s32);\nu32 func_150ADA20(void);\nf32 func_150ADA68(void);\nvoid *func_1513C650(void *, u8, u8, void *, f32, f32, f32, f32, f32,\n    u8, u8, s32, s32, s32, u8, s32);\nvoid func_151511FC(void *, u8, s32);\n",
+  "raw_sha256": "6fea10f66b291d71da733ba9d0ec380e9261963522e5bac60a22e3c49a287e12",
+  "raw_words": 291,
+  "raw_frame": 328,
+  "retail_words": 291,
+  "retail_frame": 344,
+  "refs": {
+    "32": [
+      [
+        "R_MIPS_HI16",
+        "func_151E7F60"
+      ]
+    ],
+    "40": [
+      [
+        "R_MIPS_LO16",
+        "func_151E7F60"
+      ]
+    ],
+    "36": [
+      [
+        "R_MIPS_HI16",
+        "func_151E7EF8"
+      ]
+    ],
+    "44": [
+      [
+        "R_MIPS_LO16",
+        "func_151E7EF8"
+      ]
+    ],
+    "100": [
+      [
+        "R_MIPS_HI16",
+        "D_80084060"
+      ]
+    ],
+    "104": [
+      [
+        "R_MIPS_LO16",
+        "D_80084060"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_150A3058"
+      ]
+    ],
+    "244": [
+      [
+        "R_MIPS_26",
+        "func_150A3058"
+      ]
+    ],
+    "384": [
+      [
+        "R_MIPS_26",
+        "func_150AC9C0"
+      ]
+    ],
+    "400": [
+      [
+        "R_MIPS_26",
+        "func_15145C90"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "460": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "572": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "580": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "588": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "596": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "756": [
+      [
+        "R_MIPS_26",
+        "func_1513C650"
+      ]
+    ],
+    "956": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE10"
+      ]
+    ],
+    "960": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE10"
+      ]
+    ],
+    "980": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE14"
+      ]
+    ],
+    "984": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE14"
+      ]
+    ],
+    "988": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE18"
+      ]
+    ],
+    "996": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE18"
+      ]
+    ],
+    "1000": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE1C"
+      ]
+    ],
+    "1008": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE1C"
+      ]
+    ],
+    "1012": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE20"
+      ]
+    ],
+    "1020": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE20"
+      ]
+    ],
+    "1024": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE24"
+      ]
+    ],
+    "1032": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE24"
+      ]
+    ],
+    "1036": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE28"
+      ]
+    ],
+    "1044": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE28"
+      ]
+    ],
+    "1136": [
+      [
+        "R_MIPS_26",
+        "func_151511FC"
+      ]
+    ]
+  },
+  "frozen_inputs": 1791,
+  "baseline_manifest_sha256": "3f5577fe157e8278868d7124b5947b9e8ae0def33bccb8b48820e410d0a96568",
+  "source": "conker/src/game/generated_E7380.c",
+  "asm": "conker/asm/E7380.s",
+  "entry": 353083088,
+  "rom": 947072,
+  "size": 1164,
+  "source_installed": false,
+  "c_match_credit": 0,
+  "guard_rows": [
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x0",
+      "expected": "0x27bdfeb8",
+      "replacement": "0x27bdfea8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x10",
+      "expected": "0xafa5014c",
+      "replacement": "0xafa5015c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x14",
+      "expected": "0xafa60150",
+      "replacement": "0xafa60160",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x18",
+      "expected": "0xafa70154",
+      "replacement": "0xafa70164",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x100",
+      "expected": "0xc7a4014c",
+      "replacement": "0x3c0142a0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x104",
+      "expected": "0xc600001c",
+      "replacement": "0x44809000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x108",
+      "expected": "0xc60c0014",
+      "replacement": "0xc7a8015c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x10c",
+      "expected": "0xc6080018",
+      "replacement": "0xc600001c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x110",
+      "expected": "0xc7a60150",
+      "replacement": "0xc6040018",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x114",
+      "expected": "0x46046081",
+      "replacement": "0xc60c0014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x118",
+      "expected": "0x44809000",
+      "replacement": "0xc7aa0160",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x11c",
+      "expected": "0x3c0142a0",
+      "replacement": "0x44813000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x120",
+      "expected": "0x46060401",
+      "replacement": "0x46086081",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x124",
+      "expected": "0x44815000",
+      "replacement": "0x27af0110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x128",
+      "expected": "0x27af011c",
+      "replacement": "0x27b80124",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x12c",
+      "expected": "0x46001087",
+      "replacement": "0x460a0401",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x130",
+      "expected": "0x46008407",
+      "replacement": "0x27b90128",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x134",
+      "expected": "0x44071000",
+      "replacement": "0x27a8012c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x138",
+      "expected": "0x27b80130",
+      "replacement": "0x46001087",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x13c",
+      "expected": "0x27b90134",
+      "replacement": "0x46008407",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x140",
+      "expected": "0x27a80138",
+      "replacement": "0x44071000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x144",
+      "expected": "0x27a90118",
+      "replacement": "0x27a9010c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x150",
+      "expected": "0xafa80028",
+      "replacement": "0xe7b00014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x154",
+      "expected": "0xafb90024",
+      "replacement": "0xe7b00138",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x158",
+      "expected": "0xafb80020",
+      "replacement": "0xe7a20130",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x15c",
+      "expected": "0xe7b00014",
+      "replacement": "0xafa80028",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x160",
+      "expected": "0xe7b0013c",
+      "replacement": "0xafb90024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x164",
+      "expected": "0xe7a20144",
+      "replacement": "0xafb80020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x16c",
+      "expected": "0xafa00034",
+      "replacement": "0xe7b20038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x170",
+      "expected": "0xafa0002c",
+      "replacement": "0xafa00034",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x174",
+      "expected": "0xafa00018",
+      "replacement": "0xafa0002c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x178",
+      "expected": "0xe7b20010",
+      "replacement": "0xafa00018",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x17c",
+      "expected": "0xe7b20038",
+      "replacement": "0xe7b20010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x184",
+      "expected": "0x460a4380",
+      "replacement": "0x46062380",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x194",
+      "expected": "0x8fa40118",
+      "replacement": "0x8fa4010c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x1a4",
+      "expected": "0xa3aa00f6",
+      "replacement": "0xa3aa00ea",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x1a8",
+      "expected": "0xa3a000f7",
+      "replacement": "0xa3a000eb",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x1b0",
+      "expected": "0xafab00f0",
+      "replacement": "0xafab00e4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x1c4",
+      "expected": "0xa7ad00f4",
+      "replacement": "0xa7ad00e8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x1c8",
+      "expected": "0xafa000f8",
+      "replacement": "0xafa000ec",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x1d0",
+      "expected": "0xafa000fc",
+      "replacement": "0xafa000f0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x20c",
+      "expected": "0xa3af0100",
+      "replacement": "0xa3af00f4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x210",
+      "expected": "0xa3b80101",
+      "replacement": "0xa3b800f5",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x214",
+      "expected": "0xa3b90102",
+      "replacement": "0xa3b900f6",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x218",
+      "expected": "0xa3a80103",
+      "replacement": "0xa3a800f7",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x21c",
+      "expected": "0xa3a90104",
+      "replacement": "0xa3a900f8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x220",
+      "expected": "0xa3aa0105",
+      "replacement": "0xa3aa00f9",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x224",
+      "expected": "0xafab0108",
+      "replacement": "0xafab00fc",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x228",
+      "expected": "0xa3a00106",
+      "replacement": "0xa3a000fa",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x22c",
+      "expected": "0xa3ac0107",
+      "replacement": "0xa3ac00fb",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x230",
+      "expected": "0xa7ad0112",
+      "replacement": "0xa7ad0106",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x238",
+      "expected": "0xa7ae0114",
+      "replacement": "0xa7ae0108",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x240",
+      "expected": "0xe7a00078",
+      "replacement": "0xe7a0005c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x248",
+      "expected": "0xe7a00074",
+      "replacement": "0xe7a00060",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x258",
+      "expected": "0xafa2006c",
+      "replacement": "0xafa20068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x25c",
+      "expected": "0xc7a40130",
+      "replacement": "0xc7a40124",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x260",
+      "expected": "0xc7a80138",
+      "replacement": "0xc7a8012c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x26c",
+      "expected": "0xc7aa0078",
+      "replacement": "0xc7aa005c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x27c",
+      "expected": "0xc7a80074",
+      "replacement": "0xc7a80060",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x280",
+      "expected": "0xc7a60134",
+      "replacement": "0xc7a60128",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x290",
+      "expected": "0x8fb9006c",
+      "replacement": "0x8fb90068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x298",
+      "expected": "0x93ad0157",
+      "replacement": "0x93ad0167",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x2a4",
+      "expected": "0x8fae0158",
+      "replacement": "0x8fae0168",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x2dc",
+      "expected": "0x27a400f0",
+      "replacement": "0x27a400e4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x2e8",
+      "expected": "0x27a7011c",
+      "replacement": "0x27a70110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x304",
+      "expected": "0xa7af007c",
+      "replacement": "0xa7af0070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x308",
+      "expected": "0xa7b9007e",
+      "replacement": "0xa7b90072",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x30c",
+      "expected": "0x27b80130",
+      "replacement": "0x27b80124",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x314",
+      "expected": "0x27a80080",
+      "replacement": "0x27a80074",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x328",
+      "expected": "0x27ad011c",
+      "replacement": "0x27ad0110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x334",
+      "expected": "0x27ac0098",
+      "replacement": "0x27ac008c",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x340",
+      "expected": "0xc7a60144",
+      "replacement": "0xc7a60130",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x344",
+      "expected": "0xe7a40090",
+      "replacement": "0xe7a40084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x350",
+      "expected": "0xc7a6013c",
+      "replacement": "0xc7a60138",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x354",
+      "expected": "0xe7a8008c",
+      "replacement": "0xe7a80080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x364",
+      "expected": "0xe7a80094",
+      "replacement": "0xe7a80088",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x394",
+      "expected": "0x27a4007c",
+      "replacement": "0x27a40070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x3e0",
+      "expected": "0xe7aa00ac",
+      "replacement": "0xe7aa00a0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x3ec",
+      "expected": "0xe7a400b8",
+      "replacement": "0xe7a400ac",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x3f8",
+      "expected": "0xe7a600bc",
+      "replacement": "0xe7a600b0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x404",
+      "expected": "0xe7a800c8",
+      "replacement": "0xe7a800bc",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x410",
+      "expected": "0xe7aa00cc",
+      "replacement": "0xe7aa00c0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x418",
+      "expected": "0xa3aa00b0",
+      "replacement": "0xa3aa00a4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x41c",
+      "expected": "0xa7a900b2",
+      "replacement": "0xa7a900a6",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x42c",
+      "expected": "0xa3a000b1",
+      "replacement": "0xa3a000a5",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x430",
+      "expected": "0xa7a800b4",
+      "replacement": "0xa7a800a8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x434",
+      "expected": "0xa7b800b6",
+      "replacement": "0xa7b800aa",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x438",
+      "expected": "0xafab00c0",
+      "replacement": "0xafab00b4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x43c",
+      "expected": "0xa3af00c4",
+      "replacement": "0xa3af00b8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x440",
+      "expected": "0xa3ae00c5",
+      "replacement": "0xa3ae00b9",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x444",
+      "expected": "0xa3a000d8",
+      "replacement": "0xa3a000cc",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x448",
+      "expected": "0xa3ac00d9",
+      "replacement": "0xa3ac00cd",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x44c",
+      "expected": "0xafad00dc",
+      "replacement": "0xafad00d0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x450",
+      "expected": "0xafb900e0",
+      "replacement": "0xafb900d4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x454",
+      "expected": "0xa7aa00e4",
+      "replacement": "0xa7aa00d8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x458",
+      "expected": "0xa7a900e6",
+      "replacement": "0xa7a900da",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x45c",
+      "expected": "0x8fa60158",
+      "replacement": "0x8fa60168",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x460",
+      "expected": "0x93a50157",
+      "replacement": "0x93a50167",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x464",
+      "expected": "0xe7a400d0",
+      "replacement": "0xe7a400c4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x468",
+      "expected": "0xe7a600d4",
+      "replacement": "0xe7a600c8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x46c",
+      "expected": "0xe7a800e8",
+      "replacement": "0xe7a800dc",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x474",
+      "expected": "0xe7aa00ec",
+      "replacement": "0xe7aa00e0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7380",
+      "function": "func_150B9ED0",
+      "offset": "0x480",
+      "expected": "0x27bd0148",
+      "replacement": "0x27bd0158",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Apply proved surface-impact private-frame and query scheduling correspondence",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "insertions": 0,
+  "relocated_guards": 0,
+  "retail_sha256": "9c810d852eb922e0fcece0290c0bcca97c581b802abe41f0777debbc216a9e0e",
+  "retail_unbound_sha256": "709a04995cafd859c315e26c290200b7c3e06819e23b8a2675ccac31763de3d6"
+}
