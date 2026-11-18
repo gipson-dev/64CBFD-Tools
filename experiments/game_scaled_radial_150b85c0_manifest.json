@@ -1,0 +1,309 @@
+{
+  "name": "func_150B85C0",
+  "source": "conker/src/game/generated_E4070.c",
+  "body": "/* Submit the scaled radial packet and return the factory's allocation result. */\nvoid *func_150B85C0(MenuBurstPointE4070 *position, f32 *height, f32 *radius,\n                    u8 slot, s32 context) {\n    MenuRadialPacketE4070 packet;\n    s32 secondFlag;\n    s32 firstFlag;\n\n    packet.field1D = 41;\n    packet.field08 = 0xE03;\n    packet.field00 = 0x200005;\n    packet.field04 = 0;\n    packet.field0A = (u32)func_150ADA20() % 11U + 35;\n    packet.field0C = 0;\n    packet.field10 = 0;\n    packet.field18 = 176;\n    packet.field19 = 160;\n    packet.field1A = 42;\n    packet.field14 = 64;\n    packet.field15 = 11;\n    packet.field16 = 106;\n    packet.field17 = 255;\n    packet.field1B = (u32)func_150ADA20() % 51U + 100;\n    packet.field1C = 255;\n    packet.field60 = 3;\n    packet.field61 = 3;\n    packet.field28 = *radius * 20.0f;\n    packet.field2C = *height * 20.0f;\n    packet.position = *position;\n    packet.field3C = 0.0f;\n    packet.field40 = 0.0f;\n    packet.field44 = 0.0f;\n    packet.direction.x = 0.0f;\n    packet.direction.y = 0.0f;\n    packet.direction.z = 0.0f;\n    packet.field54 = 0.0f;\n    firstFlag = (func_150ADA20() & 1) ? 0x40 : 0;\n    secondFlag = (func_150ADA20() & 1) ? 0x80 : 0;\n    packet.flags = secondFlag | 0xE01 | firstFlag | 0xC000;\n    packet.field62 = -1;\n    packet.field63 = -1;\n    packet.field1E = 25;\n    packet.field20 = 10;\n    packet.field22 = 40;\n    packet.field64 = -1;\n    packet.field65 = 0;\n    packet.field24 = D_8009FD88;\n    return func_15130374(&packet, 1, 0, slot, context);\n}\n",
+  "declarations": "typedef struct { f32 x, y, z; } MenuBurstPointE4070;\ntypedef struct {\n    u32 field00, field04;\n    s16 field08, field0A;\n    u32 field0C, field10;\n    u8 field14, field15, field16, field17;\n    u8 field18, field19, field1A, field1B;\n    u8 field1C, field1D;\n    s16 field1E, field20, field22;\n    f32 field24, field28, field2C;\n    MenuBurstPointE4070 position;\n    f32 field3C, field40, field44;\n    MenuBurstPointE4070 direction;\n    f32 field54;\n    u32 flags;\n    u8 reserved5C[4];\n    u8 field60, field61;\n    s8 field62;\n    s8 field63, field64;\n    u8 field65, reserved66[10];\n} MenuRadialPacketE4070;\nextern f32 D_8009FD88;\ns32 func_150ADA20(void);\nvoid *func_15130374(void *, u8, s32, u8, s32);\n",
+  "raw_sha256": "275be11d043aa292d47ae1ec39ec7c535f9a7c9731f8f30f5849fa8eaf3069f7",
+  "refs": {
+    "52": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "356": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD88"
+      ]
+    ],
+    "360": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD88"
+      ]
+    ],
+    "452": [
+      [
+        "R_MIPS_26",
+        "func_15130374"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x164",
+      "expected": "0x3C010000",
+      "replacement": "0x01436025",
+      "expected_relocations": "R_MIPS_HI16:D_8009FD88",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x168",
+      "expected": "0xC4300000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FD88",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD88",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x16C",
+      "expected": "0x8FA900A8",
+      "replacement": "0xC4300000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD88",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x170",
+      "expected": "0x01435825",
+      "replacement": "0x8FAA00A8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x174",
+      "expected": "0x356CC000",
+      "replacement": "0x3598C000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x178",
+      "expected": "0x2418FFFF",
+      "replacement": "0x240FFFFF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x17C",
+      "expected": "0x240FFFFF",
+      "replacement": "0x240DFFFF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x180",
+      "expected": "0x240D0019",
+      "replacement": "0x240E0019",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x184",
+      "expected": "0x240E000A",
+      "replacement": "0x2419000A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x188",
+      "expected": "0x24190028",
+      "replacement": "0x24080028",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x18C",
+      "expected": "0x2408FFFF",
+      "replacement": "0x2409FFFF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x190",
+      "expected": "0xAFAC0080",
+      "replacement": "0xAFB80080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x194",
+      "expected": "0xA3B8008A",
+      "replacement": "0xA3AF008A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x198",
+      "expected": "0xA3AF008B",
+      "replacement": "0xA3AD008B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x19C",
+      "expected": "0xA7AD0046",
+      "replacement": "0xA7AE0046",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x1A0",
+      "expected": "0xA7AE0048",
+      "replacement": "0xA7B90048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x1A4",
+      "expected": "0xA7B9004A",
+      "replacement": "0xA7A8004A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x1A8",
+      "expected": "0xA3A8008C",
+      "replacement": "0xA3A9008C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B85C0",
+      "offset": "0x1C8",
+      "expected": "0xAFA90010",
+      "replacement": "0xAFAA0010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize independent flag setup and proved closed temporary GPR roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "frozen_inputs": 1680,
+  "frame": 152,
+  "words": 119,
+  "compiler_flags": [
+    "-O2",
+    "-g3",
+    "-Wo,-loopunroll,0"
+  ],
+  "retail_sha256": "5aa187a9b27119f59dd05ed2803a4c4ed1d4702adf4ca47873c33938c25217c9"
+}
