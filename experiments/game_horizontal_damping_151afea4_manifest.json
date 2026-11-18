@@ -1,0 +1,21 @@
+{
+  "frozen_inputs": 1586,
+  "declarations": "extern s32 D_800BE9E4;\ntypedef struct {\n    u8 reserved00[0x58];\n    f32 x;\n    u8 reserved5C[4];\n    f32 z;\n    u8 reserved64[0x44];\n    f32 damping;\n} DampingState151AFEA4;\n",
+  "body": "/* Damp both horizontal velocity components once per simulation tick. */\ns32 func_151AFEA4(DampingState151AFEA4 *state, void *context) {\n    f32 *factor = &state->damping;\n    u32 ticks;\n\n    for (ticks = (u32)D_800BE9E4; ticks != 0; ticks--) {\n        state->x *= *factor;\n        state->z *= *factor;\n    }\n    return 1;\n}",
+  "raw_sha256": "18a89c5cb10c345d4b295eb71b4ba8f0fdb4e5d951e916be6036b675a1277c5d",
+  "retail_sha256": "cce54a3142eae9275144225bef910ccc2175f0ea0a2490f0d633f39147477260",
+  "refs": {
+    "4": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9E4"
+      ]
+    ],
+    "8": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9E4"
+      ]
+    ]
+  }
+}
