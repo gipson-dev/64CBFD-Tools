@@ -1,0 +1,356 @@
+{
+  "name": "func_150B791C",
+  "source": "conker/src/game/generated_E4070.c",
+  "body": "/* Replace the four menu records, preserving retail's conditional release targets. */\nvoid func_150B791C(void) {\n    MenuRecordDescriptorE4070 descriptor;\n\n    if (((void **)D_800D9898)[2] != NULL) {\n        func_1516972C(((void **)D_800D9898)[2]);\n        ((void **)D_800D9898)[2] = NULL;\n    }\n    descriptor.field31 = 3;\n    descriptor.field2C = 64;\n    descriptor.field2E = 16;\n    descriptor.field30 = 5;\n    descriptor.field20 = 150.0f;\n    descriptor.field1C = 230.0f;\n    descriptor.field0C = (s32)descriptor.field20;\n    descriptor.field24 = 0;\n    descriptor.field26 = 0;\n    descriptor.field14 = 0;\n    descriptor.field16 = 0;\n    descriptor.field18 = 0;\n    descriptor.asset = D_8009190C;\n    descriptor.secondaryAsset = NULL;\n    descriptor.field08 = 0;\n    descriptor.field10 = 0;\n    descriptor.field32 = 255;\n    descriptor.field33 = 0;\n    descriptor.field34 = 0;\n    descriptor.field35 = 128;\n    descriptor.field36 = 7;\n    descriptor.field37 = 17;\n    descriptor.field38 = 1;\n    descriptor.field39 = 0;\n    descriptor.field28 = 4096;\n    descriptor.field2A = 4096;\n    if (((void **)D_800D9898)[5] != NULL) {\n        func_1516972C(((void **)D_800D9898)[5]);\n    }\n    ((void **)D_800D9898)[5] = func_15169968(&descriptor);\n    descriptor.field16 = 256;\n    descriptor.field08 = 256;\n    descriptor.field35 = 255;\n    descriptor.field20 = 170.0f;\n    descriptor.field0C = (s32)descriptor.field20;\n    /* The gate is slot6, but the original release argument is the first result. */\n    if (((void **)D_800D9898)[6] != NULL) func_1516972C(((void **)D_800D9898)[5]);\n    ((void **)D_800D9898)[6] = func_15169968(&descriptor);\n    descriptor.field16 = 512;\n    descriptor.field08 = 512;\n    descriptor.field35 = 128;\n    descriptor.field20 = 190.0f;\n    descriptor.field0C = (s32)descriptor.field20;\n    /* Likewise, slot7 gates a release of the then-current slot5 pointer. */\n    if (((void **)D_800D9898)[7] != NULL) {\n        func_1516972C(((void **)D_800D9898)[5]);\n    }\n    ((void **)D_800D9898)[7] = func_15169968(&descriptor);\n    descriptor.field14 = 0;\n    descriptor.field16 = 0;\n    descriptor.field18 = 0;\n    descriptor.field31 = 0;\n    descriptor.field2C = 88;\n    descriptor.field2E = 64;\n    descriptor.field35 = 255;\n    descriptor.field30 = 0;\n    descriptor.asset = D_800918E8;\n    descriptor.field1C = 230.0f;\n    descriptor.field20 = 170.0f;\n    if (((void **)D_800D9898)[9] != NULL) func_1516972C(((void **)D_800D9898)[9]);\n    ((void **)D_800D9898)[9] = func_15169968(&descriptor);\n    D_800D9890 = 3;\n}\n",
+  "declarations": "extern u8 D_8009190C[];",
+  "raw_sha256": "6affbd52b7184702fe13f46893aa6be9b8ece1e1c99d72a5bcf0907c77c2b954",
+  "refs": {
+    "8": [
+      [
+        "R_MIPS_HI16",
+        "D_800D9898"
+      ]
+    ],
+    "12": [
+      [
+        "R_MIPS_LO16",
+        "D_800D9898"
+      ]
+    ],
+    "32": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "104": [
+      [
+        "R_MIPS_HI16",
+        "D_8009190C"
+      ]
+    ],
+    "108": [
+      [
+        "R_MIPS_LO16",
+        "D_8009190C"
+      ]
+    ],
+    "232": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "240": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "396": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "424": [
+      [
+        "R_MIPS_HI16",
+        "D_800918E8"
+      ]
+    ],
+    "440": [
+      [
+        "R_MIPS_LO16",
+        "D_800918E8"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "504": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "520": [
+      [
+        "R_MIPS_HI16",
+        "D_800D9890"
+      ]
+    ],
+    "524": [
+      [
+        "R_MIPS_LO16",
+        "D_800D9890"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x038",
+      "expected": "0x240E0003",
+      "replacement": "0x3C014366",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x040",
+      "expected": "0x240F0040",
+      "replacement": "0x240E0003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x044",
+      "expected": "0x24180010",
+      "replacement": "0x240F0040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x048",
+      "expected": "0x24190005",
+      "replacement": "0x24180010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x04C",
+      "expected": "0x3C014366",
+      "replacement": "0x24190005",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x054",
+      "expected": "0x44093000",
+      "replacement": "0x440A3000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x068",
+      "expected": "0x3C0A0000",
+      "replacement": "0x3C080000",
+      "expected_relocations": "R_MIPS_HI16:D_8009190C",
+      "replacement_relocations": "R_MIPS_HI16:D_8009190C",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x06C",
+      "expected": "0x254A0000",
+      "replacement": "0x25080000",
+      "expected_relocations": "R_MIPS_LO16:D_8009190C",
+      "replacement_relocations": "R_MIPS_LO16:D_8009190C",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x0A0",
+      "expected": "0xAFAA0024",
+      "replacement": "0xAFA80024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x0E4",
+      "expected": "0xAFA90030",
+      "replacement": "0xAFAA0030",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x114",
+      "expected": "0x240A00FF",
+      "replacement": "0x240C00FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x118",
+      "expected": "0x440C8000",
+      "replacement": "0x440B8000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x128",
+      "expected": "0xA3AA0059",
+      "replacement": "0xA3AC0059",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x134",
+      "expected": "0xAFAC0030",
+      "replacement": "0xAFAB0030",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x160",
+      "expected": "0x24180080",
+      "replacement": "0x24080080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x168",
+      "expected": "0x44089000",
+      "replacement": "0x44199000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x174",
+      "expected": "0xA3B80059",
+      "replacement": "0xA3A80059",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B791C",
+      "offset": "0x180",
+      "expected": "0xAFA80030",
+      "replacement": "0xAFB90030",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved independent GPR setup schedule and closed temporary register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "frozen_inputs": 1672,
+  "frame": 96,
+  "words": 137,
+  "compiler_flags": [
+    "-O2",
+    "-g3",
+    "-Wo,-loopunroll,0"
+  ],
+  "retail_sha256": "d2dd431963b60cb63a7108d332dc1d819d0088d23e50abdb96aad91ffa15ccb9"
+}
