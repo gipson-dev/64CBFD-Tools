@@ -1,0 +1,376 @@
+{
+  "name": "func_150B77A8",
+  "source": "conker/src/game/generated_E4070.c",
+  "body": "/* Replace both menu layers using the shared, partially initialized descriptor. */\nvoid func_150B77A8(void) {\n    MenuRecordDescriptorE4070 descriptor;\n\n    if (((void **)D_800D9898)[1] != NULL) {\n        func_1516972C(((void **)D_800D9898)[1]);\n        ((void **)D_800D9898)[1] = NULL;\n    }\n    descriptor.field2C = 64;\n    descriptor.field2E = 64;\n    descriptor.field30 = 4;\n    descriptor.asset = D_800918F4;\n    descriptor.secondaryAsset = D_80091900;\n    descriptor.field14 = 0;\n    descriptor.field16 = 0;\n    descriptor.field18 = 0;\n    descriptor.field31 = 0;\n    descriptor.field24 = -2048;\n    descriptor.field26 = 9;\n    descriptor.field32 = 255;\n    descriptor.field33 = 0;\n    descriptor.field34 = 0;\n    descriptor.field35 = 255;\n    descriptor.field36 = 13;\n    descriptor.field37 = 18;\n    descriptor.field38 = 2;\n    descriptor.field39 = 3;\n    descriptor.field28 = 4096;\n    descriptor.field2A = 4096;\n    descriptor.field1C = 60.0f;\n    descriptor.field20 = 170.0f;\n    if (((void **)D_800D9898)[4] != NULL) {\n        func_1516972C(((void **)D_800D9898)[4]);\n    }\n    ((void **)D_800D9898)[4] = func_15169968(&descriptor);\n    descriptor.field24 = 0;\n    descriptor.field26 = 0;\n    descriptor.field2C = 88;\n    descriptor.field2E = 64;\n    descriptor.field30 = 0;\n    descriptor.field36 = 7;\n    descriptor.field37 = 17;\n    descriptor.asset = D_800918E8;\n    descriptor.field38 = 1;\n    if (((void **)D_800D9898)[8] != NULL) {\n        func_1516972C(((void **)D_800D9898)[8]);\n    }\n    ((void **)D_800D9898)[8] = func_15169968(&descriptor);\n    D_800D9890 = 3;\n}\n",
+  "declarations": "extern u8 D_800918F4[], D_80091900[];",
+  "raw_sha256": "58a9993d4537b901f9dc31c0c2797b539015c012df2dd3963ae71ca663773242",
+  "refs": {
+    "8": [
+      [
+        "R_MIPS_HI16",
+        "D_800D9898"
+      ]
+    ],
+    "12": [
+      [
+        "R_MIPS_LO16",
+        "D_800D9898"
+      ]
+    ],
+    "32": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_HI16",
+        "D_800918F4"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_LO16",
+        "D_800918F4"
+      ]
+    ],
+    "56": [
+      [
+        "R_MIPS_HI16",
+        "D_80091900"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_LO16",
+        "D_80091900"
+      ]
+    ],
+    "228": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "248": [
+      [
+        "R_MIPS_HI16",
+        "D_800918E8"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_LO16",
+        "D_800918E8"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_HI16",
+        "D_800D9890"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_LO16",
+        "D_800D9890"
+      ]
+    ]
+  },
+  "bound_source_words": [
+    666763168,
+    2947547160,
+    1007714318,
+    638621848,
+    2948530204,
+    2382626820,
+    1350565893,
+    1006715504,
+    222668235,
+    0,
+    2919235588,
+    1006715504,
+    1149313024,
+    1008304137,
+    1007190025,
+    2382626832,
+    604897344,
+    604962880,
+    605552644,
+    658053364,
+    621287680,
+    1006715690,
+    1149317120,
+    2813198416,
+    2813263954,
+    2746744916,
+    2948136996,
+    2947022888,
+    604633088,
+    604635145,
+    604700927,
+    604766463,
+    604831757,
+    604897298,
+    604962818,
+    605552643,
+    605622272,
+    604508160,
+    2812280888,
+    2812280890,
+    2812280892,
+    2745172053,
+    2812870728,
+    2812936266,
+    2745892950,
+    2745172055,
+    2745172056,
+    2745958489,
+    2746024026,
+    2746089563,
+    2746155100,
+    2746744925,
+    2813919308,
+    2812805198,
+    3886284864,
+    276824067,
+    3886415940,
+    222668235,
+    0,
+    222668378,
+    665059364,
+    2382626848,
+    1007517705,
+    604569688,
+    604635200,
+    604700679,
+    604766225,
+    632101096,
+    604897281,
+    2919366672,
+    2812280904,
+    2812280906,
+    2812870736,
+    2812936274,
+    2745172052,
+    2745892954,
+    2745958491,
+    2947350564,
+    276824067,
+    2746089564,
+    222668235,
+    0,
+    222668378,
+    665059364,
+    2919366688,
+    604962819,
+    1006731278,
+    2687473808,
+    2411659292,
+    2410676248,
+    666697824,
+    65011720,
+    0
+  ],
+  "normalized_refs": {
+    "8": [
+      [
+        "R_MIPS_HI16",
+        "D_800D9898"
+      ]
+    ],
+    "12": [
+      [
+        "R_MIPS_LO16",
+        "D_800D9898"
+      ]
+    ],
+    "32": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_HI16",
+        "D_800918F4"
+      ]
+    ],
+    "56": [
+      [
+        "R_MIPS_HI16",
+        "D_80091900"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_LO16",
+        "D_800918F4"
+      ]
+    ],
+    "84": [
+      [
+        "R_MIPS_LO16",
+        "D_80091900"
+      ]
+    ],
+    "228": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "248": [
+      [
+        "R_MIPS_HI16",
+        "D_800918E8"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_LO16",
+        "D_800918E8"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_26",
+        "func_15169968"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_HI16",
+        "D_800D9890"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_LO16",
+        "D_800D9890"
+      ]
+    ]
+  },
+  "normalized_sha256": "16c54b1d2a1ca883695aae83407b8dc6eb16e8bb63c168cc6a79c6afb09dc68a",
+  "guard_rows": [
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B77A8",
+      "offset": "0x040",
+      "expected": "0x240E0040",
+      "replacement": "0x3C01432A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Move independent 170.0f setup before disjoint descriptor constants",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B77A8",
+      "offset": "0x044",
+      "expected": "0x240F0040",
+      "replacement": "0x240E0040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Move independent 170.0f setup before disjoint descriptor constants",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B77A8",
+      "offset": "0x048",
+      "expected": "0x24180004",
+      "replacement": "0x240F0040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Move independent 170.0f setup before disjoint descriptor constants",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B77A8",
+      "offset": "0x04C",
+      "expected": "0x27390000",
+      "replacement": "0x24180004",
+      "expected_relocations": "R_MIPS_LO16:D_800918F4",
+      "replacement_relocations": "-",
+      "note": "Move independent 170.0f setup before disjoint descriptor constants",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B77A8",
+      "offset": "0x050",
+      "expected": "0x25080000",
+      "replacement": "0x27390000",
+      "expected_relocations": "R_MIPS_LO16:D_80091900",
+      "replacement_relocations": "R_MIPS_LO16:D_800918F4",
+      "note": "Move independent 170.0f setup before disjoint descriptor constants",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B77A8",
+      "offset": "0x054",
+      "expected": "0x3C01432A",
+      "replacement": "0x25080000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_80091900",
+      "note": "Move independent 170.0f setup before disjoint descriptor constants",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "frozen_inputs": 1664,
+  "frame": 96,
+  "words": 93,
+  "compiler_flags": [
+    "-O2",
+    "-g3",
+    "-Wo,-loopunroll,0"
+  ],
+  "retail_sha256": "aa9427ee637c4efb54b64bb1fd53371b12d6da30912ef8d9501579152c5b0cc0"
+}

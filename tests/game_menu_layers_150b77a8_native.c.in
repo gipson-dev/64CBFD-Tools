@@ -1,0 +1,54 @@
+#include <ultra64.h>
+@TYPE@
+#define D_800D9898 ((u8 *)0x800D9898u)
+#define D_800D9890 (*(u8 *)0x800D9890u)
+#define D_800918F4 ((u8 *)0x800918F4u)
+#define D_80091900 ((u8 *)0x80091900u)
+#define D_800918E8 ((u8 *)0x800918E8u)
+enum { BASE=0x800D9898u,STATE=0x800D9890u,MARK=0x70000,FREE=0x1516972C,CREATE=0x15169968 };
+static u32 seed,failure,mutation,ordinal,trace,creates;
+static u8 *retained;
+static void quit(int status){__asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory");__builtin_unreachable();}
+static void fail(const char *s){u32 n=0;while(s[n])n++;__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(s),"d"(n):"memory");quit(3);}
+void *memcpy(void *dest,const void *src,u32 n){u8*d=dest;const u8*s=src;for(u32 i=0;i<n;i++)d[i]=s[i];return dest;}
+static u8 *ptr(u32 address){return (u8 *)address;}
+static const u32 fields[][2]={@FIELDS@};
+static const u8 defined[]={@DEFINED@};
+static u32 mapped(u32 off){for(u32 i=0;i<sizeof(fields)/sizeof(fields[0]);i++){u32 a=fields[i][0],n=fields[i][1];if(a<=off&&off<a+n)return a+n-1-(off-a);}return off;}
+static void word(u32 value){trace=(trace^value)*16777619u;}
+static void log_call(u32 target,u32 argument,const u8 *descriptor){
+ word(target);word(1);word(argument);word(descriptor?44:0);
+ if(descriptor)for(u32 i=0;i<44;i++)word(descriptor[mapped(defined[i])]);
+ *(u32 *)ptr(MARK)=0x13579BDFu+ordinal*0x10203u+target;
+}
+void func_1516972C(void *arg){
+ if(!arg)fail("null free");log_call(FREE,(u32)arg,NULL);
+ if(mutation&1){*(u32 *)ptr(BASE+4)=0x990000;*(u32 *)ptr(BASE+16)=0x60000+ordinal*0x1000;*(u32 *)ptr(BASE+32)=(seed&1)?0:0x70000+ordinal*0x1000;D_800D9890=(u8)(seed+3);}
+ if((mutation&2)&&retained)for(u32 i=0;i<60;i++)retained[mapped(i)]=(u8)(seed+i*7+ordinal*11);
+ ordinal++;
+}
+void *func_15169968(void *arg){
+ retained=arg;log_call(CREATE,0xFFFFFF01u,retained);
+ if(mutation&4){for(u32 i=0;i<60;i++)retained[mapped(i)]=(u8)(seed+i*13+ordinal*17);*(u32 *)ptr(BASE+32)=(seed&2)?0:0xA0000+ordinal*0x1000;D_800D9890=0xA7;}
+ u32 answer=(failure&(1u<<creates))?0:0x80000+seed*0x100+creates*0x10000;creates++;ordinal++;return(void *)answer;
+}
+@BODY@
+extern const u8 fixture_rows[],fixture_end[];
+static const u8 *file;
+static void exact_read(void *dest,u32 n){if(file+n>fixture_end)fail("short fixture");memcpy(dest,file,n);file+=n;}
+static u32 get32(void){u32 n;exact_read(&n,4);return n;}
+static void mapping(u32 a,u32 n){u32 args[]={a,n,3,0x100022u,0xFFFFFFFFu,0},answer;__asm__ volatile("int $0x80":"=a"(answer):"a"(90),"b"(args):"memory");if(answer!=a)fail("mapping");}
+static u8 expected[2][80],initial[80];
+static int run(void){
+ mapping(0x800D0000u,0x10000);mapping(MARK,4096);file=fixture_rows;
+ if(sizeof(void*)!=4||sizeof(MenuRecordDescriptorE4070)!=60||__builtin_offsetof(MenuRecordDescriptorE4070,secondaryAsset)!=4)fail("native layout");
+ u32 cases=get32(),segments=get32();if(segments!=2)fail("segments");
+ for(u32 k=0;k<cases;k++){
+  seed=get32();failure=get32();mutation=get32();u32 wanted_trace=get32(),addresses[2],lengths[2];
+  for(u32 s=0;s<segments;s++){u32 a=addresses[s]=get32(),n=lengths[s]=get32();if(n>80)fail("segment length");exact_read(initial,n);exact_read(expected[s],n);memcpy(ptr(a),initial,n);}
+  trace=2166136261u;ordinal=creates=0;retained=NULL;func_150B77A8();if(trace!=wanted_trace)fail("trace");
+  for(u32 s=0;s<segments;s++)for(u32 i=0;i<lengths[s];i++)if(ptr(addresses[s])[i]!=expected[s][i])fail("memory");
+ }
+ if(file!=fixture_end)fail("fixture tail");return 0;
+}
+__attribute__((force_align_arg_pointer))void _start(void){quit(run());}
