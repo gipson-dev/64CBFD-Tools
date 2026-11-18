@@ -1,0 +1,36 @@
+#include <ultra64.h>
+#define D_8009FDB0 (*(f32*)0x8009FDB0u)
+#define D_8009FDB4 (*(f32*)0x8009FDB4u)
+#define D_8009FDB8 (*(f32*)0x8009FDB8u)
+#define D_800A4AA0 ((u8*)0x800A4AA0u)
+#define D_80088734 ((s32*)0x80088734u)
+#define D_8008873C (*(s32*)0x8008873Cu)
+@DECLARATIONS@
+enum {ACTOR=0x30000,OUTPUT=0x50000,RNG=0x150ADA20,REAL=0x150ADA68,FACTORY=0x1513D594,SPRAY=0x15151A38,SOUND=0x10010F88,MATRIX=0x150A8050,TRANSFORM=0x150A7960,COPY=0x10022EC0};
+extern const u8 fixture_rows[],fixture_end[];
+static const u8 *file;
+static u32 flags,success,mutation,ri,fi,remaining,roles[5];
+static const u32 spans[]={0,88,136,64,8};
+static void quit(int code){__asm__ volatile("int $0x80"::"a"(1),"b"(code):"memory");__builtin_unreachable();}
+static void fail(const char*s){u32 n=0;while(s[n])n++;__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(s),"d"(n):"memory");quit(3);}
+static void copybytes(void*d,const void*s,u32 n){u8*a=d;const u8*b=s;for(u32 i=0;i<n;i++)a[i]=b[i];}
+static u32 bits(f32 f){union{u32 u;f32 f;}v;v.f=f;return v.u;}
+static void put32(u32 a,u32 v){u8*p=(u8*)a;for(u32 i=0;i<4;i++)p[i]=(u8)(v>>(8*i));}
+static u32 get32(void){u32 n;if(file+4>fixture_end)fail("short fixture");copybytes(&n,file,4);file+=4;return n;}
+static void role(u32 k,const void*p){u32 a=(u32)p;if(!a||(a&3))fail("role alignment");if(roles[k]&&roles[k]!=a)fail("role lifetime");for(u32 i=1;i<5;i++)if(i!=k&&roles[i]&&a<roles[i]+spans[i]&&roles[i]<a+spans[k])fail("role overlap");roles[k]=a;}
+static u32 norm(u32 a){for(u32 i=1;i<5;i++)if(roles[i]&&roles[i]==a)return 0xffffff00u+i;return a;}
+static void begin(u32 t,const u32*a,u32 n,u32 bytes){if(!remaining)fail("unexpected call");remaining--;if(get32()!=t||get32()!=n||get32()!=bytes)fail("call header");for(u32 i=0;i<n;i++)if(get32()!=norm(a[i]))fail("argument");}
+static void observe(const void*p,u32 n,u32 width){const u8*a=p;if(n%width||file+n>fixture_end)fail("observation size");for(u32 i=0;i<n;i++)if(a[width*(i/width)+width-1-i%width]!=*file++)fail("observation");}
+u32 func_150ADA20(void){u32 values[]={0xffffffffu-flags,flags&1,flags>>1,0xffffff00u|flags,flags&1};begin(RNG,0,0,0);if(ri>=5)fail("integer count");u32 value=values[ri];if(mutation&1 && ri==0){put32(ACTOR+0x128,0x778899aa);put32(ACTOR+0x14c,0x55667788);put32(0x8009fdb0,bits(.25f));}ri++;return value;}
+f32 func_150ADA68(void){begin(REAL,0,0,0);if(fi>=2)fail("real count");return fi++==0?.5f:.25f;}
+void *func_1513D594(void*p,void*asset,u8 a2,u8 a3,u8 a4,u8 a5,s16 a6,f32 a7,f32 a8,s32 a9,void*a10,s32 a11,s32 a12,u8 a13,s32 a14,u8 a15,s32 a16){role(1,p);u32 a[]={(u32)p,(u32)asset,a2,a3,a4,a5,(u32)(s32)a6,bits(a7),bits(a8),(u32)a9,(u32)a10,(u32)a11,(u32)a12,a13,(u32)a14,a15,(u32)a16};begin(FACTORY,a,17,78);observe(p,2,1);observe((u8*)p+2,4,2);observe((u8*)p+8,8,4);observe((u8*)p+16,4,1);observe((u8*)p+20,48,4);observe((u8*)p+68,4,1);observe((u8*)p+80,4,4);observe((u8*)p+84,4,2);return success?(void*)OUTPUT:0;}
+void *memcpy(void*d,const void*p,size_t n){role(4,p);u32 a[]={(u32)d,(u32)p,n};if(n!=8)fail("extra size");begin(COPY,a,3,4);observe(p,4,4);copybytes(d,p,n);return d;}
+void func_15151A38(void*p,u8 slot,s32 context){role(2,p);u32 a[]={(u32)p,slot,(u32)context};begin(SPRAY,a,3,132);observe(p,36,4);observe((u8*)p+0x24,20,2);observe((u8*)p+0x38,3,1);observe((u8*)p+0x3c,24,4);observe((u8*)p+0x54,3,1);observe((u8*)p+0x58,36,4);observe((u8*)p+0x7c,2,1);observe((u8*)p+0x80,4,2);observe((u8*)p+0x84,4,4);}
+u16 func_10010F88(s32 a0,s32 a1,s32 a2,s32 a3,s32 a4,s32 a5,s32 a6,s32 a7,s32 a8,s32 a9){u32 a[]={(u32)a0,(u32)a1,(u32)a2,(u32)a3,(u32)a4,(u32)a5,(u32)a6,(u32)a7,(u32)a8,(u32)a9};begin(SOUND,a,10,0);return 1;}
+void func_150A8050(f32(*matrix)[4],f32 x,f32 y,f32 z){role(3,matrix);u32 a[]={(u32)matrix,bits(x),bits(y),bits(z)};begin(MATRIX,a,4,0);for(u32 i=0;i<16;i++)put32((u32)matrix+4*i,bits((f32)(i+1)));if(mutation&8){put32(ACTOR+0x38,bits(7.5f));put32(ACTOR+0x3c,bits(8.5f));put32(ACTOR+0x40,bits(9.5f));}}
+void func_150A7960(f32(*matrix)[4],f32 x,f32 y,f32 z,f32*outx,f32*outy,f32*outz){role(3,matrix);u32 a[]={(u32)matrix,bits(x),bits(y),bits(z),(u32)outx,(u32)outy,(u32)outz};begin(TRANSFORM,a,7,64);observe(matrix,64,4);*outx=2.5f;*outy=-3.5f;*outz=4.5f;}
+@BODY@
+static void mapping(u32 a){u32 args[]={a,4096,3,0x100022u,0xffffffffu,0},answer;__asm__ volatile("int $0x80":"=a"(answer):"a"(90),"b"(args):"memory");if(answer!=a)fail("mapping");}
+static u8 expected[3][384];
+static int run(void){mapping(ACTOR);mapping(OUTPUT);mapping(0x8009f000u);mapping(0x80088000u);file=fixture_rows;if(sizeof(void*)!=4||sizeof(TerminalBurstE5E90)!=88||sizeof(TerminalSprayE5E90)!=136||sizeof(TerminalExtraE5E90)!=8||__builtin_offsetof(TerminalBurstE5E90,field50)!=0x50)fail("layout");u32 count=get32();for(u32 row=0;row<count;row++){flags=get32();success=get32();mutation=get32();u32 result=get32(),addresses[3],lengths[3];for(u32 i=0;i<3;i++){u32 a=addresses[i]=get32(),n=lengths[i]=get32();if(n>384||file+2*n>fixture_end)fail("window");copybytes((void*)a,file,n);file+=n;copybytes(expected[i],file,n);file+=n;}remaining=get32();ri=fi=0;for(u32 i=0;i<5;i++)roles[i]=0;u32 actual=(u32)func_150B89E0((u8*)ACTOR,2.25f,6.25f,4.75f,-6.5f,(void*)(ACTOR+0x114));if(actual!=result||remaining)fail("return or missing call");for(u32 i=0;i<3;i++)for(u32 j=0;j<lengths[i];j++)if(((u8*)addresses[i])[j]!=expected[i][j])fail("public memory");}if(file!=fixture_end)fail("fixture tail");return 0;}
+__attribute__((force_align_arg_pointer))void _start(void){quit(run());}
