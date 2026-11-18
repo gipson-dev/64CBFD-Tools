@@ -1,0 +1,58 @@
+#include <ultra64.h>
+typedef struct {u32 target,count,args[18];} NativeCall;
+typedef struct {u32 fields[11];u8 image[2][464];NativeCall calls[13];u32 packet[3];} NativeCase;
+extern const NativeCase fixture_rows[];
+static const NativeCase *current;
+static u8 position[64] __attribute__((aligned(16))),output[128],actor[256];
+static u32 calls,integers,reals;
+f32 D_800A9D98,D_800A9D9C,D_800A9DA0,D_800A9DA4;
+_Static_assert(sizeof(void*)==4&&sizeof(NativeCase)==2024,"native sizes");
+__attribute__((noreturn))static void quit(int code){__asm__ volatile(".byte 0xcd,0x80"::"a"(1),"b"(code):"memory");__builtin_unreachable();}
+static void failure(u32 code){__asm__ volatile(".byte 0xcd,0x80"::"a"(4),"b"(2),"c"(&code),"d"(4):"memory");quit(3);}
+static void difference(u32 row,u32 off,u32 got,u32 expected){u32 message[]={row,off,got,expected};__asm__ volatile(".byte 0xcd,0x80"::"a"(4),"b"(2),"c"(message),"d"(16):"memory");quit(3);}
+#define check(v) do { if(!(v))failure(__LINE__); } while(0)
+static void copy(u8*d,const u8*s,u32 n){for(u32 i=0;i<n;i++)((volatile u8*)d)[i]=((const volatile u8*)s)[i];}
+static int same(const u8*a,const u8*b,u32 n){for(u32 i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static u32 get32(const u8*p){return(u32)p[0]<<24|(u32)p[1]<<16|(u32)p[2]<<8|p[3];}
+static void put32(u8*p,u32 n){p[0]=n>>24;p[1]=n>>16;p[2]=n>>8;p[3]=n;}
+static f32 number(u32 n){union{u32 n;f32 f;}v;v.n=n;return v.f;}
+static u32 bits(f32 f){union{u32 n;f32 f;}v;v.f=f;return v.n;}
+static void flipPosition(u32 byte,u32 value){*(f32*)position=number(bits(*(f32*)position)^(value<<(8*(3-byte))));}
+static void enter(u32 target,u32 count,const u32*args){
+ check(calls<13);const NativeCall*expected=current->calls+calls;check(expected->target==target&&expected->count==count);
+ for(u32 i=0;i<count;i++)if(expected->args[i]!=args[i])failure(2000+calls*20+i);u32 ordinal=calls++;
+ if(target!=0x151DA6F8){
+  if(current->fields[8]&1){D_800A9D98=.125f+(f32)ordinal*.0625f;D_800A9D9C=2.f+(f32)ordinal*.25f;D_800A9DA0=4.f+(f32)ordinal*.5f;D_800A9DA4=1.f+(f32)ordinal*.125f;}
+  if(current->fields[8]&2)flipPosition(2,ordinal+1);
+ }
+}
+__attribute__((noinline))s32 func_150ADA20(void){enter(0x150ADA20,0,(void*)0);check(integers<5);return(s32)current->fields[1+integers++];}
+__attribute__((noinline))f32 func_150ADA68(void){
+ enter(0x150ADA68,0,(void*)0);check(reals<3);u32 i=reals++,seed=current->fields[0];
+ if(i==0&&current->fields[9]==2)return number(0x80000000);
+ return i==0?(f32)(seed%5)*.25f:i==1?.125f+(f32)seed*.0625f:.75f-(f32)seed*.03125f;
+}
+__attribute__((noinline))f32 func_151423D8(u8 angle){u32 args[]={angle};enter(0x151423D8,1,args);return -1.f+(f32)angle/128.f;}
+__attribute__((noinline))u8*func_151DA6F8(void*pos,void*velocity,f32 scale,s16 duration,u8 mode,f32 time,s32 request,u8 opaque,f32 first,f32 second,u8 fade,u8 selector,s32 extra,s16 a,s16 b,s32 value,u8 channel,s32 context){
+ check(pos==position);f32*v=(f32*)velocity;for(u32 j=0;j<3;j++)if(bits(v[j])!=current->packet[j])failure(1000+j);
+ u32 args[]={0x30000,0x60000,bits(scale),(u32)(s32)duration,mode,bits(time),request,opaque,bits(first),bits(second),fade,selector,extra,(u32)(s32)a,(u32)(s32)b,value,channel,context};enter(0x151DA6F8,18,args);
+ for(u32 j=0;j<3;j++){put32(output+j*4,bits(((f32*)pos)[j]));put32(output+12+j*4,bits(v[j]));}
+ put32(output+24,opaque);put32(output+28,channel);put32(output+32,(u32)(s32)duration);put32(output+36,mode);
+ if(current->fields[8]&8){flipPosition(1,0x5A);v[2]=number(bits(v[2])^0xA700);}
+ return output;
+}
+@BODY@
+static void setup(const u8*b){
+ copy(position,b,64);for(u32 j=0;j<3;j++)((f32*)position)[j]=number(get32(b+j*4));b+=64;
+ copy(output,b,128);b+=128;copy(actor,b,256);b+=256;
+ D_800A9D98=number(get32(b));D_800A9D9C=number(get32(b+4));D_800A9DA0=number(get32(b+8));D_800A9DA4=number(get32(b+12));calls=integers=reals=0;
+}
+static void snapshot(u8*b){
+ copy(b,position,64);for(u32 j=0;j<3;j++)put32(b+j*4,bits(((f32*)position)[j]));b+=64;
+ copy(b,output,128);b+=128;copy(b,actor,256);b+=256;
+ put32(b,bits(D_800A9D98));put32(b+4,bits(D_800A9D9C));put32(b+8,bits(D_800A9DA0));put32(b+12,bits(D_800A9DA4));
+}
+static void(*volatile invoke)(f32*,s32,s32)=func_151AEAB4;static u8 observed[464];
+__attribute__((force_align_arg_pointer))void _start(void){for(u32 i=0;i<@COUNT@;i++){
+ current=fixture_rows+i;setup(current->image[0]);invoke((f32*)position,(s32)current->fields[6],(s32)current->fields[7]);if(calls!=13)failure(5000+calls);snapshot(observed);if(!same(observed,current->image[1],464))for(u32 j=0;j<464;j++)if(observed[j]!=current->image[1][j])difference(i,j,observed[j],current->image[1][j]);
+ }quit(0);}
