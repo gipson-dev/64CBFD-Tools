@@ -1,0 +1,5661 @@
+{
+  "name": "func_150B7B40",
+  "source": "conker/src/game/generated_E4070.c",
+  "body": "/* Emit the actor's bound burst, ground effect, and two endpoint sprays. */\nvoid func_150B7B40(ActorBurstE4070 *actor, u8 slot, s32 context) {\n    MenuBurstPointE4070 endpoints[2];\n    MenuBurstPointE4070 origin;\n    f32 sine, cosine, factorX, factorY, magnitude;\n    ActorChildDescriptorE4070 child;\n    f32 headingSine, headingCosine, pitchSine, pitchCosine;\n    f32 offsetX, offsetZ;\n    MenuBurstPointE4070 center;\n    f32 height, radius, ratio;\n    MenuBurstPointE4070 boundA, boundB;\n    f32 dx, dz;\n    void *matrix;\n    ActorHeightResultE4070 floor;\n    MenuBurstPointE4070 probe;\n    s16 heading, pitch;\n    s16 duration;\n    s8 index;\n    f32 averageScale;\n    f32 componentScale;\n    f32 magnitudeSample;\n    f32 rotationSampleX;\n    f32 rotationSampleY;\n    ActorSprayDescriptorE4070 spray;\n\n    if (actor == NULL) return;\n    if (actor->model != NULL) {\n        func_15142314(actor->model, 4, &endpoints[0]);\n        func_15142314(actor->model, 5, &endpoints[1]);\n        func_15142314(actor->model, 0, &origin);\n    } else {\n        origin.x = actor->position.x;\n        origin.y = actor->position.y;\n        origin.z = actor->position.z;\n        endpoints[0].x = origin.x + 20.0f;\n        endpoints[1].x = origin.x - 20.0f;\n        endpoints[0].y = endpoints[1].y = origin.y + 130.0f;\n        endpoints[0].z = endpoints[1].z = origin.z;\n    }\n    sine = func_151423D8((actor->heading >> 8) & 255);\n    cosine = func_151423D8(((actor->heading >> 8) + 64) & 255);\n    offsetX = actor->radialOffset * sine;\n    offsetZ = actor->radialOffset * cosine;\n    matrix = actor->model;\n    if (matrix != NULL) {\n        matrix = (u8 *)matrix + 0x80;\n        func_15143134(&D_8009FD30, &center, matrix);\n        func_15143134(&D_8009FD3C, &boundA, matrix);\n        func_15143134(&D_8009FD48, &boundB, matrix);\n        height = fabsf(center.y - boundA.y);\n        dx = boundB.x - boundA.x;\n        dz = boundB.z - boundA.z;\n        radius = sqrtf(dx * dx + dz * dz);\n    } else {\n        func_1515C244(actor, &center, &radius, &height);\n    }\n    ratio = radius != 0.0f ? height / radius : 1.0f;\n    func_150B82D0(&center, &height, &radius, &ratio, slot, context);\n    func_150B85C0(&center, &height, &radius, slot, context);\n    probe.x = center.x;\n    probe.y = center.y + 100.0f;\n    probe.z = center.z;\n    func_1504715C(&floor, actor);\n    if (func_15046C80(&probe, 0, center.y - 2000.0f, &floor)) {\n        probe.y = floor.height;\n        duration = (u32)func_150ADA20() % 11U + 30;\n        func_1514C678(probe.x, probe.y + 31.0f, probe.z, radius,\n            0, 255, duration, 25, 0, 0.0f, NULL, slot);\n    }\n    child.field04 = D_8009FD54;\n    child.field54 = 300;\n    child.resource = 0;\n    child.field10 = actor->fieldB8;\n    child.field14 = actor->field40;\n    child.field18 = actor->fieldC4;\n    child.field1C = child.field20 = child.field24 = 1.0f;\n    child.flags = 0x197D;\n    child.field58 = 0;\n    child.field5C = 0;\n    child.field60 = 255;\n    child.field61 = 1;\n    child.field62 = 0;\n    child.field63 = 1;\n    child.field64 = 0;\n    child.field65 = 1;\n    child.field66 = 0;\n    child.field67 = 0;\n    child.field68 = 0;\n    child.field6A = 0;\n    child.field6C = 0;\n    child.field70 = 0;\n    child.field72 = 1;\n    child.field74 = 255;\n    child.field48 = 0.0f;\n    child.field4C = D_8009FD58;\n    factorX = actor->factorX;\n    if (factorX > 1.0f) factorX = 1.0f;\n    if (factorX < 0.5f) factorX = 0.5f;\n    factorY = actor->factorY;\n    if (factorY > 1.0f) factorY = 1.0f;\n    if (factorY < 0.5f) factorY = 0.5f;\n    child.field00 = (28.0f * factorY + 28.0f * factorX) * 0.5f;\n    child.field08 = 3.0f * factorX;\n    child.field0C = 3.0f * factorY;\n    index = 0;\n    do {\n        magnitudeSample = func_150ADA68();\n        magnitude = (magnitudeSample * 30.0f) * actor->factorY + 10.0f;\n        heading = (u32)func_150ADA20() & 127;\n        pitch = -32 - ((u32)func_150ADA20() & 31);\n        headingSine = func_151423D8(heading);\n        headingCosine = func_151423D8(heading - 64);\n        pitchSine = func_151423D8(pitch);\n        pitchCosine = func_151423D8(pitch - 64);\n        child.position = endpoints[index];\n        child.velocity.x = (magnitude * pitchSine) * headingCosine + offsetX;\n        child.velocity.y = -magnitude * pitchCosine;\n        child.velocity.z = (magnitude * pitchSine) * headingSine + offsetZ;\n        rotationSampleX = func_150ADA68();\n        child.field40 = 30.0f - rotationSampleX * 60.0f;\n        rotationSampleY = func_150ADA68();\n        child.field44 = 30.0f - rotationSampleY * 60.0f;\n        func_15132A4C(&child, 3, 2, 0, slot, 0);\n        averageScale = ((actor->factorX + actor->factorY) * 0.5f) / D_8009FD5C;\n        spray.position = endpoints[index];\n        spray.field24 = 4;\n        spray.field26 = 4;\n        spray.field2A = 255;\n        spray.field2C = -63;\n        spray.field2E = 75;\n        spray.field34 = 50;\n        spray.field36 = 20;\n        spray.field30 = 3;\n        spray.field32 = 3;\n        spray.field39 = 33;\n        spray.field3A = 72;\n        spray.field3C = 1;\n        spray.field55 = 155;\n        spray.field56 = 100;\n        spray.field58 = 3;\n        componentScale = 3.0f * averageScale;\n        spray.field0C = componentScale;\n        spray.field10 = componentScale;\n        spray.field1C = 15.0f * averageScale;\n        spray.field20 = 10.0f * averageScale;\n        spray.field28 = 0;\n        spray.field38 = 1;\n        spray.field40 = 0;\n        spray.field44 = 0;\n        spray.field48 = 0;\n        spray.field4C = 0;\n        spray.field50 = 0;\n        spray.field54 = 0;\n        spray.field5C = 255;\n        spray.field60 = 0;\n        spray.field64 = 0x220005;\n        spray.field68 = 0x1D0600;\n        spray.field6C = 1;\n        spray.field70 = 0x3B;\n        spray.field74 = 0x80;\n        spray.field78 = 0x20;\n        spray.field7C = 0;\n        spray.field7D = 7;\n        spray.field80 = 10;\n        spray.field82 = 25;\n        spray.field14 = D_8009FD60;\n        spray.field18 = D_8009FD64;\n        spray.field84 = actor->field184;\n        func_15151A38(&spray, slot, context);\n        index++;\n    } while (index < 2);\n}\n",
+  "declarations": "typedef struct {\n    u8 reserved00[0x14];\n    MenuBurstPointE4070 position;\n    u8 reserved20[0x1C];\n    f32 radialOffset, field40;\n    u8 reserved44[0x32];\n    u16 heading;\n    u8 reserved78[0x40];\n    f32 fieldB8;\n    u8 reservedBC[8];\n    f32 fieldC4;\n    u8 reservedC8[0x84];\n    f32 factorX, factorY;\n    u8 reserved154[0x30];\n    u32 field184;\n    u8 reserved188[0x4C];\n    void *model;\n} ActorBurstE4070;\ntypedef struct {\n    f32 field00, field04, field08, field0C;\n    f32 field10, field14, field18, field1C, field20, field24;\n    MenuBurstPointE4070 position;\n    MenuBurstPointE4070 velocity;\n    f32 field40, field44, field48, field4C;\n    u32 flags;\n    s16 field54;\n    u16 resource;\n    u8 field58, reserved59[3];\n    u32 field5C;\n    u8 field60, field61, field62, field63, field64, field65;\n    u8 field66, field67, field68, reserved69, field6A, reserved6B;\n    u32 field6C;\n    u8 field70, reserved71;\n    s16 field72, field74;\n    u8 reserved76[6];\n} ActorChildDescriptorE4070;\ntypedef struct {\n    MenuBurstPointE4070 position;\n    f32 field0C, field10, field14, field18, field1C, field20;\n    s16 field24, field26, field28, field2A, field2C, field2E;\n    s16 field30, field32, field34, field36;\n    u8 field38, field39, field3A, reserved3B;\n    u32 field3C, field40, field44, field48, field4C, field50;\n    u8 field54, field55, field56, reserved57;\n    u32 field58, field5C, field60, field64, field68;\n    u32 field6C, field70, field74, field78;\n    u8 field7C, field7D, reserved7E[2];\n    s16 field80, field82;\n    u32 field84;\n} ActorSprayDescriptorE4070;\ntypedef struct { f32 height; u8 retained04[0x20]; } ActorHeightResultE4070;\nextern MenuBurstPointE4070 D_8009FD30, D_8009FD3C, D_8009FD48;\nextern f32 D_8009FD54, D_8009FD58, D_8009FD5C, D_8009FD60, D_8009FD64;\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nf32 func_151423D8(u8);\nf32 sqrtf(f32);\nf32 fabsf(f32);\n#pragma intrinsic (fabsf)\nvoid func_15142314(void *, s32, MenuBurstPointE4070 *);\nvoid func_15143134(MenuBurstPointE4070 *, MenuBurstPointE4070 *, void *);\nvoid func_1515C244(ActorBurstE4070 *, MenuBurstPointE4070 *, f32 *, f32 *);\nvoid func_150B82D0(MenuBurstPointE4070 *, f32 *, f32 *, f32 *, u8, s32);\nvoid *func_150B85C0(MenuBurstPointE4070 *, f32 *, f32 *, u8, s32);\nvoid func_1504715C(ActorHeightResultE4070 *, ActorBurstE4070 *);\ns32 func_15046C80(MenuBurstPointE4070 *, u16, f32, ActorHeightResultE4070 *);\nvoid func_1514C678(f32, f32, f32, f32, s16, s16, s16, u8, s32, f32, void *, u8);\nvoid *func_15132A4C(void *, s32, s32, s32, u8, s32);\nvoid func_15151A38(void *, u8, s32);\n",
+  "raw_words": 483,
+  "retail_words": 484,
+  "frame": 616,
+  "raw_sha256": "1f53ede65754eedb8f10470e33856bb8be8de40d72c3f9447a908c14e6ee183b",
+  "retail_sha256": "92a0c99b9dd9e7917c01cd99e7776beafb99491052ca82b5a6054c08609df238",
+  "refs": {
+    "92": [
+      [
+        "R_MIPS_26",
+        "func_15142314"
+      ]
+    ],
+    "108": [
+      [
+        "R_MIPS_26",
+        "func_15142314"
+      ]
+    ],
+    "124": [
+      [
+        "R_MIPS_26",
+        "func_15142314"
+      ]
+    ],
+    "236": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "260": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD30"
+      ]
+    ],
+    "316": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD30"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "332": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD3C"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD3C"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "352": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD48"
+      ]
+    ],
+    "356": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD48"
+      ]
+    ],
+    "364": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "472": [
+      [
+        "R_MIPS_26",
+        "func_1515C244"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_26",
+        "func_150B82D0"
+      ]
+    ],
+    "592": [
+      [
+        "R_MIPS_26",
+        "func_150B85C0"
+      ]
+    ],
+    "644": [
+      [
+        "R_MIPS_26",
+        "func_1504715C"
+      ]
+    ],
+    "684": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "700": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "788": [
+      [
+        "R_MIPS_26",
+        "func_1514C678"
+      ]
+    ],
+    "796": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD54"
+      ]
+    ],
+    "800": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD54"
+      ]
+    ],
+    "824": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD58"
+      ]
+    ],
+    "828": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD58"
+      ]
+    ],
+    "1144": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1164": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1180": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1208": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1228": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1240": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1260": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1360": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1388": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1436": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ],
+    "1464": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD5C"
+      ]
+    ],
+    "1468": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD5C"
+      ]
+    ],
+    "1524": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD60"
+      ]
+    ],
+    "1528": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD60"
+      ]
+    ],
+    "1584": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD64"
+      ]
+    ],
+    "1604": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD64"
+      ]
+    ],
+    "1840": [
+      [
+        "R_MIPS_26",
+        "func_15151A38"
+      ]
+    ]
+  },
+  "frozen_inputs": 1696,
+  "normalization": {
+    "source_sha256": "1f53ede65754eedb8f10470e33856bb8be8de40d72c3f9447a908c14e6ee183b",
+    "source_words": 483,
+    "target_words": 484,
+    "logical_same_core_pairs": 480,
+    "all_480_operand_sets_equal": true,
+    "dropped_source": [
+      75,
+      409,
+      424
+    ],
+    "generated": {
+      "22": {
+        "kind": "copy-value",
+        "template": 3,
+        "source_register": 2,
+        "destination_register": 4,
+        "logical_source_producer": 20
+      },
+      "68": {
+        "kind": "copy-value",
+        "template": 3,
+        "source_register": 25,
+        "destination_register": 4,
+        "logical_source_producer": 66
+      },
+      "183": {
+        "kind": "transfer-zero",
+        "template": 120,
+        "destination_register": 6
+      },
+      "209": {
+        "kind": "transfer-zero",
+        "template": 120,
+        "destination_register": 6
+      }
+    },
+    "order": [
+      {
+        "source": [
+          0,
+          22
+        ]
+      },
+      {
+        "emit": {
+          "kind": "copy-value",
+          "template": 3,
+          "source_register": 2,
+          "destination_register": 4,
+          "logical_source_producer": 20
+        }
+      },
+      {
+        "source": [
+          22,
+          52
+        ]
+      },
+      {
+        "source": [
+          56,
+          57
+        ]
+      },
+      {
+        "source": [
+          52,
+          53
+        ]
+      },
+      {
+        "source": [
+          55,
+          56
+        ]
+      },
+      {
+        "source": [
+          54,
+          55
+        ]
+      },
+      {
+        "source": [
+          53,
+          54
+        ]
+      },
+      {
+        "source": [
+          57,
+          65
+        ]
+      },
+      {
+        "source": [
+          66,
+          67
+        ]
+      },
+      {
+        "source": [
+          65,
+          66
+        ]
+      },
+      {
+        "emit": {
+          "kind": "copy-value",
+          "template": 3,
+          "source_register": 25,
+          "destination_register": 4,
+          "logical_source_producer": 66
+        }
+      },
+      {
+        "source": [
+          67,
+          75
+        ]
+      },
+      {
+        "source": [
+          76,
+          102
+        ]
+      },
+      {
+        "source": [
+          103,
+          110
+        ]
+      },
+      {
+        "source": [
+          111,
+          112
+        ]
+      },
+      {
+        "source": [
+          110,
+          111
+        ]
+      },
+      {
+        "source": [
+          102,
+          103
+        ]
+      },
+      {
+        "source": [
+          112,
+          120
+        ]
+      },
+      {
+        "source": [
+          121,
+          122
+        ]
+      },
+      {
+        "source": [
+          120,
+          121
+        ]
+      },
+      {
+        "source": [
+          122,
+          150
+        ]
+      },
+      {
+        "source": [
+          156,
+          157
+        ]
+      },
+      {
+        "source": [
+          150,
+          156
+        ]
+      },
+      {
+        "source": [
+          157,
+          159
+        ]
+      },
+      {
+        "source": [
+          160,
+          161
+        ]
+      },
+      {
+        "source": [
+          159,
+          160
+        ]
+      },
+      {
+        "source": [
+          161,
+          182
+        ]
+      },
+      {
+        "emit": {
+          "kind": "transfer-zero",
+          "template": 120,
+          "destination_register": 6
+        }
+      },
+      {
+        "source": [
+          182,
+          194
+        ]
+      },
+      {
+        "source": [
+          195,
+          197
+        ]
+      },
+      {
+        "source": [
+          198,
+          199
+        ]
+      },
+      {
+        "source": [
+          197,
+          198
+        ]
+      },
+      {
+        "source": [
+          194,
+          195
+        ]
+      },
+      {
+        "source": [
+          199,
+          202
+        ]
+      },
+      {
+        "source": [
+          203,
+          204
+        ]
+      },
+      {
+        "source": [
+          202,
+          203
+        ]
+      },
+      {
+        "source": [
+          204,
+          207
+        ]
+      },
+      {
+        "emit": {
+          "kind": "transfer-zero",
+          "template": 120,
+          "destination_register": 6
+        }
+      },
+      {
+        "source": [
+          208,
+          210
+        ]
+      },
+      {
+        "source": [
+          207,
+          208
+        ]
+      },
+      {
+        "source": [
+          210,
+          211
+        ]
+      },
+      {
+        "source": [
+          212,
+          214
+        ]
+      },
+      {
+        "source": [
+          211,
+          212
+        ]
+      },
+      {
+        "source": [
+          214,
+          379
+        ]
+      },
+      {
+        "source": [
+          381,
+          383
+        ]
+      },
+      {
+        "source": [
+          396,
+          397
+        ]
+      },
+      {
+        "source": [
+          401,
+          402
+        ]
+      },
+      {
+        "source": [
+          379,
+          381
+        ]
+      },
+      {
+        "source": [
+          383,
+          387
+        ]
+      },
+      {
+        "source": [
+          388,
+          393
+        ]
+      },
+      {
+        "source": [
+          395,
+          396
+        ]
+      },
+      {
+        "source": [
+          387,
+          388
+        ]
+      },
+      {
+        "source": [
+          397,
+          398
+        ]
+      },
+      {
+        "source": [
+          394,
+          395
+        ]
+      },
+      {
+        "source": [
+          393,
+          394
+        ]
+      },
+      {
+        "source": [
+          411,
+          412
+        ]
+      },
+      {
+        "source": [
+          400,
+          401
+        ]
+      },
+      {
+        "source": [
+          402,
+          403
+        ]
+      },
+      {
+        "source": [
+          404,
+          405
+        ]
+      },
+      {
+        "source": [
+          403,
+          404
+        ]
+      },
+      {
+        "source": [
+          410,
+          411
+        ]
+      },
+      {
+        "source": [
+          407,
+          408
+        ]
+      },
+      {
+        "source": [
+          406,
+          407
+        ]
+      },
+      {
+        "source": [
+          408,
+          409
+        ]
+      },
+      {
+        "source": [
+          398,
+          400
+        ]
+      },
+      {
+        "source": [
+          405,
+          406
+        ]
+      },
+      {
+        "source": [
+          412,
+          418
+        ]
+      },
+      {
+        "source": [
+          419,
+          424
+        ]
+      },
+      {
+        "source": [
+          425,
+          436
+        ]
+      },
+      {
+        "source": [
+          418,
+          419
+        ]
+      },
+      {
+        "source": [
+          436,
+          483
+        ]
+      }
+    ],
+    "permutations": [
+      {
+        "start": 0,
+        "end": 20,
+        "g": [],
+        "f": []
+      },
+      {
+        "start": 20,
+        "end": 26,
+        "g": [
+          [
+            2,
+            4
+          ]
+        ],
+        "f": []
+      },
+      {
+        "start": 26,
+        "end": 65,
+        "g": [
+          [
+            14,
+            15
+          ],
+          [
+            24,
+            25
+          ]
+        ],
+        "f": []
+      },
+      {
+        "start": 65,
+        "end": 78,
+        "g": [
+          [
+            2,
+            8,
+            4,
+            25,
+            24,
+            16
+          ]
+        ],
+        "f": [
+          [
+            4,
+            6,
+            10
+          ]
+        ]
+      },
+      {
+        "start": 78,
+        "end": 122,
+        "g": [],
+        "f": [
+          [
+            4,
+            6,
+            10
+          ],
+          [
+            8,
+            18
+          ]
+        ]
+      },
+      {
+        "start": 122,
+        "end": 154,
+        "g": [
+          [
+            8,
+            10
+          ],
+          [
+            9,
+            11
+          ]
+        ],
+        "f": [
+          [
+            4,
+            10
+          ],
+          [
+            6,
+            18,
+            22
+          ]
+        ]
+      },
+      {
+        "start": 154,
+        "end": 200,
+        "g": [
+          [
+            10,
+            14,
+            12
+          ],
+          [
+            11,
+            15,
+            13
+          ]
+        ],
+        "f": [
+          [
+            4,
+            10
+          ],
+          [
+            6,
+            18
+          ]
+        ]
+      },
+      {
+        "start": 200,
+        "end": 212,
+        "g": [
+          [
+            14,
+            24
+          ]
+        ],
+        "f": [
+          [
+            6,
+            22
+          ],
+          [
+            10,
+            18
+          ]
+        ]
+      },
+      {
+        "start": 212,
+        "end": 260,
+        "g": [
+          [
+            8,
+            24,
+            13,
+            11,
+            9,
+            25,
+            15,
+            12,
+            10
+          ]
+        ],
+        "f": [
+          [
+            6,
+            8,
+            10,
+            18,
+            22
+          ]
+        ]
+      },
+      {
+        "start": 260,
+        "end": 383,
+        "g": [
+          [
+            8,
+            24,
+            14,
+            12,
+            10
+          ],
+          [
+            9,
+            13,
+            11
+          ],
+          [
+            15,
+            25
+          ]
+        ],
+        "f": [
+          [
+            4,
+            18
+          ],
+          [
+            8,
+            10
+          ]
+        ]
+      },
+      {
+        "start": 383,
+        "end": 403,
+        "g": [
+          [
+            8,
+            12,
+            10
+          ],
+          [
+            9,
+            14,
+            25,
+            15,
+            13,
+            11
+          ]
+        ],
+        "f": [
+          [
+            4,
+            6
+          ],
+          [
+            8,
+            18
+          ]
+        ]
+      },
+      {
+        "start": 403,
+        "end": 409,
+        "g": [
+          [
+            9,
+            13,
+            15,
+            14,
+            11,
+            10
+          ]
+        ],
+        "f": [
+          [
+            4,
+            6
+          ],
+          [
+            8,
+            10,
+            18
+          ]
+        ]
+      },
+      {
+        "start": 409,
+        "end": 416,
+        "g": [
+          [
+            8,
+            14,
+            25,
+            13,
+            11,
+            10,
+            9,
+            12
+          ]
+        ],
+        "f": []
+      },
+      {
+        "start": 416,
+        "end": 426,
+        "g": [
+          [
+            8,
+            24,
+            14
+          ],
+          [
+            9,
+            25,
+            13,
+            15,
+            12,
+            11
+          ]
+        ],
+        "f": []
+      },
+      {
+        "start": 426,
+        "end": 436,
+        "g": [
+          [
+            10,
+            14,
+            12
+          ],
+          [
+            11,
+            25,
+            15,
+            13
+          ]
+        ],
+        "f": [
+          [
+            4,
+            6
+          ]
+        ]
+      },
+      {
+        "start": 436,
+        "end": 447,
+        "g": [
+          [
+            8,
+            24,
+            14
+          ],
+          [
+            9,
+            25
+          ]
+        ],
+        "f": []
+      },
+      {
+        "start": 447,
+        "end": 484,
+        "g": [
+          [
+            8,
+            24,
+            14,
+            12,
+            10
+          ],
+          [
+            9,
+            25,
+            15,
+            13,
+            11
+          ]
+        ],
+        "f": [
+          [
+            4,
+            6
+          ],
+          [
+            8,
+            18
+          ]
+        ]
+      }
+    ],
+    "read_role_overrides": [
+      {
+        "source": 77,
+        "target": 78,
+        "field": 21,
+        "value": 2,
+        "role": "captured model read before cursor definition"
+      }
+    ],
+    "source_refs": {
+      "92": [
+        [
+          "R_MIPS_26",
+          "func_15142314"
+        ]
+      ],
+      "108": [
+        [
+          "R_MIPS_26",
+          "func_15142314"
+        ]
+      ],
+      "124": [
+        [
+          "R_MIPS_26",
+          "func_15142314"
+        ]
+      ],
+      "236": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "260": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "312": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD30"
+        ]
+      ],
+      "316": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD30"
+        ]
+      ],
+      "324": [
+        [
+          "R_MIPS_26",
+          "func_15143134"
+        ]
+      ],
+      "332": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD3C"
+        ]
+      ],
+      "336": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD3C"
+        ]
+      ],
+      "344": [
+        [
+          "R_MIPS_26",
+          "func_15143134"
+        ]
+      ],
+      "352": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD48"
+        ]
+      ],
+      "356": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD48"
+        ]
+      ],
+      "364": [
+        [
+          "R_MIPS_26",
+          "func_15143134"
+        ]
+      ],
+      "472": [
+        [
+          "R_MIPS_26",
+          "func_1515C244"
+        ]
+      ],
+      "564": [
+        [
+          "R_MIPS_26",
+          "func_150B82D0"
+        ]
+      ],
+      "592": [
+        [
+          "R_MIPS_26",
+          "func_150B85C0"
+        ]
+      ],
+      "644": [
+        [
+          "R_MIPS_26",
+          "func_1504715C"
+        ]
+      ],
+      "684": [
+        [
+          "R_MIPS_26",
+          "func_15046C80"
+        ]
+      ],
+      "700": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "788": [
+        [
+          "R_MIPS_26",
+          "func_1514C678"
+        ]
+      ],
+      "796": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD54"
+        ]
+      ],
+      "800": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD54"
+        ]
+      ],
+      "824": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD58"
+        ]
+      ],
+      "828": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD58"
+        ]
+      ],
+      "1144": [
+        [
+          "R_MIPS_26",
+          "func_150ADA68"
+        ]
+      ],
+      "1164": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "1180": [
+        [
+          "R_MIPS_26",
+          "func_150ADA20"
+        ]
+      ],
+      "1208": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "1228": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "1240": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "1260": [
+        [
+          "R_MIPS_26",
+          "func_151423D8"
+        ]
+      ],
+      "1360": [
+        [
+          "R_MIPS_26",
+          "func_150ADA68"
+        ]
+      ],
+      "1388": [
+        [
+          "R_MIPS_26",
+          "func_150ADA68"
+        ]
+      ],
+      "1436": [
+        [
+          "R_MIPS_26",
+          "func_15132A4C"
+        ]
+      ],
+      "1464": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD5C"
+        ]
+      ],
+      "1468": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD5C"
+        ]
+      ],
+      "1524": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD60"
+        ]
+      ],
+      "1528": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD60"
+        ]
+      ],
+      "1584": [
+        [
+          "R_MIPS_HI16",
+          "D_8009FD64"
+        ]
+      ],
+      "1604": [
+        [
+          "R_MIPS_LO16",
+          "D_8009FD64"
+        ]
+      ],
+      "1840": [
+        [
+          "R_MIPS_26",
+          "func_15151A38"
+        ]
+      ]
+    }
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x48",
+      "expected": "0x528001C2",
+      "replacement": "0x528001C3",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x50",
+      "expected": "0x8E8401D4",
+      "replacement": "0x8E8201D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x54",
+      "expected": "0x1080000D",
+      "replacement": "0x1040000E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "0x00402025",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xD0",
+      "expected": "0xE7BC025C",
+      "replacement": "0xE7BE0258",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xD4",
+      "expected": "0xE7BE0264",
+      "replacement": "0xE7BC025C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xD8",
+      "expected": "0xE7B80260",
+      "replacement": "0xE7B80254",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xDC",
+      "expected": "0xE7B80254",
+      "replacement": "0xE7B80260",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xE0",
+      "expected": "0xE7BE0258",
+      "replacement": "0xE7BE0264",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xE8",
+      "expected": "0x00047A03",
+      "replacement": "0x00047203",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xF0",
+      "expected": "0x31E400FF",
+      "replacement": "0x31C400FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0xFC",
+      "expected": "0x0004CA03",
+      "replacement": "0x0004C203",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x100",
+      "expected": "0x27280040",
+      "replacement": "0x27040040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x104",
+      "expected": "0x0C000000",
+      "replacement": "0x309900FF",
+      "expected_relocations": "R_MIPS_26:func_151423D8",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x108",
+      "expected": "0x310400FF",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_151423D8",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x10C",
+      "expected": "0xC682003C",
+      "replacement": "0x03202025",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x110",
+      "expected": "0x46141282",
+      "replacement": "0xC682003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x114",
+      "expected": "0x00000000",
+      "replacement": "0x46141102",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x118",
+      "expected": "0x46001102",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x11C",
+      "expected": "0xE7AA01A0",
+      "replacement": "0x46001182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x120",
+      "expected": "0xE7A4019C",
+      "replacement": "0xE7A401A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x124",
+      "expected": "0x8E9001D4",
+      "replacement": "0xE7A6019C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x128",
+      "expected": "0x12000025",
+      "replacement": "0x8E8201D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x12C",
+      "expected": "0x00000000",
+      "replacement": "0x10400024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x134",
+      "expected": "0x26100080",
+      "replacement": "0x24500080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x174",
+      "expected": "0xC7A60194",
+      "replacement": "0xC7AA0194",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x178",
+      "expected": "0xC7A8017C",
+      "replacement": "0xC7B2017C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x17C",
+      "expected": "0xC7B2016C",
+      "replacement": "0xC7A8016C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x180",
+      "expected": "0xC7AA0178",
+      "replacement": "0xC7A40178",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x184",
+      "expected": "0x46083001",
+      "replacement": "0x46125001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x188",
+      "expected": "0xC7A60180",
+      "replacement": "0xC7AA0180",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x18C",
+      "expected": "0xC7A40174",
+      "replacement": "0xC7A60174",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x190",
+      "expected": "0x460A9081",
+      "replacement": "0x46044081",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x198",
+      "expected": "0x27B0018C",
+      "replacement": "0x460A3301",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x19C",
+      "expected": "0x46062301",
+      "replacement": "0x46021482",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1A0",
+      "expected": "0x46021202",
+      "replacement": "0x46000005",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1A4",
+      "expected": "0x46000005",
+      "replacement": "0x460C6202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1A8",
+      "expected": "0x460C6482",
+      "replacement": "0xE7A0018C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1AC",
+      "expected": "0xE7A0018C",
+      "replacement": "0x46089000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1B0",
+      "expected": "0x46124000",
+      "replacement": "0x46000004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1B4",
+      "expected": "0x46000004",
+      "replacement": "0xE7A00188",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1BC",
+      "expected": "0xE7A00188",
+      "replacement": "0x27B0018C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1E0",
+      "expected": "0x4480B000",
+      "replacement": "0xC7A40188",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1E4",
+      "expected": "0xC7AA0188",
+      "replacement": "0x44803000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x1F0",
+      "expected": "0x46165032",
+      "replacement": "0x46062032",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x204",
+      "expected": "0xC7A4018C",
+      "replacement": "0xC7AA018C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x210",
+      "expected": "0x460A2183",
+      "replacement": "0x46045483",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x218",
+      "expected": "0xE7A60184",
+      "replacement": "0xE7B20184",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x22C",
+      "expected": "0x8FAA0270",
+      "replacement": "0x8FA80270",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x238",
+      "expected": "0xAFAA0014",
+      "replacement": "0xAFA80014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x23C",
+      "expected": "0x8FAB0270",
+      "replacement": "0x8FA90270",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x254",
+      "expected": "0xAFAB0010",
+      "replacement": "0xAFA90010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x258",
+      "expected": "0x3C0142C8",
+      "replacement": "0x27B0013C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x25C",
+      "expected": "0x44812000",
+      "replacement": "0x3C0142C8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x260",
+      "expected": "0xC7B20194",
+      "replacement": "0x44815000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x264",
+      "expected": "0xC7A80190",
+      "replacement": "0xC7A60194",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x268",
+      "expected": "0xC7A60198",
+      "replacement": "0xC7A80190",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x26C",
+      "expected": "0x46049280",
+      "replacement": "0xC7B20198",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x270",
+      "expected": "0x27B0013C",
+      "replacement": "0x460A3100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x27C",
+      "expected": "0xE7AA0134",
+      "replacement": "0xE7A80130",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x280",
+      "expected": "0xE7A80130",
+      "replacement": "0xE7A40134",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x288",
+      "expected": "0xE7A60138",
+      "replacement": "0xE7B20138",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x290",
+      "expected": "0x44819000",
+      "replacement": "0x44813000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2A0",
+      "expected": "0x46124101",
+      "replacement": "0x46064281",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2A8",
+      "expected": "0x44062000",
+      "replacement": "0x44065000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2B4",
+      "expected": "0x10400019",
+      "replacement": "0x1040001A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2B8",
+      "expected": "0xC7AA013C",
+      "replacement": "0xC7A4013C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2C0",
+      "expected": "0xE7AA0134",
+      "replacement": "0xE7A40134",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2D4",
+      "expected": "0xC7A60134",
+      "replacement": "0xC7B20134",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2D8",
+      "expected": "0x00006810",
+      "replacement": "0x44803000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2DC",
+      "expected": "0x25AE001E",
+      "replacement": "0x00005810",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2E0",
+      "expected": "0x240C00FF",
+      "replacement": "0x256C001E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2E4",
+      "expected": "0x240F0019",
+      "replacement": "0x240A00FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2E8",
+      "expected": "0xAFAF001C",
+      "replacement": "0x240D0019",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2EC",
+      "expected": "0xAFAC0014",
+      "replacement": "0xAFAD001C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2F0",
+      "expected": "0xAFAE0018",
+      "replacement": "0xAFAA0014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2F4",
+      "expected": "0xC7AC0130",
+      "replacement": "0xAFAC0018",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2F8",
+      "expected": "0x8FA60138",
+      "replacement": "0xC7AC0130",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x2FC",
+      "expected": "0x8FA70188",
+      "replacement": "0x8FA60138",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x300",
+      "expected": "0xAFA00010",
+      "replacement": "0x8FA70188",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x304",
+      "expected": "0xAFA00020",
+      "replacement": "0xAFA00010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x308",
+      "expected": "0xE7B60024",
+      "replacement": "0xAFA00020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x314",
+      "expected": "0x0C000000",
+      "replacement": "0x46089380",
+      "expected_relocations": "R_MIPS_26:func_1514C678",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x318",
+      "expected": "0x46083380",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_1514C678",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x31C",
+      "expected": "0x3C010000",
+      "replacement": "0xE7A60024",
+      "expected_relocations": "R_MIPS_HI16:D_8009FD54",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x320",
+      "expected": "0xC4320000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FD54",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD54",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x324",
+      "expected": "0x2418012C",
+      "replacement": "0xC42A0000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD54",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x328",
+      "expected": "0xA7B80208",
+      "replacement": "0x240E012C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x330",
+      "expected": "0xE7B201B8",
+      "replacement": "0xA7AE0208",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x334",
+      "expected": "0xC68400B8",
+      "replacement": "0xE7AA01B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x338",
+      "expected": "0x3C010000",
+      "replacement": "0xC68400B8",
+      "expected_relocations": "R_MIPS_HI16:D_8009FD58",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x33C",
+      "expected": "0xC4280000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FD58",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD58",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x340",
+      "expected": "0xE7A401C4",
+      "replacement": "0x44803000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x344",
+      "expected": "0xC68A0040",
+      "replacement": "0xE7A401C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x348",
+      "expected": "0x2419197D",
+      "replacement": "0xC6920040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x34C",
+      "expected": "0x240800FF",
+      "replacement": "0xC42A0000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD58",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x350",
+      "expected": "0xE7AA01C8",
+      "replacement": "0x240F197D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x354",
+      "expected": "0xC68600C4",
+      "replacement": "0xE7B201C8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x358",
+      "expected": "0x24090001",
+      "replacement": "0xC68800C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x35C",
+      "expected": "0x240A0001",
+      "replacement": "0x241800FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x360",
+      "expected": "0x240B0001",
+      "replacement": "0x24190001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x364",
+      "expected": "0x240C0001",
+      "replacement": "0x24080001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x368",
+      "expected": "0x240D00FF",
+      "replacement": "0x24090001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x36C",
+      "expected": "0xE7B401D0",
+      "replacement": "0x240A0001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x370",
+      "expected": "0xE7B401D4",
+      "replacement": "0x240B00FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x374",
+      "expected": "0xE7B401D8",
+      "replacement": "0xE7B401D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x378",
+      "expected": "0xAFB90204",
+      "replacement": "0xE7B401D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x37C",
+      "expected": "0xA3A0020C",
+      "replacement": "0xE7B401D8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x380",
+      "expected": "0xAFA00210",
+      "replacement": "0xAFAF0204",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x384",
+      "expected": "0xA3A80214",
+      "replacement": "0xA3A0020C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x388",
+      "expected": "0xA3A90215",
+      "replacement": "0xAFA00210",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x38C",
+      "expected": "0xA3A00216",
+      "replacement": "0xA3B80214",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x390",
+      "expected": "0xA3AA0217",
+      "replacement": "0xA3B90215",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x394",
+      "expected": "0xA3A00218",
+      "replacement": "0xA3A00216",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x398",
+      "expected": "0xA3AB0219",
+      "replacement": "0xA3A80217",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x39C",
+      "expected": "0xA3A0021A",
+      "replacement": "0xA3A00218",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3A0",
+      "expected": "0xA3A0021B",
+      "replacement": "0xA3A90219",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3A4",
+      "expected": "0xA3A0021C",
+      "replacement": "0xA3A0021A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3A8",
+      "expected": "0xA3A0021E",
+      "replacement": "0xA3A0021B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3AC",
+      "expected": "0xAFA00220",
+      "replacement": "0xA3A0021C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3B0",
+      "expected": "0xA3A00224",
+      "replacement": "0xA3A0021E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3B4",
+      "expected": "0xA7AC0226",
+      "replacement": "0xAFA00220",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3B8",
+      "expected": "0xA7AD0228",
+      "replacement": "0xA3A00224",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3BC",
+      "expected": "0xE7B601FC",
+      "replacement": "0xA7AA0226",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3C0",
+      "expected": "0xE7A80200",
+      "replacement": "0xA7AB0228",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3C4",
+      "expected": "0xE7A601CC",
+      "replacement": "0xE7A601FC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3C8",
+      "expected": "0xC682014C",
+      "replacement": "0xE7AA0200",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3CC",
+      "expected": "0x3C013F00",
+      "replacement": "0xE7A801CC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3D0",
+      "expected": "0x44816000",
+      "replacement": "0xC682014C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3D4",
+      "expected": "0x4602A03C",
+      "replacement": "0x3C013F00",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3D8",
+      "expected": "0x3C0141E0",
+      "replacement": "0x44816000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3DC",
+      "expected": "0x44817000",
+      "replacement": "0x4602A03C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3E0",
+      "expected": "0x45020003",
+      "replacement": "0x3C0141E0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3E4",
+      "expected": "0x460C103C",
+      "replacement": "0x44817000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3E8",
+      "expected": "0x4600A086",
+      "replacement": "0x45020003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3F0",
+      "expected": "0x00000000",
+      "replacement": "0x4600A086",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3F4",
+      "expected": "0x45020003",
+      "replacement": "0x460C103C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3F8",
+      "expected": "0xC6800150",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x3FC",
+      "expected": "0x46006086",
+      "replacement": "0x45020003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x404",
+      "expected": "0x46027102",
+      "replacement": "0x46006086",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x408",
+      "expected": "0x4600A03C",
+      "replacement": "0xC6800150",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x40C",
+      "expected": "0x00000000",
+      "replacement": "0x46027482",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x410",
+      "expected": "0x45020003",
+      "replacement": "0x4600A03C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x414",
+      "expected": "0x460C003C",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x418",
+      "expected": "0x4600A006",
+      "replacement": "0x45020003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x420",
+      "expected": "0x00000000",
+      "replacement": "0x4600A006",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x424",
+      "expected": "0x45000002",
+      "replacement": "0x460C003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x42C",
+      "expected": "0x46006006",
+      "replacement": "0x45000002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x430",
+      "expected": "0x46007482",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x434",
+      "expected": "0x3C014040",
+      "replacement": "0x46006006",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x438",
+      "expected": "0x44818000",
+      "replacement": "0x46007102",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x43C",
+      "expected": "0x3C014120",
+      "replacement": "0x3C014040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x440",
+      "expected": "0x4481F000",
+      "replacement": "0x44818000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x444",
+      "expected": "0x3C0141F0",
+      "replacement": "0x3C014120",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x448",
+      "expected": "0x4481E000",
+      "replacement": "0x4481F000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x44C",
+      "expected": "0x46049280",
+      "replacement": "0x3C0141F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x450",
+      "expected": "0x00009025",
+      "replacement": "0x4481E000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x454",
+      "expected": "0x27B3008C",
+      "replacement": "0x46122200",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x458",
+      "expected": "0x460C5182",
+      "replacement": "0x00009025",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x45C",
+      "expected": "0x00000000",
+      "replacement": "0x27B3008C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x460",
+      "expected": "0x46028202",
+      "replacement": "0x460C4182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x468",
+      "expected": "0x46008482",
+      "replacement": "0x46028282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x46C",
+      "expected": "0xE7A601B4",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x470",
+      "expected": "0xE7A801BC",
+      "replacement": "0x46008102",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x474",
+      "expected": "0xE7B201C0",
+      "replacement": "0xE7A601B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x478",
+      "expected": "0x0C000000",
+      "replacement": "0xE7AA01BC",
+      "expected_relocations": "R_MIPS_26:func_150ADA68",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x47C",
+      "expected": "0x00000000",
+      "replacement": "0xE7A401C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x480",
+      "expected": "0x461C0102",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA68",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x484",
+      "expected": "0xC68A0150",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x488",
+      "expected": "0x460A2182",
+      "replacement": "0x461C0482",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x48C",
+      "expected": "0x0C000000",
+      "replacement": "0xC6880150",
+      "expected_relocations": "R_MIPS_26:func_150ADA20",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x490",
+      "expected": "0x461E3500",
+      "replacement": "0x46089182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x494",
+      "expected": "0x3050007F",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA20",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x498",
+      "expected": "0x00107400",
+      "replacement": "0x461E3500",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x49C",
+      "expected": "0x0C000000",
+      "replacement": "0x3050007F",
+      "expected_relocations": "R_MIPS_26:func_150ADA20",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4A0",
+      "expected": "0x000E8403",
+      "replacement": "0x00106400",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4A4",
+      "expected": "0x3058001F",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA20",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4A8",
+      "expected": "0x2419FFE0",
+      "replacement": "0x000C8403",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4AC",
+      "expected": "0x03388823",
+      "replacement": "0x304E001F",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4B0",
+      "expected": "0x00114400",
+      "replacement": "0x240FFFE0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4B4",
+      "expected": "0x00088C03",
+      "replacement": "0x01EE8823",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4B8",
+      "expected": "0x0C000000",
+      "replacement": "0x0011C400",
+      "expected_relocations": "R_MIPS_26:func_151423D8",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4BC",
+      "expected": "0x320400FF",
+      "replacement": "0x00188C03",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4C0",
+      "expected": "0x2604FFC0",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_151423D8",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4C4",
+      "expected": "0x308A00FF",
+      "replacement": "0x320400FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4C8",
+      "expected": "0x46000586",
+      "replacement": "0x2604FFC0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4CC",
+      "expected": "0x0C000000",
+      "replacement": "0x308800FF",
+      "expected_relocations": "R_MIPS_26:func_151423D8",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4D0",
+      "expected": "0x01402025",
+      "replacement": "0x46000586",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4D4",
+      "expected": "0x46000606",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_151423D8",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4D8",
+      "expected": "0x0C000000",
+      "replacement": "0x01002025",
+      "expected_relocations": "R_MIPS_26:func_151423D8",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4DC",
+      "expected": "0x322400FF",
+      "replacement": "0x46000606",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4E0",
+      "expected": "0x2624FFC0",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_151423D8",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4E4",
+      "expected": "0x308B00FF",
+      "replacement": "0x322400FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4E8",
+      "expected": "0x46000686",
+      "replacement": "0x2624FFC0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4EC",
+      "expected": "0x0C000000",
+      "replacement": "0x308900FF",
+      "expected_relocations": "R_MIPS_26:func_151423D8",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4F0",
+      "expected": "0x01602025",
+      "replacement": "0x46000686",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4F4",
+      "expected": "0x00126080",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_151423D8",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4F8",
+      "expected": "0x01926023",
+      "replacement": "0x01202025",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x4FC",
+      "expected": "0x000C6080",
+      "replacement": "0x00125080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x500",
+      "expected": "0x27AD0250",
+      "replacement": "0x01525023",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x504",
+      "expected": "0x018D8021",
+      "replacement": "0x000A5080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x508",
+      "expected": "0x8E010000",
+      "replacement": "0x27AB0250",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x50C",
+      "expected": "0x461AA082",
+      "replacement": "0x014B8021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x510",
+      "expected": "0x27AE01DC",
+      "replacement": "0x8E010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x514",
+      "expected": "0xADC10000",
+      "replacement": "0x461AA082",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x518",
+      "expected": "0x8E180004",
+      "replacement": "0x27AC01DC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x51C",
+      "expected": "0x4600A287",
+      "replacement": "0xAD810000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x520",
+      "expected": "0xADD80004",
+      "replacement": "0x8E0E0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x524",
+      "expected": "0x46181202",
+      "replacement": "0x4600A207",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x528",
+      "expected": "0x8E010008",
+      "replacement": "0xAD8E0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x52C",
+      "expected": "0x46005182",
+      "replacement": "0x46181282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x530",
+      "expected": "0xADC10008",
+      "replacement": "0x8E010008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x534",
+      "expected": "0xC7B201A0",
+      "replacement": "0x46004182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x538",
+      "expected": "0x46124100",
+      "replacement": "0xAD810008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x53C",
+      "expected": "0x46161202",
+      "replacement": "0xC7A401A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x540",
+      "expected": "0xC7B2019C",
+      "replacement": "0x46045480",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x544",
+      "expected": "0xE7A601EC",
+      "replacement": "0x46161282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x548",
+      "expected": "0xE7A401E8",
+      "replacement": "0xC7A4019C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x54C",
+      "expected": "0x46124100",
+      "replacement": "0xE7A601EC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x550",
+      "expected": "0x0C000000",
+      "replacement": "0xE7B201E8",
+      "expected_relocations": "R_MIPS_26:func_150ADA68",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x554",
+      "expected": "0xE7A401F0",
+      "replacement": "0x46045480",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x558",
+      "expected": "0x3C014270",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA68",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x55C",
+      "expected": "0x44815000",
+      "replacement": "0xE7B201F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x560",
+      "expected": "0x00000000",
+      "replacement": "0x3C014270",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x564",
+      "expected": "0x460A0182",
+      "replacement": "0x44814000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x568",
+      "expected": "0x4606E201",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x56C",
+      "expected": "0x0C000000",
+      "replacement": "0x46080182",
+      "expected_relocations": "R_MIPS_26:func_150ADA68",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x570",
+      "expected": "0xE7A801F4",
+      "replacement": "0x4606E281",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x574",
+      "expected": "0x3C014270",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA68",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x578",
+      "expected": "0x44819000",
+      "replacement": "0xE7AA01F4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x57C",
+      "expected": "0x27A401B4",
+      "replacement": "0x3C014270",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x580",
+      "expected": "0x24050003",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x584",
+      "expected": "0x46120102",
+      "replacement": "0x27A401B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x588",
+      "expected": "0x24060002",
+      "replacement": "0x24050003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x58C",
+      "expected": "0x00003825",
+      "replacement": "0x46040482",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x590",
+      "expected": "0xAFB50010",
+      "replacement": "0x24060002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x594",
+      "expected": "0xAFA00014",
+      "replacement": "0x00003825",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x598",
+      "expected": "0x4604E281",
+      "replacement": "0xAFB50010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x59C",
+      "expected": "0x0C000000",
+      "replacement": "0xAFA00014",
+      "expected_relocations": "R_MIPS_26:func_15132A4C",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5A0",
+      "expected": "0xE7AA01F8",
+      "replacement": "0x4612E201",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5A4",
+      "expected": "0xC686014C",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_15132A4C",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5A8",
+      "expected": "0xC6880150",
+      "replacement": "0xE7A801F8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5AC",
+      "expected": "0x3C013F00",
+      "replacement": "0xC686014C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5B0",
+      "expected": "0x44812000",
+      "replacement": "0xC68A0150",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5B4",
+      "expected": "0x46083480",
+      "replacement": "0x3C013F00",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5B8",
+      "expected": "0x3C010000",
+      "replacement": "0x44819000",
+      "expected_relocations": "R_MIPS_HI16:D_8009FD5C",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5BC",
+      "expected": "0xC4260000",
+      "replacement": "0x460A3100",
+      "expected_relocations": "R_MIPS_LO16:D_8009FD5C",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5C0",
+      "expected": "0x8E010000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD5C",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5C4",
+      "expected": "0x8E0A0004",
+      "replacement": "0xC4260000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD5C",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5C8",
+      "expected": "0x46049282",
+      "replacement": "0x8E010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5CC",
+      "expected": "0xAE610000",
+      "replacement": "0x8E080004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5D0",
+      "expected": "0x8E010008",
+      "replacement": "0x46122202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5D4",
+      "expected": "0xAE6A0004",
+      "replacement": "0xAE610000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5D8",
+      "expected": "0x240B0004",
+      "replacement": "0x8E010008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5DC",
+      "expected": "0xAE610008",
+      "replacement": "0xAE680004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5E0",
+      "expected": "0x3C014040",
+      "replacement": "0x24090004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5E4",
+      "expected": "0x46065003",
+      "replacement": "0xAE610008",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5E8",
+      "expected": "0x44814000",
+      "replacement": "0x3C014040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5EC",
+      "expected": "0x3C014170",
+      "replacement": "0x46064003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5F0",
+      "expected": "0x44819000",
+      "replacement": "0x44815000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5F8",
+      "expected": "0xC4260000",
+      "replacement": "0xC4240000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FD60",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD60",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x5FC",
+      "expected": "0x240C0004",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FD64",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x600",
+      "expected": "0x240D00FF",
+      "replacement": "0xC4320000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FD64",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x604",
+      "expected": "0x2419FFC1",
+      "replacement": "0x3C014170",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x608",
+      "expected": "0x240F004B",
+      "replacement": "0x44814000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x60C",
+      "expected": "0x240E0032",
+      "replacement": "0x240A0004",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x610",
+      "expected": "0xA7AB00B0",
+      "replacement": "0x240B00FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x614",
+      "expected": "0xA7AC00B2",
+      "replacement": "0x240FFFC1",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x618",
+      "expected": "0xA7AD00B6",
+      "replacement": "0x240D004B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x61C",
+      "expected": "0xA7B900B8",
+      "replacement": "0xA7A900B0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x620",
+      "expected": "0xA7AF00BA",
+      "replacement": "0xA7AA00B2",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x624",
+      "expected": "0xA7AE00C0",
+      "replacement": "0xA7AB00B6",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x628",
+      "expected": "0x24090003",
+      "replacement": "0xA7AF00B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x62C",
+      "expected": "0x24080003",
+      "replacement": "0xA7AD00BA",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x630",
+      "expected": "0x3C010000",
+      "replacement": "0x240C0003",
+      "expected_relocations": "R_MIPS_HI16:D_8009FD64",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x634",
+      "expected": "0x24180014",
+      "replacement": "0x24190032",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x638",
+      "expected": "0xA7A900BC",
+      "replacement": "0x24180014",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x63C",
+      "expected": "0xA7A800BE",
+      "replacement": "0x240E0003",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x640",
+      "expected": "0x46004082",
+      "replacement": "0xA7B900C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x644",
+      "expected": "0xC4280000",
+      "replacement": "0xA7B800C2",
+      "expected_relocations": "R_MIPS_LO16:D_8009FD64",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x648",
+      "expected": "0x240A0021",
+      "replacement": "0x46005082",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x64C",
+      "expected": "0x46009102",
+      "replacement": "0x24090021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x650",
+      "expected": "0x240B0048",
+      "replacement": "0x240A0048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x654",
+      "expected": "0x240C0001",
+      "replacement": "0x46004182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x658",
+      "expected": "0x4600F282",
+      "replacement": "0x240B0001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x65C",
+      "expected": "0x240D009B",
+      "replacement": "0x240F009B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x660",
+      "expected": "0x24190064",
+      "replacement": "0x4600F282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x664",
+      "expected": "0x240F0003",
+      "replacement": "0x240D0064",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x668",
+      "expected": "0x240E0001",
+      "replacement": "0xA7AC00BC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x66C",
+      "expected": "0xA7B800C2",
+      "replacement": "0xA7AE00BE",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x670",
+      "expected": "0xA3AA00C5",
+      "replacement": "0x24080001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x674",
+      "expected": "0xA3AB00C6",
+      "replacement": "0xA3A900C5",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x678",
+      "expected": "0xAFAC00C8",
+      "replacement": "0xA3AA00C6",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x67C",
+      "expected": "0xA3AD00E1",
+      "replacement": "0xAFAB00C8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x680",
+      "expected": "0xA3B900E2",
+      "replacement": "0xA3AF00E1",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x684",
+      "expected": "0xAFAF00E4",
+      "replacement": "0xA3AD00E2",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x688",
+      "expected": "0xA3AE00C4",
+      "replacement": "0xAFAC00E4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x68C",
+      "expected": "0x3C090022",
+      "replacement": "0x3C190022",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x690",
+      "expected": "0x3C08001D",
+      "replacement": "0x3C18001D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x694",
+      "expected": "0x241800FF",
+      "replacement": "0x240E00FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x698",
+      "expected": "0x35290005",
+      "replacement": "0x37390005",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x69C",
+      "expected": "0x35080600",
+      "replacement": "0x37180600",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6A0",
+      "expected": "0x240A0001",
+      "replacement": "0x2409003B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6A4",
+      "expected": "0x240B003B",
+      "replacement": "0x240A0080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6A8",
+      "expected": "0x240C0080",
+      "replacement": "0x240B0020",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6AC",
+      "expected": "0x240D0020",
+      "replacement": "0x240F0007",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6B0",
+      "expected": "0x24190007",
+      "replacement": "0x240D000A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6B4",
+      "expected": "0x240F000A",
+      "replacement": "0x240C0019",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6B8",
+      "expected": "0x240E0019",
+      "replacement": "0xE7A20098",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6BC",
+      "expected": "0xE7A20098",
+      "replacement": "0xE7A2009C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6C0",
+      "expected": "0xE7A2009C",
+      "replacement": "0xE7A600A8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6C4",
+      "expected": "0xE7A400A8",
+      "replacement": "0xE7AA00AC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6C8",
+      "expected": "0xE7AA00AC",
+      "replacement": "0xA7A000B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6CC",
+      "expected": "0xA7A000B4",
+      "replacement": "0xA3A800C4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6E8",
+      "expected": "0xAFB800E8",
+      "replacement": "0xAFAE00E8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6F0",
+      "expected": "0xAFA900F0",
+      "replacement": "0xAFB900F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6F4",
+      "expected": "0xAFA800F4",
+      "replacement": "0xAFB800F4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6F8",
+      "expected": "0xAFAA00F8",
+      "replacement": "0xAFA800F8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x6FC",
+      "expected": "0xAFAB00FC",
+      "replacement": "0xAFA900FC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x700",
+      "expected": "0xAFAC0100",
+      "replacement": "0xAFAA0100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x704",
+      "expected": "0xAFAD0104",
+      "replacement": "0xAFAB0104",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x70C",
+      "expected": "0xA3B90109",
+      "replacement": "0xA3AF0109",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x710",
+      "expected": "0xA7AF010C",
+      "replacement": "0xA7AD010C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x714",
+      "expected": "0xA7AE010E",
+      "replacement": "0xA7AC010E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x718",
+      "expected": "0xE7A600A0",
+      "replacement": "0xE7A400A0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x71C",
+      "expected": "0xE7A800A4",
+      "replacement": "0xE7B200A4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x720",
+      "expected": "0x8E980184",
+      "replacement": "0x8E8E0184",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x734",
+      "expected": "0xAFB80110",
+      "replacement": "0xAFAE0110",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x73C",
+      "expected": "0x00124E00",
+      "replacement": "0x0012CE00",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x740",
+      "expected": "0x00099603",
+      "replacement": "0x00199603",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B7B40",
+      "offset": "0x748",
+      "expected": "0x1420FF4B",
+      "replacement": "0x1420FF4D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved actor burst instruction schedule and closed register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ]
+}
