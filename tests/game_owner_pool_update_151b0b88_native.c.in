@@ -1,0 +1,108 @@
+#include <ultra64.h>
+typedef struct struct171 struct171;
+typedef struct { f32 x,y,z; } TrailPoint151B0050;
+@DECLARATIONS@
+#define D_800AA12C ((OwnerPoint151B0B88 *)0x800AA12Cu)
+#define D_800AA1DC ((OwnerPoint151B0B88 *)0x800AA1DCu)
+#define D_800AB310 ((u8 *)0x800AB310u)
+#define D_800BE9E4 (*(s32 *)0x800BE9E4u)
+#define D_800BE9A4 (*(f32 *)0x800BE9A4u)
+#define D_800BE9A8 (*(f32 *)0x800BE9A8u)
+#define D_800AA2E0 (*(f32 *)0x800AA2E0u)
+#define D_800AA2E4 (*(f32 *)0x800AA2E4u)
+#define D_800AA2E8 (*(f32 *)0x800AA2E8u)
+#define D_800AA2EC (*(f32 *)0x800AA2ECu)
+static u32 seed,failure,mutation,rng_count,float_count,allocation_count,output_count,ordinal,trace;
+enum { RECORD=0x30000,OWNER=0x80000,MATRIX=0x50000,STATE=0x30028,MARK=0x70000,
+ RNG=0x150ADA20,FLOAT=0x150ADA68,TRANSFORM=0x15143134,RELEASE=0x1513F680,
+ ALLOCATE=0x1513D524,COPY=0x10022EC0,CLEAN=0x151B1918 };
+static void quit(int status){__asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory");__builtin_unreachable();}
+static u8 *ptr(u32 a) { return (u8 *)a; }
+static u32 address(const void *p) { return (u32)p; }
+static void fail(const char *what) { u32 n=0;while(what[n])n++;__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(what),"d"(n):"memory");quit(3); }
+void *memcpy(void *dest,const void *src,u32 n){u8*d=dest;const u8*s=src;for(u32 i=0;i<n;i++)d[i]=s[i];return dest;}
+static void word(u32 value) { trace=(trace^value)*16777619u; }
+static void log_call(u32 target,const u32 *args,u32 count,const u8 *data,u32 n) {
+ word(target);word(count);for(u32 i=0;i<count;i++)word(args[i]);word(n);for(u32 i=0;i<n;i++)word(data[i]);
+ ordinal++;*(u32 *)ptr(MARK)=0x13579BDFu+ordinal*0x10203u+target;
+}
+static s32 func_150ADA20(void) { log_call(RNG,NULL,0,NULL,0);return (seed+1)*0x9E3779B9u+(rng_count++)*0x10203047u; }
+static f32 func_150ADA68(void) { static const f32 values[]={0.f,.5f,1.f,2.f};log_call(FLOAT,NULL,0,NULL,0);return values[(seed+float_count++)%4]; }
+static void *native_copy(void *dest,const void *src,u32 n) {
+ if(n!=40)fail("copy length");u8 observed[26];
+ for(u32 i=0;i<26;i++){u32 at=12+i;int width=(at<16||(at>=20&&at<36))?4:1;u32 base=at&~3u;observed[i]=((const u8 *)src)[width==4?base+3-(at-base):at];}
+ u32 args[]={address(dest),0xFFFFFF03u,n};
+ /* The handwritten guest copy has its own instruction-level coverage. */
+ word(COPY);word(3);for(u32 i=0;i<3;i++)word(args[i]);word(26);for(u32 i=0;i<26;i++)word(observed[i]);
+ ordinal++;
+ return memcpy(dest,src,n);
+}
+static void func_15143134(f32 *source,f32 *dest,void *matrix) {
+ u32 a=address(source),d=address(dest),v=address(matrix);
+ u32 args[]={a,(d>=0x30000u&&d<0xB0000u)?d:0xFFFFFF01u,v};
+ u8 observed[12];
+ /* Serialize float words in guest byte order, independent of host endian. */
+ for(u32 i=0;i<3;i++){u32 b;memcpy(&b,source+i,4);for(u32 j=0;j<4;j++)observed[4*i+j]=(u8)(b>>(24-8*j));}
+ log_call(TRANSFORM,args,3,observed,12);
+ if(v<MATRIX||v>=MATRIX+4096)fail("matrix address");
+ for(u32 j=0;j<3;j++)dest[j]=source[j]+((f32)(v-MATRIX)*.015625f+(f32)j*.25f);
+ if(mutation&1){D_800BE9E4=3;D_800BE9A8=.5f;ptr(RECORD)[12]^=1;}
+ if(mutation&8){ptr(OWNER)[4]=54;ptr(OWNER)[116]=0xAF;}
+}
+void func_1513F680(struct171 *child,u8 first,u8 second,u8 third,u8 fourth) {
+ u32 a=address(child),args[]={a,first,second,third,fourth};log_call(RELEASE,args,5,NULL,0);
+ if(mutation&2){u32 i=(a-0x90000u)/512;*(u32 *)ptr(STATE+12+12*i)=0x90000u+((i+1)%11)*512;}
+}
+static const u8 request_defined[]={@REQUEST_DEFINED@};
+static int request_word(u32 off) {return(off>=2&&off<6)?2:((off>=8&&off<16)||(off>=20&&off<68))?4:1;}
+static u8 guest_byte(const u8 *bytes,u32 i) {
+ u32 width=request_word(i),base=i;
+ if(width==2)base=i&~1u;else if(width==4)base=i&~3u;
+ return bytes[base+width-1-(i-base)];
+}
+void *func_1513D524(void *request,u8 kind,u8 mode,u8 first,u8 setup,u8 variant,s32 size,u8 channel,s32 context) {
+ u32 args[]={0xFFFFFF02u,kind,mode,first,setup,variant,(u32)size,channel,(u32)context};
+ u8 observed[67];for(u32 i=0;i<67;i++)observed[i]=guest_byte(request,request_defined[i]);
+ log_call(ALLOCATE,args,9,observed,67);u32 i=allocation_count++;
+ if(mutation&4){ptr(STATE)[148]=(ptr(STATE)[148]+1)%13;ptr(RECORD)[1]^=3;}
+ if(failure==3||(failure==1&&i%2==0))return NULL;
+ if(output_count>=11)fail("allocated more than eleven slots");return ptr(0xA0000u+(output_count++)*512);
+}
+void func_151B1918(u8 *record) {
+ u32 args[]={address(record)};log_call(CLEAN,args,1,NULL,0);
+ *(u32 *)ptr(STATE+8)=0;*(f32 *)ptr(STATE+144)=0.f;
+ for(u32 i=0;i<11;i++)for(u32 j=0;j<3;j++)*(u32 *)ptr(STATE+12+12*i+4*j)=0;
+}
+#define memcpy native_copy
+@BODY@
+#undef memcpy
+extern const u8 fixture_rows[],fixture_end[];
+static const u8 *file;
+static void exact_read(void *dest,u32 size) { if(file+size>fixture_end)fail("short fixture");memcpy(dest,file,size);file+=size; }
+static u32 get32(void) { u32 value;exact_read(&value,4);return value; }
+static void mapping(u32 a,u32 n){u32 args[]={a,n,3,0x100022u,0xFFFFFFFFu,0},answer;__asm__ volatile("int $0x80":"=a"(answer):"a"(90),"b"(args):"memory");if(answer!=a)fail("mapping");}
+static u8 expected[40][4096],masks[40][4096],initial[4096];
+static int run(void) {
+ mapping(0x30000,0x80000);mapping(0x800A0000u,0x20000);file=fixture_rows;
+ u32 cases=get32(),segments=get32();
+ for(u32 k=0;k<cases;k++) {
+  seed=get32();failure=get32();mutation=get32();u32 expected_trace=get32();
+  u32 addresses[40],lengths[40];if(segments>40)fail("segment count");
+  for(u32 s=0;s<segments;s++) {
+   u32 a=addresses[s]=get32(),n=lengths[s]=get32();if(n>4096)fail("segment length");
+   exact_read(initial,n);exact_read(expected[s],n);exact_read(masks[s],n);
+   /* Fixture writer supplies native-layout bytes derived from guest fields. */
+   memcpy(ptr(a),initial,n);
+  }
+  rng_count=float_count=allocation_count=output_count=ordinal=0;trace=2166136261u;
+  func_151B0B88(ptr(RECORD));
+  if(trace!=expected_trace)fail("trace mismatch");
+  for(u32 s=0;s<segments;s++) {
+   for(u32 i=0;i<lengths[s];i++)if(masks[s][i]&&ptr(addresses[s])[i]!=expected[s][i]){
+    fail("memory mismatch");
+   }
+  }
+ }
+ if(file!=fixture_end)fail("fixture tail");return 0;
+}
+__attribute__((force_align_arg_pointer))void _start(void){quit(run());}

@@ -1,0 +1,261 @@
+{
+  "name": "func_151B0B88",
+  "source": "conker/src/game/generated_1DD500.c",
+  "retail_words": 385,
+  "raw_words": 389,
+  "frame": 312,
+  "raw_sha256": "5e31135610cfd8598335b18434bf48999a37765c9c06af446d30264b5237a52a",
+  "refs": {
+    "208": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA12C"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA12C"
+      ]
+    ],
+    "264": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA1DC"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA1DC"
+      ]
+    ],
+    "284": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA1DC"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA1DC"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9E4"
+      ]
+    ],
+    "348": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9E4"
+      ]
+    ],
+    "376": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A8"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A8"
+      ]
+    ],
+    "464": [
+      [
+        "R_MIPS_26",
+        "func_1513F680"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "580": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2E0"
+      ]
+    ],
+    "584": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2E0"
+      ]
+    ],
+    "588": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2E4"
+      ]
+    ],
+    "592": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2E4"
+      ]
+    ],
+    "600": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "604": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "660": [
+      [
+        "R_MIPS_HI16",
+        "D_800AB310"
+      ]
+    ],
+    "672": [
+      [
+        "R_MIPS_LO16",
+        "D_800AB310"
+      ]
+    ],
+    "680": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "788": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "880": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "920": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA12C"
+      ]
+    ],
+    "1012": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA12C"
+      ]
+    ],
+    "1020": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1056": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1092": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1128": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1164": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1180": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2E8"
+      ]
+    ],
+    "1184": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2E8"
+      ]
+    ],
+    "1192": [
+      [
+        "R_MIPS_HI16",
+        "D_800AA2EC"
+      ]
+    ],
+    "1196": [
+      [
+        "R_MIPS_LO16",
+        "D_800AA2EC"
+      ]
+    ],
+    "1236": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "1268": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1332": [
+      [
+        "R_MIPS_26",
+        "func_1513D524"
+      ]
+    ],
+    "1356": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ],
+    "1364": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1476": [
+      [
+        "R_MIPS_26",
+        "func_151B1918"
+      ]
+    ]
+  },
+  "frozen_inputs": 1643,
+  "declarations": "typedef struct OwnerSlot151B0B88 {\n    u8 *child;\n    s32 ticks;\n    struct OwnerSlot151B0B88 *next;\n} OwnerSlot151B0B88;\ntypedef struct {\n    u8 *owner;\n    u8 identity, private05[3];\n    s32 liveCount;\n    OwnerSlot151B0B88 slots[11];\n    f32 accumulator;\n    u8 selector, private95[3];\n} OwnerPool151B0B88;\ntypedef struct {\n    u8 matrix, private01[3];\n    TrailPoint151B0050 point;\n} OwnerPoint151B0B88;\ntypedef struct {\n    u8 kind, private01;\n    u16 mode;\n    s16 duration;\n    u8 private06[2];\n    s32 value;\n    u32 flags;\n    u8 red, green, blue, alpha;\n    f32 zero14, zero18;\n    TrailPoint151B0050 position, previous, scale;\n    u32 allocationFlags;\n    u8 first, second, private46[0x12];\n} OwnerRequest151B0B88;\ntypedef struct {\n    u8 private00[12];\n    f32 sampled;\n    u8 zero10, zero11, first, second;\n    f32 value14, value18, value1C, value20;\n    u8 bit, selector, private26[2];\n} OwnerPayload151B0B88;\nextern OwnerPoint151B0B88 D_800AA12C[], D_800AA1DC[];\nextern u8 D_800AB310[];\nextern f32 D_800BE9A4, D_800BE9A8, D_800AA2E0, D_800AA2E4, D_800AA2E8, D_800AA2EC;\nvoid func_1513F680(struct171 *, u8, u8, u8, u8);\nvoid *func_1513D524(void *, u8, u8, u8, u8, u8, s32, u8, s32);\nvoid func_151B1918(u8 *);\n",
+  "body": "/* Update the owner's eleven linked effect slots and replenish expired entries. */\nvoid func_151B0B88(u8 *record) {\n    volatile u8 invalid;\n    OwnerRequest151B0B88 request;\n    OwnerPayload151B0B88 payload;\n    OwnerSlot151B0B88 *freeHead, *freeTail, *slot;\n    OwnerPool151B0B88 *state;\n    u8 *cursor, *child;\n    OwnerPoint151B0B88 *point;\n    void *matrix;\n    f32 *velocity;\n    s32 available;\n    s32 empty;\n    s32 index;\n    s32 steps;\n\n    invalid = 0;\n    state = (OwnerPool151B0B88 *)(record + 0x28);\n    if (*(u32 *)state->owner == 0 || state->identity != state->owner[0x3B]) invalid = 1;\n    if (invalid == 0) {\n        if (*(u8 **)(state->owner + 0x1D4) != NULL && (state->owner[0x74] & 15) != 15) {\n            freeHead = NULL;\n            freeTail = NULL;\n            available = 0;\n            index = 0;\n            cursor = (u8 *)state;\n            do {\n                empty = 1;\n                if (*(u8 **)(cursor + 0xC) != NULL) {\n                    slot = (OwnerSlot151B0B88 *)(cursor + 0xC);\n                    child = slot->child;\n                    *(TrailPoint151B0050 *)(child + 0x40) = *(TrailPoint151B0050 *)(child + 0x34);\n                    point = &D_800AA12C[index];\n                    if (state->owner[4] == 0x36) point = &D_800AA1DC[index];\n                    if (state->owner[4] == 0x36) matrix = *(u8 **)(state->owner + 0x1D4) + D_800AA1DC[index].matrix * 64;\n                    else matrix = *(u8 **)(state->owner + 0x1D4) + D_800AA12C[index].matrix * 64;\n                    func_15143134((f32 *)&point->point, (f32 *)(slot->child + 0x34), matrix);\n                    slot->ticks = (u32)slot->ticks - (u32)D_800BE9E4;\n                    if (slot->ticks < 0) {\n                        child = slot->child;\n                        velocity = (f32 *)(child + 0x110);\n                        velocity[1] = 0.0f;\n                        velocity[0] = (*(f32 *)(child + 0x34) - *(f32 *)(child + 0x40)) * D_800BE9A8;\n                        child = slot->child;\n                        velocity[2] = (*(f32 *)(child + 0x3C) - *(f32 *)(child + 0x48)) * D_800BE9A8;\n                        func_1513F680((struct171 *)slot->child, 16, 27, 0, 16);\n                        child = slot->child;\n                        *(u32 *)(child + 0x58) |= 1;\n                        slot->child = NULL;\n                        state->liveCount--;\n                    } else empty = 0;\n                }\n                index++;\n                if (empty != 0) {\n                    slot = (OwnerSlot151B0B88 *)(cursor + 0xC);\n                    if (freeTail == NULL) freeTail = slot;\n                    slot->next = freeHead;\n                    freeHead = slot;\n                    available++;\n                }\n                cursor += 12;\n            } while (index != 11);\n            if (available != 0) {\n                state->accumulator += func_150ADA68() * D_800AA2E0 * D_800AA2E4 * D_800BE9A4;\n                if (state->accumulator > 1.0f) {\n                    freeTail->next = freeHead;\n                    request.kind = D_800AB310[state->selector];\n                    request.mode = 0x1001;\n                    request.duration = (u32)func_150ADA20() % 51U + 52;\n                    request.value = 0;\n                    request.flags = 0;\n                    request.red = 0;\n                    request.green = 0;\n                    request.blue = 0;\n                    request.alpha = 255;\n                    request.allocationFlags = 0;\n                    request.scale.x = 1.0f;\n                    request.scale.y = 1.0f;\n                    request.scale.z = 1.0f;\n                    payload.zero10 = 0;\n                    payload.zero11 = 0;\n                    request.previous.x = 0.0f;\n                    request.previous.y = 0.0f;\n                    request.previous.z = 0.0f;\n                    payload.selector = state->selector;\n                    payload.bit = (u32)func_150ADA20() & 1;\n                    payload.value14 = 5.0f;\n                    payload.value18 = 25.0f;\n                    payload.value1C = 2.0f;\n                    request.zero14 = 0.0f;\n                    request.zero18 = 0.0f;\n                    payload.value20 = 8.0f;\n                    do {\n                        steps = (u32)func_150ADA20() % (u32)available;\n                        if (steps != 0) {\n                            do {\n                                freeTail = freeHead;\n                                freeHead = freeHead->next;\n                                steps--;\n                            } while (steps != 0);\n                        }\n                        point = &D_800AA12C[((u8 *)freeHead - (u8 *)state - 12) / 12];\n                        request.second = (u32)func_150ADA20() % 101U + 100;\n                        request.first = (u32)func_150ADA20() % 101U + 155;\n                        payload.first = (u32)func_150ADA20() % 5U + 4;\n                        payload.second = (u32)func_150ADA20() % 5U + 4;\n                        payload.sampled = (func_150ADA68() * 506.0f + D_800AA2E8) * D_800AA2EC;\n                        func_15143134((f32 *)&point->point, (f32 *)&request.position,\n                            *(u8 **)(state->owner + 0x1D4) + point->matrix * 64);\n                        request.previous = request.position;\n                        func_150ADA20();\n                        freeHead->child = func_1513D524(&request, 17, 0, 0, 16, 2, 40, record[0xC], record[1]);\n                        if (freeHead->child != NULL) {\n                            memcpy(freeHead->child + 0x110, &payload, 40);\n                            freeHead->ticks = (u32)func_150ADA20() % 31U + 20;\n                            freeHead = freeHead->next;\n                            available--;\n                            freeTail->next = freeHead;\n                            state->liveCount++;\n                        }\n                        state->accumulator -= 1.0f;\n                    } while (state->accumulator > 1.0f && available != 0);\n                }\n            }\n        } else if (state->liveCount != 0) func_151B1918(record);\n    }\n    if (invalid != 0) *(s16 *)(record + 0xE) = -1;\n}\n",
+  "source_installed": false,
+  "c_match_credit": 0
+}
