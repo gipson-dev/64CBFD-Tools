@@ -1,0 +1,984 @@
+{
+  "name": "func_150B879C",
+  "frozen_inputs": 1714,
+  "declarations": "extern f32 D_8009FD8C, D_8009FD90, D_8009FD94, D_8009FD98, D_8009FD9C, D_8009FDA0;\nvoid func_15143874(s16, f32, f32 *, f32 *);\nvoid *memcpy(void *, const void *, size_t);\n",
+  "body": "/* Submit the menu radial descriptor and retain its pre-sampled object value. */\ns32 func_150B879C(s32 kind, s16 index, f32 x, f32 y, f32 z,\n                    f32 unused5, f32 unused6, f32 unused7, s16 heading, u8 unused9,\n                    f32 unused10, s32 unused11, f32 unused12, s32 unused13, u8 slot) {\n    f32 bonus;\n    MenuRadialPacketE4070 packet;\n    f32 sample;\n    s32 secondFlag;\n    s32 firstFlag;\n    void *allocated;\n\n    bonus = D_8009FD8C;\n    packet.field1D = 41;\n    packet.field08 = 0xE03;\n    packet.field00 = 0x200005;\n    packet.field04 = 0;\n    packet.field0A = ((u32)func_150ADA20() & 15) + 25;\n    packet.field0C = 0;\n    packet.field10 = 0;\n    packet.field18 = 176;\n    packet.field19 = 160;\n    packet.field1A = 42;\n    packet.field14 = 64;\n    packet.field15 = 11;\n    packet.field16 = 106;\n    packet.field17 = 255;\n    packet.field1B = (u32)func_150ADA20() % 71U + 60;\n    packet.field1C = 255;\n    packet.field60 = 3;\n    packet.field61 = 3;\n    sample = func_150ADA68();\n    packet.field28 = packet.field2C = (sample * D_8009FD90 + D_8009FD94) * D_8009FD98;\n    packet.position.x = x;\n    packet.position.y = y;\n    packet.position.z = z;\n    packet.field3C = 0.0f;\n    packet.field40 = 0.0f;\n    packet.field44 = 0.0f;\n    sample = func_150ADA68();\n    func_15143874(heading, (sample * 154.0f + 205.0f) * D_8009FD9C,\n        &packet.direction.x, &packet.direction.z);\n    packet.direction.y = 0.0f;\n    packet.field54 = 0.0f;\n    firstFlag = (func_150ADA20() & 1) ? 0x40 : 0;\n    secondFlag = (func_150ADA20() & 1) ? 0x80 : 0;\n    packet.flags = secondFlag | 0xE05 | firstFlag | 0xC000;\n    packet.field62 = 10;\n    packet.field63 = -1;\n    packet.field1E = 28;\n    packet.field20 = 9;\n    packet.field22 = 25;\n    packet.field64 = -1;\n    packet.field65 = 0;\n    packet.field24 = D_8009FDA0;\n    allocated = func_15130374(&packet, 1, 4, slot, 1);\n    if (allocated != NULL) memcpy((u8 *)allocated + 0xA8, &bonus, 4);\n    return 1;\n}",
+  "raw_sha256": "0d5bd6424e12f61d5065226cb3f264efd2221af85abee49d2e2597970afebf2b",
+  "retail_sha256": "78ae91531ed40fb4103041dbe121af8dd01bdc90172040ec8e98518245bb6c25",
+  "refs": {
+    "24": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD8C"
+      ]
+    ],
+    "28": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD8C"
+      ]
+    ],
+    "64": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "200": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD90"
+      ]
+    ],
+    "204": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD90"
+      ]
+    ],
+    "208": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD94"
+      ]
+    ],
+    "212": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD94"
+      ]
+    ],
+    "220": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD98"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD98"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FD9C"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FD9C"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_26",
+        "func_15143874"
+      ]
+    ],
+    "360": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "424": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FDA0"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FDA0"
+      ]
+    ],
+    "520": [
+      [
+        "R_MIPS_26",
+        "func_15130374"
+      ]
+    ],
+    "540": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x030",
+      "expected": "0xA3AE0051",
+      "replacement": "0xA3AE004D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x034",
+      "expected": "0xA7AF003C",
+      "replacement": "0xA7AF0038",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x038",
+      "expected": "0xAFB80034",
+      "replacement": "0xAFB80030",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x03C",
+      "expected": "0xAFA00038",
+      "replacement": "0xAFA00034",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x06C",
+      "expected": "0xA7A8003E",
+      "replacement": "0xA7A8003A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x070",
+      "expected": "0xAFA00040",
+      "replacement": "0xAFA0003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x074",
+      "expected": "0xAFA00044",
+      "replacement": "0xAFA00040",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x078",
+      "expected": "0xA3A9004C",
+      "replacement": "0xA3A90048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x07C",
+      "expected": "0xA3AA004D",
+      "replacement": "0xA3AA0049",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x080",
+      "expected": "0xA3AB004E",
+      "replacement": "0xA3AB004A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x084",
+      "expected": "0xA3AC0048",
+      "replacement": "0xA3AC0044",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x088",
+      "expected": "0xA3AD0049",
+      "replacement": "0xA3AD0045",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x08C",
+      "expected": "0xA3AE004A",
+      "replacement": "0xA3AE0046",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x094",
+      "expected": "0xA3AF004B",
+      "replacement": "0xA3AF0047",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x0B4",
+      "expected": "0xA3B9004F",
+      "replacement": "0xA3B9004B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x0B8",
+      "expected": "0xA3A80050",
+      "replacement": "0xA3A8004C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x0BC",
+      "expected": "0xA3A90094",
+      "replacement": "0xA3A90090",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x0C4",
+      "expected": "0xA3AA0095",
+      "replacement": "0xA3AA0091",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x0F0",
+      "expected": "0xE7A20070",
+      "replacement": "0xE7A2006C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x0FC",
+      "expected": "0xE7A40064",
+      "replacement": "0xE7A40060",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x100",
+      "expected": "0xE7A20074",
+      "replacement": "0xE7A20070",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x108",
+      "expected": "0xE7A20078",
+      "replacement": "0xE7A20074",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x10C",
+      "expected": "0xE7A60068",
+      "replacement": "0xE7A60064",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x110",
+      "expected": "0xE7A8006C",
+      "replacement": "0xE7A80068",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x114",
+      "expected": "0xE7AC005C",
+      "replacement": "0xE7AC0058",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x11C",
+      "expected": "0xE7AC0060",
+      "replacement": "0xE7AC005C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x140",
+      "expected": "0x27A6007C",
+      "replacement": "0x27A60078",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x144",
+      "expected": "0x27A70084",
+      "replacement": "0x27A70080",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x164",
+      "expected": "0xE7A20080",
+      "replacement": "0xE7A2007C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x16C",
+      "expected": "0xE7A20088",
+      "replacement": "0xE7A20084",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x188",
+      "expected": "0xAFA30028",
+      "replacement": "0xAFA30024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x194",
+      "expected": "0x8FA30028",
+      "replacement": "0x8FA30024",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1A8",
+      "expected": "0x3C010000",
+      "replacement": "0x01A37825",
+      "expected_relocations": "R_MIPS_HI16:D_8009FDA0",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1AC",
+      "expected": "0xC42A0000",
+      "replacement": "0x3C010000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FDA0",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FDA0",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1B0",
+      "expected": "0x01A37025",
+      "replacement": "0xC42A0000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FDA0",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1B4",
+      "expected": "0x35CFC000",
+      "replacement": "0x35F8C000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1B8",
+      "expected": "0x2418000A",
+      "replacement": "0x2419000A",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1BC",
+      "expected": "0x2419FFFF",
+      "replacement": "0x2408FFFF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1C0",
+      "expected": "0x2408001C",
+      "replacement": "0x2409001C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1C4",
+      "expected": "0x24090009",
+      "replacement": "0x240A0009",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1C8",
+      "expected": "0x240A0019",
+      "replacement": "0x240B0019",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1CC",
+      "expected": "0x240BFFFF",
+      "replacement": "0x240CFFFF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1D0",
+      "expected": "0x240C0001",
+      "replacement": "0x240D0001",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1D4",
+      "expected": "0xAFAF008C",
+      "replacement": "0xAFB80088",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1D8",
+      "expected": "0xA3B80096",
+      "replacement": "0xA3B90092",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1DC",
+      "expected": "0xA3B90097",
+      "replacement": "0xA3A80093",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1E0",
+      "expected": "0xA7A80052",
+      "replacement": "0xA7A9004E",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1E4",
+      "expected": "0xA7A90054",
+      "replacement": "0xA7AA0050",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1E8",
+      "expected": "0xA7AA0056",
+      "replacement": "0xA7AB0052",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1EC",
+      "expected": "0xA3AB0098",
+      "replacement": "0xA3AC0094",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1F0",
+      "expected": "0xA3A00099",
+      "replacement": "0xA3A00095",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1F4",
+      "expected": "0xAFAC0010",
+      "replacement": "0xAFAD0010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x1F8",
+      "expected": "0x27A40034",
+      "replacement": "0x27A40030",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E4070",
+      "function": "func_150B879C",
+      "offset": "0x20C",
+      "expected": "0xE7AA0058",
+      "replacement": "0xE7AA0054",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize proved menu radial private homes and closed compiler schedule/register roles",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "bound_source_words": [
+    666763096,
+    2948530204,
+    2946760872,
+    2946826412,
+    2946891952,
+    2946957492,
+    1006731274,
+    3290758540,
+    1008205856,
+    604897321,
+    604966403,
+    924319749,
+    2746089553,
+    2813263932,
+    2948071476,
+    2946498616,
+    222475912,
+    3886284964,
+    811139087,
+    656932889,
+    604569776,
+    604635296,
+    604700714,
+    604766272,
+    604831755,
+    604897386,
+    604963071,
+    2812805182,
+    2946498624,
+    2946498628,
+    2745761868,
+    2745827405,
+    2745892942,
+    2745958472,
+    2746024009,
+    2746089546,
+    222475912,
+    2746155083,
+    604045383,
+    4259867,
+    49168,
+    655949884,
+    604504319,
+    604569603,
+    604635139,
+    2746810447,
+    2745696336,
+    2745761940,
+    222475930,
+    2745827477,
+    1006731274,
+    3290889616,
+    1006731274,
+    3291151764,
+    1174798850,
+    1006731274,
+    3291676056,
+    1149243392,
+    3349414064,
+    3349545140,
+    3886153840,
+    1175077888,
+    3349676216,
+    3886284900,
+    3886153844,
+    1175618306,
+    3886153848,
+    3886415976,
+    3886547052,
+    3886809180,
+    222475930,
+    3886809184,
+    1006715674,
+    1149325312,
+    1006715725,
+    1149341696,
+    1175061506,
+    1006731274,
+    3290889628,
+    2275672266,
+    665190524,
+    665256068,
+    1175617792,
+    1174807042,
+    1141194752,
+    222629405,
+    0,
+    1149243392,
+    0,
+    3886153856,
+    222475912,
+    3886153864,
+    810221569,
+    291504131,
+    6181,
+    268435457,
+    604176448,
+    222475912,
+    2946695208,
+    810287105,
+    293601283,
+    2409824296,
+    268435458,
+    604110976,
+    4133,
+    877465093,
+    1006731274,
+    3291151776,
+    27488293,
+    902807552,
+    605552650,
+    605683711,
+    604504092,
+    604569609,
+    604635161,
+    604766207,
+    604766209,
+    2947481740,
+    2746744982,
+    2746810519,
+    2812805202,
+    2812870740,
+    2812936278,
+    2745893016,
+    2745172121,
+    2947285008,
+    665059380,
+    604307457,
+    604372996,
+    2477195491,
+    222609629,
+    3886678104,
+    272629764,
+    608436392,
+    665125028,
+    201362352,
+    604372996,
+    604110849,
+    2411659292,
+    666697896,
+    65011720,
+    0
+  ]
+}
