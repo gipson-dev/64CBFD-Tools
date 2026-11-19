@@ -8,7 +8,7 @@ class NearestHeightRecoveryTests(unittest.TestCase):
     def setUpClass(cls):cls.prepared=source.prepare()
     def receipt(self,name,value):(self.prepared['out']/(name+'.json')).write_text(json.dumps(value,indent=2)+'\n')
     def test_01_complete_owner_profile_frozen_inputs_and_corruption_gates(self):
-        p=self.prepared;r=p['report'];self.assertEqual((r['body_words'],r['frame'],r['real_word_differences'],r['unchanged_raw_neighbors']),(272,224,137,4))
+        p=self.prepared;r=p['report'];self.assertEqual((r['body_words'],r['frame'],r['real_word_differences'],r['unchanged_raw_neighbors']),(272,224,121,4))
         self.assertFalse(r['source_installed']);self.assertEqual(r['matching_credit'],0)
         for i in range(1088):
             wrong=bytearray(p['raw']);wrong[i]^=1
@@ -19,4 +19,9 @@ class NearestHeightRecoveryTests(unittest.TestCase):
     def test_02_complete_independent_guest_contract_and_effective_controls(self):self.receipt('guest-contract',guest.guest_checks(self.prepared))
     def test_03_actual_native32_private_C_and_effective_controls(self):self.receipt('native-contract',native.native_checks(self.prepared['out']))
     def test_04_original_caller_float_ABI_and_height_clamp(self):self.receipt('original-caller',guest.caller_checks(self.prepared))
+    def test_05_all_word_ordered_effects_and_loop_register_relation(self):
+        from tools.tests.game_nearest_height_15104634_relation import qualify
+        self.receipt('register-relation',qualify(self.prepared))
+    def test_06_full_query_capacity_and_original_overflow_boundary(self):
+        self.receipt('capacity-boundary',guest.capacity_checks(self.prepared))
 if __name__=='__main__':unittest.main()

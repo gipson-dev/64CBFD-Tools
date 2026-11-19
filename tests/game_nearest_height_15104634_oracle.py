@@ -32,6 +32,8 @@ class Case:
 def cases():
     for n,shape,target in itertools.product((-1,0,1,2,3,4,5,7,8,9,12,16,20,24),range(5),(0,0x80000000,0x42F68000,0x7FC12345)):
         yield Case(count=n,shape=shape,height_pattern=shape%3,target=target)
+    for n,shape,target in itertools.product((25,26,27,29,30,31,39),(1,2,5,6),(0,0x42F68000,0x7FC12345)):
+        yield Case(count=n,shape=shape,target=target,height_pattern=2)
     for target,height_pattern in itertools.product((0x7F800000,0xFF800000,0x4B000000,0xCB000000,1,0x80000001),range(4)):
         yield Case(target=target,height_pattern=height_pattern)
     for mutation,stages in itertools.product(range(1,32),(1,2,3)):
@@ -44,13 +46,13 @@ def initial_height(c,i):
     return u32((i-12)*257 if c.height_pattern==0 else(-256 if i%2==0 else 256)if c.height_pattern==1 else
                (0x7FFFFFFF,0x80000000,0x12345678,0xEDCBA988)[i%4]if c.height_pattern==2 else(24-i)*1000000)
 def triangle(c,i):
-    kind=i%3 if c.shape==3 else c.shape
+    kind=(0 if i<24 else 1)if c.shape==5 else(0 if i%2==0 else 1)if c.shape==6 else i%3 if c.shape==3 else c.shape
     return((0,0),(0,100),(100,0))if kind==0 else((0,0),(100,0),(0,100))if kind==1 else((0,0),(0,0),(0,0))if kind==2 else((-32768,-32768),(-32768,32767),(32767,-32768))
 def fixture(c):
     m={STACK+i:(i*17+0xA5)&255 for i in range(-1024,1024)}
-    for base,n in((TABLE,24*16),(OFFSETS,24*12),(VERTICES,24*64),(OUTPUT,40),(ACTOR,0x32C)):
+    for base,n in((TABLE,40*16),(OFFSETS,40*12),(VERTICES,40*64),(OUTPUT,40),(ACTOR,0x32C)):
         m.update({base+i:(i*29+0x5A)&255 for i in range(n)})
-    for i in range(24):
+    for i in range(40):
         put(m,TABLE+i*16,initial_height(c,i));put(m,TABLE+i*16+4,OFFSETS+i*12);put(m,TABLE+i*16+8,VERTICES+i*64)
         for j,(x,z)in enumerate(triangle(c,i)):
             put(m,OFFSETS+i*12+j*4,j*16);put(m,VERTICES+i*64+j*16,x,2);put(m,VERTICES+i*64+j*16+4,z,2)
@@ -58,7 +60,7 @@ def fixture(c):
     put(m,ACTOR+0x14,c.x);put(m,ACTOR+0x18,c.target);put(m,ACTOR+0x1C,c.z);return m
 def fields(m):
     result=[]
-    for i in range(24):
+    for i in range(40):
         result.append(read(m,TABLE+i*16))
         for j in range(3):result.extend((read(m,VERTICES+i*64+j*16,2),read(m,VERTICES+i*64+j*16+4,2)))
     return tuple(result)
@@ -68,7 +70,7 @@ def effect(m,c,stage,home):
         for j in range(3):
             p=VERTICES+j*16;x=read(m,p,2);z=read(m,p+4,2);put(m,p,z,2);put(m,p+4,x,2)
     if flags&2:
-        for i in range(24):put(m,TABLE+i*16,read(m,TABLE+i*16)^0x80000080)
+        for i in range(40):put(m,TABLE+i*16,read(m,TABLE+i*16)^0x80000080)
     if flags&4:put(m,BOUND,0x7FC22222 if stage else 0xBF800000)
     if flags&8:put(m,home+4,bits(31.75+stage))
     if flags&16:put(m,home+12,ALT)
@@ -153,3 +155,33 @@ def caller_checks(p):
             assert m.r[29]==STACK+c.phase and m.r[16]==ACTOR and m.f[20:24]==m.before_f[20:24]
         count+=1
     return dict(original_window_words=21,scenarios=count,streams=2,F12_F14_A2_A3_checked=True,actor_height_clamp_checked=True,full_parent_or_hardware_claim=False)
+
+class AlignmentBoundary(Exception):pass
+class CheckedAlignmentOracle(Oracle):
+    def get(self,p,n):
+        if self.own_instruction and n>1 and p%n:raise AlignmentBoundary(('read',p,n))
+        return super().get(p,n)
+    def put(self,p,v,n):
+        if self.recording and self.own_instruction and n>1 and p%n:raise AlignmentBoundary(('write',p,n))
+        return super().put(p,v,n)
+
+def capacity_checks(prepared):
+    rows=[]
+    for count in range(25,40):
+        c=Case(count=count,shape=0);initial=fixture(c);results=[]
+        for words in (prepared['truth'],prepared['words']):
+            machine=CheckedAlignmentOracle(words,initial,c)
+            try:machine.run();boundary=('returned',machine.r[2])
+            except AlignmentBoundary as e:boundary=('alignment',*e.args[0])
+            results.append((boundary,machine.trace,machine.memory,machine.calls))
+        assert results[0]==results[1],('overflow emitted-code relation',count)
+        boundary=results[0][0]
+        if count<=29:assert boundary==('returned',1)
+        else:assert boundary==('alignment','write',29,4)
+        rows.append(dict(query_count=count,accepted_count=count,outcome=boundary,
+            original_output_home_after=read(results[0][2],STACK+12),ordered_accesses=len(results[0][1])))
+    return dict(rows=rows,paired_machine_streams=2,first_output_home_overwrite_at_accepted_count=30,
+        array_entries=24,physical_frame_words_before_incoming_homes=26,
+        native_overflow_executed=False,portable_C_capacity_or_original_declared_length_proved=False,
+        defined_native_cases_include_query39_with_at_most24_accepted=True,
+        raw_temporary_register_dump_or_hardware_fault_claim=False)

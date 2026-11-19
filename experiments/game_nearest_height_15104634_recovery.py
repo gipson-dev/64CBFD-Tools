@@ -28,7 +28,7 @@ def prepare():
     truth=list(struct.unpack_from('>272I',(ROOT/'conker/conker.us.bin').read_bytes(),ROM));assert len(words)==272 and (-words[0])&65535==224
     assert words[:10]==truth[:10]and same_functions(before,after,(FUNCTION,))==4 and normalized_pools(before)==normalized_pools(after)
     assert [(w&65535)for w in words if w>>26==9 and w>>21&31==29 and w>>16&31!=29 and 0<(w&65535)<224]==[(w&65535)for w in truth if w>>26==9 and w>>21&31==29 and w>>16&31!=29 and 0<(w&65535)<224]
-    differences=sum(a!=b for a,b in zip(words,truth));assert differences==137
+    differences=sum(a!=b for a,b in zip(words,truth));assert differences==121
     report=dict(body_words=272,slot_words=275,frame=224,real_word_differences=differences,unchanged_raw_neighbors=4,diagnostics=0,
         saved_F20_F22_opening_exact=True,private_array_bases=[0x60,0x6C,0x78],candidate_capacity=24,profile='existing O2/g3',
         frozen_inputs=len(SPEC['predecessor']['inputs']),source_installed=False,matching_credit=0,raw_sha256=sha(raw),
