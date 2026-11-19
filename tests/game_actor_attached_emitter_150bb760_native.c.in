@@ -1,0 +1,33 @@
+#include <ultra64.h>
+@DECLARATIONS@
+typedef struct {
+    s32 active; u8 type, reserved05[15]; f32 x,y,z;
+    u8 reserved20[0x1B], channel; f32 motion;
+    u8 reserved40[0x36]; u16 heading; u8 reserved78[0x6C];
+    s16 width,height; u8 reservedE8[0xEC]; s32 model; u8 tail[0x28];
+} NativeActor;
+_Static_assert(sizeof(void*)==4&&sizeof(ActorEmitterDescriptorE8C10)==124&&sizeof(NativeActor)==512&&__builtin_offsetof(NativeActor,model)==0x1D4&&__builtin_offsetof(NativeActor,width)==0xE4,"SDK32 actor and descriptor");
+typedef union{u32 word;f32 value;} FloatWord;
+static u32 word(f32 v){FloatWord x;x.value=v;return x.word;}
+static f32 real(u32 v){FloatWord x;x.word=v;return x.value;}
+f32 D_8009FE94,D_8009FE98,D_8009FE9C,D_8009FEA0,D_8009FEA4;
+static f32 *globals[5]={&D_8009FE94,&D_8009FE98,&D_8009FE9C,&D_8009FEA0,&D_8009FEA4};
+static NativeActor native_actor;
+static u8 output[512];
+static const u8 *reader;extern const u8 fixture_rows[],fixture_end[];
+static u32 case_index,check_index,wanted_value,actual_value,seed,heading,gate,success,mutation,ri,fi,si,events_left;
+static void die(void)__attribute__((noreturn));
+static void die(void){char msg[36];u32 v[4]={case_index,check_index,wanted_value,actual_value},i,j;for(i=0;i<4;i++){for(j=0;j<8;j++)msg[i*9+j]="0123456789abcdef"[(v[i]>>(28-4*j))&15];msg[i*9+8]=i==3?'\n':' ';}__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(msg),"d"(36):"memory");__asm__ volatile("int $0x80"::"a"(1),"b"(3):"memory");__builtin_unreachable();}
+static u32 next(void){u32 v;if(reader+4>fixture_end)die();v=(u32)reader[0]|((u32)reader[1]<<8)|((u32)reader[2]<<16)|((u32)reader[3]<<24);reader+=4;return v;}
+static void check(u32 v){wanted_value=next();actual_value=v;check_index++;if(wanted_value!=actual_value)die();}
+static u32 unspecified(u32 i){return(i>=0x59&&i<0x5c)||i==0x69||i==0x6b||i==0x71||(i>=0x76&&i<0x7c);}
+static u32 actor_offset(u32 i){if(i<4||(i>=0x14&&i<0x20)||(i>=0x3c&&i<0x40)||(i>=0x1d4&&i<0x1d8))return(i&~3u)+(3u-(i&3u));if((i>=0x76&&i<0x78)||(i>=0xe4&&i<0xe8))return(i&~1u)+(1u-(i&1u));return i;}
+static u32 descriptor_byte(const u8*p,u32 i){u32 at=i;if(unspecified(i))return 0;if(i<0x54||(i>=0x5c&&i<0x60)||(i>=0x6c&&i<0x70))at=(i&~3u)+(3u-(i&3u));else if((i>=0x54&&i<0x58)||(i>=0x72&&i<0x76))at=(i&~1u)+(1u-(i&1u));if(i>=0x6c&&i<0x70){if(p[at]!=(((u32)&native_actor)>>(8*(3-(i&3)))&255))die();return(0x10000u>>(8*(3-(i&3))))&255;}return p[at];}
+static void event(u32 t,u32 n,const u32*a,const u8*d){u32 i;if(!events_left--)die();check(t);check(n);for(i=0;i<n;i++)check(a[i]);check(d?124:0);if(d)for(i=0;i<124;i++)check(descriptor_byte(d,i));}
+static void effect(u32 t,u32 index){u32 i;if(mutation&1){if(t==0x151423d8&&index==0){native_actor.heading=0xa531;native_actor.width=-19;native_actor.height=23;}if(t==0x150ada20&&index==1)native_actor.heading=0x7b19;}if(mutation&2){if(t==0x151423d8&&index==1){native_actor.motion=4.25f;native_actor.channel=17;}if(t==0x150ada68&&(index==2||index==3))for(i=0;i<5;i++)*globals[i]=(i+1)*(index==2?1.5f:-1.25f);if(t==0x150ada68&&index==7){native_actor.x=123.5f;native_actor.y=456.25f;native_actor.z=-789.75f;native_actor.height=77;}if(t==0x15132a4c){native_actor.motion=-19.f;native_actor.channel=99;D_8009FEA4=-8.5f;}}}
+s32 func_150ADA20(void){static const u32 values[12]={0,0xffffffffu,0x80000000u,0x7fffffffu,31,32,63,64,127,128,255,0x12345678};u32 answer;if(ri>=3)die();answer=values[(seed+3*ri)%12];event(0x150ada20,0,0,0);effect(0x150ada20,ri++);return(s32)answer;}
+f32 func_150ADA68(void){static const f32 values[7]={0.,-0.,.125f,.5f,1.f,-.5f,1.25f};f32 answer;if(fi>=12)die();answer=values[(seed+3*fi)%7];event(0x150ada68,0,0,0);effect(0x150ada68,fi++);return answer;}
+f32 func_151423D8(u8 a){u32 args[1]={a};f32 answer;if(si>=6)die();answer=(a==0&&(seed&1))?-0.f:((s32)(a^128)-128)/128.f;event(0x151423d8,1,args,0);effect(0x151423d8,si++);return answer;}
+void *func_15132A4C(void*p,s32 resource,s32 value,s32 extra,u8 channel,s32 context){u32 i,a[6]={0xffff0010,(u32)resource,(u32)value,(u32)extra,channel,(u32)context};event(0x15132a4c,6,a,p);if(success)for(i=0;i<124;i++)output[16+i]=((const u8*)p)[i];effect(0x15132a4c,0);return success?output:0;}
+@BODY@
+__attribute__((force_align_arg_pointer)) void _start(void){u32 total,i,j,value;u8 *actor_bytes=(u8*)&native_actor;reader=fixture_rows;total=next();for(i=0;i<total;i++){case_index=i;check_index=0;seed=next();heading=next();gate=next();success=next();mutation=next();for(j=0;j<5;j++)*globals[j]=real(next());for(j=0;j<512;j++)actor_bytes[actor_offset(j)]=(u8)next();events_left=next();ri=fi=si=0;for(j=0;j<512;j++)output[j]=(u8)(j*11+seed*7+7);(void)func_150BB760(actor_bytes);if(events_left||(gate==3?(ri!=3||fi!=12||si!=6):(ri||fi||si)))die();for(j=0;j<5;j++)check(word(*globals[j]));for(j=0;j<512;j++)check(actor_bytes[actor_offset(j)]);for(j=0;j<512;j++){value=output[j];if(gate==3&&success&&j>=16&&j<140)value=descriptor_byte(output+16,j-16);check(value);}}if(reader!=fixture_end)die();__asm__ volatile("int $0x80"::"a"(1),"b"(0):"memory");__builtin_unreachable();}

@@ -1,0 +1,1300 @@
+{
+  "name": "func_150BB760",
+  "source": "conker/src/game/generated_E8C10.c",
+  "asm": "conker/asm/E8C10.s",
+  "entry": 353089376,
+  "rom": 953360,
+  "size": 1020,
+  "body_words": 255,
+  "raw_words": 254,
+  "slot_words": 255,
+  "frame": 248,
+  "frozen_inputs": 1849,
+  "baseline_manifest_sha256": "f7880f1bf4fd90e8f5905b4cc1841b73fb0235eb9957b09d9cff9a7bdf87d672",
+  "body": "/* Emit an attached particle using cached actor dimensions and heading. */\n/* The known caller ignores the result; retail falls through after the factory. */\ns32 func_150BB760(u8 *actor) {\n    ActorEmitterDescriptorE8C10 descriptor;\n    f32 width;\n    f32 height;\n    f32 headingSine;\n    f32 sample;\n    f32 driftX;\n    f32 driftZ;\n    u8 angle;\n    f32 radialSine;\n    f32 radialCosine;\n    f32 radius;\n    f32 offsetX;\n    f32 offsetZ;\n    u8 spreadAngle;\n    f32 spreadSine;\n    f32 spreadCosine;\n    f32 speed;\n    f32 velocityX;\n    f32 velocityZ;\n    f32 firstSize;\n\n    /* This type read deliberately precedes the retail null check. */\n    if (actor[4] != 32) return 1;\n    if (actor != 0 && *(s32 *)actor != 0 && *(s32 *)(actor + 0x1D4) != 0) {\n        width = *(s16 *)(actor + 0xE4);\n        height = *(s16 *)(actor + 0xE6);\n        headingSine = func_151423D8((u8)(*(u16 *)(actor + 0x76) >> 8));\n        sample = func_151423D8((u8)((*(u16 *)(actor + 0x76) >> 8) + 64));\n        driftX = (*(f32 *)(actor + 0x3C) * headingSine) * 0.5f;\n        driftZ = (*(f32 *)(actor + 0x3C) * sample) * 0.5f;\n        descriptor.resource = 1;\n        descriptor.flags = 0x29E9;\n        descriptor.field58 = 0;\n        descriptor.field5C = 0;\n        descriptor.field60 = 255;\n        descriptor.field61 = 1;\n        descriptor.field62 = 0;\n        descriptor.field63 = 2;\n        descriptor.field64 = 0;\n        descriptor.field65 = 0;\n        descriptor.field66 = 0;\n        descriptor.field67 = 0;\n        descriptor.field68 = 0;\n        descriptor.field6A = 1;\n        descriptor.owner = actor;\n        descriptor.scale[0] = 1.0f;\n        descriptor.scale[1] = 1.0f;\n        descriptor.scale[2] = 1.0f;\n        descriptor.field48 = 0.0f;\n        descriptor.field4C = -1.0f;\n        descriptor.field70 = actor[0x3B];\n        descriptor.field72 = 32;\n        descriptor.field74 = 7;\n        angle = func_150ADA20();\n        radialSine = func_151423D8(angle);\n        radialCosine = func_151423D8((u8)(angle - 64));\n        radius = func_150ADA68() * width;\n        offsetX = radialSine * radius;\n        offsetZ = -radialCosine * radius;\n        angle = func_150ADA20();\n        spreadAngle = (*(u16 *)(actor + 0x76) >> 8) - (angle & 63U) - 32U;\n        spreadSine = func_151423D8(spreadAngle);\n        spreadCosine = func_151423D8((u8)(spreadAngle - 64));\n        speed = func_150ADA68() * 5.0f + 3.0f;\n        velocityX = spreadCosine * speed;\n        velocityZ = spreadSine * speed;\n        firstSize = func_150ADA68() * D_8009FE94 + D_8009FE98;\n        /* The earlier heading sample is dead; reuse its scalar for the second size. */\n        sample = func_150ADA68() * D_8009FE9C + D_8009FEA0;\n        descriptor.field08 = firstSize;\n        descriptor.field0C = sample;\n        descriptor.field00 = (firstSize + sample) * 0.5f;\n        descriptor.rotation[0] = func_150ADA68() * 360.0f;\n        descriptor.rotation[1] = func_150ADA68() * 360.0f;\n        descriptor.rotation[2] = func_150ADA68() * 360.0f;\n        descriptor.position[0] = *(f32 *)(actor + 0x14) + offsetX;\n        radius = func_150ADA68();\n        descriptor.position[1] = (radius * height + *(f32 *)(actor + 0x18)) + 4.0f;\n        descriptor.position[2] = *(f32 *)(actor + 0x1C) + offsetZ;\n        descriptor.velocity[0] = velocityX + driftX;\n        descriptor.velocity[1] = func_150ADA68() * 5.0f + 3.0f;\n        descriptor.velocity[2] = velocityZ + driftZ;\n        descriptor.field40 = 25.0f - func_150ADA68() * 50.0f;\n        descriptor.field44 = 25.0f - func_150ADA68() * 50.0f;\n        descriptor.duration = ((u32)func_150ADA20() & 31U) + 60U;\n        descriptor.field04 = func_150ADA68() * D_8009FEA4 + 0.25f;\n        func_15132A4C(&descriptor, 3, 255, 0, 255, 0);\n    }\n}\n",
+  "declarations": "/* The factory consumes all 124 bytes, including the untouched reserved bytes. */\ntypedef struct {\n    f32 field00, field04, field08, field0C;\n    f32 rotation[3], scale[3], position[3], velocity[3];\n    f32 field40, field44, field48, field4C;\n    u32 flags;\n    s16 duration;\n    u16 resource;\n    u8 field58, retained59[3];\n    u32 field5C;\n    u8 field60, field61, field62, field63, field64, field65, field66, field67, field68;\n    u8 retained69, field6A, retained6B;\n    void *owner;\n    u8 field70, retained71;\n    s16 field72, field74;\n    u8 retained76[6];\n} ActorEmitterDescriptorE8C10;\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nf32 func_151423D8(u8);\nvoid *func_15132A4C(void *, s32, s32, s32, u8, s32);\nextern f32 D_8009FE94, D_8009FE98, D_8009FE9C, D_8009FEA0, D_8009FEA4;\n",
+  "raw_sha256": "416cac829340d26f4e7313ba8c8de93fa5ddfb95c56d2d8caaf260eda436d443",
+  "retail_unbound_sha256": "13c31758f2798c7e48590af3424ade35f26ed38d9846a62888625c0d8d2f5d5f",
+  "refs": {
+    "120": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "352": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "376": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "384": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "428": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "460": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "484": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "492": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "548": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "556": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE94"
+      ]
+    ],
+    "560": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE94"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE98"
+      ]
+    ],
+    "568": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE98"
+      ]
+    ],
+    "580": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "588": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE9C"
+      ]
+    ],
+    "592": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE9C"
+      ]
+    ],
+    "596": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEA0"
+      ]
+    ],
+    "600": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEA0"
+      ]
+    ],
+    "640": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "664": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "688": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "792": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "840": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "876": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "912": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "928": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "936": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEA4"
+      ]
+    ],
+    "940": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEA4"
+      ]
+    ],
+    "988": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ]
+  },
+  "retail_refs": {
+    "120": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "344": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "356": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "380": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "464": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "488": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "552": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "560": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE94"
+      ]
+    ],
+    "564": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE94"
+      ]
+    ],
+    "568": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE98"
+      ]
+    ],
+    "572": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE98"
+      ]
+    ],
+    "584": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "592": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE9C"
+      ]
+    ],
+    "596": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE9C"
+      ]
+    ],
+    "600": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEA0"
+      ]
+    ],
+    "604": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEA0"
+      ]
+    ],
+    "644": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "668": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "692": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "728": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "796": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "844": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "880": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "916": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "932": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "940": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEA4"
+      ]
+    ],
+    "944": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEA4"
+      ]
+    ],
+    "992": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x20",
+      "expected": "0x100000F0",
+      "replacement": "0x100000F1",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Retarget forward branch across independent call-delay expansion",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x28",
+      "expected": "0x520000EF",
+      "replacement": "0x520000F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Retarget forward branch across independent call-delay expansion",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x34",
+      "expected": "0x51E000EC",
+      "replacement": "0x51E000ED",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Retarget forward branch across independent call-delay expansion",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x40",
+      "expected": "0x530000E9",
+      "replacement": "0x530000EA",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Retarget forward branch across independent call-delay expansion",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x154",
+      "expected": "0x0C000000",
+      "replacement": "0xA3A900EC",
+      "expected_relocations": "R_MIPS_26:func_150ADA20",
+      "replacement_relocations": "-",
+      "note": "Restore independent descriptor byte store and empty call delay",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x158",
+      "expected": "0xA3A900EC",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA20",
+      "note": "Restore independent descriptor byte store and empty call delay",
+      "insert_after": "0x00000000",
+      "insert_after_relocations": "-",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x1b8",
+      "expected": "0x3058003F",
+      "replacement": "0x304F003F",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x1c0",
+      "expected": "0x01D82823",
+      "replacement": "0x01CF2823",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x1c4",
+      "expected": "0x24B9FFE0",
+      "replacement": "0x24B8FFE0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x1c8",
+      "expected": "0x332400FF",
+      "replacement": "0x330400FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x1d0",
+      "expected": "0xA3B9004B",
+      "replacement": "0xA3B8004B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x1e0",
+      "expected": "0x308800FF",
+      "replacement": "0x309900FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x1e8",
+      "expected": "0x01002025",
+      "replacement": "0x03202025",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x2dc",
+      "expected": "0xC7A60074",
+      "replacement": "0xC7A40074",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x2e0",
+      "expected": "0xC6040018",
+      "replacement": "0xC6080018",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x2e8",
+      "expected": "0x46060202",
+      "replacement": "0x46040182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x2f0",
+      "expected": "0x46082280",
+      "replacement": "0x46083280",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x2f4",
+      "expected": "0xC7A4004C",
+      "replacement": "0xC7A6004C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x308",
+      "expected": "0xC606001C",
+      "replacement": "0xC604001C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x310",
+      "expected": "0x46043200",
+      "replacement": "0x46062200",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x324",
+      "expected": "0x44813000",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x330",
+      "expected": "0x46060102",
+      "replacement": "0x46040182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x33c",
+      "expected": "0x46128180",
+      "replacement": "0x46128100",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x340",
+      "expected": "0x46082280",
+      "replacement": "0x46083280",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x344",
+      "expected": "0xE7A600B8",
+      "replacement": "0xE7A400B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x354",
+      "expected": "0x44812000",
+      "replacement": "0x44813000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x368",
+      "expected": "0x460A2401",
+      "replacement": "0x460A3401",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x380",
+      "expected": "0x44813000",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x388",
+      "expected": "0x46060202",
+      "replacement": "0x46040202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x38c",
+      "expected": "0x46089101",
+      "replacement": "0x46089181",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x394",
+      "expected": "0xE7A400C0",
+      "replacement": "0xE7A600C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x398",
+      "expected": "0x3049001F",
+      "replacement": "0x3048001F",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x39c",
+      "expected": "0x252A003C",
+      "replacement": "0x2509003C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x3a4",
+      "expected": "0xA7AA00D0",
+      "replacement": "0xA7A900D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x3b4",
+      "expected": "0x44813000",
+      "replacement": "0x44812000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x3bc",
+      "expected": "0x240B00FF",
+      "replacement": "0x240A00FF",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x3c0",
+      "expected": "0xAFAB0010",
+      "replacement": "0xAFAA0010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8C10",
+      "function": "func_150BB760",
+      "offset": "0x3d4",
+      "expected": "0x46068480",
+      "replacement": "0x46048480",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve proved temporary register values and commutative floating add",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "normalizer_proof": {
+    "guards": [
+      {
+        "offset": 32,
+        "expected": 268435696,
+        "replacement": 268435697,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 40,
+        "expected": 1375731951,
+        "replacement": 1375731952,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 52,
+        "expected": 1373634796,
+        "replacement": 1373634797,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 64,
+        "expected": 1392509161,
+        "replacement": 1392509162,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 340,
+        "expected": 201326592,
+        "replacement": 2745762028,
+        "expected_relocations": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 344,
+        "expected": 2745762028,
+        "replacement": 201326592,
+        "expected_relocations": [],
+        "replacement_relocations": [
+          [
+            "R_MIPS_26",
+            "func_150ADA20"
+          ]
+        ],
+        "insert_after": 0
+      },
+      {
+        "offset": 440,
+        "expected": 811073599,
+        "replacement": 810483775,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 448,
+        "expected": 30943267,
+        "replacement": 30353443,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 452,
+        "expected": 616169440,
+        "replacement": 616103904,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 456,
+        "expected": 857997567,
+        "replacement": 855900415,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 464,
+        "expected": 2746810443,
+        "replacement": 2746744907,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 480,
+        "expected": 814219519,
+        "replacement": 815333631,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 488,
+        "expected": 16785445,
+        "replacement": 52437029,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 732,
+        "expected": 3349545076,
+        "replacement": 3349414004,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 736,
+        "expected": 3322150936,
+        "replacement": 3322413080,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 744,
+        "expected": 1174798850,
+        "replacement": 1174667650,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 752,
+        "expected": 1174938240,
+        "replacement": 1174942336,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 756,
+        "expected": 3349413964,
+        "replacement": 3349545036,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 776,
+        "expected": 3322282012,
+        "replacement": 3322150940,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 784,
+        "expected": 1174680064,
+        "replacement": 1174807040,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 804,
+        "expected": 1149317120,
+        "replacement": 1149313024,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 816,
+        "expected": 1174798594,
+        "replacement": 1174667650,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 828,
+        "expected": 1175617920,
+        "replacement": 1175617792,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 832,
+        "expected": 1174938240,
+        "replacement": 1174942336,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 836,
+        "expected": 3886416056,
+        "replacement": 3886284984,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 852,
+        "expected": 1149313024,
+        "replacement": 1149317120,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 872,
+        "expected": 1175069697,
+        "replacement": 1175073793,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 896,
+        "expected": 1149317120,
+        "replacement": 1149313024,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 904,
+        "expected": 1174798850,
+        "replacement": 1174667778,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 908,
+        "expected": 1174966529,
+        "replacement": 1174966657,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 916,
+        "expected": 3886284992,
+        "replacement": 3886416064,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 920,
+        "expected": 810090527,
+        "replacement": 810024991,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 924,
+        "expected": 623509564,
+        "replacement": 621346876,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 932,
+        "expected": 2812936400,
+        "replacement": 2812870864,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 948,
+        "expected": 1149317120,
+        "replacement": 1149313024,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 956,
+        "expected": 604700927,
+        "replacement": 604635391,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 960,
+        "expected": 2947219472,
+        "replacement": 2947153936,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      },
+      {
+        "offset": 980,
+        "expected": 1174832256,
+        "replacement": 1174701184,
+        "expected_relocations": [],
+        "replacement_relocations": [],
+        "insert_after": null
+      }
+    ],
+    "insertions": 1,
+    "omissions": 0,
+    "float_register_words": [
+      736,
+      740,
+      748,
+      756,
+      760,
+      780,
+      788,
+      808,
+      820,
+      832,
+      836,
+      840,
+      856,
+      876,
+      900,
+      908,
+      912,
+      920,
+      952,
+      984
+    ],
+    "integer_register_words": [
+      444,
+      452,
+      456,
+      460,
+      468,
+      484,
+      492,
+      924,
+      928,
+      936,
+      960,
+      964
+    ],
+    "commutative_add_word": 756,
+    "closed_branch_updates": [
+      32,
+      40,
+      52,
+      64
+    ],
+    "all_stored_float_values_proven": true,
+    "all_integer_values_and_helper_arguments_proven": true,
+    "helper_FP_arguments": false
+  },
+  "metadata_groups": [
+    [
+      [
+        "D_8009FE9C",
+        "D_80096A9C"
+      ],
+      [
+        "D_80096A9C",
+        "D_8009FE9C"
+      ]
+    ],
+    [
+      [
+        "D_8009FEA0",
+        "D_800A02A0"
+      ],
+      [
+        "D_800A02A0",
+        "D_8009FEA0"
+      ]
+    ],
+    [
+      [
+        "D_8009FEA4",
+        "D_800A02A4"
+      ],
+      [
+        "D_800A02A4",
+        "D_8009FEA4"
+      ]
+    ]
+  ]
+}
