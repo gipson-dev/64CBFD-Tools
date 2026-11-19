@@ -1,0 +1,96 @@
+{
+  "name": "func_150BAA14",
+  "source": "conker/src/game/generated_E7970.c",
+  "asm": "conker/asm/E7970.s",
+  "entry": 353085972,
+  "rom": 949956,
+  "size": 460,
+  "body_words": 114,
+  "slot_words": 115,
+  "frame": 120,
+  "frozen_inputs": 1818,
+  "baseline_manifest_sha256": "904f3e1d367e09ecf511e81bcb44c2f59f318aaa42ba2d69310d8811ae701678",
+  "body": "/* Query an actor position, then submit the gated coordinate and angular effects. */\n/* Preserve the selector byte and the callback interface's unused third word. */\nvoid func_150BAA14(u8 *actor, s32 selector, s32 unused) {\n    f32 position[3];\n    HeightResult71820 surface;\n    s32 angle;\n    u8 hit;\n    u32 random;\n    f32 sample;\n\n    if (*(u32 *)(actor + 0x1D4) == 0) return;\n    hit = func_150BA930(position, actor, &surface, (u8)selector);\n    func_151D5404(position, 1307.0f, 2000.0f, 0.0005f, 12, 15, 255, 0);\n    func_15143E94(5, 0x4022);\n    if (hit != 0) {\n        angle = (s32)(D_800DBFF0[(u32)D_80082FA4].field380 * D_8009FE64);\n        func_15165F80(-1, (s32)position[0], (s32)(position[1] + 6.0f),\n                      (s32)position[2], 25, 18, 0, 255, 1);\n        sample = func_150ADA68();\n        random = (u32)func_150ADA20();\n        func_1514C678(position[0], position[1], position[2], sample * 50.0f + 40.0f,\n                     (s16)((u32)angle + 60U), (s16)((u32)angle - 60U),\n                     random % 11U + 30U, 5, 0, 0.0f, 0, 255);\n    }\n}\n",
+  "declarations": "/* Opaque 36-byte height-query output; its fields are not interpreted here. */\nstruct HeightResult71820 { u32 words[9]; };\ntypedef struct { u8 reserved[0x380]; f32 field380; u8 tail[0x61C]; } EffectAngleRecordE7970;\nextern EffectAngleRecordE7970 *D_800DBFF0;\nextern s32 D_80082FA4;\nextern f32 D_8009FE64;\nvoid func_151D5404(f32 *, f32, f32, f32, s32, s32, s32, s32);\nu8 func_15143E94(s32, s32);\ns32 func_15165F80(s32, s32, s32, s32, s32, s32, s32, u8, s32);\nvoid func_1514C678(f32, f32, f32, f32, s16, s16, s16, u8, s32, f32, void *, u8);\n",
+  "raw_sha256": "aaf8f739a501ecdcdc46b89b3e951580f361b1d837bfcaceb0377936dbcf5e3b",
+  "refs": {
+    "48": [
+      [
+        "R_MIPS_26",
+        "func_150BA930"
+      ]
+    ],
+    "108": [
+      [
+        "R_MIPS_26",
+        "func_151D5404"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_26",
+        "func_15143E94"
+      ]
+    ],
+    "132": [
+      [
+        "R_MIPS_HI16",
+        "D_800DBFF0"
+      ]
+    ],
+    "152": [
+      [
+        "R_MIPS_LO16",
+        "D_800DBFF0"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_HI16",
+        "D_80082FA4"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_LO16",
+        "D_80082FA4"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE64"
+      ]
+    ],
+    "156": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE64"
+      ]
+    ],
+    "296": [
+      [
+        "R_MIPS_26",
+        "func_15165F80"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "312": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_26",
+        "func_1514C678"
+      ]
+    ]
+  }
+}
