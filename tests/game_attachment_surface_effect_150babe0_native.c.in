@@ -1,0 +1,49 @@
+#include <ultra64.h>
+@DECLARATIONS@
+typedef union {u32 word;f32 value;} FloatWord;
+static u32 word(f32 v){FloatWord x;x.value=v;return x.word;}
+typedef struct {s32 active;u8 reserved04[0x17c];f32 height;u8 reserved184[0x50];s32 model;} NativeActor;
+static NativeActor actor;
+static EffectAngleRecordE8090 records[2][3];
+EffectAngleRecordE8090 *D_800DBFF0;
+s32 D_80082FA4;
+f32 D_8009FE70;
+static u8 queue[16],effect_record[64];
+u8 *D_80088750;
+static f32 *position,*probe;
+static EffectSurfaceE8090 *surface;
+static SurfaceEffectDescriptorE8090 *descriptor;
+static const u8 *reader;
+extern const u8 fixture_rows[],fixture_end[];
+static u32 case_index,check_index,wanted_value,actual_value,seed,hit,created,appended,mutation,calls,events_left,mark;
+static const f32 points[6][3]={{0.,-0.,0.},{-0.,0.,-0.},{17.75f,-91.5f,255.25f},{-17.75f,91.5f,-255.25f},{32768.5f,-32769.5f,65535.75f},{-65536.5f,1000000.25f,-1000000.25f}};
+static void die(void)__attribute__((noreturn));
+static void die(void){char msg[36];u32 v[4]={case_index,check_index,wanted_value,actual_value},i,j;for(i=0;i<4;i++){for(j=0;j<8;j++)msg[i*9+j]="0123456789abcdef"[(v[i]>>(28-4*j))&15];msg[i*9+8]=i==3?'\n':' ';}__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(msg),"d"(36):"memory");__asm__ volatile("int $0x80"::"a"(1),"b"(3):"memory");__builtin_unreachable();}
+static u32 next(void){u32 v;if(reader+4>fixture_end)die();v=(u32)reader[0]|((u32)reader[1]<<8)|((u32)reader[2]<<16)|((u32)reader[3]<<24);reader+=4;return v;}
+static void check(u32 v){wanted_value=next();actual_value=v;check_index++;if(wanted_value!=actual_value)die();}
+static u32 readword(const void *p){const u8 *b=p;return(u32)b[0]|((u32)b[1]<<8)|((u32)b[2]<<16)|((u32)b[3]<<24);}
+static void putword(void *p,u32 v){u8 *b=p;u32 i;for(i=0;i<4;i++)b[i]=(u8)(v>>(i*8));}
+static u32 pointer(const void *p){if(p==&actor)return 0x60000;if(p==effect_record)return 0xb0000;if(p==queue)return 0xc0000;return(u32)p;}
+/* Compare initialized descriptor fields in guest byte order; native padding
+ * and the seven untouched tail bytes remain unspecified. */
+static u32 descriptor_byte(u32 i){u32 at=i;if(i>=33)return 0;if(i<4||(i>=8&&i<16)||(i>=24&&i<32))at=(i&~3u)+(3u-(i&3u));else if(i>=4&&i<6)at=9-i;return((u8*)descriptor)[at];}
+static void event(u32 target,u32 n,const u32 *a){u32 i,j=0,obs[64];if(!events_left--)die();check(target);check(n);for(i=0;i<n;i++)check(a[i]);if(target==0x15046c80)for(i=0;i<3;i++)obs[j++]=word(probe[i]);if(target==0x1513c73c)for(i=0;i<40;i++)obs[j++]=descriptor_byte(i);if(position)for(i=0;i<3;i++)obs[j++]=target==0x15142314?0:word(position[i]);if(surface)for(i=0;i<9;i++)obs[j++]=target==0x1504715c?0:readword((u8*)surface+4*i);check(j);for(i=0;i<j;i++)check(obs[i]);}
+static void effect(u32 target){u32 n=calls++,i,b;if((mutation&1)&&position){for(i=0;i<3;i++)position[i]=((s32)seed-100)*.125f+n*.25f+i;actor.height=((s32)seed-100)*.125f+n*.25f+1;}if(mutation&2){D_800DBFF0=records[n&1];D_80082FA4=(seed+n)%3;D_8009FE70=n&1?.25f:-1.25f;for(b=0;b<2;b++)for(i=0;i<3;i++)records[b][i].field380=((s32)seed-128)*256.f+(n+1)*32.f+i*.125f;}if((mutation&4)&&surface){surface->height=-25.5f+n*.25f;for(i=1;i<9;i++)putword((u8*)surface+4*i,0xabcdef00u+n*0x010203u+i*0x070b11u+seed);}mark=0x13579bdfu+n*0x10203u+target;}
+void func_15142314(void *model,s32 index,f32 *p){u32 i,a[3]={pointer(model),(u32)index,0xffff0010};position=p;event(0x15142314,3,a);effect(0x15142314);for(i=0;i<3;i++)p[i]=points[seed%6][i];}
+u8 func_15143E94(s32 a,s32 b){u32 args[2]={(u32)a,(u32)b};event(0x15143e94,2,args);effect(0x15143e94);return(u8)((seed+calls-1)&1);}
+s32 func_15165F80(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 h,u8 i,s32 j){u32 args[9]={(u32)a,(u32)b,(u32)c,(u32)d,(u32)e,(u32)f,(u32)h,i,(u32)j};event(0x15165f80,9,args);effect(0x15165f80);return(s32)(0xdeadbeefu+calls-1);}
+f32 func_150ADA68(void){u32 n=calls;event(0x150ada68,0,0);effect(0x150ada68);return((seed*37+n*19)%257)/256.f;}
+s32 func_150ADA20(void){u32 n=calls;static const u32 values[8]={0,0xffffffffu,0x80000000u,0x7fffffffu,10,11,22,2001};event(0x150ada20,0,0);effect(0x150ada20);return(s32)values[(seed+n)%8];}
+void func_1514C678(f32 x,f32 y,f32 z,f32 size,s16 first,s16 last,s16 life,u8 kind,s32 zero,f32 realzero,void *null,u8 color){u32 args[12]={word(x),word(y),word(z),word(size),(u32)(s32)first,(u32)(s32)last,(u32)(s32)life,kind,(u32)zero,word(realzero),(u32)null,color};event(0x1514c678,12,args);effect(0x1514c678);}
+void func_1504715C(EffectSurfaceE8090 *s,void *a){u32 i,args[2]={0xffff0011,pointer(a)};surface=s;event(0x1504715c,2,args);effect(0x1504715c);s->height=-12.75f;for(i=1;i<9;i++)putword((u8*)s+4*i,0x12340000u+seed*0x10203u+i*0x112233u);}
+s32 func_15046C80(f32 *p,u16 zero,f32 low,EffectSurfaceE8090 *s){u32 args[4]={0xffff0012,zero,word(low),0xffff0011};if(s!=surface)die();probe=p;event(0x15046c80,4,args);effect(0x15046c80);return(s32)hit;}
+void *func_1513C73C(void *d,u8 a,u8 b,void *v,f32 x,f32 y,f32 z,f32 sx,f32 sy,u8 c,u8 variant,s32 extra,u8 channel,s32 zero){u32 args[14]={0xffff0013,a,b,0xffff0014,word(x),word(y),word(z),word(sx),word(sy),c,variant,(u32)extra,channel,(u32)zero};if(v!=(u8*)surface+4)die();descriptor=d;event(0x1513c73c,14,args);effect(0x1513c73c);return created?effect_record:0;}
+s32 func_1518ABD0(u8 *q,void *p,u8 mode){u32 args[3]={pointer(q),pointer(p),mode};event(0x1518abd0,3,args);effect(0x1518abd0);return(s32)appended;}
+void func_1516972C(void *p){u32 args[1]={pointer(p)};event(0x1516972c,1,args);effect(0x1516972c);}
+/* Only caller-proven low-byte selectors 0/1 enter this native fixture. Keep the
+ * original unspecified other-selector home instead of inventing a default. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+@BODY@
+#pragma GCC diagnostic pop
+__attribute__((force_align_arg_pointer)) void _start(void){u32 count,i,j,b,selector,context,gate;reader=fixture_rows;count=next();for(i=0;i<count;i++){case_index=i;check_index=0;seed=next();gate=next();selector=next();context=next();hit=next();created=next();appended=next();mutation=next();mark=next();actor.active=gate==2?0:gate==3?8:5;actor.model=gate==4?0:0x90000;actor.height=points[seed%6][1];D_800DBFF0=records[0];D_80082FA4=seed%3;D_8009FE70=(const f32[]){1.f,-.5f,.25f,2.f}[seed%4];D_80088750=queue;for(b=0;b<2;b++)for(j=0;j<3;j++)records[b][j].field380=((s32)seed-128)*256.f+j*17.25f;position=0;surface=0;probe=0;descriptor=0;calls=0;events_left=next();func_150BABE0(gate==1?0:(u8*)&actor,(u8)selector,(u8)context);if(events_left)die();if(D_800DBFF0!=records[0]&&D_800DBFF0!=records[1])die();check(D_800DBFF0==records[1]?0xa0000:0x80000);check((u32)D_80082FA4);check(word(D_8009FE70));check((u32)actor.active);check((u32)actor.model);check(word(actor.height));check(mark);for(b=0;b<2;b++)for(j=0;j<3;j++)check(word(records[b][j].field380));}if(reader!=fixture_end)die();__asm__ volatile("int $0x80"::"a"(1),"b"(0):"memory");__builtin_unreachable();}

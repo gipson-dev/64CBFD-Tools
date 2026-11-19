@@ -1,0 +1,236 @@
+{
+  "name": "func_150BABE0",
+  "source": "conker/src/game/generated_E8090.c",
+  "asm": "conker/asm/E8090.s",
+  "entry": 353086432,
+  "rom": 950416,
+  "size": 1036,
+  "body_words": 259,
+  "slot_words": 259,
+  "frame": 208,
+  "frozen_inputs": 1827,
+  "baseline_manifest_sha256": "d40f18ce47a127cb97ad363b725f9ddf5f3aa3efa4ae786fd29ca9f68359c734",
+  "body": "/* Emit the selected attachment's paired angular effects and surface-linked child. */\n/* The direct callers select attachment 0 or 1; other low-byte values have no index. */\nvoid func_150BABE0(u8 *actor, u8 selector, u8 context) {\n    f32 position[3];\n    s32 attachment;\n    s32 angle;\n    EffectSurfaceE8090 surface;\n    f32 probe[3];\n    SurfaceEffectDescriptorE8090 descriptor;\n    void *effect;\n    f32 size;\n    u32 third;\n    f32 sample;\n    u32 second;\n    u32 first;\n\n    angle = (s32)(D_800DBFF0[(u32)D_80082FA4].field380 * D_8009FE70);\n    if (actor == 0 || *(s32 *)actor == 0 || *(s32 *)actor == 8) return;\n    if (*(s32 *)(actor + 0x1D4) == 0) return;\n    switch ((u8)selector) {\n        case 0: attachment = 17; break;\n        case 1: attachment = 26; break;\n    }\n    func_15142314((void *)*(s32 *)(actor + 0x1D4), attachment, position);\n    position[1] = *(f32 *)(actor + 0x180);\n    func_15143E94(5, 0x4022);\n    func_15165F80(-1, (s32)position[0], (s32)(position[1] + 6.0f),\n                  (s32)position[2], 25, 18, 0, (u8)context, 1);\n    sample = func_150ADA68();\n    func_1514C678(position[0], position[1], position[2], sample * 50.0f + 40.0f,\n                 (s16)((u32)angle + 60U), (s16)((u32)angle - 60U), (u32)func_150ADA20() % 11U + 30U, 5, 0, 0.0f, 0, (u8)context);\n    func_1504715C(&surface, actor);\n    probe[0] = position[0];\n    probe[1] = position[1] + 100.0f;\n    probe[2] = position[2];\n    if (func_15046C80(probe, 0, position[1] - 100.0f, &surface)) {\n        size = func_150ADA68() * 200.0f + 200.0f;\n        descriptor.kind = 42;\n        descriptor.reserved07 = 0;\n        descriptor.flags = 0x7340;\n        descriptor.duration = 300;\n        descriptor.zero08 = 0;\n        descriptor.angle = (u32)func_150ADA20() % 2001U + 2000U;\n        descriptor.opacity = 255;\n        descriptor.alpha = 255;\n        descriptor.red = 0;\n        descriptor.green = 0;\n        descriptor.blue = 0;\n        descriptor.alpha2 = 255;\n        descriptor.zero16 = 0;\n        descriptor.mode = 13;\n        descriptor.opacity20 = 255;\n        descriptor.zero1C = 0;\n        descriptor.flags18 = 0x170002;\n        first = (u32)func_150ADA20();\n        second = (u32)func_150ADA20();\n        third = (u32)func_150ADA20();\n        effect = func_1513C73C(&descriptor, 0, 0, (u8 *)&surface + 4,\n                    position[0], surface.height, position[2], size, size,\n                    first & 0xFFU, (third & 1U) + ((second & 1U) << 1), 4, (u8)context, 0);\n        if (effect != 0 && func_1518ABD0(D_80088750, effect, 1) == 0) {\n            func_1516972C(effect);\n        }\n    }\n    sample = func_150ADA68();\n    func_1514C678(position[0], position[1], position[2], sample * 40.0f + 60.0f,\n                 (s16)((u32)angle + 60U), (s16)((u32)angle - 60U), (u32)func_150ADA20() % 7U + 6U, 6, 0, 0.0f, 0, (u8)context);\n}\n",
+  "declarations": "typedef struct { u8 reserved[0x380]; f32 field380; u8 tail[0x61C]; } EffectAngleRecordE8090;\ntypedef struct { f32 height; u8 retained04[0x20]; } EffectSurfaceE8090;\ntypedef struct {\n    u32 flags;\n    s16 duration;\n    u8 kind, reserved07;\n    u32 zero08;\n    s32 angle;\n    u8 opacity, alpha, red, green, blue, alpha2, zero16, mode;\n    u32 flags18, zero1C;\n    u8 opacity20, reserved21[7];\n} SurfaceEffectDescriptorE8090;\nextern EffectAngleRecordE8090 *D_800DBFF0;\nextern s32 D_80082FA4;\nextern f32 D_8009FE70;\nextern u8 *D_80088750;\ns32 func_150ADA20(void);\nf32 func_150ADA68(void);\nvoid func_15142314(void *, s32, f32 *);\nu8 func_15143E94(s32, s32);\ns32 func_15165F80(s32, s32, s32, s32, s32, s32, s32, u8, s32);\nvoid func_1514C678(f32, f32, f32, f32, s16, s16, s16, u8, s32, f32, void *, u8);\nvoid func_1504715C(EffectSurfaceE8090 *, void *);\ns32 func_15046C80(f32 *, u16, f32, EffectSurfaceE8090 *);\nvoid *func_1513C73C(void *, u8, u8, void *, f32, f32, f32, f32, f32, u8, u8, s32, u8, s32);\ns32 func_1518ABD0(u8 *, void *, u8);\nvoid func_1516972C(void *);\n",
+  "raw_sha256": "8749fb22399b3c202d4b778dd1bd4749a93068441fcd6b10134470a259e96367",
+  "retail_unbound_sha256": "c9189367818594050eedb2b81595053ee1e108eec693b6e58c169e6d5356b9ce",
+  "refs": {
+    "36": [
+      [
+        "R_MIPS_HI16",
+        "D_800DBFF0"
+      ]
+    ],
+    "40": [
+      [
+        "R_MIPS_LO16",
+        "D_800DBFF0"
+      ]
+    ],
+    "28": [
+      [
+        "R_MIPS_HI16",
+        "D_80082FA4"
+      ]
+    ],
+    "32": [
+      [
+        "R_MIPS_LO16",
+        "D_80082FA4"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE70"
+      ]
+    ],
+    "84": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE70"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_26",
+        "func_15142314"
+      ]
+    ],
+    "216": [
+      [
+        "R_MIPS_26",
+        "func_15143E94"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_26",
+        "func_15165F80"
+      ]
+    ],
+    "316": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "324": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "468": [
+      [
+        "R_MIPS_26",
+        "func_1514C678"
+      ]
+    ],
+    "480": [
+      [
+        "R_MIPS_26",
+        "func_1504715C"
+      ]
+    ],
+    "540": [
+      [
+        "R_MIPS_26",
+        "func_15046C80"
+      ]
+    ],
+    "556": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "612": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "708": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "716": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "836": [
+      [
+        "R_MIPS_26",
+        "func_1513C73C"
+      ]
+    ],
+    "852": [
+      [
+        "R_MIPS_HI16",
+        "D_80088750"
+      ]
+    ],
+    "856": [
+      [
+        "R_MIPS_LO16",
+        "D_80088750"
+      ]
+    ],
+    "864": [
+      [
+        "R_MIPS_26",
+        "func_1518ABD0"
+      ]
+    ],
+    "880": [
+      [
+        "R_MIPS_26",
+        "func_1516972C"
+      ]
+    ],
+    "888": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "896": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1012": [
+      [
+        "R_MIPS_26",
+        "func_1514C678"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E8090",
+      "function": "func_150BABE0",
+      "offset": "0x1ac",
+      "expected": "0xAFA40040",
+      "replacement": "0xAFA40044",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve the two proved private angular cache homes; frame and exposed objects stay fixed",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8090",
+      "function": "func_150BABE0",
+      "offset": "0x1b4",
+      "expected": "0xAFA30044",
+      "replacement": "0xAFA30048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve the two proved private angular cache homes; frame and exposed objects stay fixed",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8090",
+      "function": "func_150BABE0",
+      "offset": "0x3a4",
+      "expected": "0x8FA90044",
+      "replacement": "0x8FA90048",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve the two proved private angular cache homes; frame and exposed objects stay fixed",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E8090",
+      "function": "func_150BABE0",
+      "offset": "0x3a8",
+      "expected": "0x8FAA0040",
+      "replacement": "0x8FAA0044",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Preserve the two proved private angular cache homes; frame and exposed objects stay fixed",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "relocated_guards": 0
+}
