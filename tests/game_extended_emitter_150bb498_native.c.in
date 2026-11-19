@@ -1,0 +1,27 @@
+#include <ultra64.h>
+@DECLARATIONS@
+_Static_assert(sizeof(void*)==4&&sizeof(ExtendedEmitterDescriptorE8090)==124&&__builtin_offsetof(ExtendedEmitterDescriptorE8090,flags)==0x50,"SDK32 descriptor layout");
+typedef union{u32 word;f32 value;} FloatWord;
+static u32 word(f32 v){FloatWord x;x.value=v;return x.word;}
+static f32 real(u32 v){FloatWord x;x.word=v;return x.value;}
+f32 D_8009FE7C,D_8009FE80,D_8009FE84,D_8009FE88,D_8009FE8C;
+static f32 *globals[5]={&D_8009FE7C,&D_8009FE80,&D_8009FE84,&D_8009FE88,&D_8009FE8C};
+static union{u32 align;u8 bytes[512];} output;
+static const u8 *reader;
+extern const u8 fixture_rows[],fixture_end[];
+static u32 case_index,check_index,wanted_value,actual_value,seed,angle,slot,success,mutation,coords,ri,fi,events_left;
+static const f32 points[6][3]={{0.,-0.,0.},{-0.,0.,-0.},{1.25f,-2.5f,3.75f},{-17.75f,91.5f,-255.25f},{32768.5f,-32769.5f,65535.75f},{-65536.5f,1000000.25f,-1000000.25f}};
+static void die(void)__attribute__((noreturn));
+static void die(void){char msg[36];u32 v[4]={case_index,check_index,wanted_value,actual_value},i,j;for(i=0;i<4;i++){for(j=0;j<8;j++)msg[i*9+j]="0123456789abcdef"[(v[i]>>(28-4*j))&15];msg[i*9+8]=i==3?'\n':' ';}__asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(msg),"d"(36):"memory");__asm__ volatile("int $0x80"::"a"(1),"b"(3):"memory");__builtin_unreachable();}
+static u32 next(void){u32 v;if(reader+4>fixture_end)die();v=(u32)reader[0]|((u32)reader[1]<<8)|((u32)reader[2]<<16)|((u32)reader[3]<<24);reader+=4;return v;}
+static void check(u32 v){wanted_value=next();actual_value=v;check_index++;if(wanted_value!=actual_value)die();}
+static u32 unspecified(u32 i){return(i>=0x59&&i<0x5c)||i==0x69||i==0x6b||i==0x71||(i>=0x76&&i<0x7c);}
+static u32 descriptor_byte(const u8*p,u32 i){u32 at=i;if(unspecified(i))return 0;if(i<0x54||(i>=0x5c&&i<0x60)||(i>=0x6c&&i<0x70))at=(i&~3u)+(3u-(i&3u));else if((i>=0x54&&i<0x58)||(i>=0x72&&i<0x76))at=(i&~1u)+(1u-(i&1u));return p[at];}
+static void event(u32 t,u32 n,const u32*a,const u8*d){u32 i;if(!events_left--)die();check(t);check(n);for(i=0;i<n;i++)check(a[i]);check(d?124:0);if(d)for(i=0;i<124;i++)check(descriptor_byte(d,i));}
+static void mutate(u32 stage){u32 i;if((stage==0&&(mutation&1))||(stage==1&&(mutation&2)))for(i=0;i<5;i++)*globals[i]=(i+1)*(stage?-1.25f:1.5f);}
+s32 func_150ADA20(void){static const u32 values[12]={0,0xffffffffu,0x80000000u,0x7fffffffu,12,13,67,68,38,100,0x12345678,255};u32 answer;if(ri>=2)die();answer=values[(seed+(ri?3:0))%12];event(0x150ada20,0,0,0);ri++;return(s32)answer;}
+f32 func_150ADA68(void){static const f32 values[7]={0.,-0.,.125f,.5f,1.f,-.5f,1.25f};f32 answer;if(fi>=5)die();answer=values[(seed+fi*3)%7];event(0x150ada68,0,0,0);if(fi==3)mutate(0);fi++;return answer;}
+f32 func_151423D8(u8 a){u32 args[1]={a};event(0x151423d8,1,args,0);return(a==0&&(seed&1))?-0.f:((s32)(a^128)-128)/128.f;}
+void *func_15132A4C(void*p,s32 resource,s32 value,s32 extra,u8 channel,s32 context){u32 i,a[6]={0xffff0010,(u32)resource,(u32)value,(u32)extra,channel,(u32)context};event(0x15132a4c,6,a,p);if(success)for(i=0;i<124;i++)output.bytes[16+i]=((const u8*)p)[i];mutate(1);return success?output.bytes:0;}
+@BODY@
+__attribute__((force_align_arg_pointer)) void _start(void){u32 total,i,j,value;reader=fixture_rows;total=next();for(i=0;i<total;i++){case_index=i;check_index=0;seed=next();angle=next();slot=next();success=next();mutation=next();coords=next();for(j=0;j<5;j++)*globals[j]=real(next());events_left=next();ri=fi=0;for(j=0;j<512;j++)output.bytes[j]=(u8)(j*11+seed*7+7);check((u32)func_150BB498((s32)(0x87654321u+seed),(s16)(-32768+(s32)seed),points[coords][0],points[coords][1],points[coords][2],5.5f,-6.25f,7.75f,angle,255,11.25f,(s32)0x80000000u,-13.5f,-1,(u8)slot));if(events_left||ri!=2||fi!=5)die();for(j=0;j<5;j++)check(word(*globals[j]));for(j=0;j<512;j++){value=output.bytes[j];if(success&&j>=16&&j<140)value=descriptor_byte(output.bytes+16,j-16);check(value);}}if(reader!=fixture_end)die();__asm__ volatile("int $0x80"::"a"(1),"b"(0):"memory");__builtin_unreachable();}

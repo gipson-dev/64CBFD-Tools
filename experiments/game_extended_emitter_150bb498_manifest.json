@@ -1,0 +1,224 @@
+{
+  "name": "func_150BB498",
+  "source": "conker/src/game/generated_E8090.c",
+  "asm": "conker/asm/E8090.s",
+  "entry": 353088664,
+  "rom": 952648,
+  "size": 616,
+  "body_words": 151,
+  "slot_words": 154,
+  "frame": 192,
+  "frozen_inputs": 1841,
+  "baseline_manifest_sha256": "38ba31bdfe33aa709c299101d65246fcf4b6fc1c9f50a5e8d893d36f749ea76b",
+  "body": "/* Emit the extended angular effect through the shared fifteen-word callback ABI. */\ns32 func_150BB498(s32 unused0, s16 unused1, f32 x, f32 y, f32 z,\n                  f32 unused5, f32 unused6, f32 unused7, u32 heading,\n                  u8 unused9, f32 unused10, s32 unused11, f32 unused12,\n                  s32 unused13, u8 context) {\n    s16 pitch;\n    f32 headingCosine;\n    f32 headingSine;\n    f32 pitchCosine;\n    f32 pitchSine;\n    f32 speed;\n    ExtendedEmitterDescriptorE8090 descriptor;\n\n    headingCosine = func_151423D8((u8)(heading - 64U));\n    headingSine = func_151423D8((u8)heading);\n    descriptor.flags = 0x9E8;\n    descriptor.rotation[0] = 0.0f;\n    descriptor.rotation[1] = 0.0f;\n    descriptor.rotation[2] = 0.0f;\n    descriptor.scale[0] = 1.0f;\n    descriptor.scale[1] = 1.0f;\n    descriptor.scale[2] = 1.0f;\n    descriptor.position[0] = x;\n    descriptor.position[1] = y;\n    descriptor.position[2] = z;\n    descriptor.field04 = D_8009FE7C;\n    pitch = (u32)func_150ADA20() % 13U - 52U;\n    pitchCosine = func_151423D8((u8)(pitch - 64));\n    pitchSine = func_151423D8((u8)pitch);\n    speed = func_150ADA68() * 9.0f + 3.0f;\n    descriptor.velocity[0] = (speed * pitchSine) * headingCosine;\n    descriptor.velocity[1] = -speed * pitchCosine;\n    descriptor.velocity[2] = (speed * pitchSine) * headingSine;\n    descriptor.field40 = func_150ADA68() * 50.0f + -25.0f;\n    descriptor.field44 = 0.0f;\n    descriptor.field48 = func_150ADA68() * 50.0f + -25.0f;\n    descriptor.duration = (u32)func_150ADA20() % 68U + 38U;\n    descriptor.field4C = func_150ADA68() * D_8009FE80 + D_8009FE84;\n    descriptor.field00 = 1.0f;\n    descriptor.field08 = descriptor.field0C = func_150ADA68() * D_8009FE88 + D_8009FE8C;\n    descriptor.resource = 31;\n    descriptor.field58 = 0;\n    descriptor.field5C = 0;\n    descriptor.field60 = 255;\n    descriptor.field61 = 1;\n    descriptor.field62 = 0;\n    descriptor.field63 = 0;\n    descriptor.field64 = 0;\n    descriptor.field65 = 0;\n    descriptor.field66 = 0;\n    descriptor.field67 = 0;\n    descriptor.field68 = 0;\n    descriptor.field6A = 0;\n    descriptor.field6C = 0;\n    descriptor.field70 = 0;\n    descriptor.field72 = 1;\n    descriptor.field74 = 255;\n    func_15132A4C(&descriptor, 3, 255, 0, context, 0);\n    return 1;\n}\n",
+  "declarations": "/* Retail copies the full descriptor, including its unspecified reserved bytes. */\ntypedef struct {\n    f32 field00, field04, field08, field0C;\n    f32 rotation[3], scale[3], position[3], velocity[3];\n    f32 field40, field44, field48, field4C;\n    u32 flags;\n    s16 duration;\n    u16 resource;\n    u8 field58, retained59[3];\n    u32 field5C;\n    u8 field60, field61, field62, field63, field64, field65, field66, field67, field68;\n    u8 retained69, field6A, retained6B;\n    u32 field6C;\n    u8 field70, retained71;\n    s16 field72, field74;\n    u8 retained76[6];\n} ExtendedEmitterDescriptorE8090;\nextern f32 D_8009FE7C, D_8009FE80, D_8009FE84, D_8009FE88, D_8009FE8C;\nvoid *func_15132A4C(void *, s32, s32, s32, u8, s32);\n",
+  "raw_sha256": "72f78025e4505f9aae07979533c54f919c08ebf94587d6b37f1104a5f527e6b8",
+  "refs": {
+    "36": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "48": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "68": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE7C"
+      ]
+    ],
+    "84": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE7C"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "172": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "184": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "192": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "276": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "352": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "376": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "384": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE80"
+      ]
+    ],
+    "388": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE80"
+      ]
+    ],
+    "392": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE84"
+      ]
+    ],
+    "396": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE84"
+      ]
+    ],
+    "424": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE88"
+      ]
+    ],
+    "436": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE88"
+      ]
+    ],
+    "440": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE8C"
+      ]
+    ],
+    "444": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE8C"
+      ]
+    ],
+    "576": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ]
+  },
+  "metadata_groups": [
+    [
+      [
+        "D_8009FE80",
+        "D_800A0280"
+      ],
+      [
+        "D_800A0280",
+        "D_8009FE80"
+      ]
+    ],
+    [
+      [
+        "D_8009FE84",
+        "D_800A0284"
+      ],
+      [
+        "D_800A0284",
+        "D_8009FE84"
+      ]
+    ],
+    [
+      [
+        "D_8009FE8C",
+        "D_800A028C"
+      ],
+      [
+        "D_800A028C",
+        "D_8009FE8C"
+      ]
+    ],
+    [
+      [
+        "D_8009FE7C",
+        "func_1510B128",
+        "D_800A027C"
+      ],
+      [
+        "func_1510B128",
+        "D_800A027C",
+        "D_8009FE7C"
+      ]
+    ],
+    [
+      [
+        "__n_seqpReleaseVoice",
+        "func_151F8994"
+      ],
+      [
+        "func_151F8994",
+        "__n_seqpReleaseVoice"
+      ]
+    ],
+    [
+      [
+        "func_15071B18",
+        "func_151F8CF0"
+      ],
+      [
+        "func_151F8CF0",
+        "func_15071B18"
+      ]
+    ],
+    [
+      [
+        "func_150DF4B8",
+        "func_151F9BF0"
+      ],
+      [
+        "func_151F9BF0",
+        "func_150DF4B8"
+      ]
+    ]
+  ]
+}
