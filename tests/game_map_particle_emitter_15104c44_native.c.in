@@ -1,0 +1,69 @@
+#include <ultra64.h>
+#include "structs.h"
+s32 D_800BE9E4;
+f32 D_800BE9A4;
+s32 func_1000EF40(struct57 *,struct57 *,s32 *,s32,s32,s32,u16 *);
+@FRAGMENT@
+typedef struct {MapParticleRecord131F30 object;u8 tail70[32];} NativeRecord;
+_Static_assert(sizeof(void*)==4&&sizeof(struct260)==36&&sizeof(NativeRecord)==144&&sizeof(MapParticlePacket131F30)==80&&sizeof(MapParticleSurface131F30)==36,"SDK32 layout");
+_Static_assert(__builtin_offsetof(MapParticleRecord131F30,emitter)==40&&__builtin_offsetof(MapParticleEmitter131F30,surface)==32&&__builtin_offsetof(MapParticleEmitter131F30,gate)==68,"emitter layout");
+_Static_assert(__builtin_offsetof(MapParticlePacket131F30,pieces)==56&&__builtin_offsetof(MapParticlePacket131F30,state)==76,"packet layout");
+typedef union {u32 bits;f32 real;} FloatWord;
+static u32 word(f32 v){FloatWord u;u.real=v;return u.bits;}
+static f32 real(u32 v){FloatWord u;u.bits=v;return u.real;}
+__asm__(".section .rodata\n.global expected_bytes\nexpected_bytes:\n.incbin \"@BINARY@\"\n.text\n");
+extern const u8 expected_bytes[];static const u8 *cursor;
+static NativeRecord record;static s16 gate[2];static s32 D_80082FA0=2;
+f32 D_800A23AC,D_800A23B0;static u32 mark,seed,hits,mutation,ri,fi,pi,events_left;
+static f32 *roles[6];static u32 role_count;static s32 failed;
+static void die(void){__asm__ volatile(".byte 0xcd,0x80"::"a"(1),"b"(1):"memory");__builtin_unreachable();}
+static u32 take(void){u32 v=((u32)cursor[0]<<24)|((u32)cursor[1]<<16)|((u32)cursor[2]<<8)|cursor[3];cursor+=4;return v;}
+static void check(u32 v){if(take()!=v)die();}
+static u32 record_offset(u32 i){
+ if(i>=14&&i<16)return i^1;
+ if(i>=20&&i<24)return(i&~3u)+(3-(i&3u));
+ if(i>=40&&i<112){u32 j=i-40;if(j<8||(j>=12&&j<36)||(j>=56&&j<60)||(j>=64&&j<72))return(i&~3u)+(3-(i&3u));if((j>=8&&j<12)||(j>=36&&j<56)||(j>=62&&j<64))return(i&~1u)+(1-(i&1u));}
+ return i;
+}
+static u32 packet_offset(u32 i){if((i>=4&&i<52)||(i>=56&&i<68))return(i&~3u)+(3-(i&3u));if(i<2||(i>=68&&i<72))return(i&~1u)+(1-(i&1u));return i;}
+static u32 unspecified(u32 i){return i==3||(i>=53&&i<56)||i>=77;}
+static u32 role(f32 *p){u32 i;for(i=0;i<role_count;i++)if(roles[i]==p)return i;if(role_count==6)die();roles[role_count]=p;return role_count++;}
+static void event(u32 t,u32 n,const u32 *args,const void *data){u32 i;if(!events_left--)die();check(t);check(n);for(i=0;i<n;i++)check(args[i]);if(t==0x15105CE0){const u8 *b=data;check(73);for(i=0;i<80;i++)if(!unspecified(i))check(b[packet_offset(i)]);}else check(0);}
+static void effect(u32 target,u32 index,MapParticlePoint131F30 *position){u32 i;mark=0xAABB0000u|((target>>2)&65535);
+ if((mutation&1)&&target==0x150ADA68&&index==0){D_800A23AC=.25f;D_800A23B0=.5f;D_800BE9A4=.5f;record.object.emitter.accumulator=2.5f;}
+ if(target==0x15046C80){for(i=0;i<36;i++)((u8*)&record)[record_offset(40+32+i)]=(u8)(i*13+seed+index);record.object.emitter.surface.height=-7.5f+index*.25f;record.object.emitter.gate=gate;
+  if(mutation&2){record.object.emitter.position.x=10.5f;record.object.emitter.position.z=31.25f;record.object.emitter.radius=2.75f;}
+  if(mutation&8){position->x+=.25f;position->z+=-.5f;}}
+ if((mutation&4)&&target==0x15105CE0){record.object.emitter.accumulator=1.5f;((u8*)&record)[1]^=0x17;((u8*)&record)[12]^=0x21;}
+}
+s32 func_1000EF40(struct57*a,struct57*b,s32*c,s32 d,s32 e,s32 f,u16*g){return 0;}
+void func_1000FD38(s32 fn,s32 id,s32 zero){u32 a[3]={(u32)fn==(u32)func_1000EF40?0x1000EF40:0,(u32)id,(u32)zero};event(0x1000FD38,3,a,0);effect(0x1000FD38,0,0);}
+@GATE@
+u8 func_151464B8(s16 *g){u32 a[1]={g==gate?0x40000:0};u8 result=actual_gate(g);event(0x151464B8,1,a,0);effect(0x151464B8,0,0);return result;}
+s32 func_150ADA20(void){static const u32 v[10]={0,0xffffffffu,0x80000000u,0x7fffffffu,255,256,13,156,3,0x12345678};u32 answer=v[(ri+seed)%10];event(0x150ADA20,0,0,0);effect(0x150ADA20,ri++,0);return(s32)answer;}
+f32 func_150ADA68(void){static const f32 v[5]={0.,.125f,.5f,1.,-0.};f32 answer=v[(fi+seed)%5];event(0x150ADA68,0,0,0);effect(0x150ADA68,fi++,0);return answer;}
+void func_15143874(s16 angle,f32 radius,f32 *x,f32 *z){u32 a[4]={(u32)(s32)angle,word(radius),role(x),role(z)};event(0x15143874,4,a,0);*x=radius*((s32)(angle&255)-128)/128.f;*z=radius*(127-(s32)(angle&255))/128.f;effect(0x15143874,0,0);}
+s32 func_15046C80(MapParticlePoint131F30 *position,u16 selector,f32 threshold,MapParticleSurface131F30 *surface){u32 a[6]={word(position->x),word(position->y),word(position->z),selector,word(threshold),surface==&record.object.emitter.surface?0x30048:0};s32 answer=!!(hits&(1u<<(pi%4)));event(0x15046C80,6,a,0);effect(0x15046C80,pi++,position);return answer;}
+void *func_15105CE0(MapParticlePacket131F30 *packet,s32 zero,u8 priority,s32 category){u32 a[4]={0,(u32)zero,priority,(u32)category};event(0x15105CE0,4,a,packet);effect(0x15105CE0,0,0);return 0;}
+void (*D_8008A4E8[97])(struct260*);void (*D_8008A4C0[10])(struct260*);
+void func_1516972C(void *p){failed=1;}
+@PARENT@
+static void registered(struct260 *p){u32 a[1]={p==&record.object.header?0x30000:0};event(0x15104C44,1,a,0);func_15104C44(p);}
+static s32 run(void){u32 row,i,native_caller,fp_changed,word_expected,actual,rows;u8 expected_record[144];cursor=expected_bytes;rows=take();
+ for(row=0;row<rows;row++){
+  seed=take();hits=take();mutation=take();native_caller=take();fp_changed=take();
+  for(i=0;i<144;i++)((u8*)&record)[record_offset(i)]=(u8)take();
+  gate[0]=0;gate[1]=take()?0:1;record.object.emitter.gate=gate;
+  D_800BE9E4=(s32)take();D_800BE9A4=real(take());D_800A23AC=real(take());D_800A23B0=real(take());mark=take();
+  ri=fi=pi=role_count=0;failed=0;events_left=take();D_8008A4E8[60]=registered;
+  if(native_caller)func_15149264(&record.object.header);else func_15104C44(&record.object.header);
+  if(events_left||failed)die();
+  for(i=0;i<144;i++)expected_record[i]=(u8)take();
+  word_expected=((u32)expected_record[44]<<24)|((u32)expected_record[45]<<16)|((u32)expected_record[46]<<8)|expected_record[47];actual=word(record.object.emitter.accumulator);
+  if(fp_changed&&(word_expected&0x7f800000)==0x7f800000&&(word_expected&0x7fffff)){if((actual&0x7f800000)!=0x7f800000||!(actual&0x7fffff))die();for(i=44;i<48;i++)expected_record[i]=((u8*)&record)[record_offset(i)];}
+  for(i=0;i<144;i++){u8 value=((u8*)&record)[record_offset(i)];if(i>=108&&i<112){u32 pointer=record.object.emitter.gate==gate?0x40000:0;value=(u8)(pointer>>(24-8*(i-108)));}if(value!=expected_record[i])die();}
+  check((u32)D_800BE9E4);check(word(D_800BE9A4));check(word(D_800A23AC));check(word(D_800A23B0));check(mark);
+ }
+ return 0;
+}
+@START@
