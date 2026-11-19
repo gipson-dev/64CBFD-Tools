@@ -1,0 +1,725 @@
+{
+  "name": "func_150BBB5C",
+  "source": "conker/src/game/generated_E8C10.c",
+  "asm": "conker/asm/E8C10.s",
+  "entry": 353090396,
+  "rom": 954380,
+  "size": 2348,
+  "body": "/* Build a sprite, randomized particles and trails, then submit the burst sound. */\n/* The known caller ignores this result; only the type-rejection path returns one. */\ns32 func_150BBB5C(u8 *actor) {\n    ActorEmitterDescriptorE8C10 descriptor;\n    BurstSpriteE8C10 sprite;\n    f32 width;\n    f32 height;\n    f32 headingSine;\n    f32 sample;\n    f32 driftX;\n    f32 driftZ;\n    f32 offsetX;\n    f32 offsetZ;\n    f32 radialSine;\n    f32 radialCosine;\n    f32 radius;\n    f32 spreadSine;\n    f32 spreadCosine;\n    f32 speed;\n    f32 velocityX;\n    f32 velocityZ;\n    f32 firstSize;\n    f32 sizeBase;\n    f32 position[3];\n    f32 velocity[3];\n    f32 trailRadius;\n    f32 trailSpeed;\n    f32 trailSample;\n    f32 burstSpeed;\n    f32 burstSine;\n    f32 burstCosine;\n    f32 pitchSine;\n    f32 pitchCosine;\n    f32 horizontalSpeed;\n    s32 particleCount;\n    s32 trailCount;\n    s32 alpha;\n    u8 angle;\n    s16 trailAngle;\n    s32 durationSample;\n    s32 colorSample;\n    s16 burstAngle;\n    s16 burstPitch;\n    s8 burstIndex;\n\n    /* Retail reads the actor type before its subsequent null gate. */\n    if (actor[4] != 32) return 1;\n    if (actor != 0 && *(s32 *)actor != 0) {\n        width = *(s16 *)(actor + 0xE4);\n        height = *(s16 *)(actor + 0xE6);\n        particleCount = ((u32)func_150ADA20() & 3U) + 6U;\n        trailCount = ((u32)func_150ADA20() & 3U) + 10U;\n        headingSine = func_151423D8((u8)(*(u16 *)(actor + 0x76) >> 8));\n        sample = func_151423D8((u8)((*(u16 *)(actor + 0x76) >> 8) + 64));\n        driftX = (*(f32 *)(actor + 0x3C) * headingSine) * 0.5f;\n        driftZ = (*(f32 *)(actor + 0x3C) * sample) * 0.5f;\n        alpha = 255;\n        if (*(s32 *)(actor + 0x1D4) != 0) {\n            alpha = (255U - ((*(u32 *)(actor + 0x184) >> 5) << 6)) & 255U;\n        }\n        sprite.value8A = 128;\n        sprite.cleared88 = 0;\n        sprite.x = (s16)(s32)*(f32 *)(actor + 0x14);\n        *(volatile s16 *)&sprite.y = (s16)(s32)(*(f32 *)(actor + 0x180) + 60.0f);\n        sprite.width = (s16)(s32)width;\n        sprite.height = (s16)(s32)height;\n        sprite.z = (s16)(s32)*(f32 *)(actor + 0x1C);\n        sprite.tag = -1;\n        sprite.textureIndex = 46;\n        sprite.flags = 52;\n        sprite.alpha = alpha;\n        sprite.mode = 0;\n        sprite.initialHeight = (s16)(s32)*(f32 *)(actor + 0x180);\n        func_1516865C(&sprite, 255, 255, 255, 255);\n        func_15168800(&sprite, 255, 0);\n        descriptor.resource = 1;\n        descriptor.duration = 120;\n        descriptor.flags = 0x29E9;\n        descriptor.field58 = 0;\n        descriptor.field5C = 0;\n        descriptor.field60 = 255;\n        descriptor.field61 = 1;\n        descriptor.field62 = 0;\n        descriptor.field63 = 2;\n        descriptor.field64 = 0;\n        descriptor.field65 = 0;\n        descriptor.field66 = 0;\n        descriptor.field67 = 0;\n        descriptor.field68 = 0;\n        descriptor.field6A = 0;\n        descriptor.owner = 0;\n        descriptor.field70 = 0;\n        descriptor.field72 = 32;\n        descriptor.field74 = 7;\n        descriptor.field04 = D_8009FEA8;\n        descriptor.scale[0] = 1.0f;\n        descriptor.scale[1] = 1.0f;\n        descriptor.scale[2] = 1.0f;\n        descriptor.field48 = 0.0f;\n        descriptor.field4C = -1.5f;\n        if (particleCount > 0) {\n            sizeBase = D_8009FEAC;\n            do {\n                angle = func_150ADA20();\n                radialSine = func_151423D8(angle);\n                radialCosine = func_151423D8((u8)(angle - 64));\n                radius = func_150ADA68() * width;\n                offsetX = radialSine * radius;\n                offsetZ = -radialCosine * radius;\n                angle = func_150ADA20();\n                spreadSine = func_151423D8(angle);\n                spreadCosine = func_151423D8((u8)(angle - 64));\n                speed = func_150ADA68() * 4.0f + 2.0f;\n                velocityX = spreadCosine * speed;\n                velocityZ = spreadSine * speed;\n                firstSize = func_150ADA68() * sizeBase + sizeBase;\n                sample = func_150ADA68() * sizeBase + sizeBase;\n                descriptor.field08 = firstSize;\n                descriptor.field0C = sample;\n                descriptor.field00 = (firstSize + sample) * 0.5f;\n                descriptor.rotation[0] = func_150ADA68() * 360.0f;\n                descriptor.rotation[1] = func_150ADA68() * 360.0f;\n                descriptor.rotation[2] = func_150ADA68() * 360.0f;\n                descriptor.position[0] = *(f32 *)(actor + 0x14) + offsetX;\n                *(volatile f32 *)&descriptor.position[1] = (*(f32 *)(actor + 0x18) + func_150ADA68() * height) + 5.0f;\n                descriptor.velocity[0] = driftX + velocityX;\n                descriptor.position[2] = *(f32 *)(actor + 0x1C) + offsetZ;\n                descriptor.velocity[1] = func_150ADA68() * 7.0f + 13.0f;\n                descriptor.velocity[2] = driftZ + velocityZ;\n                descriptor.field40 = 25.0f - func_150ADA68() * 50.0f;\n                descriptor.field44 = 25.0f - func_150ADA68() * 50.0f;\n                func_15132A4C(&descriptor, 3, 255, 0, 255, 0);\n                particleCount--;\n            } while (particleCount > 0);\n        }\n        if (trailCount > 0) {\n            do {\n                trailRadius = func_150ADA68() * width;\n                trailSpeed = func_150ADA68() * 7.0f + 7.0f;\n                trailAngle = (u32)func_150ADA20() & 255U;\n                radialSine = func_151423D8((u8)trailAngle);\n                radialCosine = func_151423D8((u8)(trailAngle - 64));\n                position[0] = *(f32 *)(actor + 0x14) + radialSine * trailRadius;\n                position[1] = (func_150ADA68() * height + *(f32 *)(actor + 0x18)) + 5.0f;\n                velocity[0] = radialCosine * trailSpeed + driftX;\n                position[2] = *(f32 *)(actor + 0x1C) - radialCosine * trailRadius;\n                velocity[1] = func_150ADA68() * 9.0f + 15.0f;\n                velocity[2] = radialSine * trailSpeed + driftZ;\n                durationSample = func_150ADA20();\n                colorSample = func_150ADA20();\n                trailSample = func_150ADA68();\n                func_151DA6F8(position, velocity, 1.6f,\n                    (s16)(((u32)durationSample & 7U) + 25U),\n                    ((u32)colorSample & 127U) + 128U,\n                    (trailSample * D_8009FEB0 * width) + 13.0f,\n                    ((u32)func_150ADA20() & 3U) + 2U, 0,\n                    1.0f, 1.0f, 1, 1, 0, 16, 15, 0, 255, 0);\n                trailCount--;\n            } while (trailCount > 0);\n        }\n        descriptor.resource = 0;\n        descriptor.duration = ((u32)func_150ADA20() & 15U) + 16U;\n        descriptor.field04 = D_8009FEB4;\n        descriptor.rotation[0] = *(f32 *)(actor + 0xB8);\n        descriptor.rotation[1] = *(f32 *)(actor + 0x40);\n        descriptor.flags = 0x39E8;\n        descriptor.scale[0] = 1.0f;\n        descriptor.scale[1] = 1.0f;\n        descriptor.scale[2] = 1.0f;\n        descriptor.rotation[2] = *(f32 *)(actor + 0xC4);\n        descriptor.field48 = 0.0f;\n        descriptor.field4C = D_8009FEB8;\n        descriptor.position[0] = *(f32 *)(actor + 0x14);\n        descriptor.position[1] = *(f32 *)(actor + 0x18);\n        descriptor.position[2] = *(f32 *)(actor + 0x1C);\n        burstIndex = 0;\n        descriptor.field00 = *(f32 *)(actor + 0x14C) * 20.0f;\n        descriptor.field58 = 0;\n        descriptor.field5C = 0;\n        descriptor.field60 = 255;\n        descriptor.field61 = 1;\n        descriptor.field62 = 0;\n        sample = *(f32 *)(actor + 0x14C);\n        descriptor.field08 = sample + sample;\n        descriptor.field63 = 0;\n        descriptor.field64 = 0;\n        descriptor.field65 = 0;\n        descriptor.field66 = 0;\n        descriptor.field67 = 0;\n        descriptor.field68 = 0;\n        descriptor.field6A = 0;\n        descriptor.owner = 0;\n        descriptor.field70 = 0;\n        descriptor.field72 = 16;\n        descriptor.field74 = 15;\n        descriptor.field0C = descriptor.field08;\n        do {\n            burstSpeed = (func_150ADA68() * 30.0f) * *(f32 *)(actor + 0x150) + 10.0f;\n            burstAngle = (u32)func_150ADA20() & 127U;\n            burstPitch = -32 - ((u32)func_150ADA20() & 31U);\n            burstSine = func_151423D8((u8)burstAngle);\n            burstCosine = func_151423D8((u8)(burstAngle - 64));\n            pitchSine = func_151423D8((u8)burstPitch);\n            pitchCosine = func_151423D8((u8)(burstPitch - 64));\n            horizontalSpeed = burstSpeed * pitchSine;\n            descriptor.velocity[1] = -burstSpeed * pitchCosine;\n            descriptor.velocity[0] = horizontalSpeed * burstCosine + driftX;\n            descriptor.velocity[2] = horizontalSpeed * burstSine + driftZ;\n            descriptor.field40 = 30.0f - func_150ADA68() * 60.0f;\n            descriptor.field44 = 30.0f - func_150ADA68() * 60.0f;\n            func_15132A4C(&descriptor, 3, 255, 0, 255, 0);\n            burstIndex++;\n        } while (burstIndex < 2);\n        func_10010F88(170, 26000, 0, 0, 0,\n            (s32)*(f32 *)(actor + 0x14), (s32)*(f32 *)(actor + 0x18),\n            (s32)*(f32 *)(actor + 0x1C), 200, 2000);\n    }\n}\n",
+  "declarations": "typedef struct {\n    Vtx vertices[8];\n    u32 alpha, retained84;\n    s16 cleared88;\n    u16 value8A;\n    s16 x, y, z, width, height, initialHeight;\n    u16 flags, retained9A;\n    s16 cleared9C, cleared9E;\n    u8 textureIndex, mode;\n    s8 tag;\n    u8 retainedA3;\n    u32 retainedA4;\n} BurstSpriteE8C10;\nvoid func_1516865C(void *, u8, u8, u8, u8);\nvoid *func_15168800(void *, u8, s32);\nu8 *func_151DA6F8(void *, void *, f32, s16, u8, f32, s32, u8,\n    f32, f32, u8, u8, s32, s16, s16, s32, u8, s32);\n/* The original caller passes integer coordinates in full o32 argument words. */\nu16 func_10010F88();\nextern f32 D_8009FEA8, D_8009FEAC, D_8009FEB0, D_8009FEB4, D_8009FEB8;\n",
+  "raw_words": 590,
+  "retail_words": 587,
+  "frame": 624,
+  "raw_sha256": "808e01bf55d22a85740eb5fbd292740e764060d77e7fcc8a2769d945c7337f68",
+  "refs": {
+    "136": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "172": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "200": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "476": [
+      [
+        "R_MIPS_26",
+        "func_1516865C"
+      ]
+    ],
+    "492": [
+      [
+        "R_MIPS_26",
+        "func_15168800"
+      ]
+    ],
+    "500": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEA8"
+      ]
+    ],
+    "504": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEA8"
+      ]
+    ],
+    "672": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEAC"
+      ]
+    ],
+    "676": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEAC"
+      ]
+    ],
+    "684": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "696": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "716": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "760": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "772": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "792": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "800": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "844": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "856": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "896": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "920": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "944": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "980": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1044": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1088": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1124": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1184": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ],
+    "1232": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1248": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1272": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1296": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1316": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1340": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1408": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1440": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1448": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1456": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1464": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1480": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEB0"
+      ]
+    ],
+    "1484": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEB0"
+      ]
+    ],
+    "1632": [
+      [
+        "R_MIPS_26",
+        "func_151DA6F8"
+      ]
+    ],
+    "1652": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1660": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEB4"
+      ]
+    ],
+    "1664": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEB4"
+      ]
+    ],
+    "1724": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEB8"
+      ]
+    ],
+    "1748": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEB8"
+      ]
+    ],
+    "1928": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1948": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1964": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1992": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2012": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2024": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2044": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2100": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "2128": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "2180": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ],
+    "2296": [
+      [
+        "R_MIPS_26",
+        "func_10010F88"
+      ]
+    ]
+  },
+  "retail_unbound_sha256": "a4a1d9fd12e224ce351c63e87338c9273383680426c6e4e728838a213412209a",
+  "retail_refs": {
+    "132": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "196": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "472": [
+      [
+        "R_MIPS_26",
+        "func_1516865C"
+      ]
+    ],
+    "488": [
+      [
+        "R_MIPS_26",
+        "func_15168800"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEA8"
+      ]
+    ],
+    "500": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEA8"
+      ]
+    ],
+    "668": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEAC"
+      ]
+    ],
+    "672": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEAC"
+      ]
+    ],
+    "676": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "688": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "708": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "716": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "752": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "764": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "784": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "792": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "836": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "848": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "888": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "912": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "936": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "972": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1036": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1080": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1116": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1176": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ],
+    "1220": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1236": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1260": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1284": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1304": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "1328": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1396": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1428": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1436": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1444": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1452": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1468": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEB0"
+      ]
+    ],
+    "1472": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEB0"
+      ]
+    ],
+    "1620": [
+      [
+        "R_MIPS_26",
+        "func_151DA6F8"
+      ]
+    ],
+    "1640": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1648": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEB4"
+      ]
+    ],
+    "1652": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEB4"
+      ]
+    ],
+    "1708": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FEB8"
+      ]
+    ],
+    "1716": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FEB8"
+      ]
+    ],
+    "1916": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "1936": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1952": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "1980": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2000": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2012": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2032": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "2092": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "2120": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "2172": [
+      [
+        "R_MIPS_26",
+        "func_15132A4C"
+      ]
+    ],
+    "2288": [
+      [
+        "R_MIPS_26",
+        "func_10010F88"
+      ]
+    ]
+  },
+  "baseline_manifest_sha256": "f14226cf6d05e6b5c949d0ca92977b504534061a84996bb817ceb4b81b2869fe",
+  "frozen_inputs": 1871,
+  "caller_sha256": "992a3c2611d7e41acd285037bda21b33996c30965fbe74d2266610b1ef8e7e7d",
+  "table_sha256": "6cb077ea30db0df2251db1762d8f0a2c55af88b7f06c1a055df7805ef2c055b2",
+  "selected_ordering_view": "volatile signed16 store to sprite.y; no extra source operation",
+  "source_installed": false,
+  "c_match_credit": 0,
+  "whole_function_relation_proved": false,
+  "full_function_relation_proved": false,
+  "qualification_scope": "Ordered normal-execution relation through first descriptor factory; full trail relation still differs"
+}
