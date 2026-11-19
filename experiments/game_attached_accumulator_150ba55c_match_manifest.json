@@ -1,0 +1,1465 @@
+{
+  "name": "func_150BA55C",
+  "source": "conker/src/game/generated_E7970.c",
+  "asm": "conker/asm/E7970.s",
+  "entry": 353084764,
+  "rom": 948748,
+  "size": 916,
+  "baseline_manifest_sha256": "8935bd1554b6fc652f0052fd15561ac76485e1260d5d450623a7809f589c0ef8",
+  "frozen_inputs": 1808,
+  "declarations": "typedef struct { f32 x, y, z; } AttachedEmitterPointE7970;\nextern f32 D_800BE9A4;\nextern f32 D_8009FE30, D_8009FE34, D_8009FE38, D_8009FE3C;\nextern f32 D_8009FE40, D_8009FE44, D_8009FE48, D_8009FE4C;\nextern f32 D_8009FE50, D_8009FE54, D_8009FE58;\nf32 func_150ADA68(void);\nvoid func_1515C244(void *, AttachedEmitterPointE7970 *, f32 *, f32 *);\nvoid func_15143794(s16, s16, f32, AttachedEmitterPointE7970 *);\nvoid *func_1518A3C0(AttachedEmitterPointE7970 *, AttachedEmitterPointE7970 *, f32,\n    AttachedEmitterPointE7970 *, AttachedEmitterPointE7970 *, f32, f32, u8, s16,\n    u8, s32, u8, s32);\n",
+  "body": "/* Emit attached effects while the live fractional accumulator is strictly above one. */\nvoid func_150BA55C(u8 *effect) {\n    EffectPayload *payload = (EffectPayload *)(effect + 0x28);\n    u8 *source = payload->source;\n    AttachedEmitterPointE7970 origin;\n    f32 radius, unusedHeight;\n    AttachedEmitterPointE7970 acceleration;\n    f32 sizeFactor;\n    AttachedEmitterPointE7970 position;\n    AttachedEmitterPointE7970 rotation;\n    AttachedEmitterPointE7970 velocity;\n    f32 accelerationBase, accelerationRange;\n    f32 sample, spread, sizeSample, speedSample;\n    u32 firstRandom, secondRandom, durationRandom;\n    s32 heading;\n\n    if (*(u32 *)source == 0 || payload->sourceByte != source[0x3B]) {\n        *(s16 *)(effect + 0xE) = -1;\n        return;\n    }\n    if (*(u32 *)(source + 0x1D4) == 0) return;\n\n    sample = func_150ADA68();\n    payload->value += (D_8009FE30 + sample * D_8009FE34) * D_800BE9A4;\n    if (1.0f < payload->value) {\n        sizeFactor = (*(f32 *)(source + 0x14C) + *(f32 *)(source + 0x150)) * 0.5f;\n        heading = (*(u16 *)(source + 0x76) >> 8) - 0x40;\n        func_1515C244(source, &origin, &radius, &unusedHeight);\n        accelerationBase = D_8009FE38;\n        accelerationRange = D_8009FE3C;\n        acceleration.y = 0.0f;\n        do {\n            firstRandom = (u32)func_150ADA20();\n            secondRandom = (u32)func_150ADA20();\n            func_15143794((s16)(firstRandom % 127U + heading - 63),\n                (s16)(secondRandom % 31U - 50), radius, &position);\n            position.y *= *(f32 *)(source + 0xF0);\n            position.x += origin.x;\n            position.y += origin.y;\n            position.z += origin.z;\n            rotation.x = func_150ADA68() * 360.0f;\n            rotation.y = func_150ADA68() * 360.0f;\n            rotation.z = func_150ADA68() * 360.0f;\n            sample = func_150ADA68();\n            spread = sample * D_8009FE40 + D_8009FE44;\n            velocity.x = (position.x - origin.x) * spread;\n            velocity.y = (position.y - origin.y) * spread;\n            velocity.z = (position.z - origin.z) * spread;\n            acceleration.x = func_150ADA68() * accelerationRange + accelerationBase;\n            acceleration.z = func_150ADA68() * accelerationRange + accelerationBase;\n            sizeSample = func_150ADA68();\n            speedSample = func_150ADA68();\n            durationRandom = (u32)func_150ADA20();\n            func_1518A3C0(&position, &rotation,\n                (sizeSample * D_8009FE48 + D_8009FE4C) * sizeFactor, &velocity,\n                &acceleration, speedSample * D_8009FE50 + D_8009FE54,\n                D_8009FE58, 7, durationRandom % 41U + 60, 0, 0,\n                effect[0xC], effect[1]);\n            payload->value -= 1.0f;\n        } while (1.0f < payload->value);\n    }\n}\n",
+  "raw_sha256": "f15047c12d789d1d967f6ba5f8b6aff151880d272d3a25591d0039745951b43e",
+  "refs": {
+    "132": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE30"
+      ]
+    ],
+    "152": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE30"
+      ]
+    ],
+    "156": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE34"
+      ]
+    ],
+    "160": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE34"
+      ]
+    ],
+    "164": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_26",
+        "func_1515C244"
+      ]
+    ],
+    "276": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE38"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE38"
+      ]
+    ],
+    "284": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE3C"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE3C"
+      ]
+    ],
+    "300": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE40"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE40"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "420": [
+      [
+        "R_MIPS_26",
+        "func_15143794"
+      ]
+    ],
+    "484": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "508": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "520": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "532": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE44"
+      ]
+    ],
+    "536": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE44"
+      ]
+    ],
+    "604": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "620": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "636": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "644": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "652": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "660": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE48"
+      ]
+    ],
+    "664": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE48"
+      ]
+    ],
+    "668": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE4C"
+      ]
+    ],
+    "672": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE4C"
+      ]
+    ],
+    "680": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE50"
+      ]
+    ],
+    "684": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE50"
+      ]
+    ],
+    "692": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE54"
+      ]
+    ],
+    "708": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE54"
+      ]
+    ],
+    "712": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE58"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE58"
+      ]
+    ],
+    "804": [
+      [
+        "R_MIPS_26",
+        "func_1518A3C0"
+      ]
+    ]
+  },
+  "guard_rows": [
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x0",
+      "expected": "0x27BDFEE8",
+      "replacement": "0x27BDFEF8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x90",
+      "expected": "0x4481F000",
+      "replacement": "0x4481D000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0xc8",
+      "expected": "0x4608F03C",
+      "replacement": "0x4608D03C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0xd8",
+      "expected": "0xC68A0150",
+      "replacement": "0xC68A014C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0xdc",
+      "expected": "0xC690014C",
+      "replacement": "0xC6900150",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0xf0",
+      "expected": "0x27A50104",
+      "replacement": "0x27A500F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0xf4",
+      "expected": "0x27A60100",
+      "replacement": "0x27A600EC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0xfc",
+      "expected": "0x27A700FC",
+      "replacement": "0x27A700E8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x100",
+      "expected": "0xE7A400EC",
+      "replacement": "0xE7A400D8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x118",
+      "expected": "0xC43A0000",
+      "replacement": "0xC43E0000",
+      "expected_relocations": "R_MIPS_LO16:D_8009FE38",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FE38",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x12c",
+      "expected": "0x3C1E0000",
+      "replacement": "0x4481C000",
+      "expected_relocations": "R_MIPS_HI16:D_8009FE40",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x130",
+      "expected": "0x4481C000",
+      "replacement": "0x27BE00C0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x134",
+      "expected": "0x27DE0000",
+      "replacement": "0x2417001F",
+      "expected_relocations": "R_MIPS_LO16:D_8009FE40",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x138",
+      "expected": "0x2417001F",
+      "replacement": "0x2416007F",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x13c",
+      "expected": "0x2416007F",
+      "replacement": "0x27B200CC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x140",
+      "expected": "0x27B200E0",
+      "replacement": "0xE7A800E0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x144",
+      "expected": "0xE7A800F4",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA20",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x148",
+      "expected": "0x0C000000",
+      "replacement": "0x00000000",
+      "expected_relocations": "R_MIPS_26:func_150ADA20",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x14c",
+      "expected": "0x00000000",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA20",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x150",
+      "expected": "0x0C000000",
+      "replacement": "0x00408025",
+      "expected_relocations": "R_MIPS_26:func_150ADA20",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x154",
+      "expected": "0x00408025",
+      "replacement": "0x0216001B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x158",
+      "expected": "0x0216001B",
+      "replacement": "0x00005010",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x15c",
+      "expected": "0x00005010",
+      "replacement": "0x01552021",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x160",
+      "expected": "0x01552021",
+      "replacement": "0x2484FFC1",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x164",
+      "expected": "0x2484FFC1",
+      "replacement": "0x0057001B",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x168",
+      "expected": "0x0057001B",
+      "replacement": "0x00002810",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x16c",
+      "expected": "0x00002810",
+      "replacement": "0x24A5FFCE",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x170",
+      "expected": "0x24A5FFCE",
+      "replacement": "0x00045C00",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x174",
+      "expected": "0x00045C00",
+      "replacement": "0x000B6403",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x178",
+      "expected": "0x000B6403",
+      "replacement": "0x00056C00",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x17c",
+      "expected": "0x00056C00",
+      "replacement": "0x16C00002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x180",
+      "expected": "0x16C00002",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x184",
+      "expected": "0x00000000",
+      "replacement": "0x0007000D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x188",
+      "expected": "0x0007000D",
+      "replacement": "0x000D2C03",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x18c",
+      "expected": "0x000D2C03",
+      "replacement": "0x01802025",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x190",
+      "expected": "0x01802025",
+      "replacement": "0x16E00002",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x194",
+      "expected": "0x16E00002",
+      "replacement": "0x00000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x198",
+      "expected": "0x00000000",
+      "replacement": "0x0007000D",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x19c",
+      "expected": "0x0007000D",
+      "replacement": "0x8FA600EC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1a0",
+      "expected": "0x8FA60100",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_15143794",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1a4",
+      "expected": "0x0C000000",
+      "replacement": "0x02403825",
+      "expected_relocations": "R_MIPS_26:func_15143794",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1a8",
+      "expected": "0x02403825",
+      "replacement": "0xC7AA00D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1ac",
+      "expected": "0xC7AA00E4",
+      "replacement": "0xC69000F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1b0",
+      "expected": "0xC69000F0",
+      "replacement": "0xC7B200CC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1b4",
+      "expected": "0xC7B200E0",
+      "replacement": "0xC7A400F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1b8",
+      "expected": "0xC7A40104",
+      "replacement": "0x46105182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1bc",
+      "expected": "0x46105182",
+      "replacement": "0xC7AA00F4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1c0",
+      "expected": "0xC7AA0108",
+      "replacement": "0x46049200",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1c4",
+      "expected": "0x46049200",
+      "replacement": "0xC7A400F8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1c8",
+      "expected": "0xC7A4010C",
+      "replacement": "0xC7B200D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1cc",
+      "expected": "0xC7B200E8",
+      "replacement": "0xE7A800CC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1d0",
+      "expected": "0xE7A800E0",
+      "replacement": "0x460A3400",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1d4",
+      "expected": "0x460A3400",
+      "replacement": "0xE7A600D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1d8",
+      "expected": "0xE7A600E4",
+      "replacement": "0x46049200",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1dc",
+      "expected": "0x46049200",
+      "replacement": "0xE7B000D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1e0",
+      "expected": "0xE7B000E4",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA68",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1e4",
+      "expected": "0x0C000000",
+      "replacement": "0xE7A800D4",
+      "expected_relocations": "R_MIPS_26:func_150ADA68",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1e8",
+      "expected": "0xE7A800E8",
+      "replacement": "0x46180182",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1ec",
+      "expected": "0x46180182",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA68",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1f0",
+      "expected": "0x0C000000",
+      "replacement": "0xE7A600C0",
+      "expected_relocations": "R_MIPS_26:func_150ADA68",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1f4",
+      "expected": "0xE7A600D4",
+      "replacement": "0x46180282",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1f8",
+      "expected": "0x46180282",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA68",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x1fc",
+      "expected": "0x0C000000",
+      "replacement": "0xE7AA00C4",
+      "expected_relocations": "R_MIPS_26:func_150ADA68",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x200",
+      "expected": "0xE7AA00D8",
+      "replacement": "0x46180402",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x204",
+      "expected": "0x46180402",
+      "replacement": "0x0C000000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_26:func_150ADA68",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x208",
+      "expected": "0x0C000000",
+      "replacement": "0xE7B000C8",
+      "expected_relocations": "R_MIPS_26:func_150ADA68",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x20c",
+      "expected": "0xE7B000DC",
+      "replacement": "0x3C010000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_HI16:D_8009FE40",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x210",
+      "expected": "0xC7D20000",
+      "replacement": "0xC4320000",
+      "expected_relocations": "-",
+      "replacement_relocations": "R_MIPS_LO16:D_8009FE40",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x220",
+      "expected": "0xC7A600E0",
+      "replacement": "0xC7A600CC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x224",
+      "expected": "0xC7AA0104",
+      "replacement": "0xC7AA00F0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x230",
+      "expected": "0xC7A80108",
+      "replacement": "0xC7A800F4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x234",
+      "expected": "0xC7A400E4",
+      "replacement": "0xC7A400D0",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x240",
+      "expected": "0xC7B000E8",
+      "replacement": "0xC7B000D4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x248",
+      "expected": "0xE7B200C8",
+      "replacement": "0xE7B200B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x24c",
+      "expected": "0xC7B2010C",
+      "replacement": "0xC7B200F8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x254",
+      "expected": "0xE7AA00CC",
+      "replacement": "0xE7AA00B8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x260",
+      "expected": "0xE7A800D0",
+      "replacement": "0xE7A800BC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x268",
+      "expected": "0x461A3280",
+      "replacement": "0x461E3280",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x270",
+      "expected": "0xE7AA00F0",
+      "replacement": "0xE7AA00DC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x278",
+      "expected": "0x461A8480",
+      "replacement": "0x461E8480",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x280",
+      "expected": "0xE7B200F8",
+      "replacement": "0xE7B200E4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x288",
+      "expected": "0x46000506",
+      "replacement": "0x46000586",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x290",
+      "expected": "0x46000586",
+      "replacement": "0x46000506",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x2a4",
+      "expected": "0x4604A202",
+      "replacement": "0x4604B202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x2b0",
+      "expected": "0xC7B000EC",
+      "replacement": "0xC7B000D8",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x2b8",
+      "expected": "0x27AF00F0",
+      "replacement": "0x27AF00DC",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x2e0",
+      "expected": "0x4604B202",
+      "replacement": "0x4604A202",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x314",
+      "expected": "0x27A500D4",
+      "replacement": "0x03C02825",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x318",
+      "expected": "0x27A700C8",
+      "replacement": "0x27A700B4",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x330",
+      "expected": "0x461E9101",
+      "replacement": "0x461A9101",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x33c",
+      "expected": "0x4608F03C",
+      "replacement": "0x4608D03C",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x344",
+      "expected": "0x4501FF80",
+      "replacement": "0x4501FF7F",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    },
+    {
+      "filename": "generated_E7970",
+      "function": "func_150BA55C",
+      "offset": "0x390",
+      "expected": "0x27BD0118",
+      "replacement": "0x27BD0108",
+      "expected_relocations": "-",
+      "replacement_relocations": "-",
+      "note": "Normalize attached-actor accumulator proved frame, finite operand roles and cached-address schedule",
+      "insert_after": "",
+      "insert_after_relocations": "",
+      "omit": "false"
+    }
+  ],
+  "relocated_guards": 19,
+  "insertions": 0,
+  "omissions": 0,
+  "retail_unbound_sha256": "4f32f17fd5b0cc968715b194f37db2d967b6a064fd493f69562ad6b33fb2df6a",
+  "retail_sha256": "13844d83266d5bb3e1320e46b0de4677032a7764b4a64af70a1499561e545858"
+}
