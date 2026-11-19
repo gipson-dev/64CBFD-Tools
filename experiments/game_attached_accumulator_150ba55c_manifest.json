@@ -1,0 +1,249 @@
+{
+  "name": "func_150BA55C",
+  "source": "conker/src/game/generated_E7970.c",
+  "asm": "conker/asm/E7970.s",
+  "entry": 353084764,
+  "rom": 948748,
+  "size": 916,
+  "baseline_manifest_sha256": "8935bd1554b6fc652f0052fd15561ac76485e1260d5d450623a7809f589c0ef8",
+  "frozen_inputs": 1800,
+  "declarations": "typedef struct { f32 x, y, z; } AttachedEmitterPointE7970;\nextern f32 D_800BE9A4;\nextern f32 D_8009FE30, D_8009FE34, D_8009FE38, D_8009FE3C;\nextern f32 D_8009FE40, D_8009FE44, D_8009FE48, D_8009FE4C;\nextern f32 D_8009FE50, D_8009FE54, D_8009FE58;\nf32 func_150ADA68(void);\nvoid func_1515C244(void *, AttachedEmitterPointE7970 *, f32 *, f32 *);\nvoid func_15143794(s16, s16, f32, AttachedEmitterPointE7970 *);\nvoid *func_1518A3C0(AttachedEmitterPointE7970 *, AttachedEmitterPointE7970 *, f32,\n    AttachedEmitterPointE7970 *, AttachedEmitterPointE7970 *, f32, f32, u8, s16,\n    u8, s32, u8, s32);\n",
+  "body": "/* Emit attached effects while the live fractional accumulator is strictly above one. */\nvoid func_150BA55C(u8 *effect) {\n    EffectPayload *payload = (EffectPayload *)(effect + 0x28);\n    u8 *source = payload->source;\n    AttachedEmitterPointE7970 origin;\n    f32 radius, unusedHeight;\n    AttachedEmitterPointE7970 acceleration;\n    f32 sizeFactor;\n    AttachedEmitterPointE7970 position;\n    AttachedEmitterPointE7970 rotation;\n    AttachedEmitterPointE7970 velocity;\n    f32 accelerationBase, accelerationRange;\n    f32 sample, spread, sizeSample, speedSample;\n    u32 firstRandom, secondRandom, durationRandom;\n    s32 heading;\n\n    if (*(u32 *)source == 0 || payload->sourceByte != source[0x3B]) {\n        *(s16 *)(effect + 0xE) = -1;\n        return;\n    }\n    if (*(u32 *)(source + 0x1D4) == 0) return;\n\n    sample = func_150ADA68();\n    payload->value += (D_8009FE30 + sample * D_8009FE34) * D_800BE9A4;\n    if (1.0f < payload->value) {\n        sizeFactor = (*(f32 *)(source + 0x14C) + *(f32 *)(source + 0x150)) * 0.5f;\n        heading = (*(u16 *)(source + 0x76) >> 8) - 0x40;\n        func_1515C244(source, &origin, &radius, &unusedHeight);\n        accelerationBase = D_8009FE38;\n        accelerationRange = D_8009FE3C;\n        acceleration.y = 0.0f;\n        do {\n            firstRandom = (u32)func_150ADA20();\n            secondRandom = (u32)func_150ADA20();\n            func_15143794((s16)(firstRandom % 127U + heading - 63),\n                (s16)(secondRandom % 31U - 50), radius, &position);\n            position.y *= *(f32 *)(source + 0xF0);\n            position.x += origin.x;\n            position.y += origin.y;\n            position.z += origin.z;\n            rotation.x = func_150ADA68() * 360.0f;\n            rotation.y = func_150ADA68() * 360.0f;\n            rotation.z = func_150ADA68() * 360.0f;\n            sample = func_150ADA68();\n            spread = sample * D_8009FE40 + D_8009FE44;\n            velocity.x = (position.x - origin.x) * spread;\n            velocity.y = (position.y - origin.y) * spread;\n            velocity.z = (position.z - origin.z) * spread;\n            acceleration.x = func_150ADA68() * accelerationRange + accelerationBase;\n            acceleration.z = func_150ADA68() * accelerationRange + accelerationBase;\n            sizeSample = func_150ADA68();\n            speedSample = func_150ADA68();\n            durationRandom = (u32)func_150ADA20();\n            func_1518A3C0(&position, &rotation,\n                (sizeSample * D_8009FE48 + D_8009FE4C) * sizeFactor, &velocity,\n                &acceleration, speedSample * D_8009FE50 + D_8009FE54,\n                D_8009FE58, 7, durationRandom % 41U + 60, 0, 0,\n                effect[0xC], effect[1]);\n            payload->value -= 1.0f;\n        } while (1.0f < payload->value);\n    }\n}\n",
+  "raw_sha256": "f15047c12d789d1d967f6ba5f8b6aff151880d272d3a25591d0039745951b43e",
+  "refs": {
+    "132": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "148": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE30"
+      ]
+    ],
+    "152": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE30"
+      ]
+    ],
+    "156": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE34"
+      ]
+    ],
+    "160": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE34"
+      ]
+    ],
+    "164": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_26",
+        "func_1515C244"
+      ]
+    ],
+    "276": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE38"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE38"
+      ]
+    ],
+    "284": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE3C"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE3C"
+      ]
+    ],
+    "300": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE40"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE40"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "336": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "420": [
+      [
+        "R_MIPS_26",
+        "func_15143794"
+      ]
+    ],
+    "484": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "496": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "508": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "520": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "532": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE44"
+      ]
+    ],
+    "536": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE44"
+      ]
+    ],
+    "604": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "620": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "636": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "644": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "652": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "660": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE48"
+      ]
+    ],
+    "664": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE48"
+      ]
+    ],
+    "668": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE4C"
+      ]
+    ],
+    "672": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE4C"
+      ]
+    ],
+    "680": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE50"
+      ]
+    ],
+    "684": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE50"
+      ]
+    ],
+    "692": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE54"
+      ]
+    ],
+    "708": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE54"
+      ]
+    ],
+    "712": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE58"
+      ]
+    ],
+    "724": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE58"
+      ]
+    ],
+    "804": [
+      [
+        "R_MIPS_26",
+        "func_1518A3C0"
+      ]
+    ]
+  }
+}

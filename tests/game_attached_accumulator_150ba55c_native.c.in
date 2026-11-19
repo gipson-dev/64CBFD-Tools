@@ -1,0 +1,76 @@
+#include <ultra64.h>
+typedef struct { void *source; u8 sourceByte; u8 reserved[3]; f32 value; } EffectPayload;
+s32 func_150ADA20(void);
+@DECLARATIONS@
+typedef union { u32 word; f32 real; } FloatWord;
+static u32 word(f32 v) { FloatWord a; a.real=v; return a.word; }
+static f32 real(u32 v) { FloatWord a; a.word=v; return a.real; }
+typedef struct {
+ u32 active;u8 pad04[55];u8 identity;u8 pad3c[58];u16 heading;
+ u8 pad78[120];f32 ratio;u8 padf4[88];f32 width,height;
+ u8 pad154[128];u32 ready;
+} Actor;
+typedef struct { u8 field00,slot,pad02[10],mode,flags;s16 life;s8 cleanup,callback;u8 pad12[22];EffectPayload payload; } Effect;
+typedef char actor_size[(sizeof(Actor)==472)?1:-1];
+typedef char payload_offset[(__builtin_offsetof(Effect,payload)==40)?1:-1];
+f32 D_800BE9A4;
+f32 D_8009FE30,D_8009FE34,D_8009FE38,D_8009FE3C,D_8009FE40,D_8009FE44;
+f32 D_8009FE48,D_8009FE4C,D_8009FE50,D_8009FE54,D_8009FE58;
+static f32 *constants[11]={&D_8009FE30,&D_8009FE34,&D_8009FE38,&D_8009FE3C,&D_8009FE40,&D_8009FE44,&D_8009FE48,&D_8009FE4C,&D_8009FE50,&D_8009FE54,&D_8009FE58};
+static Actor actor,other;
+static Effect effect;
+static AttachedEmitterPointE7970 *origin,*position,*rotation,*velocity,*acceleration;
+static f32 *radius,*height;
+static const u8 *reader;
+extern const u8 fixture_rows[],fixture_end[];
+static u32 case_index,check_index,wanted_value,actual_value;
+static u32 seed,route,mutation,events_left,calls,ri,fi,emissions;
+static void die(void) __attribute__((noreturn));
+static void die(void) {
+ char msg[36];u32 v[4]={case_index,check_index,wanted_value,actual_value},i,j;
+ for(i=0;i<4;i++){for(j=0;j<8;j++)msg[i*9+j]="0123456789abcdef"[(v[i]>>(28-4*j))&15];msg[i*9+8]=i==3?'\n':' ';}
+ __asm__ volatile("int $0x80"::"a"(4),"b"(2),"c"(msg),"d"(36):"memory");
+ __asm__ volatile("int $0x80"::"a"(1),"b"(3):"memory");__builtin_unreachable();
+}
+static u32 next(void){u32 v;if(reader+4>fixture_end)die();v=(u32)reader[0]|((u32)reader[1]<<8)|((u32)reader[2]<<16)|((u32)reader[3]<<24);reader+=4;return v;}
+static void check(u32 v){wanted_value=next();actual_value=v;check_index++;if(wanted_value!=actual_value)die();}
+static void vector(AttachedEmitterPointE7970 *p){check(word(p->x));check(word(p->y));check(word(p->z));}
+static void event(u32 target,u32 n,const u32 *a){u32 i;if(!events_left--)die();check(target);check(n);for(i=0;i<n;i++)check(a[i]);if(target==0x1518a3c0){vector(position);vector(rotation);vector(velocity);vector(acceleration);}}
+static void effect_call(u32 target){
+ u32 i;u32 n=calls++;
+ if(mutation&1){effect.payload.source=&other;effect.mode=(u8)(seed+n*7);effect.slot=(u8)(seed+n*13);actor.ratio=.5f+n*.125f;actor.width=40.f+n;actor.height=60.f+n;actor.heading=(u16)(n*313);}
+ if(mutation&2){for(i=0;i<11;i++)*constants[i]=(i+1)*.125f+n*.015625f;D_800BE9A4=.25f;}
+ if(mutation&4){
+  if(origin){origin->x=((s32)seed-100)*.125f+n*.25f;origin->y=origin->x+1.f;origin->z=origin->x+2.f;}
+  if(radius)*radius=((s32)seed-100)*.125f+n*.25f;
+  if(height)*height=((s32)seed-100)*.125f+n*.25f;
+ }
+ if(mutation&8){AttachedEmitterPointE7970 *v[4];v[0]=position;v[1]=rotation;v[2]=velocity;v[3]=acceleration;for(i=0;i<4;i++)if(v[i]){v[i]->x=((s32)seed-80)*.25f+n;if(i!=3||target==0x1518a3c0)v[i]->y=v[i]->x+1.f;v[i]->z=v[i]->x+2.f;}}
+ if((mutation&16)&&target==0x1518a3c0)effect.payload.value=emissions==1?2.25f:.25f;
+}
+s32 func_150ADA20(void){static const u32 values[8]={0,0xffffffffu,0x80000000u,0x7fffffffu,126,127,30,31};u32 v;event(0x150ada20,0,0);effect_call(0x150ada20);v=values[(seed+ri)%8]+ri*0x1020304u;ri++;return(s32)v;}
+f32 func_150ADA68(void){f32 v;event(0x150ada68,0,0);effect_call(0x150ada68);v=((seed+fi*37)%257)/256.f;fi++;return v;}
+void func_1515C244(void *p,AttachedEmitterPointE7970 *o,f32 *r,f32 *h){u32 a[4]={0xffff0001,0xffff0010,0xffff0011,0xffff0012};if(p!=&actor)die();origin=o;radius=r;height=h;event(0x1515c244,4,a);effect_call(0x1515c244);o->x=((s32)seed-128)*.125f;o->y=((s32)seed-128)*2*.125f;o->z=((s32)seed-128)*3*.125f;*r=2.5f;*h=3.75f;}
+void func_15143794(s16 yaw,s16 pitch,f32 r,AttachedEmitterPointE7970 *p){u32 a[4]={(u32)(s32)yaw,(u32)(s32)pitch,word(r),0xffff0013};position=p;event(0x15143794,4,a);effect_call(0x15143794);p->x=((s32)(seed%17)-8)*.25f+.5f;p->y=p->x+1.f;p->z=p->x+2.f;}
+void *func_1518A3C0(AttachedEmitterPointE7970 *p,AttachedEmitterPointE7970 *r,f32 size,AttachedEmitterPointE7970 *v,AttachedEmitterPointE7970 *a,f32 speed,f32 damp,u8 kind,s16 life,u8 zero,s32 zero2,u8 mode,s32 slot){
+ u32 args[13]={0xffff0013,0xffff0014,word(size),0xffff0015,0xffff0016,word(speed),word(damp),kind,(u32)(s32)life,zero,(u32)zero2,mode,(u32)slot};
+ if(position!=p)die();rotation=r;velocity=v;acceleration=a;event(0x1518a3c0,13,args);emissions++;effect_call(0x1518a3c0);return(void*)0x12345678;
+}
+@BODY@
+__attribute__((force_align_arg_pointer)) void _start(void){
+ u32 count,i,j;reader=fixture_rows;count=next();
+ for(i=0;i<count;i++){
+  case_index=i;check_index=0;seed=next();route=next();mutation=next();
+  effect.field00=(u8)(seed*11+90);effect.slot=(u8)(29+seed*11+90);effect.mode=(u8)(12*29+seed*11+90);effect.flags=0;effect.life=15;
+  effect.payload.source=&actor;effect.payload.sourceByte=(u8)seed;effect.payload.value=real(next());
+  actor.active=route==0?0:1;actor.identity=(u8)(seed+(route==1));actor.ready=route==2?0:1;actor.heading=(u16)(seed*257);
+  actor.ratio=real(next());actor.width=3.25f;actor.height=4.75f;
+  for(j=0;j<11;j++)*constants[j]=real(next());D_800BE9A4=.5f;
+  calls=ri=fi=emissions=0;origin=position=rotation=velocity=acceleration=0;radius=height=0;events_left=next();
+  func_150BA55C((u8*)&effect);if(events_left)die();
+  check(word(effect.payload.value));check((u32)(u16)effect.life);check(effect.mode);check(effect.slot);check(effect.payload.source==&other?0x80000:0x60000);
+  check(word(actor.ratio));check(word(actor.width));check(word(actor.height));check(actor.heading);
+  for(j=0;j<11;j++)check(word(*constants[j]));check(word(D_800BE9A4));
+ }
+ if(reader!=fixture_end)die();__asm__ volatile("int $0x80"::"a"(1),"b"(0):"memory");__builtin_unreachable();
+}
