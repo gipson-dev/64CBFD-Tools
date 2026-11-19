@@ -1,0 +1,144 @@
+{
+  "name": "func_150BAFEC",
+  "source": "conker/src/game/generated_E8090.c",
+  "asm": "conker/asm/E8090.s",
+  "entry": 353087468,
+  "rom": 951452,
+  "size": 628,
+  "body_words": 157,
+  "slot_words": 157,
+  "frame": 184,
+  "frozen_inputs": 1835,
+  "baseline_manifest_sha256": "98ee2ee62201b05483a2347d30e05ed13635b8ab13fdd73a592776d891cf8325",
+  "body": "/* Build an angular emitter from the callback's fifteen o32 argument words. */\n/* Unused words keep their original positions in the shared callback interface. */\ns32 func_150BAFEC(s32 unused0, s16 unused1, f32 x, f32 y, f32 z,\n                  f32 unused5, f32 unused6, f32 unused7, u32 heading,\n                  u8 unused9, f32 unused10, s32 unused11, f32 unused12,\n                  s32 unused13, u8 context) {\n    AngularEmitterDescriptorE8090 descriptor;\n    void *result;\n    f32 extra;\n    s16 pitch;\n    f32 headingCosine;\n    f32 headingSine;\n    f32 pitchCosine;\n    f32 pitchSine;\n    f32 speed;\n\n    headingCosine = func_151423D8((u8)(heading - 64U));\n    headingSine = func_151423D8((u8)heading);\n    descriptor.field1D = 41;\n    descriptor.field08 = 0xE03;\n    descriptor.field00 = 0x200005;\n    descriptor.field04 = 0;\n    descriptor.field0A = (u32)func_150ADA20() % 36U + 70U;\n    descriptor.field0C = 0;\n    descriptor.field10 = 0;\n    descriptor.field18 = 176;\n    descriptor.field19 = 160;\n    descriptor.field1A = 42;\n    descriptor.field14 = 64;\n    descriptor.field15 = 11;\n    descriptor.field16 = 106;\n    descriptor.field17 = 255;\n    descriptor.field1B = (u32)func_150ADA20() % 52U + 90U;\n    descriptor.field1C = 255;\n    descriptor.field60 = 3;\n    descriptor.field61 = 3;\n    descriptor.field28 = descriptor.field2C = func_150ADA68() * 165.0f + 800.0f;\n    descriptor.position[0] = x;\n    descriptor.position[1] = y;\n    descriptor.position[2] = z;\n    pitch = (u32)func_150ADA20() % 11U - 12U;\n    pitchCosine = func_151423D8((u8)(pitch - 64));\n    pitchSine = func_151423D8((u8)pitch);\n    speed = func_150ADA68() * 11.0f + 15.0f;\n    descriptor.flags = 0xE05;\n    descriptor.velocity[0] = (speed * pitchSine) * headingCosine;\n    descriptor.velocity[1] = -speed * pitchCosine;\n    descriptor.velocity[2] = (speed * pitchSine) * headingSine;\n    descriptor.field54 = 0.0f;\n    if ((u32)func_150ADA20() & 1U) descriptor.flags |= 0x40;\n    if ((u32)func_150ADA20() & 1U) descriptor.flags |= 0x80;\n    descriptor.field62 = 2;\n    descriptor.field63 = -1;\n    descriptor.field1E = 22;\n    descriptor.field20 = 11;\n    descriptor.field22 = 1;\n    descriptor.field24 = D_8009FE74;\n    extra = D_8009FE78;\n    result = func_15130374(&descriptor, 0, 4, context, 1);\n    if (result != 0) memcpy((u8 *)result + 0xA8, &extra, 4);\n    return 1;\n}\n",
+  "declarations": "/* The descriptor's unspecified words and tail are retained for the factory. */\ntypedef struct {\n    u32 field00, field04;\n    s16 field08, field0A;\n    u32 field0C, field10;\n    u8 field14, field15, field16, field17;\n    u8 field18, field19, field1A, field1B;\n    u8 field1C, field1D;\n    s16 field1E, field20, field22;\n    f32 field24, field28, field2C;\n    f32 position[3];\n    u32 retained3C[3];\n    f32 velocity[3];\n    f32 field54;\n    u32 flags;\n    u32 retained5C;\n    u8 field60, field61;\n    s8 field62, field63;\n    u8 retained64[12];\n} AngularEmitterDescriptorE8090;\nextern f32 D_8009FE74, D_8009FE78;\nf32 func_151423D8(u8);\nvoid *func_15130374(void *, u8, s32, u8, s32);\nvoid *memcpy(void *, const void *, size_t);\n",
+  "raw_sha256": "15112d185681476053c22bab1e4ba5c876d11670081d3c300b52080db3354b56",
+  "refs": {
+    "36": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "48": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "88": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "176": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "284": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "320": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "332": [
+      [
+        "R_MIPS_26",
+        "func_151423D8"
+      ]
+    ],
+    "340": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "440": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "468": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "500": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE74"
+      ]
+    ],
+    "504": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE74"
+      ]
+    ],
+    "508": [
+      [
+        "R_MIPS_HI16",
+        "D_8009FE78"
+      ]
+    ],
+    "512": [
+      [
+        "R_MIPS_LO16",
+        "D_8009FE78"
+      ]
+    ],
+    "580": [
+      [
+        "R_MIPS_26",
+        "func_15130374"
+      ]
+    ],
+    "600": [
+      [
+        "R_MIPS_26",
+        "memcpy"
+      ]
+    ]
+  },
+  "metadata_groups": [
+    [
+      [
+        "D_8009FE78",
+        "D_800A0278"
+      ],
+      [
+        "D_800A0278",
+        "D_8009FE78"
+      ]
+    ],
+    [
+      [
+        "D_8009FE74",
+        "D_80091804",
+        "D_800A0274"
+      ],
+      [
+        "D_80091804",
+        "D_800A0274",
+        "D_8009FE74"
+      ]
+    ]
+  ]
+}
