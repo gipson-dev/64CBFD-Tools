@@ -1,0 +1,55 @@
+#include <ultra64.h>
+#include "structs.h"
+s32 func_1000EF40(struct57 *,struct57 *,s32 *,s32,s32,s32,u16 *);
+void func_1000FD38(s32,s32,s32);
+u16 func_1000FA64(u16,s16,s16,s16,s32,u16,s16,s32,void *,s32,s32,s32);
+@SOURCE@
+_Static_assert(sizeof(void*)==4&&sizeof(struct260)==36&&sizeof(MapParticleSoundRecord131F30)==52,"SDK32 record");
+_Static_assert(__builtin_offsetof(MapParticleSoundRecord131F30,state)==40&&__builtin_offsetof(MapParticleSoundState131F30,timer)==8&&__builtin_offsetof(MapParticleSoundSource131F30,state)==20,"source layout");
+static struct {u32 left[4];MapParticleSoundRecord131F30 object;u32 right[4];} record,expected;
+static MapParticleSoundSource131F30 first,second,expected_first,expected_second;
+static u32 calls,mutation,active,failed,observed_cases;
+static void check(s32 v){if(!v)failed=1;}
+s32 func_1000EF40(struct57*a,struct57*b,s32*c,s32 d,s32 e,s32 f,u16*g){return 0;}
+void func_1000FD38(s32 callback,s32 object,s32 zero){
+ check(active&&calls++==0&&callback==(s32)func_1000EF40&&object==(s32)&first&&zero==0&&record.object.state.timer==300);
+ if(mutation&1)record.object.state.source=&second;
+ if(mutation&2){MapParticleSoundSource131F30*p=record.object.state.source;p->x=-32767;p->y=32766;p->z=-292;}
+ if(mutation&4)record.object.state.timer=-1;
+}
+u16 func_1000FA64(u16 sound,s16 x,s16 y,s16 z,s32 volume,u16 distance,s16 pitch,s32 callback,void *object,s32 zero,s32 flags,s32 final){
+ const MapParticleSoundSource131F30*p=(mutation&1)?&expected_second:&expected_first;
+ check(active&&calls++==1&&sound==0x236&&x==p->x&&y==p->y&&z==p->z&&volume==0x4000&&distance==1500&&pitch==1000&&callback==(s32)func_1000EF40&&object==((mutation&1)?(void*)&second:(void*)&first)&&zero==0&&flags==8&&final==0);return 0xABCD;
+}
+void (*D_8008A8D8[74])(struct260*,s32,u8);
+@PARENT@
+typedef void (*Update)(struct260*,s32,u8);
+static s32 variant(Update fn){
+ static const s16 coords[3][3]={{-32768,-1,32767},{0,0,0},{123,-456,789}};
+ static const u8 states[4]={0,1,2,255};u32 command,state,which,parent,i;u8*a=(u8*)&record,*b=(u8*)&expected;
+ failed=0;
+ for(command=0;command<256;command++)for(state=0;state<4;state++)for(mutation=0;mutation<8;mutation++)for(which=0;which<3;which++)for(parent=0;parent<2;parent++){
+  for(i=0;i<sizeof(record);i++)a[i]=(u8)(i*29+command+mutation);
+  for(i=0;i<sizeof(first);i++)((u8*)&first)[i]=(u8)(i*13+state);
+  for(i=0;i<sizeof(second);i++)((u8*)&second)[i]=(u8)(i*17+which);
+  first.x=coords[which][0];first.y=coords[which][1];first.z=coords[which][2];first.state=states[state];second.x=32767;second.y=-32768;second.z=-12345;
+  record.object.header.unk13=45;record.object.state.source=&first;record.object.state.timer=-32477;
+  for(i=0;i<sizeof(record);i++)b[i]=a[i];
+  for(i=0;i<sizeof(first);i++)((u8*)&expected_first)[i]=((u8*)&first)[i];
+  for(i=0;i<sizeof(second);i++)((u8*)&expected_second)[i]=((u8*)&second)[i];
+  active=command==0x38&&states[state]==1;calls=0;
+  if(active){expected.object.state.timer=300;if(mutation&1)expected.object.state.source=&second;
+   if(mutation&2){MapParticleSoundSource131F30*p=(mutation&1)?&expected_second:&expected_first;p->x=-32767;p->y=32766;p->z=-292;}
+   if(mutation&4)expected.object.state.timer=-1;}
+  D_8008A8D8[45]=fn;
+  if(parent)func_15149434(&record.object.header,0xDEADBEEF,(u8)command);else fn(&record.object.header,0xDEADBEEF,(u8)command);
+  if(calls!=(active?2u:0u))failed=1;
+  for(i=0;i<sizeof(record);i++)if(a[i]!=b[i])failed=1;
+  for(i=0;i<sizeof(first);i++)if(((u8*)&first)[i]!=((u8*)&expected_first)[i])failed=1;
+  for(i=0;i<sizeof(second);i++)if(((u8*)&second)[i]!=((u8*)&expected_second)[i])failed=1;
+  if(failed)return 1;observed_cases++;
+ }
+ return 0;
+}
+int run(void){@RUN@ return 0;}
+@START@
