@@ -14,6 +14,7 @@ from tools.experiments.game_list_owner_make import actual_Make
 from tools.experiments import game_embedded_dual_phase_position_update_match as linker
 from tools.check_game_data_layout import audit_layout
 from tools.match_progress import load_elf_functions
+from tools.experiments.game_list_historical_image import historical_dependencies
 
 ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve()
 OUT=ROOT/'conker/build/game-list-unlink-1517e134-private'
@@ -92,8 +93,9 @@ def qualify():
     assert caller.read_bytes()==(BASE/caller_object).read_bytes()
     route=actual_Make(ROOT,WHERE,objects[0],after,guards,SOURCE,OBJECT,SPEC['selected'],'target',8)
     caller_route=actual_Make(ROOT,WHERE,caller,newc,guards,CALLER,caller_object,SPEC['selected_caller'],'caller',16)
-    with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT=OBJECT,LINKER='conker/build/conker.ld'):
-        image=linker.link_image(ROOT,WHERE,objects[0],'image')
+    with historical_dependencies(ROOT,WHERE,SOURCE,SPEC)as script:
+        with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT=OBJECT,LINKER=script):
+            image=linker.link_image(ROOT,WHERE,objects[0],'image')
     expected=(BASE/'conker/build/conker.us.elf').read_bytes();assert image.read_bytes()==expected
     fs,_,_=load_elf_functions(image,'mips-linux-gnu-objdump');assert len(fs)==6051
     report=dict(raw_words=31,normalized_words=30,frame=24,omitted_unused_home_words=1,unchanged_owner_neighbors=7,

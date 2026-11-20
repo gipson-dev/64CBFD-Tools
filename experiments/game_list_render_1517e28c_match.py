@@ -11,6 +11,7 @@ from tools.experiments import game_embedded_dual_phase_position_update_match as 
 from tools.experiments.game_actor_state_tick_integration import elf_slot_offset,symbol_rows
 from tools.match_progress import load_elf_functions
 from tools.check_game_data_layout import audit_layout
+from tools.experiments.game_list_historical_image import historical_dependencies
 from tools.tests.game_list_render_1517e28c_normalizer import derive,OUT
 
 def rotate(image):
@@ -75,8 +76,10 @@ def qualify():
     caller=(root/s.CALLER).read_text().replace('s32  func_1517E28C(s32 arg0, s32 arg1);','Gfx *func_1517E28C(Gfx *commands, s32 category);').replace('commands = (Gfx *)func_1517E28C((s32)commands, D_800BE9F0);','commands = func_1517E28C(commands, D_800BE9F0);')
     (where/'caller-after-diagnostics.txt').write_text((s.OUT/'banked-screen/caller-typed-diagnostics.txt').read_text())
     caller_route=actual_Make(root,where,base/'conker/build/src/game_45B80.c.o',s.OUT/'banked-screen/caller-typed.o',guards,s.CALLER,'conker/build/src/game_45B80.c.o',caller,'caller',16)
-    with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT=object_path,LINKER='conker/build/conker.ld'):
-        image=linker.link_image(root,where,padded[0],'image')
+    manifest=json.loads(Path(__file__).with_name('game_list_render_1517e28c_match_manifest.json').read_text())
+    with historical_dependencies(root,where,s.SOURCE,manifest)as script:
+        with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT=object_path,LINKER=script):
+            image=linker.link_image(root,where,padded[0],'image')
     previous=(base/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(previous)
     at=elf_slot_offset(prediction,s.ENTRY,540);retail=(root/'conker/conker.us.bin').read_bytes()[s.ROM:s.ROM+540]
     prediction[at:at+540]=retail

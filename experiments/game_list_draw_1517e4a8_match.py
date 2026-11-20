@@ -11,6 +11,7 @@ from tools.experiments import game_embedded_dual_phase_position_update_match as 
 from tools.experiments.game_actor_state_tick_integration import elf_slot_offset,symbol_rows
 from tools.match_progress import load_elf_functions
 from tools.check_game_data_layout import audit_layout
+from tools.experiments.game_list_historical_image import historical_dependencies
 from tools.tests.game_list_draw_1517e4a8_normalizer import derive,OUT
 BASE=OUT/'baseline'
 
@@ -77,8 +78,9 @@ def qualify():
             lo=info['value'];hi=lo+info['size'];return(parsed[0][lo:hi],{at-lo:rs for at,rs in parsed[2].items()if lo<=at<hi})
         if content(a,f)!=content(b,h):changed.append(name)
     assert changed==[s.FUNCTION],changed
-    with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT='conker/build/src/game/generated_1AB530.c.o',LINKER='conker/build/conker.ld'):
-        image=linker.link_image(root,where,padded[0],'image')
+    with historical_dependencies(root,where,s.SOURCE,s.SPEC)as script:
+        with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT='conker/build/src/game/generated_1AB530.c.o',LINKER=script):
+            image=linker.link_image(root,where,padded[0],'image')
     previous=(BASE/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(previous)
     at=elf_slot_offset(prediction,s.ENTRY,1444);retail=(root/'conker/conker.us.bin').read_bytes()[s.ROM:s.ROM+1444]
     prediction[at:at+1444]=retail

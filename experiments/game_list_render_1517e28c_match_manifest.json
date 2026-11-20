@@ -140,6 +140,26 @@
     {
       "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
       "guards_sha256": "c769155389ef34f5d2412143adb3cb474b44f497c195c4b0c273eba0fa3ac83f"
+    },
+    {
+      "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+      "guards_sha256": "8f51a0e1d126a3860ed86d675d2b47c7583e7f49adeb14c9a03bd005ab5d13bf"
+    }
+  ],
+  "historical_image_dependencies": [
+    {
+      "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+      "guards_sha256": "8f51a0e1d126a3860ed86d675d2b47c7583e7f49adeb14c9a03bd005ab5d13bf",
+      "overrides": [
+        {
+          "source": "conker/src/game/generated_124920.c",
+          "source_sha256": "da3a6a46869a46d6806a16660540411eb67cd3d166ab85eb62672d62bf0328cd",
+          "object": "conker/build/src/game/generated_124920.c.o",
+          "live_sha256": "131c10954c22bba89b27a80ea847d939030f6b382e7d5ba6dbcdcf0940a157c3",
+          "frozen": "conker/build/game-actor-randomized-effect-150f97ec-private/baseline/conker/build/src/game/generated_124920.c.o",
+          "frozen_sha256": "c0a46d99f9f59bd861514b0baca9814773cfdef8ebbad5071c8c41ac7026722d"
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,133 @@
+{
+  "function": "func_150F97EC",
+  "source": "conker/src/game/generated_124920.c",
+  "entry": 353343468,
+  "rom": 1207452,
+  "body": "/* Transform the actor's emitter point and submit an effect with randomized parameters. */\nvoid func_150F97EC(struct127 *actor, u8 priority, s32 parameter) {\n    struct17 position;\n    f32 sample;\n    f32 scale[2];\n    struct17 *input;\n    struct17 *output;\n    f32 span;\n    u32 random[2];\n\n    if (actor->unk1D4 != NULL) {\n        input = (struct17 *)D_800A1C48;\n        output = &position;\n        func_15145EA4(&input, &output, (u8 *)actor->unk1D4 + D_80088B50 * 64, 1);\n        span = 1.0f;\n        sample = func_150ADA68();\n        scale[1] = sample * span + 2.0f;\n        scale[0] = func_150ADA68() * 14.0f + 28.0f;\n        random[0] = func_150ADA20();\n        random[1] = func_150ADA20();\n        func_15102B38((u8 *)actor, D_80088B50, D_800A1C48, D_800A1C54, scale,\n            random[0] % 3U + 4, random[1] % 156U + 100,\n            func_150ADA68() * 300.0f + 400.0f, (f32 *)&position,\n            255, 0, -1, priority, parameter);\n    }\n}",
+  "preamble": "extern u8 D_80088B50;\nextern f32 D_800A1C48[3], D_800A1C54[3];\ns32 func_150ADA20(void);\nvoid func_15145EA4(struct17 **, struct17 **, u8 *, s32);\nu8 *func_15102B38(u8 *, u8, f32 *, f32 *, f32 *, s16, u8, f32, f32 *, u8, s32, s16, u8, s32);",
+  "raw_sha256": "492ac73a2088135f7f3ab134e297afa9abf4e9589b6bc76122f4e9e2efaec5a8",
+  "raw_refs": {
+    "24": [
+      [
+        "R_MIPS_HI16",
+        "D_800A1C48"
+      ]
+    ],
+    "28": [
+      [
+        "R_MIPS_LO16",
+        "D_800A1C48"
+      ]
+    ],
+    "52": [
+      [
+        "R_MIPS_HI16",
+        "D_80088B50"
+      ]
+    ],
+    "56": [
+      [
+        "R_MIPS_LO16",
+        "D_80088B50"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_26",
+        "func_15145EA4"
+      ]
+    ],
+    "88": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "152": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "160": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_150ADA68"
+      ]
+    ],
+    "252": [
+      [
+        "R_MIPS_HI16",
+        "D_80088B50"
+      ]
+    ],
+    "304": [
+      [
+        "R_MIPS_LO16",
+        "D_80088B50"
+      ]
+    ],
+    "260": [
+      [
+        "R_MIPS_HI16",
+        "D_800A1C48"
+      ]
+    ],
+    "296": [
+      [
+        "R_MIPS_LO16",
+        "D_800A1C48"
+      ]
+    ],
+    "264": [
+      [
+        "R_MIPS_HI16",
+        "D_800A1C54"
+      ]
+    ],
+    "292": [
+      [
+        "R_MIPS_LO16",
+        "D_800A1C54"
+      ]
+    ],
+    "328": [
+      [
+        "R_MIPS_26",
+        "func_15102B38"
+      ]
+    ]
+  },
+  "profile": [
+    "-O2",
+    "-g3"
+  ],
+  "raw_words": 88,
+  "retail_words": 89,
+  "frame": 112,
+  "inputs": {
+    "conker/src/game/generated_124920.c": "b3d37a2460fac993780e8a3024e0cdd8362ef7874e1b7f688135fcf63e29f13b",
+    "conker/src/game/generated_50D80.c": "d277597deae6d821577f2d51950133cb199e9dcb23afb32c3df5f85b595938f8",
+    "conker/asm/124920.s": "a51d70de6613d3590130beef2efbf7720ae54af056a64e76f88133e802074262",
+    "conker/asm/50D80.s": "58dec15b45859c1dface2fc227f074871296eb4884e6499e4cfee37b8389111c",
+    "conker/Makefile": "94141fe5474af30f4aa757fdf09bfb023bab819e4bf4d7ada94a89ac89ac1766",
+    "conker/retail_word_patches.us.csv": "c769155389ef34f5d2412143adb3cb474b44f497c195c4b0c273eba0fa3ac83f",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382"
+  },
+  "selected_source_sha256": "da3a6a46869a46d6806a16660540411eb67cd3d166ab85eb62672d62bf0328cd",
+  "replacement": "extern u8 D_80088B50;\nextern f32 D_800A1C48[3], D_800A1C54[3];\ns32 func_150ADA20(void);\nvoid func_15145EA4(struct17 **, struct17 **, u8 *, s32);\nu8 *func_15102B38(u8 *, u8, f32 *, f32 *, f32 *, s16, u8, f32, f32 *, u8, s32, s16, u8, s32);\n\n/* Transform the actor's emitter point and submit an effect with randomized parameters. */\nvoid func_150F97EC(struct127 *actor, u8 priority, s32 parameter) {\n    struct17 position;\n    f32 sample;\n    f32 scale[2];\n    struct17 *input;\n    struct17 *output;\n    f32 span;\n    u32 random[2];\n\n    if (actor->unk1D4 != NULL) {\n        input = (struct17 *)D_800A1C48;\n        output = &position;\n        func_15145EA4(&input, &output, (u8 *)actor->unk1D4 + D_80088B50 * 64, 1);\n        span = 1.0f;\n        sample = func_150ADA68();\n        scale[1] = sample * span + 2.0f;\n        scale[0] = func_150ADA68() * 14.0f + 28.0f;\n        random[0] = func_150ADA20();\n        random[1] = func_150ADA20();\n        func_15102B38((u8 *)actor, D_80088B50, D_800A1C48, D_800A1C54, scale,\n            random[0] % 3U + 4, random[1] % 156U + 100,\n            func_150ADA68() * 300.0f + 400.0f, (f32 *)&position,\n            255, 0, -1, priority, parameter);\n    }\n}\n\n",
+  "guards_after_sha256": "8f51a0e1d126a3860ed86d675d2b47c7583e7f49adeb14c9a03bd005ab5d13bf"
+}
