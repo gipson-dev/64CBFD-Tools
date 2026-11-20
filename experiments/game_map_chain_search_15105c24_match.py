@@ -12,6 +12,7 @@ from tools.experiments.game_path_heading_turn_roles import bound_blob
 from tools.tests.game_owner_pool import normalized_pools
 from tools.tests.game_map_chain_search_15105c24_normalizer import normalize
 from tools.tests.game_map_chain_search_15105c24_proof import prove
+from tools.tests import game_map_chain_search_15105c24_debugger as debugger
 from tools.match_progress import load_elf_functions
 from tools.check_game_data_layout import audit_layout
 ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve()
@@ -46,6 +47,7 @@ def actual_Make(source,object_path,text,compact,guards,label,plain=False,expecte
  proposal.write_text(text)
  command=['make','-n','-B','BUILD_DIR='+shadow.relative_to(conker).as_posix()]
  if plain:command+=['GLOBAL_ASM_C_FILES=']
+ elif source==SOURCE:command+=['GLOBAL_ASM_C_FILES='+source.removeprefix('conker/')]
  plan=subprocess.run(command+[target.relative_to(conker).as_posix()],cwd=conker,capture_output=True,text=True,check=True)
  (OUT/(label+'-Make-plan.txt')).write_text(plan.stdout+plan.stderr);commands=[]
  for line in plan.stdout.replace('\\\n','').splitlines():
@@ -84,11 +86,14 @@ def strict_image(actual):
  return 1
 def prepare():
  OUT.mkdir(exist_ok=True)
+ live=(ROOT/SOURCE).read_text();assert live in(SPEC['old_source'],SPEC['selected']);installed=live==SPEC['selected']
+ debug_audit=debugger.verify(ROOT,BASE)if installed else None
  mutable={*SPEC['new_files'],GUARDS,PROGRESS,OBJECT,ELF,'README.md'}
  for n,h in SPEC['predecessor']['inputs'].items():
+  if installed and n==debugger.OBJECT:
+   assert h==debugger.OLD and sha((ROOT/n).read_bytes())==debug_audit['after_sha256'];continue
   q=BASE/n if n in mutable or n.startswith('DOCS/')else ROOT/n
   assert sha(q.read_bytes())==h,('frozen input changed',n)
- live=(ROOT/SOURCE).read_text();assert live in(SPEC['old_source'],SPEC['selected']);installed=live==SPEC['selected']
  for n,new in SPEC['new_files'].items():assert(ROOT/n).read_text()==(new if installed else SPEC['old_files'][n]),n
  oldguards=(BASE/GUARDS).read_bytes();eol='\r\n'if b'\r\n'in oldguards else'\n';newguards=oldguards+SPEC['append_guards'].replace('\n',eol).encode()
  assert sha(newguards)==SPEC['new_guards_sha256']and(ROOT/GUARDS).read_bytes()==(newguards if installed else oldguards)
@@ -127,7 +132,7 @@ def prepare():
  assert af==bf and aa==ba and bf[FUNCTION]==retail+[0]
  data=audit_layout(elf,ROOT/'conker');assert data['exact']and not data['different_bytes']
  calls=[at for at in range(0,len(rom)-3,4)if struct.unpack_from('>I',rom,at)[0]==0x0C000000|((ENTRY>>2)&0x3FFFFFF)];assert calls==[0x18D084]
- report=dict(body_words=46,slot_words=47,raw_words=47,frame=0,guards=len(SPEC['guard_rows']),insertions=0,omissions=1,unchanged_owner_neighbors=10,dependencies=dependencies,mixed_Make=mixed_report,plain_Make=plain_report,source_installed=installed,matching_credit=int(installed),ELF_identical=False,strict_changed_bytes=1,symbol_size_before=188,symbol_size_after=184,exclusions=0,functions=len(af),all_addresses_fixed=True,conversion_rows=1,protected_data=data,ELF_sha256=sha(elf.read_bytes()),direct_call_sites=calls)
+ report=dict(body_words=46,slot_words=47,raw_words=47,frame=0,guards=len(SPEC['guard_rows']),insertions=0,omissions=1,unchanged_owner_neighbors=10,dependencies=dependencies,debugger_metadata=debug_audit,mixed_Make=mixed_report,plain_Make=plain_report,source_installed=installed,matching_credit=int(installed),ELF_identical=False,strict_changed_bytes=1,symbol_size_before=188,symbol_size_after=184,exclusions=0,functions=len(af),all_addresses_fixed=True,conversion_rows=1,protected_data=data,ELF_sha256=sha(elf.read_bytes()),direct_call_sites=calls)
  (OUT/'qualification.json').write_text(json.dumps(report,indent=2)+'\n')
  return dict(report=report,out=OUT,raw=raw,refs=refs,truth=retail,words=words,after=b,compact=after,retail=original,elf=elf,oldelf=oldelf,fullasm=fullasm,normal=normal,normal_refs=nrefs)
 if __name__=='__main__':print(json.dumps(prepare()['report'],indent=2))

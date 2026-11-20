@@ -4,6 +4,7 @@ from tools.experiments import game_map_chain_search_15105c24_match as match
 from tools.tests import game_map_chain_search_15105c24_oracle as guest
 from tools.tests.game_map_chain_search_15105c24_native import run as native
 from tools.tests.game_map_chain_search_15105c24_proof import prove,negative_controls
+from tools.tests import game_map_chain_search_15105c24_debugger as debugger
 from tools.experiments.alternative_source_draft_word_screen import emit_function
 from tools.experiments.game_actor_state_tick_integration import elf_slot_offset
 SYMS={n:int(n.split('_')[1],16)for rs in match.SPEC['refs'].values()for _,n in rs}
@@ -66,4 +67,12 @@ class ChainSearchTests(unittest.TestCase):
    with self.assertRaises(ValueError):match.strict_image(bytes(wrong))
   self.assertEqual((p['report']['strict_changed_bytes'],p['report']['exclusions'],p['report']['functions']),(1,0,6051))
   self.receipt('image-controls',dict(effective_controls=4,changed_bytes=1,exclusions=0))
+ def test_08_unpadded_debugger_array_metadata_and_independent_header_pair(self):
+  p=self.p;result=debugger.verify(match.ROOT,match.BASE);self.assertEqual(result['functions_unchanged'],1)
+  independent=debugger.reproduce(match.ROOT,p['out'],match.SPEC);self.assertEqual(independent['debug_growth'],20)
+  root=p['out']/'debugger-guard-root';path=root/debugger.OBJECT;path.parent.mkdir(parents=True,exist_ok=True);data=(match.ROOT/debugger.OBJECT).read_bytes()
+  for at in(0x80,len(data)//2,len(data)-1):
+   wrong=bytearray(data);wrong[at]^=1;path.write_bytes(wrong)
+   with self.assertRaises(ValueError):debugger.verify(root,match.BASE)
+  self.receipt('debugger-metadata',dict(audit=result,independent=independent,effective_object_controls=3))
 if __name__=='__main__':unittest.main()
