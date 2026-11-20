@@ -1,0 +1,53 @@
+#include <ultra64.h>
+#include "structs.h"
+typedef struct { f32 x,y,z; } MapParticlePoint131F30;
+typedef struct MapTrailRecord131F30 MapTrailRecord131F30;
+void func_151058B4(MapTrailRecord131F30 *);
+s32 func_150ADA20(void);f32 func_150ADA68(void);u8 func_151464B8(s16 *);
+@TYPES@
+@FRAGMENT@
+_Static_assert(sizeof(void*)==4&&sizeof(MapTrailSource131F30)==22&&sizeof(MapTrailRecord131F30)==56&&sizeof(MapTrailHeader131F30)==24&&sizeof(MapTrailPacket131F30)==60&&sizeof(MapTrailScratch131F30)==92,"SDK32 extents");
+_Static_assert(__builtin_offsetof(MapTrailRecord131F30,emitter)==40&&__builtin_offsetof(MapTrailScratch131F30,packet)==8&&__builtin_offsetof(MapTrailScratch131F30,header)==68,"typed scratch layout");
+typedef union {f32 value;u32 bits;} FloatWord;
+static f32 real(u32 n){FloatWord v;v.bits=n;return v.value;}static u32 word(f32 f){FloatWord v;v.value=f;return v.bits;}
+f32 D_800A23EC,D_800A23F0,D_800A23F4,D_800A23F8,D_800A23FC,D_800A2400;
+__asm__(".section .rodata\n.global expected_bytes\nexpected_bytes:\n.incbin \"@BINARY@\"\n.text\n");
+extern const u8 expected_bytes[];static const u8*cursor;
+static struct {u32 left[4];MapTrailRecord131F30 object;u32 right[4];} record;
+static MapTrailSource131F30 firstSource,secondSource;static s16 gate[2];
+static u32 randomInteger,blocked,seed,mutation,ri,ii,si,remaining,mark;
+static void die(void){__asm__ volatile(".byte 0xcd,0x80"::"a"(1),"b"(1):"memory");__builtin_unreachable();}
+static u32 take(void){u32 v=(u32)cursor[0]<<24|(u32)cursor[1]<<16|(u32)cursor[2]<<8|cursor[3];cursor+=4;return v;}
+static void check(u32 v){if(take()!=v)die();}
+static u32 record_byte(u32 i){u32 n;if(i>=40&&i<44){n=record.object.emitter.source==&firstSource?0x50000:record.object.emitter.source==&secondSource?0x51000:0;return n>>(8*(3-(i&3)))&255;}if(i>=48&&i<52)return 0x60000u>>(8*(3-(i&3)))&255;if(i>=44&&i<48)i=(i&~3u)+3-(i&3u);return((const u8*)&record.object)[i];}
+static u32 header_offset(u32 i){if(i<12||(i>=16&&i<20))return(i&~3u)+3-(i&3u);if(i<16)return i^1;return i;}
+static u32 packet_offset(u32 i){if(i<20||(i>=36&&i<44)||(i>=52&&i<56))return(i&~3u)+3-(i&3u);if(i>=44&&i<50)return i^1;return i;}
+static void event(u32 target,u32 n,const u32*args){u32 i;if(!remaining--)die();check(target);check(n);for(i=0;i<n;i++)check(args[i]);}
+static void globals(int load){f32*items[]={&D_800A23EC,&D_800A23F0,&D_800A23F4,&D_800A23F8,&D_800A23FC,&D_800A2400};u32 i;if(load){for(i=0;i<6;i++)*items[i]=real(take());mark=take();}else{for(i=0;i<6;i++)check(word(*items[i]));check(mark);}}
+static void effect(u32 target,u32 index,MapTrailHeader131F30*h,MapTrailPacket131F30*p){mark=target;
+ if((mutation&1)&&target==0x150ADA68&&index==0){D_800A23EC=.125f;D_800A23F0=.75f;record.object.emitter.scale=4.;}
+ if((mutation&2)&&target==0x151432BC){record.object.emitter.source=&secondSource;record.object.header[1]^=0x21;record.object.header[12]^=0x17;}
+ if((mutation&4)&&target==0x1515C2F0){D_800A23F4=99.;D_800A23F8=5.;D_800A23FC=-.5f;D_800A2400=.75f;}
+ if((mutation&8)&&target==0x1515C2F0){h->flag^=3;p->fixed21^=1;record.object.emitter.flags=0x40;}
+ if((mutation&16)&&target==0x151464B8){record.object.emitter.scale=3.25f;D_800A23EC=0.;D_800A23F0=1.;}}
+u8 func_151464B8(s16*g){u32 a[1]={g==gate?0x60000:0};event(0x151464B8,1,a);effect(0x151464B8,0,0,0);return(u8)blocked;}
+f32 func_150ADA68(void){static const u32 v[]={0,0x3E800000,0x3F000000,0x3F7FFFFF};u32 n=v[(seed+ri)%4];event(0x150ADA68,0,0);effect(0x150ADA68,ri++,0,0);return real(n);}
+s32 func_150ADA20(void){u32 n=randomInteger+ii*0x9E3779B9u;event(0x150ADA20,0,0);effect(0x150ADA20,ii++,0,0);return(s32)n;}
+void func_151432BC(MapTrailSource131F30*s,f32*x,f32*z,f32*top,f32*bottom){u32 a[5]={s==&firstSource?0x50000:s==&secondSource?0x51000:0,0,0,0,0};
+ if((u32)z-(u32)x!=8||(u32)top-(u32)x!=0xFFFFFFC0u||(u32)bottom-(u32)x!=0xFFFFFFBCu)die();
+ event(0x151432BC,5,a);*x=s->x+si*.25f;*z=s->z-si*.5f;*top=s->y+8.f;*bottom=s->y;effect(0x151432BC,si++,0,0);}
+void func_15143794(s16 yaw,s16 pitch,f32 radius,f32*point){u32 a[4]={(u32)(s32)yaw,(u32)(s32)pitch,word(radius),0};event(0x15143794,4,a);point[0]=yaw*.125f;point[1]=pitch*.25f;point[2]=radius;effect(0x15143794,0,0,0);}
+void*func_1515C2F0(MapTrailHeader131F30*h,s32 a,MapTrailPacket131F30*p,s32 b,u8 channel,s32 category){u32 args[81],i,j=0;
+ for(i=0;i<22;i++)args[j++]=((const u8*)h)[header_offset(i)];args[j++]=(u32)a;
+ for(i=0;i<60;i++)if(i!=34&&i!=35&&i!=51&&i!=58&&i!=59)args[j++]=((const u8*)p)[packet_offset(i)];
+ args[j++]=(u32)b;args[j++]=channel;args[j++]=(u32)category;event(0x1515C2F0,j,args);effect(0x1515C2F0,0,h,p);return 0;}
+void func_151058B4(MapTrailRecord131F30*r){u32 a[1]={r==&record.object?0x30000:0};event(0x151058B4,1,a);func_151058B4_impl(r);}
+int run(void){u32 count,i,mode;cursor=expected_bytes;count=take();while(count--){blocked=take();randomInteger=take();seed=take();mutation=take();mode=take();ri=ii=si=0;
+ for(i=0;i<4;i++){record.left[i]=0xA5B60000+i;record.right[i]=0xC7D80000+i;}
+ for(i=0;i<56;i++){u8 v=(u8)take();if(i<40||i>=52)((u8*)&record.object)[i]=v;else if(i>=44&&i<48)((u8*)&record.object)[(i&~3u)+3-(i&3u)]=v;}
+ record.object.emitter.source=&firstSource;record.object.emitter.gate=gate;
+ for(i=0;i<22;i++)((u8*)&firstSource)[i<6?i^1:i]=(u8)take();for(i=0;i<22;i++)((u8*)&secondSource)[i<6?i^1:i]=(u8)take();globals(1);remaining=take();
+ if(mode){u8 command=mode==2?0x39:mode==4?0x37:0x38;func_15105848((struct207*)&record.object,0,command);}else func_151058B4_impl(&record.object);
+ if(remaining)die();for(i=0;i<56;i++)check(record_byte(i));for(i=0;i<22;i++)check(((u8*)&firstSource)[i<6?i^1:i]);for(i=0;i<22;i++)check(((u8*)&secondSource)[i<6?i^1:i]);globals(0);
+ for(i=0;i<4;i++)if(record.left[i]!=0xA5B60000+i||record.right[i]!=0xC7D80000+i)die();}return 0;}
+@START@
