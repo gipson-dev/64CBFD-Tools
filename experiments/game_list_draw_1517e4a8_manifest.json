@@ -1,0 +1,197 @@
+{
+  "body": "/* Smooth flare intensity, prepare the sprite state, then submit its palette row. */\nGfx *func_1517E4A8(Gfx *commands, ListRecord1AB530 *record, s32 group,\n                    s32 count, s32 falloff, s32 strength, u8 *intensity) {\n    f32 centerX = record->valueC - D_800BE620 * 0.5f;\n    f32 centerY = record->value10 - D_800BE624 * 0.5f;\n    s32 distance;\n    s32 desired;\n    s32 value;\n    s32 index;\n    s32 factor;\n    const u8 *palette;\n    f32 x, y;\n    FlareDrawPacket1AB530 packet;\n\n    if (intensity != NULL) {\n        if (strength == -1) {\n            desired = 0;\n        } else {\n            distance = ((s32)centerX * (s32)centerX + (s32)centerY * (s32)centerY) * falloff / 10;\n            if (distance < 120) {\n                desired = (120 - distance) * 176 / 120;\n            } else {\n                desired = 0;\n            }\n        }\n        value = *intensity;\n        if ((desired - value < 0 ? value - desired : desired - value) < (D_800BE9E4 * 5)) {\n            value = desired;\n        } else if (value < desired) {\n            value += (D_800BE9E4 * 5);\n        } else {\n            value -= (D_800BE9E4 * 5);\n        }\n        *intensity = value;\n    }\n    distance = ((s32)centerX * (s32)centerX + (s32)centerY * (s32)centerY) * falloff / 10;\n    if (record->valueC < 2.0f || record->valueC >= D_800BE620 - 2 ||\n        record->value10 < 0.0f || record->value10 >= D_800BE624) {\n        desired = 0;\n    } else if (strength == -1) {\n        desired = 0;\n    } else {\n        desired = (1760000 / (distance + 10000) * strength) / 256;\n    }\n    value = record->state28;\n    if ((desired - value < 0 ? value - desired : desired - value) < (D_800BE9E4 * 10)) {\n        record->state28 = desired;\n    } else if (desired < value) {\n        record->state28 = value - (D_800BE9E4 * 10);\n    } else {\n        record->state28 = value + (D_800BE9E4 * 10);\n    }\n\n    if (distance < 200000 && record->state28 > 0 &&\n        fabsf(record->valueC) < 2000.0f && fabsf(record->value10) < 2000.0f) {\n        D_800D2DA8 = 255;\n        D_800D2DA9 = 255;\n        D_800D2DAA = 255;\n        packet.descriptor = &D_800903AC;\n        packet.animationStep = 0;\n        packet.animationFrame = 0;\n        packet.flipFlags = 0;\n        if (D_800DDD60 == 0) {\n            commands = func_1517EA4C(commands);\n            commands = (Gfx *)(u32)func_150950D4((s32)commands, &D_800903AC, 0, 0, 0, 0, 2, 256, 256, 3);\n            D_800DDD60 = 1;\n        }\n        value = (record->state28 * record->second30) >> 8;\n        palette = D_800A7250 + group * 7;\n        factor = 2;\n        for (index = 0; index < count; index++) {\n            x = record->valueC - centerX * (f32)factor / 5.0f;\n            y = record->value10 - centerY * (f32)factor / 5.0f;\n            desired = palette[index];\n            y += desired * 0.015625f;\n            packet.alpha = value;\n            D_800D2DAB = 0;\n            packet.extentX = (s32)((desired << 12) * D_800380A0 / 255.0f);\n            packet.extentY = (s32)((desired << 12) * D_800380A4 / 255.0f);\n            commands = func_15095A48(commands, &packet, x, y);\n            gDPPipeSync(commands++);\n            factor += 2;\n        }\n    }\n    return commands;\n}\n",
+  "preamble": "typedef struct {\n    u32 unk0;\n    u16 unk4, unk6;\n    u8 unk8, unk9, unkA, padB;\n} FlareDescriptor1AB530;\ntypedef struct {\n    s16 coordinates[3];\n    s16 extentX, extentY;\n    u8 alpha, animationStep, animationFrame, flipFlags;\n    u8 paddingE[2];\n    FlareDescriptor1AB530 *descriptor;\n} FlareDrawPacket1AB530;\nextern FlareDescriptor1AB530 D_800903AC;\nextern const u8 D_800A7250[16];\nextern s32 D_800BE9E4;\nextern f32 D_800380A0, D_800380A4;\nextern u8 D_800D2DA8, D_800D2DA9, D_800D2DAA, D_800D2DAB;\nf32 fabsf(f32);\n#pragma intrinsic (fabsf)\nGfx *func_1517EA4C(Gfx *);\ns32 func_150950D4(s32, FlareDescriptor1AB530 *, s32, s32, s32, s32, s32, s32, s32, s32);\nGfx *func_15095A48(Gfx *, FlareDrawPacket1AB530 *, f32, f32);\n",
+  "selected_helper": "#include <ultra64.h>\ntypedef struct {\n    u8 padding0;\n    u8 slotRange;\n    u8 padding2[2];\n    s16 (*points)[8];\n} PackedPointSource948C0;\n\nextern f32 (*D_800D2C20)[4];\nvoid func_1509499C(PackedPointSource948C0 *, s16 **);\nvoid func_150A7960(f32 matrix[4][4], f32 x, f32 y, f32 z,\n                   f32 *outX, f32 *outY, f32 *outZ);\n\nextern s32 D_80082FA4;\nextern u8 *D_800BE628;\nextern u8 D_800BE9C0;\nextern f32 D_8009DEC0;\nextern f32 D_800380A0, D_800380A4;\nextern f32 D_800D2C70, D_800D2C74, D_800D2C78, D_800D2C7C;\nextern f32 D_800D2C80, D_800D2C84, D_800D2C88;\nextern u8 D_800D2DA8, D_800D2DA9, D_800D2DAA, D_800D2DAB;\nextern u8 D_800BE9A0;\nextern f32 D_800D2CA8[][4][4];\nextern f32 D_800D9B20;\nextern Mtx *D_800DC2A0[];\nvoid func_150A7A48(f32 left[4][4], f32 right[4][4], f32 product[4][4]);\nvoid func_150A7A00(f32 matrix[4][4], f32 x, f32 y, f32 z,\n                   f32 *outX, f32 *outY, f32 *outZ, f32 *outW);\ns32 func_1509563C(f32 x, f32 y, f32 z, f32 *screenX, f32 *screenY,\n                   f32 *depth, f32 *divisor, f32 maximum);\n\ntypedef struct {\n    u8 prefix[0xC];\n    f32 scaleX, scaleY;\n    f32 flatScaleX, flatScaleY;\n    f32 projectedScaleX, projectedScaleY;\n    f32 clipTop, clipBottom, clipLeft, clipRight;\n    f32 translateX, translateY;\n    u8 padding3C[4];\n    Vp viewports[20];\n} ProjectedViewFrame95760;\n\ns32 func_15095A90(s32, s32, f32, f32, f32, s32, s32, s32, s32);\nvoid func_15095B08(s32, f32, f32, f32, s32, s32 *);\nextern s32 D_800D2CA0;\nextern u8 D_800873D0[];\n\ntypedef struct {\n    u32 unk0;\n    u8 unk4;\n    u8 pad5;\n    u16 unk6;\n    u16 unk8;\n    u8 unkA;\n    u8 unkB;\n} structC1D70Source;\n\ntypedef struct {\n    u32 unk0;\n    u16 unk4;\n    u16 unk6;\n    u8 unk8;\n    u8 unk9;\n    u8 unkA;\n    u8 padB;\n} structC1D70Descriptor;\n\ntypedef struct {\n    s16 coordinates[3];\n    s16 extentX, extentY;\n    u8 alpha;\n    u8 animationStep;\n    u8 animationFrame;\n    u8 flipFlags;\n    u8 paddingE[2];\n    structC1D70Descriptor *descriptor;\n} ProjectedPacket95B08;\n\ns32 func_15095D34(Gfx *, ProjectedPacket95B08 *, s32, s32, s32);\n\nextern structC1D70Descriptor D_800D2C90;\n\nvoid func_15095060(structC1D70Source *, s32, u8 *);\ns32 func_150950D4(s32, structC1D70Descriptor *, s32, s32, s32, s32, s32, s32, s32, s32);\n\n/* Non-matching placeholders for the text-only asm slice asm/C1D70.s. */\n\ns32 func_15095D34();\n\n/* Transform populated signed-coordinate slots; leave all other outputs intact. */\nvoid func_150948C0(PackedPointSource948C0 *source, f32 output[][3]) {\n    s16 *slots[16];\n    s32 index;\n    s16 *point;\n    f32 *destination;\n\n    func_1509499C(source, slots);\n    index = 0;\n    do {\n        point = slots[index];\n        if (point != NULL) {\n            destination = (f32 *)(index * 12 + (u8 *)output);\n            func_150A7960(D_800D2C20, point[0], point[1], point[2],\n                           destination, destination + 1, destination + 2);\n        }\n        index++;\n    } while (index != 16);\n}\n\n/* Build sixteen point slots from the packed inclusive range; clear unused slots. */\nvoid func_1509499C(PackedPointSource948C0 *source, s16 **slots) {\n    s16 *point = (s16 *)source->points;\n    s16 first = source->slotRange & 0xF;\n    s32 index = 0;\n    s16 end = (source->slotRange >> 4) + 1;\n\n    for (; index < first; index++) {\n        slots[index] = NULL;\n    }\n    for (index = first; index < end; index++) {\n        slots[index] = point;\n        point += 8;\n    }\n    for (; index < 16; index++) {\n        slots[index] = NULL;\n    }\n}\n\ns32 func_15094AB8() {\n    return 0;\n}\n\n/* Convert the view's live fixed matrix pair, then combine them in order. */\nvoid func_15094EA0(s32 index) {\n    f32 model[4][4];\n    f32 projection[4][4];\n\n    guMtxL2F(model, D_800DC2A0[D_800BE9C0] + index);\n    guMtxL2F(projection, (Mtx *)((u8 *)(((ProjectedViewFrame95760 *)D_800BE628) + index) +\n        D_800BE9C0 * 0x40 + 0x100));\n    func_150A7A48(model, projection, D_800D2CA8[index]);\n}\n\nu32 *func_15094F40(u32 *arg0) {\n    u32 *temp_v1 = arg0;\n\n    arg0 += 2;\n    temp_v1[0] = 0xDE000000;\n    temp_v1[1] = (u32) D_800873D0;\n    D_800D2CA0 = 0;\n    return arg0;\n}\n\ns32 func_15094F70(s32 arg0, structC1D70Source *arg1, s32 arg2, u8 *arg3,\n                  s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {\n    func_15095060(arg1, arg2, arg3);\n    return func_150950D4(arg0, &D_800D2C90, arg4, arg5, 0, arg6, arg7,\n                         0x100, 0x100, arg8);\n}\n\ns32 func_15094FE8(s32 arg0, structC1D70Source *arg1, s32 arg2, u8 *arg3,\n                  s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9,\n                  s32 arg10) {\n    func_15095060(arg1, arg2, arg3);\n    return func_150950D4(arg0, &D_800D2C90, arg4, arg5, 0, arg6, arg7,\n                         arg8, arg9, arg10);\n}\n\nvoid func_15095060(structC1D70Source *arg0, s32 arg1, u8 *arg2) {\n    structC1D70Descriptor *descriptor;\n    u32 value;\n\n    descriptor = &D_800D2C90;\n    if (arg2 != NULL) {\n        *(structC1D70Descriptor **) (arg2 + 0x10) = descriptor;\n    }\n\n    value = arg0->unk0;\n    if (value < 0x10000000) {\n        descriptor->unk0 = value;\n    } else {\n        descriptor->unk0 = ((u32 *) value)[arg1 >> 8];\n    }\n\n    descriptor->unk4 = arg0->unk6;\n    descriptor->unk6 = arg0->unk8;\n    descriptor->unk8 = arg0->unkA;\n    descriptor->unk9 = arg0->unkB;\n    descriptor->unkA = arg0->unk4;\n}\n\ns32 func_150950D4(s32 arg0, structC1D70Descriptor *arg1, s32 arg2, s32 arg3,\n                  s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9) {\n    return 0;\n}\n\n/* Clip transformed coordinates, then map both outputs before either store. */\ns32 func_1509563C(f32 x, f32 y, f32 z, f32 *screenX, f32 *screenY,\n                   f32 *depth, f32 *divisor, f32 maximum) {\n    f32 transformedW;\n    f32 inverse;\n    f32 valueX;\n    f32 valueY;\n    ProjectedViewFrame95760 *view;\n\n    func_150A7A00(D_800D2CA8[D_80082FA4], x, y, z, screenX, screenY, depth, divisor);\n    transformedW = *divisor;\n    if (maximum <= transformedW || transformedW <= D_800D9B20) {\n        return 0;\n    }\n    inverse = 1.0f / transformedW;\n    view = (ProjectedViewFrame95760 *)D_800BE628 + D_80082FA4;\n    valueX = *screenX;\n    valueY = *screenY;\n    valueX = (view->scaleX + 5.0f) * valueX * inverse + view->translateX;\n    valueY = view->translateY - (view->scaleY + 5.0f) * valueY * inverse;\n    *screenX = valueX;\n    *screenY = valueY;\n    return 1;\n}\n\n/* Project a signed coordinate packet, set depth, then draw its screen-space form. */\nGfx *func_15095760(Gfx *output, s16 *packet) {\n    f32 screenX;\n    f32 screenY;\n    f32 depth;\n    f32 divisor;\n\n    if (func_1509563C(packet[0], packet[1], packet[2],\n                      &screenX, &screenY, &depth, &divisor, 4000.0f) == 0) {\n        return output;\n    }\n    gDPPipeSync(output++);\n    gDPSetPrimDepth(output++, (s32)(((depth / divisor) * ((ProjectedViewFrame95760 *)D_800BE628)[D_80082FA4].viewports[D_800BE9C0].vp.vscale[2] + ((ProjectedViewFrame95760 *)D_800BE628)[D_80082FA4].viewports[D_800BE9C0].vp.vtrans[2]) * 32.0f), 0);\n    return (Gfx *)func_15095A90((s32)output, (s32)packet, screenX, screenY, divisor, 1, 0, 0, 0);\n}\n\n/* Project the packet, update visibility, then emit unsigned primitive depth. */\nGfx *func_150958B0(Gfx *output, s16 *packet, s32 *visible) {\n    f32 screenX;\n    f32 screenY;\n    f32 depth;\n    f32 divisor;\n    f32 scale;\n    Gfx *command;\n\n    if (func_1509563C(packet[0], packet[1], packet[2],\n                      &screenX, &screenY, &depth, &divisor, 4000.0f) == 0) {\n        *visible = 0;\n        return output;\n    }\n    func_15095B08((s32)packet, screenX, screenY, divisor, 1, visible);\n    if (*visible != 0) {\n        scale = D_8009DEC0;\n        command = output++;\n        command->words.w0 = 0xE7000000;\n        command->words.w1 = 0;\n        command = output++;\n        command->words.w0 = 0xEE000000;\n        command->words.w1 = (u32)((depth / divisor) * scale + scale) << 16;\n    }\n    return output;\n}\n\nGfx *func_15095A48(Gfx *output, ProjectedPacket95B08 *packet, f32 x, f32 y) {\n    return (Gfx *)(u32)func_15095A90((s32)output, (s32)packet, x, y, 4096.0f, 0, 0, 0, 0);\n}\n\ns32 func_15095A90(s32 arg0, s32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {\n    s32 active;\n\n    func_15095B08(arg1, arg2, arg3, arg4, arg5, &active);\n    if (active != 0) {\n        arg0 = func_15095D34((Gfx *)arg0, (ProjectedPacket95B08 *)arg1, arg6, arg7, arg8);\n    }\n    return arg0;\n}\n\n/* Scale the packet rectangle, test viewport overlap, and publish draw inputs. */\nvoid func_15095B08(s32 packetAddress, f32 x, f32 y, f32 divisor, s32 projected, s32 *visible) {\n    ProjectedPacket95B08 *packet = (ProjectedPacket95B08 *)packetAddress;\n    ProjectedViewFrame95760 *view;\n    structC1D70Descriptor *descriptor;\n    s32 extentX;\n    s32 extentY;\n    f32 scaleX;\n    f32 scaleY;\n    f32 inverse;\n    f32 width;\n    f32 height;\n\n    *visible = 0;\n    extentX = packet->extentX;\n    if (extentX != 0) {\n        extentY = packet->extentY;\n        if (extentY != 0) {\n            scaleX = D_800380A0;\n            scaleY = D_800380A4;\n            scaleX = (f32)extentX * scaleX;\n            scaleY = (f32)extentY * scaleY;\n            if (projected != 0) {\n                view = (ProjectedViewFrame95760 *)D_800BE628 + D_80082FA4;\n                scaleX *= view->projectedScaleX;\n                scaleY *= view->projectedScaleY;\n            } else {\n                view = (ProjectedViewFrame95760 *)D_800BE628 + D_80082FA4;\n                scaleX *= view->flatScaleX;\n                scaleY *= view->flatScaleY;\n            }\n            descriptor = packet->descriptor;\n            inverse = 1.0f / divisor;\n            width = (f32)(u32)descriptor->unk4 * scaleX * inverse;\n            height = (f32)(u32)descriptor->unk6 * scaleY * inverse;\n            x -= width * 0.5f;\n            y -= height * 0.5f;\n            if (view->clipLeft <= x + width && x < view->clipRight &&\n                view->clipTop <= y + height && y < view->clipBottom) {\n                *visible = 1;\n            }\n            D_800D2C70 = scaleX;\n            D_800D2C74 = scaleY;\n            D_800D2C78 = x;\n            D_800D2C7C = y;\n            D_800D2C80 = divisor;\n            D_800D2C84 = width;\n            D_800D2C88 = height;\n        }\n    }\n}\n\ns32 func_15095D0C(s32 arg0, s32 arg1) {\n    func_15095D34((Gfx *)arg0, (ProjectedPacket95B08 *)arg1, 0, 0, 0);\n}\n\n/* Emit a scissored textured rectangle, then advance the packet animation byte. */\ns32 func_15095D34(Gfx *output, ProjectedPacket95B08 *packet, s32 sOffset, s32 insetTOffset, s32 widthAdjust) {\n    f32 width = D_800D2C70;\n    f32 height = D_800D2C74;\n    f32 left = D_800D2C78;\n    f32 top = D_800D2C7C;\n    f32 divisor = D_800D2C80;\n    s32 integerScaleX = (s32)width;\n    s32 integerScaleY = (s32)height;\n    s32 numerator;\n    s32 originalStepS;\n    s32 stepS;\n    s32 stepT;\n    s32 integerX;\n    s32 integerY;\n    s32 textureS;\n    s32 textureT;\n    s32 fractionalT;\n    s32 animationDelta;\n    s32 flipFlags;\n\n    if (insetTOffset != 0) {\n        D_800D2C84 -= (width + width) / D_800D2C80;\n        D_800D2C88 -= (height + height) / D_800D2C80;\n        left += width / D_800D2C80;\n        top += height / D_800D2C80;\n    }\n    width = D_800D2C84;\n    height = D_800D2C88;\n    numerator = (s32)((u32)(s32)divisor << 10);\n    if (width < 2.0f) {\n        width = 2.0f;\n    }\n    originalStepS = numerator / integerScaleX;\n    stepS = originalStepS;\n    stepT = numerator / integerScaleY;\n    integerX = (s32)left;\n    if (D_800D2DAB == 0) {\n        gDPSetPrimColor(output++, 1, 0, D_800D2DA8, D_800D2DA9, D_800D2DAA, packet->alpha);\n    }\n    integerY = (s32)top;\n    textureS = (s32)((u32)(s32)(((32.0f - (left - (f32)integerX) * 32) * divisor) /\n        (f32)integerScaleX) + (u32)sOffset + 0x2000u);\n    fractionalT = (s32)(((32.0f - (top - (f32)integerY) * 32) * divisor) / (f32)integerScaleY);\n    textureT = (s32)((u32)fractionalT + (u32)insetTOffset + 0x2000u);\n    if (packet->flipFlags != 0) {\n        flipFlags = packet->flipFlags;\n        if (flipFlags & 1) {\n            textureS = (packet->descriptor->unk4 + 255) << 5;\n            stepS = (u16)(0u - (u32)originalStepS);\n        }\n        if (flipFlags & 2) {\n            textureT = (s32)((u32)((packet->descriptor->unk6 + 255) << 5) - (u32)fractionalT);\n            stepT = (u16)(0u - (u32)stepT);\n        }\n    }\n    gSPScisTextureRectangle(output++, (s32)((u32)integerX << 2), (s32)((u32)integerY << 2),\n        (s32)((u32)((s32)((f32)widthAdjust + width - 1.0f) + integerX) << 2),\n        (s32)((u32)((s32)(height - 1.0f) + integerY) << 2), 0, textureS, textureT, stepS, stepT);\n\n    if (packet->descriptor->unkA != 0) {\n        animationDelta = packet->animationStep * D_800BE9A0;\n        if (packet->descriptor->unkA & 0x80) {\n            if (packet->animationFrame & 0x80) {\n                packet->animationFrame -= animationDelta;\n                if (!(packet->animationFrame & 0x80)) {\n                    packet->animationFrame = (packet->animationFrame + animationDelta) & 0x7F;\n                }\n            } else {\n                packet->animationFrame += animationDelta;\n                if (packet->animationFrame >= ((packet->descriptor->unkA & 0x7F) << 3)) {\n                    packet->animationFrame = (packet->animationFrame - animationDelta) | 0x80;\n                }\n            }\n        } else {\n            packet->animationFrame += animationDelta;\n            if (packet->animationFrame >= (packet->descriptor->unkA << 3)) {\n                packet->animationFrame -= packet->descriptor->unkA << 3;\n            }\n        }\n    }\n    return (s32)output;\n}\n\ns32 func_1509629C() {\n    return 0;\n}\n\nu8 *func_15096934(u8 *arg0) {\n    extern u32 D_80087408;\n    extern u8 D_800D2DAB;\n    u8 *ptr = arg0;\n\n    *(u32 *) (ptr + 0) = 0xde000000;\n    *(u32 *) (ptr + 4) = (u32) &D_80087408;\n    arg0 = arg0 + 8;\n    D_800D2DAB = 0;\n    return arg0;\n}\n",
+  "raw_sha256": "2353a48952e6704d107ac718cd215cb7c5d88b7fa70ff864249ef962434a0a15",
+  "raw_refs": {
+    "20": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE620"
+      ]
+    ],
+    "36": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE620"
+      ]
+    ],
+    "24": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE624"
+      ]
+    ],
+    "32": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE624"
+      ]
+    ],
+    "372": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9E4"
+      ]
+    ],
+    "376": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9E4"
+      ]
+    ],
+    "796": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9E4"
+      ]
+    ],
+    "800": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9E4"
+      ]
+    ],
+    "932": [
+      [
+        "R_MIPS_HI16",
+        "D_800903AC"
+      ]
+    ],
+    "952": [
+      [
+        "R_MIPS_LO16",
+        "D_800903AC"
+      ]
+    ],
+    "936": [
+      [
+        "R_MIPS_HI16",
+        "D_800DDD60"
+      ]
+    ],
+    "944": [
+      [
+        "R_MIPS_LO16",
+        "D_800DDD60"
+      ]
+    ],
+    "960": [
+      [
+        "R_MIPS_HI16",
+        "D_800D2DA8"
+      ]
+    ],
+    "972": [
+      [
+        "R_MIPS_LO16",
+        "D_800D2DA8"
+      ]
+    ],
+    "976": [
+      [
+        "R_MIPS_HI16",
+        "D_800D2DA9"
+      ]
+    ],
+    "980": [
+      [
+        "R_MIPS_LO16",
+        "D_800D2DA9"
+      ]
+    ],
+    "984": [
+      [
+        "R_MIPS_HI16",
+        "D_800D2DAA"
+      ]
+    ],
+    "988": [
+      [
+        "R_MIPS_LO16",
+        "D_800D2DAA"
+      ]
+    ],
+    "1016": [
+      [
+        "R_MIPS_26",
+        "func_1517EA4C"
+      ]
+    ],
+    "1076": [
+      [
+        "R_MIPS_26",
+        "func_150950D4"
+      ]
+    ],
+    "1116": [
+      [
+        "R_MIPS_HI16",
+        "D_800A7250"
+      ]
+    ],
+    "1128": [
+      [
+        "R_MIPS_LO16",
+        "D_800A7250"
+      ]
+    ],
+    "1248": [
+      [
+        "R_MIPS_HI16",
+        "D_800D2DAB"
+      ]
+    ],
+    "1256": [
+      [
+        "R_MIPS_LO16",
+        "D_800D2DAB"
+      ]
+    ],
+    "1260": [
+      [
+        "R_MIPS_HI16",
+        "D_800380A0"
+      ]
+    ],
+    "1280": [
+      [
+        "R_MIPS_LO16",
+        "D_800380A0"
+      ]
+    ],
+    "1284": [
+      [
+        "R_MIPS_HI16",
+        "D_800380A4"
+      ]
+    ],
+    "1300": [
+      [
+        "R_MIPS_LO16",
+        "D_800380A4"
+      ]
+    ],
+    "1344": [
+      [
+        "R_MIPS_26",
+        "func_15095A48"
+      ]
+    ]
+  },
+  "inputs": {
+    "conker/src/game/generated_1AB530.c": "6b63186aac5872ed976534f421c81d6218253ac4bfdfbc04d982695c3fa2f1e1",
+    "conker/src/game/generated_C1D70.c": "27194aad3aa8465ab2fc1569ffdfa0672e4740efcbdd2c379652ca923eb6e32b",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/asm/1AB530.s": "b0ae73c9d414ae85d1ddf5cf760001c670eb8ecab6a86e669204e5993111152a",
+    "conker/asm/C1D70.s": "dcf4dee9900592f8f40476367e93b455b7e5a3d1705e2c0bb658657b7780b139",
+    "conker/asm/data/24BD10.rodata.s": "318ae7317c5c9df6c453145fad0faf18ace8569f6aa60b859bed0f5af21c5874",
+    "conker/Makefile": "94141fe5474af30f4aa757fdf09bfb023bab819e4bf4d7ada94a89ac89ac1766",
+    "conker/retail_word_patches.us.csv": "2ad895172ced827695636bf56bcc5c1df79545ccba23bcb850e18d4d09285551",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365"
+  },
+  "words": 361,
+  "frame": 184,
+  "positional_differences": 162,
+  "credit": 0
+}
