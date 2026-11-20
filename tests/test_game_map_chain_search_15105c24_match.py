@@ -68,6 +68,8 @@ class ChainSearchTests(unittest.TestCase):
   self.assertEqual((p['report']['strict_changed_bytes'],p['report']['exclusions'],p['report']['functions']),(1,0,6051))
   self.receipt('image-controls',dict(effective_controls=4,changed_bytes=1,exclusions=0))
  def test_08_unpadded_debugger_array_metadata_and_independent_header_pair(self):
+  header=match.SPEC['new_files']['conker/include/functions.h']
+  self.assertLess(header.index('void *func_15105C24(s32 key);'),header.rfind('#endif'))
   p=self.p;result=debugger.verify(match.ROOT,match.BASE);self.assertEqual(result['functions_unchanged'],1)
   independent=debugger.reproduce(match.ROOT,p['out'],match.SPEC);self.assertEqual(independent['debug_growth'],20)
   root=p['out']/'debugger-guard-root';path=root/debugger.OBJECT;path.parent.mkdir(parents=True,exist_ok=True);data=(match.ROOT/debugger.OBJECT).read_bytes()

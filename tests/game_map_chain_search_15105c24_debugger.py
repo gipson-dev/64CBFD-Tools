@@ -7,7 +7,7 @@ from tools.experiments.game_remaining_donor_candidates import compile_owner
 from tools.tests.game_owner_pool import normalized_pools
 OBJECT='conker/build/src/debugger_258ED0.c.o'
 OLD='6015a738e26aa68ab8aacaefce0f66de5b99aba40e55f6ce710778e855186406'
-NEW='bcf9b9bcbcb8899412a1c2db84d64223b094ac54991b8c3a8023f8c3444e255f'
+NEW='483b5099e8d671e2f9401d453e84a1fd73472237f40d96b79b6ad1b5e0a958c0'
 sha=lambda b:hashlib.sha256(b).hexdigest()
 def verify(root,base):
  before=base/OBJECT;after=root/OBJECT
