@@ -6,7 +6,7 @@ from tools import pad_generated_object as pg
 sys.modules.setdefault('pad_generated_object',pg)
 from tools import pad_c_object as pc
 from tools.experiments import game_list_render_1517e28c_recovery as s
-from tools.experiments import game_map_trail_constructor_15105ce0_match as driver
+from tools.experiments.game_list_owner_make import actual_Make
 from tools.experiments import game_embedded_dual_phase_position_update_match as linker
 from tools.experiments.game_actor_state_tick_integration import elf_slot_offset,symbol_rows
 from tools.match_progress import load_elf_functions
@@ -71,11 +71,10 @@ def qualify():
     assert changed==[s.FUNCTION],changed
     selected=s.source()[1];(where/'after-diagnostics.txt').write_text('')
     object_path='conker/build/src/game/generated_1AB530.c.o'
-    with patch.multiple(driver,ROOT=root,OUT=where,SOURCE=s.SOURCE,OBJECT=object_path,SPEC=dict(selected=selected)):
-        route=driver.actual_Make(padded[0],obj,guards,source=s.SOURCE,object_path=object_path,selected=selected,functions=8)
-        caller=(root/s.CALLER).read_text().replace('s32  func_1517E28C(s32 arg0, s32 arg1);','Gfx *func_1517E28C(Gfx *commands, s32 category);').replace('commands = (Gfx *)func_1517E28C((s32)commands, D_800BE9F0);','commands = func_1517E28C(commands, D_800BE9F0);')
-        (where/'caller-after-diagnostics.txt').write_text((s.OUT/'banked-screen/caller-typed-diagnostics.txt').read_text())
-        caller_route=driver.actual_Make(base/'conker/build/src/game_45B80.c.o',s.OUT/'banked-screen/caller-typed.o',guards,source=s.CALLER,object_path='conker/build/src/game_45B80.c.o',selected=caller,label='caller',functions=16)
+    route=actual_Make(root,where,padded[0],obj,guards,s.SOURCE,object_path,selected,'target',8)
+    caller=(root/s.CALLER).read_text().replace('s32  func_1517E28C(s32 arg0, s32 arg1);','Gfx *func_1517E28C(Gfx *commands, s32 category);').replace('commands = (Gfx *)func_1517E28C((s32)commands, D_800BE9F0);','commands = func_1517E28C(commands, D_800BE9F0);')
+    (where/'caller-after-diagnostics.txt').write_text((s.OUT/'banked-screen/caller-typed-diagnostics.txt').read_text())
+    caller_route=actual_Make(root,where,base/'conker/build/src/game_45B80.c.o',s.OUT/'banked-screen/caller-typed.o',guards,s.CALLER,'conker/build/src/game_45B80.c.o',caller,'caller',16)
     with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT=object_path,LINKER='conker/build/conker.ld'):
         image=linker.link_image(root,where,padded[0],'image')
     previous=(base/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(previous)

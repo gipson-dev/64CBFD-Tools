@@ -10,7 +10,7 @@ from tools.experiments.game_paired_ground_constructor_match import payload
 from tools.experiments.game_path_heading_turn_roles import bound_blob
 from tools.experiments.game_actor_state_tick_integration import same_functions
 from tools.tests.game_owner_pool import normalized_pools
-from tools.experiments import game_map_trail_constructor_15105ce0_match as driver
+from tools.experiments.game_list_owner_make import actual_Make
 from tools.experiments import game_embedded_dual_phase_position_update_match as linker
 from tools.check_game_data_layout import audit_layout
 from tools.match_progress import load_elf_functions
@@ -87,9 +87,8 @@ def qualify():
     caller_object='conker/build/src/game_16DC80.c.o'
     caller=assemble('caller-pad',pc.emit_padded_assembly(newc,ROOT/'conker/retail_layout.us.txt','game_16DC80',word_patches_path=guards))
     assert caller.read_bytes()==(BASE/caller_object).read_bytes()
-    with patch.multiple(driver,ROOT=ROOT,OUT=WHERE,SOURCE=SOURCE,OBJECT=OBJECT,SPEC=dict(selected=SPEC['selected'])):
-        route=driver.actual_Make(objects[0],after,guards,source=SOURCE,object_path=OBJECT,selected=SPEC['selected'],functions=8)
-        caller_route=driver.actual_Make(caller,newc,guards,source=CALLER,object_path=caller_object,selected=SPEC['selected_caller'],label='caller',functions=16)
+    route=actual_Make(ROOT,WHERE,objects[0],after,guards,SOURCE,OBJECT,SPEC['selected'],'target',8)
+    caller_route=actual_Make(ROOT,WHERE,caller,newc,guards,CALLER,caller_object,SPEC['selected_caller'],'caller',16)
     with patch.multiple(linker,FILENAME='generated_1AB530',OBJECT=OBJECT,LINKER='conker/build/conker.ld'):
         image=linker.link_image(ROOT,WHERE,objects[0],'image')
     expected=(BASE/'conker/build/conker.us.elf').read_bytes();assert image.read_bytes()==expected

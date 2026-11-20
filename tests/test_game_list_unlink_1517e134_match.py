@@ -54,6 +54,7 @@ class ListUnlinkTests(unittest.TestCase):
         r=native.run();self.assertEqual(len(r['valid']),3);self.assertEqual(len(r['rejected']),3)
     def test_06_padders_actual_Make_and_literal_image(self):
         r=s.qualify();self.assertEqual((r['changed_bytes'],r['exclusions'],r['function_slots']),(0,0,6051))
-        self.assertEqual(r['actual_Make']['commands'],5);self.assertEqual(r['caller_actual_Make']['commands'],3)
+        self.assertEqual(r['actual_Make']['commands'],3);self.assertEqual(r['caller_actual_Make']['commands'],3)
+        self.assertFalse(r['actual_Make']['mixed_GLOBAL_ASM_recipe'])
 
 if __name__=='__main__':unittest.main()
