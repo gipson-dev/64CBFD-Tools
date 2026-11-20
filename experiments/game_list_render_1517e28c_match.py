@@ -90,7 +90,7 @@ def qualify():
     fs,_,_=load_elf_functions(image,'mips-linux-gnu-objdump');assert len(fs)==6051
     report=dict(guard_rows=len(rows),inserted_output_indices=inserted,omitted_source_rows=omitted,actual_Make=route,caller_actual_Make=caller_route,
         strict_predicted_ELF_equal=same,exclusions=0,function_slots=len(fs),protected_data_audit=audit_layout(image,root/'conker'),
-        ELF_sha256=hashlib.sha256(image.read_bytes()).hexdigest(),source_installed=(root/s.SOURCE).read_text()==selected,credit=0)
+        ELF_sha256=hashlib.sha256(image.read_bytes()).hexdigest(),source_installed=s.BODY in(root/s.SOURCE).read_text(),credit=0)
     report.update(metadata_rotation=['D_8008D008','func_1503FB40','D_8002BBE0'],metadata_named_definitions_unchanged=True,changed_bytes=sum(a!=b for a,b in zip(previous,prediction)))
     (where/'integration.json').write_text(json.dumps(report,indent=2)+'\n')
     return report

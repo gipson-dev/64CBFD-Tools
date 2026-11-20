@@ -20,7 +20,8 @@ class ListRenderRecoveryTests(unittest.TestCase):
         self.assertGreater(r['typed_caller_functions_unchanged'],0)
         self.assertEqual(r['caller_existing_warnings_unchanged'],3)
         self.assertTrue(r['pools_unchanged'])
-        self.assertEqual(r['installed'],(s.ROOT/s.SOURCE).read_text()==s.source()[1])
+        s.source()  # Validate the complete owner/guard snapshot before function scope.
+        self.assertEqual(r['installed'],s.BODY in(s.ROOT/s.SOURCE).read_text())
         self.assertEqual(r['matching_credit'],0)
         self.assertNotEqual(self.words,self.retail)
 

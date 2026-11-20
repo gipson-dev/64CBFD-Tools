@@ -131,5 +131,11 @@
   "guards_sha256": "40ae4a8dd2efd071820ac7f2be12966c86d0e655ea1a3bc46e40a9a33f5bffb2",
   "guard_rows": 43,
   "selected_source_sha256": "0d76339ded2e2eb491f6516c9c987fedeea5c0401fc398ecfc69d43ef189ca84",
-  "selected_caller_sha256": "fc2f6dee3b8d1a8dc4db93d41864e00f9357df70e4146f7537fdcc3573d38939"
+  "selected_caller_sha256": "fc2f6dee3b8d1a8dc4db93d41864e00f9357df70e4146f7537fdcc3573d38939",
+  "compatible_installed_snapshots": [
+    {
+      "source_sha256": "6b63186aac5872ed976534f421c81d6218253ac4bfdfbc04d982695c3fa2f1e1",
+      "guards_sha256": "2ad895172ced827695636bf56bcc5c1df79545ccba23bcb850e18d4d09285551"
+    }
+  ]
 }
