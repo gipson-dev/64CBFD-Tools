@@ -1,0 +1,135 @@
+{
+  "raw_sha256": "673fc386318f7a0843b64ca6459e55b846c499258bb536e0c780598798b49af5",
+  "raw_refs": {
+    "64": [
+      [
+        "R_MIPS_HI16",
+        "D_8008D004"
+      ]
+    ],
+    "68": [
+      [
+        "R_MIPS_LO16",
+        "D_8008D004"
+      ]
+    ],
+    "76": [
+      [
+        "R_MIPS_HI16",
+        "D_8008D008"
+      ]
+    ],
+    "80": [
+      [
+        "R_MIPS_LO16",
+        "D_8008D008"
+      ]
+    ],
+    "92": [
+      [
+        "R_MIPS_HI16",
+        "D_8008D00C"
+      ]
+    ],
+    "96": [
+      [
+        "R_MIPS_LO16",
+        "D_8008D00C"
+      ]
+    ],
+    "108": [
+      [
+        "R_MIPS_HI16",
+        "D_800DDD64"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_LO16",
+        "D_800DDD64"
+      ]
+    ],
+    "124": [
+      [
+        "R_MIPS_HI16",
+        "D_800DDD60"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_LO16",
+        "D_800DDD60"
+      ]
+    ],
+    "112": [
+      [
+        "R_MIPS_HI16",
+        "D_800DCDD0"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_LO16",
+        "D_800DCDD0"
+      ]
+    ],
+    "188": [
+      [
+        "R_MIPS_HI16",
+        "D_800B0DF0"
+      ]
+    ],
+    "208": [
+      [
+        "R_MIPS_LO16",
+        "D_800B0DF0"
+      ]
+    ],
+    "212": [
+      [
+        "R_MIPS_HI16",
+        "D_8008CFFC"
+      ]
+    ],
+    "240": [
+      [
+        "R_MIPS_LO16",
+        "D_8008CFFC"
+      ]
+    ],
+    "256": [
+      [
+        "R_MIPS_26",
+        "func_1517EAAC"
+      ]
+    ],
+    "308": [
+      [
+        "R_MIPS_26",
+        "func_1517EC1C"
+      ]
+    ],
+    "368": [
+      [
+        "R_MIPS_HI16",
+        "D_800DD2D0"
+      ]
+    ],
+    "376": [
+      [
+        "R_MIPS_LO16",
+        "D_800DD2D0"
+      ]
+    ],
+    "432": [
+      [
+        "R_MIPS_26",
+        "func_1517E4A8"
+      ]
+    ]
+  },
+  "guards_sha256": "40ae4a8dd2efd071820ac7f2be12966c86d0e655ea1a3bc46e40a9a33f5bffb2",
+  "guard_rows": 43,
+  "selected_source_sha256": "0d76339ded2e2eb491f6516c9c987fedeea5c0401fc398ecfc69d43ef189ca84",
+  "selected_caller_sha256": "fc2f6dee3b8d1a8dc4db93d41864e00f9357df70e4146f7537fdcc3573d38939"
+}

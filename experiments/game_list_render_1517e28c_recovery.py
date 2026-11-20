@@ -1,7 +1,7 @@
-"""Uninstalled list-flare renderer recovery: 132 words versus retail's 135.
+"""Raw list-flare renderer recovery: 132 words versus retail's 135.
 
 Public and final-private agreement is not byte-exact, instruction-fault or
-hardware credit. This fixture deliberately has no installation/guard route.
+hardware credit. The separate match layer qualifies installation and guarded output.
 """
 from pathlib import Path
 import hashlib,json,os,struct,subprocess
@@ -102,11 +102,15 @@ Gfx *func_1517E28C(Gfx *commands, s32 unusedCategory) {
 }'''
 
 def source():
-    before=(ROOT/SOURCE).read_text()
+    live=(ROOT/SOURCE).read_text()
+    before=live
     if hashlib.sha256((ROOT/SOURCE).read_bytes()).hexdigest()!=INPUTS[SOURCE]:
-        raise ValueError('Recovery owner changed; qualify a new baseline')
+        frozen=OUT/'committed-baseline'/SOURCE
+        assert hashlib.sha256(frozen.read_bytes()).hexdigest()==INPUTS[SOURCE]
+        before=frozen.read_text()
     assert before.count(STUB)==1
     selected=before.replace(STUB,PREAMBLE+'\n'+BODY).replace('s32 func_1517E4A8() {','Gfx *func_1517E4A8() {')
+    assert live in(before,selected),"Recovery source changed"
     return before,selected
 
 def bind(raw,refs):
@@ -118,14 +122,20 @@ def bind(raw,refs):
     return tuple(bound_blob(raw,refs,symbols))
 
 def screen():
-    for name,digest in INPUTS.items():assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,name
+    manifest=json.loads(Path(__file__).with_name('game_list_render_1517e28c_match_manifest.json').read_text())
+    accepted={SOURCE:manifest['selected_source_sha256'],CALLER:manifest['selected_caller_sha256'],
+        'conker/retail_word_patches.us.csv':manifest['guards_sha256']}
+    for name,digest in INPUTS.items():
+        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()in(digest,accepted.get(name)),name
     where=OUT/'banked-screen';where.mkdir(parents=True,exist_ok=True)
     before,selected=source();old,bd=compile_owner(ROOT,where,before,'before')
     obj,diag=compile_owner(ROOT,where,selected,'candidate');assert not bd and not diag,(bd,diag)
     raw,refs=payload(obj,FUNCTION);words=bind(raw,refs)
     retail=struct.unpack_from('>135I',(ROOT/'conker/conker.us.bin').read_bytes(),ROM)
     assert normalized_pools(old)==normalized_pools(obj)
-    caller=(ROOT/CALLER).read_text()
+    frozen_caller=OUT/'committed-baseline'/CALLER
+    assert hashlib.sha256(frozen_caller.read_bytes()).hexdigest()==INPUTS[CALLER]
+    caller=frozen_caller.read_text()
     revised=caller.replace('s32  func_1517E28C(s32 arg0, s32 arg1);','Gfx *func_1517E28C(Gfx *commands, s32 category);').replace('commands = (Gfx *)func_1517E28C((s32)commands, D_800BE9F0);','commands = func_1517E28C(commands, D_800BE9F0);')
     assert revised!=caller
     a,ad=compile_owner(ROOT,where,caller,'caller-before');b,dd=compile_owner(ROOT,where,revised,'caller-typed')
@@ -138,7 +148,7 @@ def screen():
         raw_sha256=hashlib.sha256(raw).hexdigest(),unchanged_neighbors=same_functions(old,obj,(FUNCTION,)),
         pools_unchanged=True,typed_caller_functions_unchanged=caller_functions,diagnostics='',
         caller_existing_warnings_unchanged=3,
-        installed=False,matching_credit=0)
+        installed=(ROOT/SOURCE).read_text()==selected,matching_credit=0)
     (where/'receipt.json').write_text(json.dumps(report,indent=2)+'\n')
     return report
 

@@ -20,7 +20,8 @@ class ListRenderRecoveryTests(unittest.TestCase):
         self.assertGreater(r['typed_caller_functions_unchanged'],0)
         self.assertEqual(r['caller_existing_warnings_unchanged'],3)
         self.assertTrue(r['pools_unchanged'])
-        self.assertEqual((r['installed'],r['matching_credit']),(False,0))
+        self.assertEqual(r['installed'],(s.ROOT/s.SOURCE).read_text()==s.source()[1])
+        self.assertEqual(r['matching_credit'],0)
         self.assertNotEqual(self.words,self.retail)
 
     def test_02_bounded_guest_with_retained_depth_and_helper_mutation(self):
