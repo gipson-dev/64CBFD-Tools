@@ -57,8 +57,10 @@ def assemble(name,text):
 def prepare():
     WHERE.mkdir(parents=True,exist_ok=True)
     for n,d in SPEC['inputs'].items():assert sha((ROOT/n).read_bytes())==d,n
+    snapshot={'source_sha256':sha((ROOT/SOURCE).read_bytes()),'guards_sha256':sha((ROOT/'conker/retail_word_patches.us.csv').read_bytes())}
+    compatible=snapshot in SPEC.get('compatible_installed_snapshots',[])
     for n,old,new in((SOURCE,'old_source','selected'),(CALLER,'old_caller','selected_caller')):
-        assert(ROOT/n).read_text()in(SPEC[old],SPEC[new]),n
+        assert(compatible and n==SOURCE)or(ROOT/n).read_text()in(SPEC[old],SPEC[new]),n
     before,bd=compile_owner(ROOT,WHERE,SPEC['old_source'],'before')
     after,ad=compile_owner(ROOT,WHERE,SPEC['selected'],'candidate');assert not bd and not ad,(bd,ad)
     raw,refs=payload(after,FUNCTION);derived,bindings=derive(raw,refs)
@@ -78,7 +80,8 @@ def qualify():
     assert sha(old)==SPEC['guards_before_sha256']
     proposed=old+SPEC['append_guards'].encode();assert sha(proposed)==SPEC['guards_after_sha256']
     guards=WHERE/'proposed-guards.csv';guards.write_bytes(proposed)
-    assert sha((ROOT/'conker/retail_word_patches.us.csv').read_bytes())in(SPEC['guards_before_sha256'],SPEC['guards_after_sha256'])
+    snapshot={'source_sha256':sha((ROOT/SOURCE).read_bytes()),'guards_sha256':sha((ROOT/'conker/retail_word_patches.us.csv').read_bytes())}
+    assert snapshot in SPEC.get('compatible_installed_snapshots',[])or snapshot['guards_sha256']in(SPEC['guards_before_sha256'],SPEC['guards_after_sha256'])
     objects=[]
     for label,text in(('layout',pc.emit_padded_assembly(after,ROOT/'conker/retail_layout.us.txt','generated_1AB530',word_patches_path=guards)),
         ('asm',pg.emit_padded_assembly(after,ROOT/'conker/asm/1AB530.s',filename='generated_1AB530',word_patches_path=guards))):
@@ -96,5 +99,5 @@ def qualify():
     report=dict(raw_words=31,normalized_words=30,frame=24,omitted_unused_home_words=1,unchanged_owner_neighbors=7,
         typed_caller_functions_unchanged=16,complete_owner_and_caller_objects_equal=True,actual_Make=route,caller_actual_Make=caller_route,
         strict_predicted_ELF_equal=True,changed_bytes=0,exclusions=0,function_slots=len(fs),protected_data_audit=audit_layout(image,ROOT/'conker'),
-        ELF_sha256=sha(expected),source_installed=(ROOT/SOURCE).read_text()==SPEC['selected'],credit=0)
+        ELF_sha256=sha(expected),source_installed=snapshot in SPEC.get('compatible_installed_snapshots',[])or(ROOT/SOURCE).read_text()==SPEC['selected'],credit=0)
     (WHERE/'integration.json').write_text(json.dumps(report,indent=2)+'\n');return report

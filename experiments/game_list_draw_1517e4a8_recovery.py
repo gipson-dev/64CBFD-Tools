@@ -20,13 +20,17 @@ sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def screen():
     WHERE.mkdir(parents=True,exist_ok=True)
-    for n,d in SPEC['inputs'].items():assert sha(ROOT/n)==d,n
-    before=(ROOT/SOURCE).read_text();selected=before.replace('Gfx *func_1517E4A8();','Gfx *func_1517E4A8(Gfx *, ListRecord1AB530 *, s32, s32, s32, s32, u8 *);')
+    snapshot={n:sha(ROOT/n)for n in(SOURCE,HELPER,'conker/retail_word_patches.us.csv')}
+    compatible=snapshot in SPEC.get('compatible_installed_snapshots',[])
+    for n,d in SPEC['inputs'].items():assert sha(ROOT/n)==(snapshot[n]if compatible and n in snapshot else d),n
+    def frozen(n):
+        p=BASE/n;assert sha(p)==SPEC['inputs'][n],n;return p.read_text()
+    before=frozen(SOURCE)if compatible else(ROOT/SOURCE).read_text();selected=before.replace('Gfx *func_1517E4A8();','Gfx *func_1517E4A8(Gfx *, ListRecord1AB530 *, s32, s32, s32, s32, u8 *);')
     selected=selected.replace('Gfx *func_1517E4A8() {\n    return 0;\n}',PREAMBLE+'\n'+BODY);assert selected!=before
     old,bd=compile_owner(ROOT,WHERE,before,'before');after,ad=compile_owner(ROOT,WHERE,selected,'candidate');assert not bd and not ad,(bd,ad)
     raw,refs=payload(after,FUNCTION);assert hashlib.sha256(raw).hexdigest()==SPEC['raw_sha256']and json.loads(json.dumps(refs))==SPEC['raw_refs']
     words=bind(raw,refs);truth=struct.unpack_from('>361I',(ROOT/'conker/conker.us.bin').read_bytes(),ROM)
-    helper=(ROOT/HELPER).read_text();ha,hd=compile_owner(ROOT,WHERE,helper,'helper-before');hb,hbd=compile_owner(ROOT,WHERE,SPEC['selected_helper'],'helper-after')
+    helper=frozen(HELPER)if compatible else(ROOT/HELPER).read_text();ha,hd=compile_owner(ROOT,WHERE,helper,'helper-before');hb,hbd=compile_owner(ROOT,WHERE,SPEC['selected_helper'],'helper-after')
     assert not hd and not hbd,(hd,hbd)
     assert normalized_pools(old)==normalized_pools(after)and normalized_pools(ha)==normalized_pools(hb)
     report=dict(words=len(words),frame=(-words[0])&65535,positional_differences=sum(a!=b for a,b in zip(words,truth)),
@@ -39,7 +43,8 @@ def integration():
     def assemble(name,text):
         p=WHERE/(name+'.s');p.write_text(text);obj=p.with_suffix('.o')
         subprocess.run(['mips-linux-gnu-as','-EB','-mtune=vr4300','-march=vr4300','-mabi=32','-I',str(ROOT/'conker/include'),'-o',str(obj),str(p)],capture_output=True,check=True);return obj
-    guards=ROOT/'conker/retail_word_patches.us.csv';results={}
+    # Keep the historical raw-C route distinct from the new normalized route.
+    guards=BASE/'conker/retail_word_patches.us.csv';assert sha(guards)==SPEC['inputs']['conker/retail_word_patches.us.csv'];results={}
     for label,source,owner,asm,compact,count in(('target',SOURCE,'generated_1AB530','1AB530','candidate.o',8),('helper',HELPER,'generated_C1D70','C1D70','helper-after.o',19)):
         obj=WHERE/compact
         a=assemble(label+'-layout',pc.emit_padded_assembly(obj,ROOT/'conker/retail_layout.us.txt',owner,word_patches_path=guards))

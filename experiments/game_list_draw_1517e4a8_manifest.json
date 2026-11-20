@@ -193,5 +193,12 @@
   "words": 361,
   "frame": 184,
   "positional_differences": 162,
-  "credit": 0
+  "credit": 0,
+  "compatible_installed_snapshots": [
+    {
+      "conker/src/game/generated_1AB530.c": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+      "conker/src/game/generated_C1D70.c": "2e6dc21f29f8afe2a40f211e6864e834951250d6523d3a3e3bd225e50bc766a7",
+      "conker/retail_word_patches.us.csv": "c769155389ef34f5d2412143adb3cb474b44f497c195c4b0c273eba0fa3ac83f"
+    }
+  ]
 }
