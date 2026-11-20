@@ -14,7 +14,9 @@ sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def screen():
     WHERE.mkdir(parents=True,exist_ok=True)
     actual=(sha(ROOT/SOURCE),sha(ROOT/'conker/retail_word_patches.us.csv'))
-    assert actual in((SPEC['inputs'][SOURCE],SPEC['inputs']['conker/retail_word_patches.us.csv']),(SPEC['selected_source_sha256'],SPEC['guards_after_sha256'])),actual
+    accepted=[(SPEC['inputs'][SOURCE],SPEC['inputs']['conker/retail_word_patches.us.csv']),(SPEC['selected_source_sha256'],SPEC['guards_after_sha256'])]
+    accepted += [(r['source_sha256'],r['guards_sha256'])for r in SPEC.get('compatible_installed_snapshots',[])]
+    assert actual in accepted,actual
     for n,d in SPEC['inputs'].items():
         if n not in(SOURCE,'conker/retail_word_patches.us.csv'):assert sha(ROOT/n)==d,n
     before=(BASE/SOURCE).read_text();assert sha(BASE/SOURCE)==SPEC['inputs'][SOURCE]

@@ -1,0 +1,131 @@
+{
+  "source": "conker/src/game/generated_61D10.c",
+  "caller": "conker/src/game_45B80.c",
+  "function": "func_15035FE8",
+  "entry": 352542696,
+  "rom": 406680,
+  "raw_sha256": "7af2583da5702262721af815370ad4ea9a9121a095c28a96473db49c37e5800e",
+  "raw_refs": {
+    "12": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F00"
+      ]
+    ],
+    "16": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F00"
+      ]
+    ],
+    "140": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "144": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ],
+    "164": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ],
+    "268": [
+      [
+        "R_MIPS_26",
+        "func_1502CCFC"
+      ]
+    ],
+    "276": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F00"
+      ]
+    ],
+    "280": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F00"
+      ]
+    ],
+    "284": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "288": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ]
+  },
+  "raw_words": 90,
+  "frame": 104,
+  "parameters_offset": 84,
+  "neighbors": 9,
+  "pools_unchanged": true,
+  "source_installed": false,
+  "matching_credit": 0,
+  "body": "/* Draw queued records with their matrix, opacity and color parameters. */\nGfx *func_15035FE8(Gfx *commands, s32 view) {\n    s32 red;\n    s32 parameters[4];\n    ProjectionDrawRecord61D10 *record;\n\n    if (D_800C3F00 == 0) {\n        return commands;\n    }\n    gSPSetGeometryMode(commands++, G_SHADE | G_SHADING_SMOOTH);\n    gSPClearGeometryMode(commands++, G_FOG | G_LOD);\n    gDPSetAlphaCompare(commands++, G_AC_NONE);\n    if (D_800C3F00 > 0) {\n        for (record = D_800C3F08; record < D_800C3F08 + D_800C3F00; record++) {\n            if (record->skip == 0) {\n                red = record->color[0];\n                parameters[0] = red;\n                parameters[1] = record->color[1];\n                parameters[2] = record->color[2];\n                parameters[3] = 255;\n                commands = func_1502CCFC(commands, record->slot, view, record->matrix,\n                record->alpha, parameters, 0, 1);\n            }\n        }\n    }\n    return commands;\n}",
+  "replacements": [
+    [
+      "#include <ultra64.h>",
+      "#include <ultra64.h>\n\ntypedef struct {\n    u8 *matrix;\n    u8 alpha;\n    u8 color[3];\n    u8 slot;\n    u8 reserved09[2];\n    u8 skip;\n} ProjectionDrawRecord61D10;\n\nextern ProjectionDrawRecord61D10 D_800C3F08[];\nGfx *func_1502CCFC(Gfx *, s32, s32, u8 *, s32, s32 *, s32, s32);\n"
+    ],
+    [
+      "extern u8 D_800C3F08[];",
+      "extern ProjectionDrawRecord61D10 D_800C3F08[];"
+    ],
+    [
+      "return D_800C3F08 + (val - 1) * 12;",
+      "return (u8 *)(D_800C3F08 + val - 1);"
+    ],
+    [
+      "s32 func_15035FE8() {\n    return 0;\n}",
+      "/* Draw queued records with their matrix, opacity and color parameters. */\nGfx *func_15035FE8(Gfx *commands, s32 view) {\n    s32 red;\n    s32 parameters[4];\n    ProjectionDrawRecord61D10 *record;\n\n    if (D_800C3F00 == 0) {\n        return commands;\n    }\n    gSPSetGeometryMode(commands++, G_SHADE | G_SHADING_SMOOTH);\n    gSPClearGeometryMode(commands++, G_FOG | G_LOD);\n    gDPSetAlphaCompare(commands++, G_AC_NONE);\n    if (D_800C3F00 > 0) {\n        for (record = D_800C3F08; record < D_800C3F08 + D_800C3F00; record++) {\n            if (record->skip == 0) {\n                red = record->color[0];\n                parameters[0] = red;\n                parameters[1] = record->color[1];\n                parameters[2] = record->color[2];\n                parameters[3] = 255;\n                commands = func_1502CCFC(commands, record->slot, view, record->matrix,\n                record->alpha, parameters, 0, 1);\n            }\n        }\n    }\n    return commands;\n}\n"
+    ]
+  ],
+  "caller_replacements": [
+    [
+      "s32  func_15035FE8(s32 arg0, s32 arg1);",
+      "Gfx *func_15035FE8(Gfx *commands, s32 view);"
+    ],
+    [
+      "commands = (Gfx *)func_15035FE8((s32)commands, view);",
+      "commands = func_15035FE8(commands, view);"
+    ]
+  ],
+  "inputs": {
+    "conker/src/game/generated_61D10.c": "084a2c29b40a8cdbdcb783f4c611d51afc0b134aa286ee6f82ebd31add9f2ac1",
+    "conker/src/game_45B80.c": "fc2f6dee3b8d1a8dc4db93d41864e00f9357df70e4146f7537fdcc3573d38939",
+    "conker/retail_word_patches.us.csv": "8f51a0e1d126a3860ed86d675d2b47c7583e7f49adeb14c9a03bd005ab5d13bf",
+    "conker/Makefile": "94141fe5474af30f4aa757fdf09bfb023bab819e4bf4d7ada94a89ac89ac1766",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/symbol_addrs.us.txt": "2eb50e08f06c79454d9ca57a5e4ba1f1670447de73d65302e7225fed6870e644",
+    "conker/include/2.0L/PR/gbi.h": "155141ca4e38735b9a5642521fb78ac735e4b32ee7509fb8df89966dc12c05b6",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "conker/src/game/generated_58F80.c": "b2c68fe7dec3e7050f40e5806c296eca53429502e15e3eb7e72ab9604a6358ca",
+    "conker/asm/61D10.s": "87052fbff2aa1677dcfb8efc3b94b407037e58e47500164e603d5a238883ec14",
+    "conker/asm/58F80.s": "fa4472b7643a9b3ae837eea6d1220122c59f05b34e50d6df608bab0bffc96884",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382"
+  },
+  "installed_snapshot": {
+    "conker/src/game/generated_61D10.c": "21dd74147fbf420bf47bb786307d9724a9c38d47f5aceec7e044097d3886719a",
+    "conker/src/game_45B80.c": "3799c0c770cfe8b7773a8937670a230d2f4f599b77aa033286d25832369409f1",
+    "conker/retail_word_patches.us.csv": "aad592d568239e2c2916265eafe72f1386f99086189f966c4ebe4ae8b012a369"
+  }
+}

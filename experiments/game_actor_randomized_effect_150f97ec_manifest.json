@@ -129,5 +129,27 @@
   },
   "selected_source_sha256": "da3a6a46869a46d6806a16660540411eb67cd3d166ab85eb62672d62bf0328cd",
   "replacement": "extern u8 D_80088B50;\nextern f32 D_800A1C48[3], D_800A1C54[3];\ns32 func_150ADA20(void);\nvoid func_15145EA4(struct17 **, struct17 **, u8 *, s32);\nu8 *func_15102B38(u8 *, u8, f32 *, f32 *, f32 *, s16, u8, f32, f32 *, u8, s32, s16, u8, s32);\n\n/* Transform the actor's emitter point and submit an effect with randomized parameters. */\nvoid func_150F97EC(struct127 *actor, u8 priority, s32 parameter) {\n    struct17 position;\n    f32 sample;\n    f32 scale[2];\n    struct17 *input;\n    struct17 *output;\n    f32 span;\n    u32 random[2];\n\n    if (actor->unk1D4 != NULL) {\n        input = (struct17 *)D_800A1C48;\n        output = &position;\n        func_15145EA4(&input, &output, (u8 *)actor->unk1D4 + D_80088B50 * 64, 1);\n        span = 1.0f;\n        sample = func_150ADA68();\n        scale[1] = sample * span + 2.0f;\n        scale[0] = func_150ADA68() * 14.0f + 28.0f;\n        random[0] = func_150ADA20();\n        random[1] = func_150ADA20();\n        func_15102B38((u8 *)actor, D_80088B50, D_800A1C48, D_800A1C54, scale,\n            random[0] % 3U + 4, random[1] % 156U + 100,\n            func_150ADA68() * 300.0f + 400.0f, (f32 *)&position,\n            255, 0, -1, priority, parameter);\n    }\n}\n\n",
-  "guards_after_sha256": "8f51a0e1d126a3860ed86d675d2b47c7583e7f49adeb14c9a03bd005ab5d13bf"
+  "guards_after_sha256": "8f51a0e1d126a3860ed86d675d2b47c7583e7f49adeb14c9a03bd005ab5d13bf",
+  "compatible_installed_snapshots": [
+    {
+      "source_sha256": "da3a6a46869a46d6806a16660540411eb67cd3d166ab85eb62672d62bf0328cd",
+      "guards_sha256": "aad592d568239e2c2916265eafe72f1386f99086189f966c4ebe4ae8b012a369"
+    }
+  ],
+  "historical_image_dependencies": [
+    {
+      "source_sha256": "da3a6a46869a46d6806a16660540411eb67cd3d166ab85eb62672d62bf0328cd",
+      "guards_sha256": "aad592d568239e2c2916265eafe72f1386f99086189f966c4ebe4ae8b012a369",
+      "overrides": [
+        {
+          "source": "conker/src/game/generated_61D10.c",
+          "source_sha256": "21dd74147fbf420bf47bb786307d9724a9c38d47f5aceec7e044097d3886719a",
+          "object": "conker/build/src/game/generated_61D10.c.o",
+          "live_sha256": "ff5da10a80afae90d5717cf9d0d0030ffdfcd459e88edb2f90000df4dbfd0689",
+          "frozen": "conker/build/game-projection-record-draw-15035fe8-private/baseline/conker/build/src/game/generated_61D10.c.o",
+          "frozen_sha256": "3ce3749fe9ce436c166a9882e7c13ecb4ccddf97ba6d48c7d7fe1aabfbb71b27"
+        }
+      ]
+    }
+  ]
 }

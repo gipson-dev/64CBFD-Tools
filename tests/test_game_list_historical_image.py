@@ -82,6 +82,26 @@ class HistoricalImageTests(unittest.TestCase):
                 with self.enter():
                     self.fail('Ambiguous linker substitution accepted')
 
+    def test_two_pinned_objects_and_second_fingerprint(self):
+        for name,value in (('conker/src/second.c',b'second source'),
+                           ('conker/build/second.o',b'second live object'),
+                           ('conker/private/before/second.o',b'second frozen object')):
+            path=self.root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(value)
+        original=b'INPUT(build/effect.o build/second.o)\n'
+        (self.root/'conker/build/conker.ld').write_bytes(original)
+        manifest=deepcopy(self.manifest)
+        second=dict(source='conker/src/second.c',source_sha256=digest(self.root/'conker/src/second.c'),
+                    object='conker/build/second.o',live_sha256=digest(self.root/'conker/build/second.o'),
+                    frozen='conker/private/before/second.o',frozen_sha256=digest(self.root/'conker/private/before/second.o'))
+        manifest['historical_image_dependencies'][0]['overrides'].append(second)
+        with self.enter(manifest)as script:
+            self.assertEqual((self.root/script).read_bytes(),b'INPUT(private/before/effect.o private/before/second.o)\n')
+        self.assertEqual((self.root/'conker/build/conker.ld').read_bytes(),original)
+        (self.root/second['frozen']).write_bytes(b'changed second object')
+        with self.assertRaisesRegex(ValueError,'fingerprint changed'):
+            with self.enter(manifest):
+                self.fail('Changed second frozen dependency accepted')
+
 
 if __name__ == '__main__':
     unittest.main()

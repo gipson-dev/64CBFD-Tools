@@ -134,6 +134,9 @@ def screen():
               'guards_sha256':hashlib.sha256((ROOT/'conker/retail_word_patches.us.csv').read_bytes()).hexdigest()}
     if snapshot in manifest.get('compatible_installed_snapshots',[]):
         accepted[SOURCE]=snapshot['source_sha256'];accepted['conker/retail_word_patches.us.csv']=snapshot['guards_sha256']
+    caller_snapshot=dict(snapshot,caller_sha256=hashlib.sha256((ROOT/CALLER).read_bytes()).hexdigest())
+    if caller_snapshot in manifest.get('compatible_caller_snapshots',[]):
+        accepted[CALLER]=caller_snapshot['caller_sha256']
     for name,digest in INPUTS.items():
         assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()in(digest,accepted.get(name)),name
     where=OUT/'banked-screen';where.mkdir(parents=True,exist_ok=True)

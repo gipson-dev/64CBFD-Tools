@@ -11,6 +11,7 @@ from tools.experiments.game_actor_state_tick_integration import elf_slot_offset,
 from tools.match_progress import load_elf_functions
 from tools.check_game_data_layout import audit_layout
 from tools.experiments import game_actor_randomized_effect_150f97ec_recovery as source
+from tools.experiments.game_list_historical_image import historical_dependencies
 ROOT=source.ROOT;OUT=source.OUT;BASE=OUT/'baseline';WHERE=OUT/'qualification'
 def permute_metadata(image):
     result=bytearray(image);pairs=[('D_800A48C8','D_800A03C8'),('D_800A1C54','D_800A5F54')]
@@ -27,11 +28,11 @@ def permute_metadata(image):
     return bytes(result),pairs
 def qualify():
     WHERE.mkdir(exist_ok=True);obj=OUT/'qualified-screen/candidate.o';raw,refs=d.payload(obj,'func_150F97EC');blob,bindings,_=d.derive(raw,refs)
-    source=struct.unpack('>88I',raw);wanted=struct.unpack('>89I',blob);old=(BASE/'conker/retail_word_patches.us.csv').read_bytes()
+    original_words=struct.unpack('>88I',raw);wanted=struct.unpack('>89I',blob);old=(BASE/'conker/retail_word_patches.us.csv').read_bytes()
     reader=csv.DictReader(io.StringIO(old.decode()));fields=reader.fieldnames;assert not[r for r in reader if r['function']=='func_150F97EC']
     rows=[];cursor=0
     def reloc(rs):return';'.join(k+':'+n for k,n in rs)or'-'
-    for i,w in enumerate(source):
+    for i,w in enumerate(original_words):
         row={key:''for key in fields};rr=bindings.get(cursor*4,[])
         row.update(filename='generated_124920',function='func_150F97EC',offset='0x%03X'%(i*4),expected='0x%08X'%w,replacement='0x%08X'%wanted[cursor],
             expected_relocations=reloc(refs.get(i*4,[])),replacement_relocations=reloc(rr),
@@ -58,8 +59,9 @@ def qualify():
     route=actual_Make(ROOT,WHERE,objects[0],obj,guards,'conker/src/game/generated_124920.c','conker/build/src/game/generated_124920.c.o',
         (OUT/'qualified-screen/selected-owner.c').read_text(),'target',17)
     assert route['commands']==5 and route['natural_live_recipe']
-    with patch.multiple(linker,FILENAME='generated_124920',OBJECT='conker/build/src/game/generated_124920.c.o',LINKER='conker/build/conker.ld'):
-        image=linker.link_image(ROOT,WHERE,objects[0],'image')
+    with historical_dependencies(ROOT,WHERE,source.SOURCE,source.SPEC)as script:
+        with patch.multiple(linker,FILENAME='generated_124920',OBJECT='conker/build/src/game/generated_124920.c.o',LINKER=script):
+            image=linker.link_image(ROOT,WHERE,objects[0],'image')
     before=(BASE/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(before)
     at=elf_slot_offset(prediction,0x150F97EC,356);prediction[at:at+356]=(ROOT/'conker/conker.us.bin').read_bytes()[0x126C9C:0x126E00]
     matches=[(at,row)for at,name,row,_ in symbol_rows(prediction)if name=='func_150F97EC'];assert len(matches)==1
