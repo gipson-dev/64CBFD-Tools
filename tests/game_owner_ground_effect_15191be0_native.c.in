@@ -1,0 +1,55 @@
+#include <ultra64.h>
+@@DECL@@
+static struct127 actor;
+static GroundEffectPosition1BF090 position;
+static union { struct260 object; u64 alignment; u8 bytes[256]; } output;
+static OwnerGroundEffect1BF090 expected;
+static u32 seed,mutation,outcome,error,surfaces,factories,copies;
+static s16 life;
+static u8 selector,priority;
+static void copy(void*d,const void*s,u32 n){for(u32 i=0;i<n;i++)((u8*)d)[i]=((const u8*)s)[i];}
+static int equal(const void*a,const void*b,u32 n){for(u32 i=0;i<n;i++)if(((const u8*)a)[i]!=((const u8*)b)[i])return 0;return 1;}
+static void fill_surface(void*p){for(u32 i=0;i<36;i++)((u8*)p)[i]=(u8)(seed*17+i*29+0x53);}
+__attribute__((noinline,noclone)) void func_1504715C(HeightResult71820*p,HeightActor71820*a){
+ surfaces++;if(a!=(HeightActor71820*)&actor)error=1;fill_surface(p);
+ if(mutation){((u8*)&actor)[0x3B]^=0x55;position.x=11.0f;position.y=12.0f;position.z=13.0f;}
+}
+__attribute__((noinline,noclone)) struct260*func_15149130(s16 duration,s8 first,s8 kind,s8 last,u8 active,u8 render,struct37*bytes,u8 slot,s32 context){
+ factories++;if(duration!=(life==-1?300:life)||first!=-1||kind!=29||last!=-1||active!=(life!=-1)||render!=29||(u32)bytes!=104||slot!=priority||context!=0x13579BDF)error=2;
+ if(mutation)((u8*)&actor)[0x3B]^=0xAA;
+ return outcome?&output.object:NULL;
+}
+__attribute__((noinline,noclone)) void*memcpy(void*d,const void*s,u32 n){
+ copies++;if(d!=output.bytes+40||n!=104)error=3;
+ for(u32 i=0;i<104;i++){
+  if((i>=5&&i<=7)||(i>=86&&i<=87)||i>=101)continue;
+  if(((const u8*)s)[i]!=((const u8*)&expected)[i])error=4;
+ }
+ if(n<=128&&d>=((void*)output.bytes)&&d<=((void*)(output.bytes+128)))copy(d,s,n);
+ return d;
+}
+@@FUNCTIONS@@
+typedef void*(*Subject)(u8*,GroundEffectPosition1BF090*,u8,f32,f32,s16,f32,f32,s16,s16,u8,u8,f32,f32,f32,u8,u8,s32);
+_Static_assert(sizeof(void*)==4&&sizeof(OwnerGroundEffect1BF090)==104&&sizeof(HeightResult71820)==36,"SDK32 extent");
+_Static_assert(__builtin_offsetof(OwnerGroundEffect1BF090,surface)==36&&__builtin_offsetof(OwnerGroundEffect1BF090,value48)==72&&__builtin_offsetof(OwnerGroundEffect1BF090,value64)==100,"packet fields");
+_Static_assert(sizeof(struct127)>0x3B&&sizeof(output.bytes)>=144,"valid SDK objects");
+static u32 check(Subject fn){
+ static const s16 lives[]={-32768,-2,-1,0,1,32767};
+ for(u32 i=0;i<256;i++)for(u32 j=0;j<6;j++)for(u32 flags=0;flags<8;flags++){
+  seed=i;life=lives[j];selector=(u8)i;priority=(u8)(255-i);mutation=flags&1;outcome=(flags>>1)&1;
+  u32 null=(flags>>2)&1;error=surfaces=factories=copies=0;
+  for(u32 k=0;k<sizeof(actor);k++)((u8*)&actor)[k]=(u8)(i+k*13);
+  for(u32 k=0;k<sizeof(output.bytes);k++)output.bytes[k]=(u8)(i+k*11);
+  position.x=(f32)i;position.y=-1.5f;position.z=7.25f;
+  expected.owner=(u8*)&actor;expected.identity=((u8*)&actor)[0x3B];expected.position=position;expected.channel=(u32)selector<<6;
+  expected.zero=0.0f;expected.value1C=-0.0f;expected.value20=3.25f;fill_surface(&expected.surface);
+  expected.value48=2.5f;expected.value4C=-3.5f;expected.value50=(s16)(i*257u);expected.value52=(s16)(65535-i);
+  expected.value54=(u8)(i+37);expected.value55=(u8)(i+79);expected.value58=0.25f;expected.value5C=1024.0f;expected.value60=-0.125f;expected.value64=(u8)(i+127);
+  void*r=fn(null?NULL:(u8*)&actor,null?NULL:&position,selector,-0.0f,3.25f,life,2.5f,-3.5f,(s16)(i*257u),(s16)(65535-i),(u8)(i+37),(u8)(i+79),0.25f,1024.0f,-0.125f,(u8)(i+127),priority,0x13579BDF);
+  if(error||surfaces!=!null||factories!=!null||copies!=(!null&&outcome)||r!=(!null&&outcome?&output.object:NULL))return 1;
+  if(!null&&outcome){for(u32 k=0;k<104;k++){if((k>=5&&k<=7)||(k>=86&&k<=87)||k>=101)continue;if(output.bytes[40+k]!=((u8*)&expected)[k])return 1;}}
+ }
+ return 0;
+}
+static int run(void){if(check(selected))return 1;@@CONTROLS@@return 0;}
+@@START@@
