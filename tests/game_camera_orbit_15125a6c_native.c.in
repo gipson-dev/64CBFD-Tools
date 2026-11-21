@@ -1,0 +1,107 @@
+#include <ultra64.h>
+#include "functions.h"
+#define D_800C3600 D_800C3600_legacy_pointer_declaration
+#define D_800DC2B0 D_800DC2B0_legacy_integer_declaration
+#include "variables.h"
+#undef D_800C3600
+#undef D_800DC2B0
+@@VIEW@@
+CameraOrbitSetup14FF90 D_800C3600;
+f32 D_800A3550,D_800A3554;u8 D_800DBFF4[16];u8 *D_800DC2B0;
+#define D_800C3614 D_800C3600.x
+#define D_800C3618 D_800C3600.y
+#define D_800C361C D_800C3600.z
+#define D_800C3624 D_800C3600.angle24
+#define D_800C365C D_800C3600.byte5C
+void func_1512D560(u8 *,s32,void *);
+_Static_assert(sizeof(CameraOrbitSetup14FF90)==0x60,"setup extent");
+_Static_assert(__builtin_offsetof(CameraOrbitSetup14FF90,byte5C)==0x5C,"byte offset");
+_Static_assert(__builtin_offsetof(CameraOrbitSetup14FF90,x)==0x14,"x offset");
+_Static_assert(__builtin_offsetof(struct108,unk3D0)==0x3D0,"actor pointer offset");
+_Static_assert(__builtin_offsetof(struct108,unk7E4)==0x7E4,"pending offset");
+@@FUNCTIONS@@
+struct Case {u32 mode,pending,flags,heading,x,y,z,factor,phase_factor,profile,mutation,index,cursor,alias,actor_present;};
+static const struct Case cases[]={@@CASES@@};
+struct Entry{s32 command;void *payload;};
+struct Queue{struct Entry entries[20];u8 padA0[12];u32 count;};
+_Static_assert(sizeof(struct Queue)==0xB0,"queue stride");
+_Static_assert(__builtin_offsetof(struct Queue,count)==0xAC,"queue cursor");
+static struct108 camera,expected_camera;static struct127 actor,second_actor;
+static CameraOrbitSetup14FF90 expected_setup,observed_snapshot,expected_snapshot;
+static struct Queue queues[4],expected_queues[4];static u8 expected_selector[16];
+static u32 calls[8][4],expected_calls[8][4];static int count,expected_count,snapshots,expected_snapshots,error;
+static f32 expected_factor,expected_phase_factor;static const struct Case *current;
+static void bytes(void*p,int n,u8 seed){u8*d=p;for(int i=0;i<n;i++)d[i]=(u8)(i*29+seed);}
+static void copy(void*p,const void*q,int n){u8*a=p;const u8*b=q;for(int i=0;i<n;i++)a[i]=b[i];}
+static int equal(const void*p,const void*q,int n){const u8*a=p,*b=q;for(int i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static u32 word(f32 f){union{f32 f;u32 u;}v;v.f=f;return v.u;}
+static f32 real(u32 u){union{f32 f;u32 u;}v;v.u=u;return v.f;}
+static f32 plus(f32 a,f32 b){volatile f32 v=a+b;return v;}
+static f32 minus(f32 a,f32 b){volatile f32 v=a-b;return v;}
+static f32 times(f32 a,f32 b){volatile f32 v=a*b;return v;}
+static f32 result(int kind,u32 arg){static const u32 values[]={0,0x80000000u,0x3e800000u,0xbf000000u,0x3f400000u,0xbf800000u,0x3fa00000u,0x40000000u};return real(values[((arg>>20)^(arg>>8)^(kind==3?3u:0u)^current->profile)&7]);}
+static void record(int expected,u32 kind,u32 a,u32 b,u32 c){u32(*p)[4]=expected?expected_calls:calls;int*i=expected?&expected_count:&count;if(*i>=8){error=1;return;}p[*i][0]=kind;p[*i][1]=a;p[*i][2]=b;p[*i][3]=c;(*i)++;}
+f32 sinf(f32 x){record(0,2,word(x),0,0);return result(2,word(x));}
+f32 cosf(f32 x){record(0,3,word(x),0,0);return result(3,word(x));}
+static f32 math_result(int kind,f32 x){record(1,kind,word(x),0,0);return result(kind,word(x));}
+@@QUEUE_BODY@@
+static void effect(struct108*p,s32 command,f32*a,f32*b,CameraOrbitSetup14FF90*s){
+ if(!current->mutation)return;
+ if(command==5){p->unk3D0=&second_actor;*a=0.03125f;*b=-0.015625f;p->unk23D=(u8)((current->index+1)%4);p->unk7E4=0x55;p->unk23E=0;}
+ else if(command==6)p->unk7E4=0x55;
+ else if(command==7)s->byte5C=0x7D;
+}
+void func_1512D560(u8*object,s32 command,void*payload){
+ if(object!=(u8*)&camera)error=1;
+ record(0,1,(u32)object,(u32)command,(u32)payload);
+ if(command==7){snapshots++;copy(&observed_snapshot,&D_800C3600,sizeof(D_800C3600));}
+ queue_append(object,command,payload);effect(&camera,command,&D_800A3550,&D_800A3554,&D_800C3600);
+}
+static void model_command(s32 command,void*payload){
+ record(1,1,(u32)&camera,(u32)command,(u32)payload);
+ if(command==7){expected_snapshots++;copy(&expected_snapshot,&expected_setup,sizeof(expected_setup));}
+ struct Queue*q=&expected_queues[expected_camera.unk23D];u32 i=q->count;
+ q->entries[i].command=command;q->entries[i].payload=payload;q->count=i+1==20?0:i+1;
+ effect(&expected_camera,command,&expected_factor,&expected_phase_factor,&expected_setup);
+}
+static void model(void){
+ if(expected_camera.unk23E==42){
+  f32 heading=expected_camera.unk3D0->unk40;
+  if(expected_camera.unk2C!=0x40000){model_command(5,0);expected_camera.unk7E4=1;}
+  expected_selector[0]=3;expected_setup.active=1;expected_setup.word04=0;
+  f32 angle=times(heading,expected_factor);f32 first=math_result(2,angle);
+  f32 phase=times(minus(heading,90.f),expected_phase_factor);f32 second=math_result(2,phase);
+  expected_setup.x=plus(times(second,46.f),plus(expected_camera.unk3D0->x_position,times(138.f,first)));
+  expected_setup.y=plus(expected_camera.unk3D0->y_position,96.f);
+  first=math_result(3,angle);second=math_result(3,phase);
+  expected_setup.z=plus(times(second,46.f),plus(expected_camera.unk3D0->z_position,times(138.f,first)));
+  expected_setup.zero20=0.f;expected_setup.angle24=-180.f;expected_setup.zero08=0.f;
+  expected_setup.heading28=minus(heading,180.f);expected_setup.byte5C=0;model_command(7,&D_800C3600);
+ }else if(expected_camera.unk7E4){model_command(6,0);expected_camera.unk7E4=0;}
+}
+typedef void(*Fn)(struct108*);
+static int check(Fn fn){
+ for(u32 i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
+  const struct Case*c=&cases[i];current=c;
+  /* The wrong-mode control would activate a deliberately null inactive actor.
+     Its rejection is measured on defined inputs; selected still runs every row. */
+  if(fn==bad_0 && c->mode==0x2B && !c->actor_present)continue;
+  bytes(&camera,sizeof(camera),0x35);bytes(&actor,sizeof(actor),0x35);bytes(&second_actor,sizeof(second_actor),0x35);
+  bytes(&D_800C3600,sizeof(D_800C3600),0x35);bytes(queues,sizeof(queues),0x35);bytes(D_800DBFF4,sizeof(D_800DBFF4),0x35);
+  camera.unk23E=(u8)c->mode;camera.unk7E4=(u8)c->pending;camera.unk2C=(s32)c->flags;camera.unk23D=(u8)c->index;
+  camera.unk3D0=c->actor_present?&actor:(void*)0;
+  actor.x_position=real(c->x);actor.y_position=real(c->y);actor.z_position=real(c->z);actor.unk40=real(c->heading);
+  second_actor.x_position=-17.5f;second_actor.y_position=31.25f;second_actor.z_position=60.5f;second_actor.unk40=-45.f;
+  D_800A3550=expected_factor=real(c->factor);D_800A3554=expected_phase_factor=real(c->phase_factor);D_800DC2B0=(u8*)queues;
+  for(int j=0;j<4;j++)queues[j].count=c->cursor;
+  copy(&expected_camera,&camera,sizeof(camera));copy(&expected_setup,&D_800C3600,sizeof(expected_setup));copy(expected_queues,queues,sizeof(queues));copy(expected_selector,D_800DBFF4,sizeof(D_800DBFF4));
+  count=expected_count=snapshots=expected_snapshots=error=0;model();fn(&camera);
+  if(error||count!=expected_count||snapshots!=expected_snapshots||word(D_800A3550)!=word(expected_factor)||word(D_800A3554)!=word(expected_phase_factor))return 1;
+  if(!equal(&camera,&expected_camera,sizeof(camera))||!equal(&D_800C3600,&expected_setup,sizeof(expected_setup))||!equal(queues,expected_queues,sizeof(queues))||!equal(D_800DBFF4,expected_selector,sizeof(D_800DBFF4)))return 1;
+  if(snapshots&&!equal(&observed_snapshot,&expected_snapshot,sizeof(expected_setup)))return 1;
+  for(int j=0;j<count;j++)for(int k=0;k<4;k++)if(calls[j][k]!=expected_calls[j][k])return 1;
+ }
+ return 0;
+}
+static int run(void){if(check(selected))return 10;@@CONTROLS@@return 0;}
+@@START@@
