@@ -1,0 +1,67 @@
+#include <ultra64.h>
+#include "functions.h"
+@@VIEWS@@
+void func_1515BA10(s32);s32 func_1515BA1C(s16);void func_1515BA48(s32);s32 func_1515BA54(s16);s32 func_1515BA80(s16);s32 func_1515BAAC(s16);void func_15124B18(struct108 *);
+_Static_assert(sizeof(CameraFlagFloat14FF90)==4 && sizeof(CameraFlagShort14FF90)==2,"scalar widths");
+_Static_assert(__builtin_offsetof(struct108,unk3D0)==0x3D0 && __builtin_offsetof(struct108,unk3D4)==0x3D4,"actor pointers");
+_Static_assert(__builtin_offsetof(struct108,unk5F0)==0x5F0 && __builtin_offsetof(struct108,unk2C)==0x2C,"flags");
+_Static_assert(__builtin_offsetof(struct108,unk2FC)==0x2FC && __builtin_offsetof(struct108,pad360)==0x360,"height fields");
+_Static_assert(__builtin_offsetof(struct108,unk23C)==0x23C && __builtin_offsetof(struct108,unk23D)==0x23D,"byte fields");
+_Static_assert(__builtin_offsetof(struct127,unk9C)==0x9C && __builtin_offsetof(struct127,unk28)==0x28 && __builtin_offsetof(struct127,unk137)==0x137,"actor fields");
+_Static_assert(sizeof(struct108)>=0x7B4 && sizeof(struct127)>=0x138,"extents");
+@@FUNCTIONS@@
+struct Case{u32 flags,mode,secondary,word9C,byte95,byte137,velocity,identity,byte16,byte4E,y,limit,counter,slot,mutation,alias,seed;};
+static const struct Case cases[]={@@CASES@@};
+static struct108 camera,expected;static struct127 primary,secondary;
+static struct108 *active;static const struct Case *current;
+static u32 calls[3][2],expected_calls[3][2];static int count,expected_count,error,model_mode;
+static void bytes(void*p,int n,u8 seed){u8*d=p;for(int i=0;i<n;i++)d[i]=(u8)(i*29+seed);}
+static void copy(void*p,const void*q,int n){u8*a=p;const u8*b=q;for(int i=0;i<n;i++)a[i]=b[i];}
+static int equal(const void*p,const void*q,int n){const u8*a=p,*b=q;for(int i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static f32 real(u32 u){union{f32 f;u32 u;}v;v.u=u;return v.f;}
+static void call(u32 kind,u32 arg){
+ u32(*p)[2]=model_mode?expected_calls:calls;int*i=model_mode?&expected_count:&count;
+ if(*i>=3){error=1;return;}p[*i][0]=kind;p[*i][1]=arg;(*i)++;
+ if(current->mutation&1){active->unk5F0^=0xA5A5;active->unk23D^=0x5A;*(CameraFlagFloat14FF90*)((u8*)active+0x7B0)=37.5f;}
+ if(kind==0x15124B18)active->unk348=17.25f;
+}
+void func_1515BA10(s32 v){call(0x1515BA10,(u32)v);}s32 func_1515BA1C(s16 v){call(0x1515BA1C,(u32)v);return 0x12345678;}
+void func_1515BA48(s32 v){call(0x1515BA48,(u32)v);}s32 func_1515BA54(s16 v){call(0x1515BA54,(u32)v);return 0x12345678;}
+s32 func_1515BA80(s16 v){call(0x1515BA80,(u32)v);return 0x12345678;}s32 func_1515BAAC(s16 v){call(0x1515BAAC,(u32)v);return 0x12345678;}
+void func_15124B18(struct108 *v){if(v!=active)error=1;call(0x15124B18,0);}
+static void model(void){
+ struct108*c=active;u32 f=(u32)c->unk5F0,old=f&1;struct127*s=c->unk3D4,*p=c->unk3D0;
+ if(s){
+  u32 forty=(s->unk9C!=0)||(((u8*)s)[0x95]!=0&&p->unk137==0);
+  u32 eight=(*(CameraFlagShort14FF90*)((u8*)s+8)!=0)&&(((u8*)s)[0x16]==0);
+  u32 eighty=((u8*)s)[0x4E]==2;
+  f=(f&~0xC8u)|(forty?0x40u:0)|(eight?8u:0)|(eighty?0x80u:0);
+  if(p->unk28==0.f)f&=~0x400u;
+ }
+ u32 now=(c->unk2FC<=*(CameraFlagFloat14FF90*)((u8*)c+0x360))&&c->unk2C!=0x100;
+ f=(f&~1u)|now;c->unk5F0=(s32)f;
+ /* Declarative old/new transition table; the two special routes depend on bit4/mode. */
+ static const u32 normal[4]={0x1515BA10,0x1515BAAC,0x1515BA54,0x1515BA1C};
+ static const u32 special[4]={0x1515BA10,0x1515BA80,0x1515BA48,0x1515BA1C};
+ u32 route=(old<<1)|now,gate=(f&4)||((u32)c->unk2C&0x40000),kind;
+ if(c->unk23C)kind=now?0x1515BA80:0x1515BA48;else kind=(gate?special:normal)[route];
+ call(kind,c->unk23D);
+ if(kind==0x1515BA48)*(CameraFlagFloat14FF90*)((u8*)c+0x7B0)=0.f;
+ if(kind==0x1515BA54)call(0x15124B18,0);
+}
+typedef void(*Fn)(struct108*);
+static int check(Fn fn){
+ for(u32 i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
+  const struct Case*c=&cases[i];current=c;bytes(&camera,sizeof(camera),(u8)(0x35+c->seed));bytes(&primary,sizeof(primary),0x35);bytes(&secondary,sizeof(secondary),0x35);
+  struct127*p=&primary,*s=c->alias?&primary:&secondary;p->unk28=real(c->velocity);p->unk137=(u8)c->byte137;
+  s->unk9C=c->word9C;((u8*)s)[0x95]=(u8)c->byte95;*(CameraFlagShort14FF90*)((u8*)s+8)=(s16)c->identity;((u8*)s)[0x16]=(u8)c->byte16;((u8*)s)[0x4E]=(u8)c->byte4E;
+  camera.unk3D0=c->secondary?p:(void*)0;camera.unk3D4=c->secondary?s:(void*)0;camera.unk5F0=(s32)c->flags;camera.unk2C=(s32)c->mode;
+  camera.unk2FC=real(c->y);*(CameraFlagFloat14FF90*)((u8*)&camera+0x360)=real(c->limit);*(CameraFlagFloat14FF90*)((u8*)&camera+0x7B0)=-31.25f;camera.unk23C=(u8)c->counter;camera.unk23D=(u8)c->slot;
+  copy(&expected,&camera,sizeof(camera));count=expected_count=error=0;active=&expected;model_mode=1;model();active=&camera;model_mode=0;fn(&camera);
+  if(error||count!=expected_count||!equal(&camera,&expected,sizeof(camera)))return 1;
+  for(int j=0;j<count;j++)for(int k=0;k<2;k++)if(calls[j][k]!=expected_calls[j][k])return 1;
+ }
+ return 0;
+}
+static int run(void){if(check(selected))return 10;@@CONTROLS@@return 0;}
+@@START@@
