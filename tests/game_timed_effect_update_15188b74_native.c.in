@@ -1,0 +1,94 @@
+#include <ultra64.h>
+typedef struct ListNode15188A58 ListNode15188A58;
+struct ListNode15188A58 {
+    u8 active, kind, cleared, opacity;
+    u8 mode, retained05;
+    s16 timer;
+    u8 *buffer;
+    ListNode15188A58 *next;
+    s32 key;
+};
+_Static_assert(sizeof(void*)==4 && sizeof(ListNode15188A58)==20,"SDK32 node extent");
+#define OFFSET(n,v) _Static_assert(__builtin_offsetof(ListNode15188A58,n)==v,"offset " #n)
+OFFSET(active,0);OFFSET(opacity,3);OFFSET(timer,6);OFFSET(buffer,8);OFFSET(next,12);OFFSET(key,16);
+struct Case { s32 timer;u32 opacity,delta,list,count,mutation,pattern; };
+static const struct Case cases[]={@@CASES@@};
+struct World { ListNode15188A58 *heads[2];ListNode15188A58 nodes[3];u8 retained[24]; };
+static struct World world,initial,expected;
+static s32 D_800BE9E4,savedDelta,expectedDelta;
+#define D_800DF7C8 (world.heads[0])
+static void (*D_8008D580[2])(ListNode15188A58 *);
+static void (*D_8008D588[2])(ListNode15188A58 *);
+static const struct Case *current;
+static u32 calls[16][2],expectedCalls[16][2],callCount,expectedCount,error;
+static void copy(void *a,const void *b,u32 n){u8*d=a;const u8*s=b;for(u32 i=0;i<n;i++)d[i]=s[i];}
+static int equal(const void*a,const void*b,u32 n){const u8*x=a,*y=b;for(u32 i=0;i<n;i++)if(x[i]!=y[i])return 0;return 1;}
+static u32 ordinal(ListNode15188A58*p){for(u32 i=0;i<3;i++)if(p==&world.nodes[i])return i;error=1;return 0;}
+static void record(u32 t,ListNode15188A58*p){if(callCount>=16){error=1;return;}calls[callCount][0]=t;calls[callCount++][1]=ordinal(p);}
+static void effect(ListNode15188A58*p){
+ u32 i=ordinal(p),m=current->mutation;
+ if(m&1)p->timer=0;
+ if(m&2)p->opacity=(u8)(i==0?1:i==1?0:255);
+ if(m&4)p->next=0;
+ if(m&8)p->active^=1;
+ if(m&16)D_800BE9E4=3;
+ if(m&32)world.heads[current->list]=0;
+}
+static void update0(ListNode15188A58*p){record(1,p);effect(p);}
+static void update1(ListNode15188A58*p){record(2,p);effect(p);}
+static void cleanup0(ListNode15188A58*p){record(3,p);p->kind^=0x53;}
+static void cleanup1(ListNode15188A58*p){record(4,p);p->kind^=0x53;}
+static void func_10004074(void*v){ListNode15188A58*p=v;record(5,p);p->cleared=0xA7;}
+@@FUNCTIONS@@
+/* Separate transition model; callbacks and free record effects without deallocation. */
+static void model(s32 list){
+ ListNode15188A58 **link=&world.heads[list],*p=*link,*previous=0;
+ while(p){
+  ListNode15188A58 *following=p->next;
+  s32 timer=p->timer;
+  if(timer){u32 h=((u32)timer-(u32)D_800BE9E4)&65535u;timer=h<32768u?(s32)h:(s32)h-65536;p->timer=(s16)timer;}
+  if(p->timer<0)p->timer=0;
+  if(p->active)update1(p);else update0(p);
+  s32 amount=p->opacity;
+  if(p->timer){
+   if(amount<255){amount+=D_800BE9E4*16;if(amount>255)amount=255;p->opacity=(u8)amount;}
+   previous=p;
+  }else if(amount){
+   amount-=D_800BE9E4*8;if(amount<0)amount=0;
+   if(!amount){
+    if(previous)previous->next=following;else *link=following;
+    if(p->active)cleanup1(p);else cleanup0(p);
+    func_10004074(p);
+   }else{p->opacity=(u8)amount;previous=p;}
+  }
+  p=following;
+ }
+}
+static void setup(const struct Case*c){
+ u8 *b=(u8*)&world;for(u32 i=0;i<sizeof(world);i++)b[i]=(u8)(i*29+c->pattern*11+0x35);
+ world.heads[0]=world.heads[1]=0;if(c->count)world.heads[c->list]=&world.nodes[0];
+ for(u32 i=0;i<3;i++){
+  ListNode15188A58*p=&world.nodes[i];p->active=(u8)((c->pattern+i)&1);
+  p->opacity=(u8)(c->opacity+((c->pattern&2)?17*i:0));
+  p->timer=(s16)((!i||!(c->pattern&1))?c->timer:i==1?0:-1);
+  p->next=i+1<c->count?&world.nodes[i+1]:0;p->key=0;
+ }
+ D_800BE9E4=(s32)c->delta;error=0;callCount=0;
+}
+static int check(void(*fn)(s32)){
+ for(u32 i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
+  current=&cases[i];setup(current);copy(&initial,&world,sizeof(world));savedDelta=D_800BE9E4;
+  model((s32)current->list);copy(&expected,&world,sizeof(world));expectedDelta=D_800BE9E4;expectedCount=callCount;copy(expectedCalls,calls,sizeof(calls));
+  if(error)return 1;
+  copy(&world,&initial,sizeof(world));D_800BE9E4=savedDelta;error=0;callCount=0;fn((s32)current->list);
+  if(error||D_800BE9E4!=expectedDelta||callCount!=expectedCount||!equal(calls,expectedCalls,callCount*sizeof(calls[0]))||!equal(&world,&expected,sizeof(world)))return 1;
+ }
+ return 0;
+}
+static int run(void){
+ D_8008D580[0]=update0;D_8008D580[1]=update1;D_8008D588[0]=cleanup0;D_8008D588[1]=cleanup1;
+ if(check(selected))return 2;
+ @@CONTROLS@@
+ return 0;
+}
+@@START@@
