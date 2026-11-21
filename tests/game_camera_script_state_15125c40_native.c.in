@@ -1,0 +1,65 @@
+#include <ultra64.h>
+#include "functions.h"
+#include "variables.h"
+@@FUNCTIONS@@
+u8 D_800D1940;
+static struct108 actual,expected;
+static struct127 actor;
+static u16 actual_flags,expected_flags;
+static s32 trace[2][6],expected_trace[2][6];
+static int calls,expected_calls,mutation,error;
+static void bytes(void *p,int n,u8 seed){u8 *d=p;for(int i=0;i<n;i++)d[i]=(u8)(i*29+seed);}
+static void copy(void *p,const void *s,int n){u8 *a=p;const u8*b=s;for(int i=0;i<n;i++)a[i]=b[i];}
+static int equal(const void *p,const void *q,int n){const u8*a=p,*b=q;for(int i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static void model_call(s32 num,s32 command,s32 value){
+ int n=expected_calls++;
+ expected_trace[n][0]=num;expected_trace[n][1]=0x9000;expected_trace[n][2]=command;expected_trace[n][3]=value;
+ expected_trace[n][4]=0;expected_trace[n][5]=250;
+ if(mutation){expected.unk5F0=(s32)(0xC1000000u+(u32)expected_calls);expected.unk23E^=0x55;}
+}
+void func_1509BFB0(s32 num,s32 handle,s32 command,...){
+ __builtin_va_list ap;int n=calls++;if(n>=2){error=1;return;}
+ trace[n][0]=num;trace[n][1]=handle;trace[n][2]=command;
+ __builtin_va_start(ap,command);trace[n][3]=__builtin_va_arg(ap,s32);
+ if(num==3){trace[n][4]=__builtin_va_arg(ap,s32);trace[n][5]=__builtin_va_arg(ap,s32);}
+ else if(num!=1)error=1;
+ __builtin_va_end(ap);
+ if(mutation){actual.unk5F0=(s32)(0xC1000000u+(u32)calls);actual.unk23E^=0x55;D_800D1940^=0x55;}
+}
+typedef void(*Fn)(struct108 *);
+static int check(Fn fn){
+ static const s32 timers[]={-1,0,1,2,0x7fffffff};
+ static const f32 values[]={-12.75f,0.f,12.75f};
+ for(int selector=0;selector<1280;selector++)for(int t=0;t<5;t++)
+ for(int flags=0;flags<2;flags++)for(int mut=0;mut<2;mut++)for(int v=0;v<3;v++){
+  int category,state;static const int states[]={0,3,26};
+  if(selector<768){category=selector/3;state=states[selector%3];}
+  else{category=(selector-768)/256?0x42:0;state=(selector-768)%256;}
+  bytes(&actual,sizeof(actual),0x35);bytes(&actor,sizeof(actor),0x51);
+  actual.unk23E=(u8)state;actual.unk7CC=timers[t];actual.unk5F0=flags?2:0;
+  actual.unk3D0=&actor;actual.unk36C=&actual_flags;actual.unk36A=0xA581;actual_flags=expected_flags=0xA581;
+  actor.unk40=values[v];D_800D1940=(u8)category;copy(&expected,&actual,sizeof(actual));
+  mutation=mut;calls=expected_calls=error=0;bytes(trace,sizeof(trace),0);bytes(expected_trace,sizeof(expected_trace),0);
+  expected.unk7CC=timers[t]-1;
+  if(state==3||state==26){
+   if(timers[t]==1){
+    if(state==26)model_call(3,0x18,category==0x42?(s32)values[v]:0);
+    expected.unk5F0|=2;expected_flags|=0x10;expected.unk36A|=0x10;expected.unk7CC=1;
+   }
+  }else{
+   if(flags){model_call(1,0x10,0);model_call(1,0xF,0);expected.unk5F0&=~2;}
+   expected.unk7CC=2;
+  }
+  u8 expected_category=(u8)(category^((mut&&(expected_calls&1))?0x55:0));
+  fn(&actual);
+  if(error||calls!=expected_calls||D_800D1940!=expected_category||actual_flags!=expected_flags||!equal(&actual,&expected,sizeof(actual)))return 1;
+  for(int i=0;i<calls;i++)for(int j=0;j<trace[i][0]+3;j++)if(trace[i][j]!=expected_trace[i][j])return 1;
+ }
+ return 0;
+}
+static int run(void){
+ if(check(selected))return 10;
+ @@CONTROLS@@
+ return 0;
+}
+@@START@@
