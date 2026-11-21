@@ -1,0 +1,89 @@
+#include <ultra64.h>
+@@DECL@@
+
+static BufferedMatrixOwner1E73B0 actor, expected;
+static u32 pattern, mutation, calls, error, initialPage;
+static f32 initialScale;
+
+static f32 matrix_value(u32 index) {
+    if (index % 4 == 3) return index == 15 ? 1.0f : 0.0f;
+    return ((s32)((index + pattern) % 5) - 2) * 0.125f;
+}
+
+static void fill_matrix(f32 values[4][4]) {
+    for (u32 i = 0; i < 16; i++) values[i / 4][i % 4] = matrix_value(i);
+}
+
+__attribute__((noinline,noclone))
+void func_150A8050(f32 values[4][4], f32 x, f32 y, f32 z) {
+    calls++;
+    if (values != actor.matrices[initialPage] || x != 0.0f || y != .75f || z != 0.0f) error = 1;
+    fill_matrix(values);
+    if (mutation & 1) D_800BE9C0 ^= 1;
+    if (mutation & 2) D_800AA8E0 = -.25f;
+    if (mutation & 4) {
+        actor.x = -7.5f;
+        actor.y = 8.25f;
+        actor.z = -9.0f;
+        actor.angle = 12.0f;
+    }
+}
+
+u8 D_800BE9C0;
+f32 D_800AA8E0;
+
+@@FUNCTIONS@@
+
+typedef s32 (*Subject)(BufferedMatrixOwner1E73B0 *);
+_Static_assert(sizeof(void *) == 4 && sizeof(BufferedMatrixOwner1E73B0) == 0x124, "SDK32 owner extent");
+_Static_assert(__builtin_offsetof(BufferedMatrixOwner1E73B0, matrices) == 0x7C, "matrix offset");
+_Static_assert(__builtin_offsetof(BufferedMatrixOwner1E73B0, angle) == 0x120, "angle offset");
+
+static int equal(const void *first, const void *second, u32 length) {
+    const u8 *a = first, *b = second;
+    for (u32 i = 0; i < length; i++) if (a[i] != b[i]) return 0;
+    return 1;
+}
+
+static int check(Subject subject) {
+    static const f32 scales[] = {0.0f, -0.0f, 1.0f, -1.0f, .5f, 2.0f};
+    for (pattern = 0; pattern < 8; pattern++) {
+        for (initialPage = 0; initialPage < 2; initialPage++) {
+            for (u32 scaleIndex = 0; scaleIndex < 6; scaleIndex++) {
+                for (mutation = 0; mutation < 8; mutation++) {
+                    for (u32 i = 0; i < sizeof(actor); i++) ((u8 *)&actor)[i] = (u8)(i * 13 + pattern);
+                    fill_matrix(actor.matrices[0]);
+                    fill_matrix(actor.matrices[1]);
+                    actor.x = 1.25f; actor.y = -2.5f; actor.z = 3.75f; actor.angle = .75f;
+                    for (u32 i = 0; i < sizeof(actor); i++) ((u8 *)&expected)[i] = ((u8 *)&actor)[i];
+                    D_800BE9C0 = (u8)initialPage;
+                    initialScale = D_800AA8E0 = scales[scaleIndex];
+                    calls = error = 0;
+                    fill_matrix(expected.matrices[initialPage]);
+                    u32 destination = initialPage ^ (mutation & 1);
+                    f32 scale = mutation & 2 ? -.25f : initialScale;
+                    if (mutation & 4) {
+                        expected.x = -7.5f; expected.y = 8.25f; expected.z = -9.0f; expected.angle = 12.0f;
+                    }
+                    expected.matrices[destination][3][0] = expected.x;
+                    expected.matrices[destination][3][1] = expected.y;
+                    expected.matrices[destination][3][2] = expected.z;
+                    for (u32 row = 0; row < 3; row++) {
+                        for (u32 column = 0; column < 3; column++) expected.matrices[destination][row][column] *= scale;
+                    }
+                    if (subject(&actor) != 1 || calls != 1 || error) return 1;
+                    if (!equal(&actor, &expected, sizeof(actor))) return 1;
+                    if (D_800BE9C0 != destination || !equal(&D_800AA8E0, &scale, sizeof(scale))) return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+static int run(void) {
+    if (check(selected)) return 1;
+    @@CONTROLS@@
+    return 0;
+}
+@@START@@
