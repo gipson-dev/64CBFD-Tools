@@ -1,5 +1,6 @@
 """Complete typed actor effect C recovery; raw source remains 88 words."""
 from pathlib import Path
+from tools.experiments.game_list_historical_image import qualified_input_context
 import hashlib,json,os,struct
 from tools.experiments.game_remaining_donor_candidates import compile_owner
 from tools.experiments.game_paired_ground_constructor_match import payload
@@ -12,13 +13,14 @@ SPEC=json.loads(Path(__file__).with_name('game_actor_randomized_effect_150f97ec_
 SOURCE=SPEC['source'];BODY=SPEC['body'];PREAMBLE=SPEC['preamble'];FUNCTION=SPEC['function'];ENTRY=SPEC['entry'];ROM=SPEC['rom']
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def screen():
+    extra=qualified_input_context(ROOT,SOURCE,SPEC)
     WHERE.mkdir(parents=True,exist_ok=True)
     actual=(sha(ROOT/SOURCE),sha(ROOT/'conker/retail_word_patches.us.csv'))
     accepted=[(SPEC['inputs'][SOURCE],SPEC['inputs']['conker/retail_word_patches.us.csv']),(SPEC['selected_source_sha256'],SPEC['guards_after_sha256'])]
     accepted += [(r['source_sha256'],r['guards_sha256'])for r in SPEC.get('compatible_installed_snapshots',[])]
     assert actual in accepted,actual
     for n,d in SPEC['inputs'].items():
-        if n not in(SOURCE,'conker/retail_word_patches.us.csv'):assert sha(ROOT/n)==d,n
+        if n not in(SOURCE,'conker/retail_word_patches.us.csv'):assert sha(ROOT/n)==extra.get(n,d),n
     before=(BASE/SOURCE).read_text();assert sha(BASE/SOURCE)==SPEC['inputs'][SOURCE]
     stub='s32 func_150F97EC() {\n    return 0;\n}';assert before.count(stub)==1
     selected=before.replace(stub,SPEC['replacement']);assert hashlib.sha256(selected.encode()).hexdigest()==SPEC['selected_source_sha256']

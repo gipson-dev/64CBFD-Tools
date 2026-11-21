@@ -1,5 +1,6 @@
 """Frozen projection submission source, ABI and owner qualification."""
 from pathlib import Path
+from tools.experiments.game_list_historical_image import qualified_input_context
 import hashlib,json,os
 from tools.experiments.game_remaining_donor_candidates import compile_owner
 from tools.experiments.game_paired_ground_constructor_match import payload
@@ -15,11 +16,12 @@ def original_assembly():
     text=(ROOT/'conker/asm/61D10.s').read_text();a=text.index('glabel '+FUNCTION+'\n');b=text.index('endlabel '+FUNCTION,a)+len('endlabel '+FUNCTION)
     return text[a:b]
 def screen():
+    extra=qualified_input_context(ROOT,SOURCE,SPEC)
     WHERE.mkdir(exist_ok=True)
     snapshot={n:sha(ROOT/n)for n in SPEC['installed_snapshot']};previous={n:SPEC['inputs'][n]for n in snapshot}
     assert snapshot in([previous,SPEC['installed_snapshot']]+SPEC.get('compatible_installed_snapshots',[])),snapshot
     for n,d in SPEC['inputs'].items():
-        if n not in snapshot:assert sha(ROOT/n)==d,n
+        if n not in snapshot:assert sha(ROOT/n)==extra.get(n,d),n
     before=(BASE/SOURCE).read_text();assert sha(BASE/SOURCE)==SPEC['inputs'][SOURCE];selected=before
     for old,new in SPEC['replacements']:assert selected.count(old)==1;selected=selected.replace(old,new)
     assert hashlib.sha256(selected.encode()).hexdigest()==SPEC['installed_snapshot'][SOURCE]

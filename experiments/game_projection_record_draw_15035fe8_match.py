@@ -2,6 +2,8 @@ from pathlib import Path
 import sys
 from tools.experiments import game_projection_record_draw_15035fe8_recovery as source
 ROOT=source.ROOT
+from tools.experiments.game_list_historical_image import historical_dependencies,assert_qualified_makefile
+HISTORICAL_SOURCE=source.SOURCE;HISTORICAL_SPEC=source.SPEC
 from unittest.mock import patch
 import csv,hashlib,io,json,struct,subprocess
 from tools.tests import game_projection_record_draw_15035fe8_normalizer as d
@@ -65,8 +67,9 @@ def qualify():
     assert caller.read_bytes()==(BASE/'conker/build/src/game_45B80.c.o').read_bytes()
     (WHERE/'caller-after-diagnostics.txt').write_text(cbd);(WHERE/'selected-caller.c').write_text(selected)
     caller_route=actual_Make(ROOT,WHERE,caller,cb,guards,caller_source,'conker/build/src/game_45B80.c.o',selected,'caller',16)
-    with patch.multiple(linker,FILENAME='generated_61D10',OBJECT='conker/build/src/game/generated_61D10.c.o',LINKER='conker/build/conker.ld'):
-        image=linker.link_image(ROOT,WHERE,target,'image')
+    with historical_dependencies(ROOT,WHERE,HISTORICAL_SOURCE,HISTORICAL_SPEC)as script:
+        with patch.multiple(linker,FILENAME='generated_61D10',OBJECT='conker/build/src/game/generated_61D10.c.o',LINKER=script):
+            image=linker.link_image(ROOT,WHERE,target,'image')
     before=(BASE/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(before)
     at=elf_slot_offset(prediction,0x15035FE8,352);prediction[at:at+352]=(ROOT/'conker/conker.us.bin').read_bytes()[0x63498:0x635F8]
     matches=[(at,row)for at,name,row,_ in symbol_rows(prediction)if name=='func_15035FE8'];assert len(matches)==1

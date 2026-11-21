@@ -2,6 +2,8 @@ from pathlib import Path
 import sys
 from tools.experiments import game_projection_filtered_draw_15035d6c_recovery as source
 ROOT=source.ROOT
+from tools.experiments.game_list_historical_image import historical_dependencies,assert_qualified_makefile
+HISTORICAL_SOURCE=source.SOURCE;HISTORICAL_SPEC=source.SPEC
 from unittest.mock import patch
 import csv,hashlib,io,json,struct,subprocess
 from tools.tests import game_projection_filtered_draw_15035d6c_normalizer as d
@@ -49,12 +51,13 @@ def qualify():
             lo=s['value'];hi=lo+s['size'];return(p[0][lo:hi],{at-lo:rs for at,rs in p[2].items()if lo<=at<hi})
         if contents(a,f)!=contents(b,h):changed.append(name)
     assert changed==['func_15035D6C'],changed
-    assert(ROOT/'conker/Makefile').read_bytes()==(BASE/'conker/Makefile').read_bytes()
+    assert_qualified_makefile(ROOT,BASE,HISTORICAL_SOURCE,HISTORICAL_SPEC)
     (WHERE/'after-diagnostics.txt').write_text('')
     route=actual_Make(ROOT,WHERE,target,compact,guards,'conker/src/game/generated_61D10.c','conker/build/src/game/generated_61D10.c.o',
         (OUT/'qualified-screen/selected-owner.c').read_text(),'target',10)
-    with patch.multiple(linker,FILENAME='generated_61D10',OBJECT='conker/build/src/game/generated_61D10.c.o',LINKER='conker/build/conker.ld'):
-        image=linker.link_image(ROOT,WHERE,target,'image')
+    with historical_dependencies(ROOT,WHERE,HISTORICAL_SOURCE,HISTORICAL_SPEC)as script:
+        with patch.multiple(linker,FILENAME='generated_61D10',OBJECT='conker/build/src/game/generated_61D10.c.o',LINKER=script):
+            image=linker.link_image(ROOT,WHERE,target,'image')
     before=(BASE/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(before)
     at=elf_slot_offset(prediction,0x15035D6C,636);prediction[at:at+636]=(ROOT/'conker/conker.us.bin').read_bytes()[0x6321C:0x63498]
     matches=[(at,row)for at,name,row,_ in symbol_rows(prediction)if name=='func_15035D6C'];assert len(matches)==1
@@ -66,7 +69,7 @@ def qualify():
     (WHERE/'predicted.elf').write_bytes(prediction);fs,_,_=load_elf_functions(image,'mips-linux-gnu-objdump')
     r=dict(guard_rows=len(rows),insertions=0,omissions=1,owner_functions=len(a[1]),unchanged_owner_functions=9,
         record_field_rename_neighbors_unchanged=True,submit_placeholder_unchanged=True,padders_equal=True,
-        actual_Make=route,Makefile_unchanged=True,strict_predicted_ELF_equal=True,
+        actual_Make=route,owner_Make_recipe_unchanged=True,strict_predicted_ELF_equal=True,
         changed_bytes=sum(x!=y for x,y in zip(before,prediction)),exclusions=0,function_slots=len(fs),
         protected_data=audit_layout(image,ROOT/'conker'),ELF_sha256=hashlib.sha256(actual).hexdigest(),matching_credit=0)
     (WHERE/'integration.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r));return r

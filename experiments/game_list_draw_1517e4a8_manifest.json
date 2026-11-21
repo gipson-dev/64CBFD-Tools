@@ -224,6 +224,11 @@
       "conker/src/game/generated_1AB530.c": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
       "conker/src/game/generated_C1D70.c": "2e6dc21f29f8afe2a40f211e6864e834951250d6523d3a3e3bd225e50bc766a7",
       "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
+    },
+    {
+      "conker/src/game/generated_1AB530.c": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+      "conker/src/game/generated_C1D70.c": "2e6dc21f29f8afe2a40f211e6864e834951250d6523d3a3e3bd225e50bc766a7",
+      "conker/retail_word_patches.us.csv": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755"
     }
   ],
   "historical_image_dependencies": [
@@ -328,6 +333,51 @@
           "frozen_sha256": "3ce3749fe9ce436c166a9882e7c13ecb4ccddf97ba6d48c7d7fe1aabfbb71b27"
         }
       ]
+    },
+    {
+      "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+      "guards_sha256": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755",
+      "overrides": [
+        {
+          "source": "conker/src/game/generated_124920.c",
+          "source_sha256": "da3a6a46869a46d6806a16660540411eb67cd3d166ab85eb62672d62bf0328cd",
+          "object": "conker/build/src/game/generated_124920.c.o",
+          "live_sha256": "131c10954c22bba89b27a80ea847d939030f6b382e7d5ba6dbcdcf0940a157c3",
+          "frozen": "conker/build/game-actor-randomized-effect-150f97ec-private/baseline/conker/build/src/game/generated_124920.c.o",
+          "frozen_sha256": "c0a46d99f9f59bd861514b0baca9814773cfdef8ebbad5071c8c41ac7026722d"
+        },
+        {
+          "source": "conker/src/game/generated_61D10.c",
+          "source_sha256": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+          "object": "conker/build/src/game/generated_61D10.c.o",
+          "live_sha256": "7927118934c7dad6e037c92ea5c79c9d6999f0a89254d06302e96290b90c34c4",
+          "frozen": "conker/build/game-projection-record-draw-15035fe8-private/baseline/conker/build/src/game/generated_61D10.c.o",
+          "frozen_sha256": "3ce3749fe9ce436c166a9882e7c13ecb4ccddf97ba6d48c7d7fe1aabfbb71b27"
+        },
+        {
+          "source": "conker/src/game/generated_CBAF0.c",
+          "source_sha256": "8daf465a756a8d3048f57a731edbb4a8014eafb309b87a559ea5cc6fdbed47d6",
+          "object": "conker/build/src/game/generated_CBAF0.c.o",
+          "live_sha256": "122af64a012874d52cd579269ee81e1a64e4d6f97482dfe2e7afbc757d4f3591",
+          "frozen": "conker/build/game-audio-command-dispatch-1509e730-private/baseline/conker/build/src/game/generated_CBAF0.c.o",
+          "frozen_sha256": "6de7193fba7795045145bafe0320c0a27a6676a20aa72f6cd72ffdc8f67828bd"
+        }
+      ]
+    }
+  ],
+  "qualified_input_contexts": [
+    {
+      "selector": {
+        "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+        "guards_sha256": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755"
+      },
+      "inputs": {
+        "conker/src/game/generated_CBAF0.c": "8daf465a756a8d3048f57a731edbb4a8014eafb309b87a559ea5cc6fdbed47d6",
+        "conker/Makefile": "ba1bebf5b6e449ac74e682445a0ceeda80595d4ba23754df824d87398e555b47"
+      },
+      "overrides": {
+        "conker/Makefile": "ba1bebf5b6e449ac74e682445a0ceeda80595d4ba23754df824d87398e555b47"
+      }
     }
   ]
 }

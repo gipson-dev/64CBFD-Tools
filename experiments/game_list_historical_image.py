@@ -10,6 +10,29 @@ import hashlib
 
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
+
+def qualified_input_context(root,source,manifest):
+    """Accept supplemental inputs only with their exact source/guard context."""
+    selector=dict(source_sha256=digest(root/source),
+                  guards_sha256=digest(root/'conker/retail_word_patches.us.csv'))
+    matches=[entry for entry in manifest.get('qualified_input_contexts',[])
+             if entry['selector']==selector]
+    if not matches:return {}
+    if len(matches)!=1:raise ValueError('Duplicate qualified input context')
+    for name,expected in matches[0]['inputs'].items():
+        if digest(root/name)!=expected:
+            raise ValueError('Qualified context fingerprint changed: '+name)
+    return dict(matches[0]['overrides'])
+
+
+def assert_qualified_makefile(root,baseline,source,manifest):
+    expected=digest(baseline/'conker/Makefile')
+    if expected!=manifest['inputs']['conker/Makefile']:
+        raise ValueError('Historical Makefile fixture changed')
+    overrides=qualified_input_context(root,source,manifest)
+    if digest(root/'conker/Makefile')!=overrides.get('conker/Makefile',expected):
+        raise ValueError('Unqualified Makefile input')
+
 @contextmanager
 def historical_dependencies(root,output,source,manifest):
     pair=dict(source_sha256=digest(root/source),guards_sha256=digest(root/'conker/retail_word_patches.us.csv'))

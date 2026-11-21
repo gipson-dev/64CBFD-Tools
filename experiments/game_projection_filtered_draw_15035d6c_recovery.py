@@ -1,5 +1,6 @@
 """Complete filtered projection draw recovery and exact snapshot gates."""
 from pathlib import Path
+from tools.experiments.game_list_historical_image import qualified_input_context
 import hashlib,json,os,struct
 from tools.experiments.game_remaining_donor_candidates import compile_owner
 from tools.experiments.game_paired_ground_constructor_match import payload
@@ -12,12 +13,13 @@ SPEC=json.loads(Path(__file__).with_name('game_projection_filtered_draw_15035d6c
 FUNCTION,SOURCE,BODY,ENTRY,ROM=(SPEC[k]for k in('function','source','body','entry','rom'))
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def screen():
+    extra=qualified_input_context(ROOT,SOURCE,SPEC)
     WHERE.mkdir(parents=True,exist_ok=True)
     snapshot={n:sha(ROOT/n)for n in SPEC['installed_snapshot']}
     before_snapshot={n:SPEC['inputs'][n]for n in snapshot}
     assert snapshot in([before_snapshot,SPEC['installed_snapshot']]+SPEC.get('compatible_installed_snapshots',[])),snapshot
     for n,d in SPEC['inputs'].items():
-        if n not in snapshot:assert sha(ROOT/n)==d,n
+        if n not in snapshot:assert sha(ROOT/n)==extra.get(n,d),n
     assert sha(BASE/SOURCE)==SPEC['inputs'][SOURCE]
     before=(BASE/SOURCE).read_text();selected=before
     for old,new in SPEC['replacements']:assert selected.count(old)==1;selected=selected.replace(old,new)

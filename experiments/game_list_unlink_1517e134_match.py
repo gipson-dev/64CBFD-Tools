@@ -14,7 +14,7 @@ from tools.experiments.game_list_owner_make import actual_Make
 from tools.experiments import game_embedded_dual_phase_position_update_match as linker
 from tools.check_game_data_layout import audit_layout
 from tools.match_progress import load_elf_functions
-from tools.experiments.game_list_historical_image import historical_dependencies
+from tools.experiments.game_list_historical_image import historical_dependencies,qualified_input_context
 
 ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve()
 OUT=ROOT/'conker/build/game-list-unlink-1517e134-private'
@@ -56,8 +56,9 @@ def assemble(name,text):
     return obj
 
 def prepare():
+    extra=qualified_input_context(ROOT,SOURCE,SPEC)
     WHERE.mkdir(parents=True,exist_ok=True)
-    for n,d in SPEC['inputs'].items():assert sha((ROOT/n).read_bytes())==d,n
+    for n,d in SPEC['inputs'].items():assert sha((ROOT/n).read_bytes())==extra.get(n,d),n
     snapshot={'source_sha256':sha((ROOT/SOURCE).read_bytes()),'guards_sha256':sha((ROOT/'conker/retail_word_patches.us.csv').read_bytes())}
     compatible=snapshot in SPEC.get('compatible_installed_snapshots',[])
     for n,old,new in((SOURCE,'old_source','selected'),(CALLER,'old_caller','selected_caller')):

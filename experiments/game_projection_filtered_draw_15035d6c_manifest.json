@@ -165,6 +165,41 @@
     {
       "conker/src/game/generated_61D10.c": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
       "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
+    },
+    {
+      "conker/src/game/generated_61D10.c": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+      "conker/retail_word_patches.us.csv": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755"
+    }
+  ],
+  "historical_image_dependencies": [
+    {
+      "source_sha256": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+      "guards_sha256": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755",
+      "overrides": [
+        {
+          "source": "conker/src/game/generated_CBAF0.c",
+          "source_sha256": "8daf465a756a8d3048f57a731edbb4a8014eafb309b87a559ea5cc6fdbed47d6",
+          "object": "conker/build/src/game/generated_CBAF0.c.o",
+          "live_sha256": "122af64a012874d52cd579269ee81e1a64e4d6f97482dfe2e7afbc757d4f3591",
+          "frozen": "conker/build/game-audio-command-dispatch-1509e730-private/baseline/conker/build/src/game/generated_CBAF0.c.o",
+          "frozen_sha256": "6de7193fba7795045145bafe0320c0a27a6676a20aa72f6cd72ffdc8f67828bd"
+        }
+      ]
+    }
+  ],
+  "qualified_input_contexts": [
+    {
+      "selector": {
+        "source_sha256": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+        "guards_sha256": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755"
+      },
+      "inputs": {
+        "conker/src/game/generated_CBAF0.c": "8daf465a756a8d3048f57a731edbb4a8014eafb309b87a559ea5cc6fdbed47d6",
+        "conker/Makefile": "ba1bebf5b6e449ac74e682445a0ceeda80595d4ba23754df824d87398e555b47"
+      },
+      "overrides": {
+        "conker/Makefile": "ba1bebf5b6e449ac74e682445a0ceeda80595d4ba23754df824d87398e555b47"
+      }
     }
   ]
 }

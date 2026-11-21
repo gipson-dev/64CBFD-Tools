@@ -44,7 +44,7 @@ class ActorProjectionScanTests(unittest.TestCase):
         self.assertTrue(r['following_original_call_executed']);self.assertTrue(r['complete_RAM_equal']);self.assertFalse(r['full_outer_caller_claim'])
     def test_07_both_padders_actual_Make_whole_image_and_guard_controls(self):
         r=match.qualify();self.assertEqual((r['guards'],r['changed_bytes'],r['exclusions']),(8,396,0))
-        self.assertTrue(r['strict_predicted_ELF_equal']);self.assertTrue(r['caller_complete_padded_object_unchanged']);self.assertTrue(r['Makefile_unchanged'])
+        self.assertTrue(r['strict_predicted_ELF_equal']);self.assertTrue(r['caller_complete_padded_object_unchanged']);self.assertTrue(r['owner_Make_recipe_unchanged'])
         self.assertTrue(r['named_definitions_preserved']);self.assertEqual(r['metadata_permutation_bytes'],28)
         self.assertEqual([r['actual_Make'][n]['commands']for n in('target','caller')],[3,3])
         path=match.WHERE/'proposed-guards.csv';counts={}

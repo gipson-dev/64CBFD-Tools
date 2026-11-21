@@ -1,0 +1,48 @@
+{
+  "function": "func_1509E730",
+  "source": "conker/src/game/generated_CBAF0.c",
+  "entry": 352970544,
+  "rom": 834528,
+  "words": 92,
+  "frame": 32,
+  "replacements": [
+    [
+      "/* Non-matching placeholders for the text-only asm slice asm/CBAF0.s. */",
+      "/* Audio script dispatch and query callbacks; retail layout asm/CBAF0.s. */"
+    ],
+    [
+      "s32 func_1509E730() {\n    return 0;\n}",
+      "void func_1000DE1C(s32, s32);\n\n/* Dispatch an audio control command, preserving legacy script packet layouts. */\ns32 func_1509E730(s32 handle, s32 command, s32 *packet) {\n    s32 enabled;\n    switch (command) {\n        case 0:\n            func_1000D96C(handle & 0xFFF, packet[2], packet[3]);\n            return 1;\n        case 2:\n            func_1000DF68(handle & 0xFFF, packet[2], 0);\n            return 1;\n        case 5:\n            func_1000DF68(handle & 0xFFF, packet[2], 1);\n            return 1;\n        case 1:\n            func_1000DE1C(handle & 0xFFF, packet[2]);\n            return 1;\n        case 3:\n            if (D_800D3840 == 5) {\n                return func_1000E46C(handle & 0xFFF, packet[2], packet[3], packet[4]);\n            }\n            return func_1000E46C(handle & 0xFFF, packet[2], packet[3], 60);\n        case 4:\n            if (D_800D3840 == 5) {\n                return func_1000E654(handle & 0xFFF, packet[2], packet[3], packet[4] & 0xFFF);\n            }\n            return func_1000E654(handle & 0xFFF, packet[2], packet[3], handle & 0xFFF);\n        case 6:\n            enabled = 1;\n            if (D_800D3840 == 3) enabled = packet[2];\n            func_1000E054(handle & 0xFFF, enabled);\n            return 1;\n    }\n    return 0;\n}"
+    ]
+  ],
+  "inputs": {
+    "conker/src/game/generated_CBAF0.c": "1637a6997767abc482119d4ad914a1a27f12da35fb8064874359712fcea93855",
+    "conker/Makefile": "94141fe5474af30f4aa757fdf09bfb023bab819e4bf4d7ada94a89ac89ac1766",
+    "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/symbol_addrs.us.txt": "2eb50e08f06c79454d9ca57a5e4ba1f1670447de73d65302e7225fed6870e644",
+    "conker/include/functions.h": "96e983ba995117c09ed99bbd1d8c346bb3e12a9cbd1821e8420200b6f6ed8a1c",
+    "conker/include/variables.h": "f22ef54ac889e625409a39871bf813661ed8c1c3c25f92d293beb034560d9105",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "conker/include/macro.inc": "d7366200752da1051aba7bf98e361ca4af662fb5e22c7107455fc06a34969f1e",
+    "conker/asm/CBAF0.s": "80bd3d32e35977d8a90d8d2a10329a8ed88811340ebe0e886fdd2d1c85912f97",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/src/init_B1B0.c": "772f38a83df52e59338b01f664cd09b360b0e93e58ad7c49420f4f13bbbbf960",
+    "conker/asm/DAFA0.s": "c5428427a06160a918eacdd2b2f0fa8dbcaea5459f1c71e5ce5acd3d9a8d5d29",
+    "conker/asm/nonmatchings/game_C8950/func_1509BFB0.s": "0ca3aae6e071b3fe2fae73f04f0c264a5150b8934cdfd5c9d73afc19181e7eb5",
+    "conker/asm/data/22BEF0.rodata.s": "7ce9790a5ce8b759dec089d2b3d1d42d24e3573b52613377ed0fde5b5a7a28ae",
+    "conker/src/game_C8950.c": "f4d0c90eeaf85a599c242071c4ca3a6c644e2a458c6881c6bcfdb01ff88317e9",
+    "conker/src/game/generated_DAFA0.c": "8619af83324feb8c066bab47335417d38319489604a7d1d51f7c59dea53a6626",
+    "conker/build/src/game_C8950.c.o": "067eb725e24ce499f8ef4d8744beed3d82bfef7ac0b798387806e426c1083b2e",
+    "conker/build/src/game/generated_DAFA0.c.o": "5f238c04327821f6e9e9196b42892f1d96842d0ce6e05d2d4bac1e83a7c42239"
+  },
+  "installed_snapshot": {
+    "conker/src/game/generated_CBAF0.c": "8daf465a756a8d3048f57a731edbb4a8014eafb309b87a559ea5cc6fdbed47d6",
+    "conker/Makefile": "ba1bebf5b6e449ac74e682445a0ceeda80595d4ba23754df824d87398e555b47",
+    "conker/retail_word_patches.us.csv": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755"
+  },
+  "raw_sha256": "7781565d57520a7af31c3d64a613b1452740b73d692ed77233786e078fa9f3b4",
+  "expected_raw_pool": "0000003c000000840000005400000098000000e00000006c00000130",
+  "expected_ELF_sha256": "95909e0eee87ace336ec22f7c524c44213f82a61ed9d76fbe887dc803517a7ea"
+}

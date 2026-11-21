@@ -1,5 +1,6 @@
 """Complete private C recovery; matching/installation credit remains zero."""
 from pathlib import Path
+from tools.experiments.game_list_historical_image import qualified_input_context
 import hashlib,json,os,struct,subprocess,sys
 from tools import pad_generated_object as pg
 sys.modules.setdefault('pad_generated_object',pg)
@@ -19,10 +20,11 @@ SOURCE='conker/src/game/generated_1AB530.c';HELPER='conker/src/game/generated_C1
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 
 def screen():
+    extra=qualified_input_context(ROOT,SOURCE,SPEC)
     WHERE.mkdir(parents=True,exist_ok=True)
     snapshot={n:sha(ROOT/n)for n in(SOURCE,HELPER,'conker/retail_word_patches.us.csv')}
     compatible=snapshot in SPEC.get('compatible_installed_snapshots',[])
-    for n,d in SPEC['inputs'].items():assert sha(ROOT/n)==(snapshot[n]if compatible and n in snapshot else d),n
+    for n,d in SPEC['inputs'].items():assert sha(ROOT/n)==extra.get(n,(snapshot[n]if compatible and n in snapshot else d)),n
     def frozen(n):
         p=BASE/n;assert sha(p)==SPEC['inputs'][n],n;return p.read_text()
     before=frozen(SOURCE)if compatible else(ROOT/SOURCE).read_text();selected=before.replace('Gfx *func_1517E4A8();','Gfx *func_1517E4A8(Gfx *, ListRecord1AB530 *, s32, s32, s32, s32, u8 *);')

@@ -1140,7 +1140,13 @@
   },
   "predicted_ELF_sha256": "17080b77c6fccf01ed110cf372fa8acd41799dc1ed1be27d8d7ae23b0807e1e1",
   "guard_rows": 316,
-  "compatible_installed_snapshots": [],
+  "compatible_installed_snapshots": [
+    {
+      "conker/src/game/generated_61D10.c": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+      "conker/src/game/generated_CDE80.c": "90158b02a9687df644479e12b164d90bb9dcb861e8ed2d41df153a5cf710641a",
+      "conker/retail_word_patches.us.csv": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755"
+    }
+  ],
   "caller_asm_frozen_baseline": {
     "assembly": "conker/asm/CDE80.s",
     "sha256": "95904fbecd5afa084a49b575c41494f0e275754359e2eefc3e1068d5efc15ec1",
@@ -1148,5 +1154,36 @@
       "conker/asm/nonmatchings/generated_CDE80/func_150A2CA4.s",
       "conker/asm/nonmatchings/generated_CDE80/func_150A2D84.s"
     ]
-  }
+  },
+  "historical_image_dependencies": [
+    {
+      "source_sha256": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+      "guards_sha256": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755",
+      "overrides": [
+        {
+          "source": "conker/src/game/generated_CBAF0.c",
+          "source_sha256": "8daf465a756a8d3048f57a731edbb4a8014eafb309b87a559ea5cc6fdbed47d6",
+          "object": "conker/build/src/game/generated_CBAF0.c.o",
+          "live_sha256": "122af64a012874d52cd579269ee81e1a64e4d6f97482dfe2e7afbc757d4f3591",
+          "frozen": "conker/build/game-audio-command-dispatch-1509e730-private/baseline/conker/build/src/game/generated_CBAF0.c.o",
+          "frozen_sha256": "6de7193fba7795045145bafe0320c0a27a6676a20aa72f6cd72ffdc8f67828bd"
+        }
+      ]
+    }
+  ],
+  "qualified_input_contexts": [
+    {
+      "selector": {
+        "source_sha256": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+        "guards_sha256": "ec76ca06c83d700addc221b5c3b99e3fa69ecc53476a2e53f5554ad4b08ae755"
+      },
+      "inputs": {
+        "conker/src/game/generated_CBAF0.c": "8daf465a756a8d3048f57a731edbb4a8014eafb309b87a559ea5cc6fdbed47d6",
+        "conker/Makefile": "ba1bebf5b6e449ac74e682445a0ceeda80595d4ba23754df824d87398e555b47"
+      },
+      "overrides": {
+        "conker/Makefile": "ba1bebf5b6e449ac74e682445a0ceeda80595d4ba23754df824d87398e555b47"
+      }
+    }
+  ]
 }

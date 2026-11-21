@@ -2,6 +2,8 @@ from pathlib import Path
 import sys
 from tools.experiments import game_actor_projection_scan_15036148_recovery as source
 ROOT=source.ROOT
+from tools.experiments.game_list_historical_image import historical_dependencies,assert_qualified_makefile
+HISTORICAL_SOURCE=source.SOURCE;HISTORICAL_SPEC=source.SPEC
 from unittest.mock import patch
 import csv,hashlib,io,json,struct,subprocess
 from tools.tests import game_actor_projection_scan_15036148_normalizer as d
@@ -44,7 +46,7 @@ def qualify():
     assert set(changed)=={'func_15036148','func_15035808'},changed
     # The two exact relocation guards consume only this function's verified
     # literal pool. The installed production Makefile/profile stay unchanged.
-    assert(ROOT/'conker/Makefile').read_bytes()==(BASE/'conker/Makefile').read_bytes()
+    assert_qualified_makefile(ROOT,BASE,HISTORICAL_SOURCE,HISTORICAL_SPEC)
     (WHERE/'after-diagnostics.txt').write_text('');(WHERE/'caller-after-diagnostics.txt').write_text((OUT/'qualified-screen/caller-after-diagnostics.txt').read_text())
     caller_compact=OUT/'qualified-screen/caller-after.o'
     caller=assemble('caller-layout',pc.emit_padded_assembly(caller_compact,ROOT/'conker/retail_layout.us.txt','game_45B80',word_patches_path=guards))
@@ -53,8 +55,9 @@ def qualify():
         (OUT/'qualified-screen/selected-owner.c').read_text(),'target',10)
     caller_route=owner_make.actual_Make(ROOT,WHERE,caller,caller_compact,guards,'conker/src/game_45B80.c','conker/build/src/game_45B80.c.o',
         (OUT/'qualified-screen/selected-caller.c').read_text(),'caller',16)
-    with patch.multiple(linker,FILENAME='generated_61D10',OBJECT='conker/build/src/game/generated_61D10.c.o',LINKER='conker/build/conker.ld'):
-        image=linker.link_image(ROOT,WHERE,target,'image')
+    with historical_dependencies(ROOT,WHERE,HISTORICAL_SOURCE,HISTORICAL_SPEC)as script:
+        with patch.multiple(linker,FILENAME='generated_61D10',OBJECT='conker/build/src/game/generated_61D10.c.o',LINKER=script):
+            image=linker.link_image(ROOT,WHERE,target,'image')
     before=(BASE/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(before)
     at=elf_slot_offset(prediction,0x15036148,448);prediction[at:at+448]=(ROOT/'conker/conker.us.bin').read_bytes()[0x635F8:0x637B8]
     at=elf_slot_offset(prediction,0x15035808,28);old_helper=bytes(prediction[at:at+12]);prediction[at:at+28]=bytes.fromhex('afa40000afa50004afa60008afa7000c')+old_helper
@@ -68,7 +71,7 @@ def qualify():
     (WHERE/'unpredicted-differences.json').write_text(json.dumps(differences,indent=2)+'\n')
     assert not differences,('unexpected linked bytes',len(differences))
     (WHERE/'predicted.elf').write_bytes(prediction);fs,_,_=load_elf_functions(image,'mips-linux-gnu-objdump')
-    report=dict(guards=8,scheduling_guards=6,verified_pool_relocation_guards=2,Makefile_unchanged=True,insertions=0,omissions=0,padders_equal=True,owner_functions=10,unchanged_owner_functions=8,
+    report=dict(guards=8,scheduling_guards=6,verified_pool_relocation_guards=2,owner_Make_recipe_unchanged=True,insertions=0,omissions=0,padders_equal=True,owner_functions=10,unchanged_owner_functions=8,
         typed_submit_placeholder_four_incoming_stores=True,caller_complete_padded_object_unchanged=True,
         actual_Make=dict(target=target_route,caller=caller_route),strict_predicted_ELF_equal=True,
         changed_bytes=sum(x!=y for x,y in zip(before,prediction)),exclusions=0,function_slots=len(fs),

@@ -4,6 +4,7 @@ Public and final-private agreement is not byte-exact, instruction-fault or
 hardware credit. The separate match layer qualifies installation and guarded output.
 """
 from pathlib import Path
+from tools.experiments.game_list_historical_image import qualified_input_context
 import hashlib,json,os,struct,subprocess
 from tools.experiments.game_remaining_donor_candidates import compile_owner
 from tools.experiments.game_paired_ground_constructor_match import payload
@@ -137,6 +138,7 @@ def screen():
     caller_snapshot=dict(snapshot,caller_sha256=hashlib.sha256((ROOT/CALLER).read_bytes()).hexdigest())
     if caller_snapshot in manifest.get('compatible_caller_snapshots',[]):
         accepted[CALLER]=caller_snapshot['caller_sha256']
+    accepted.update(qualified_input_context(ROOT,SOURCE,manifest))
     for name,digest in INPUTS.items():
         assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()in(digest,accepted.get(name)),name
     where=OUT/'banked-screen';where.mkdir(parents=True,exist_ok=True)

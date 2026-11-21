@@ -3,6 +3,8 @@ from pathlib import Path
 import sys
 from tools.experiments import game_projection_submit_15035808_recovery as recovery
 ROOT=recovery.ROOT
+from tools.experiments.game_list_historical_image import historical_dependencies,assert_qualified_makefile
+HISTORICAL_SOURCE=recovery.SOURCE;HISTORICAL_SPEC=recovery.SPEC
 from unittest.mock import patch
 import csv,hashlib,io,json,struct,subprocess
 from tools.tests import game_projection_submit_15035808_normalizer as d
@@ -49,7 +51,7 @@ def qualify():
             lo=s['value'];hi=lo+s['size'];return p[0][lo:hi],{at-lo:rs for at,rs in p[2].items()if lo<=at<hi}
         if contents(a,f)!=contents(b,h):changed.append(name)
     assert changed==[FUNCTION],changed
-    assert(ROOT/'conker/Makefile').read_bytes()==(BASE/'conker/Makefile').read_bytes()
+    assert_qualified_makefile(ROOT,BASE,HISTORICAL_SOURCE,HISTORICAL_SPEC)
     (WHERE/'after-diagnostics.txt').write_text('')
     route=actual_Make(ROOT,WHERE,target,compact,guards,SOURCE,OBJECT,
         (recovery.WHERE/'selected-owner.c').read_text(),'target',10)
@@ -59,8 +61,9 @@ def qualify():
     (WHERE/'caller-after-diagnostics.txt').write_text('')
     caller_route=actual_Make(ROOT,WHERE,caller_object,caller_compact,guards,'conker/src/game/generated_CDE80.c',
         'conker/build/src/game/generated_CDE80.c.o',(recovery.WHERE/'selected-caller.c').read_text(),'caller',28)
-    with patch.multiple(linker,FILENAME='generated_61D10',OBJECT=OBJECT,LINKER='conker/build/conker.ld'):
-        image=linker.link_image(ROOT,WHERE,target,'image')
+    with historical_dependencies(ROOT,WHERE,HISTORICAL_SOURCE,HISTORICAL_SPEC)as script:
+        with patch.multiple(linker,FILENAME='generated_61D10',OBJECT=OBJECT,LINKER=script):
+            image=linker.link_image(ROOT,WHERE,target,'image')
     before=(BASE/'conker/build/conker.us.elf').read_bytes();prediction=bytearray(before)
     at=elf_slot_offset(prediction,0x15035808,1380);prediction[at:at+1380]=(ROOT/'conker/conker.us.bin').read_bytes()[0x62cb8:0x6321c]
     matches=[(at,row)for at,name,row,_ in symbol_rows(prediction)if name==FUNCTION];assert len(matches)==1

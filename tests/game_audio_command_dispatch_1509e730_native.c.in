@@ -1,0 +1,113 @@
+typedef signed int s32;
+typedef unsigned int u32;
+_Static_assert(sizeof(void *)==4 && sizeof(s32)==4,"SDK32 ABI required");
+static s32 state[32], *active_packet, returned, mutate;
+static u32 initial_handle, initial_command;
+static struct { u32 target, count, args[4]; } observed;
+static void bytes_copy(void *to,const void *from,u32 count) {
+    unsigned char *d=to;const unsigned char *s=from;u32 i;
+    for(i=0;i<count;i++)d[i]=s[i];
+}
+static void bytes_zero(void *to,u32 count) {
+    unsigned char *d=to;u32 i;for(i=0;i<count;i++)d[i]=0;
+}
+static int bytes_differ(const void *left,const void *right,u32 count) {
+    const unsigned char *a=left,*b=right;u32 i;
+    for(i=0;i<count;i++)if(a[i]!=b[i])return 1;return 0;
+}
+static void report(u32 cases,u32 command,u32 actual,u32 wanted,u32 fd) {
+    char b[36];u32 values[4]={cases,command,actual,wanted},i,j;
+    for(i=0;i<4;i++) {
+        for(j=0;j<8;j++)b[i*9+j]="0123456789abcdef"[(values[i]>>(28-j*4))&15];
+        b[i*9+8]=i==3?'\n':' ';
+    }
+    __asm__ volatile(".byte 0xcd,0x80" : : "a"(4),"b"(fd),"c"(b),"d"(36) : "memory");
+}
+#define D_800D3840 state[8]
+void func_1000D96C(s32,s32,s32);
+void func_1000DE1C(s32,s32);
+void func_1000DF68(s32,s32,s32);
+s32 func_1000E46C(s32,s32,s32,s32);
+s32 func_1000E654(s32,s32,s32,s32);
+void func_1000E054(s32,s32);
+s32 func_1000E0F8(s32);
+s32 func_1000E8F0(s32);
+s32 func_151F2CDC(void);
+@@OWNER@@
+static s32 provider(u32 target,u32 count,s32 a,s32 b,s32 c,s32 d) {
+    observed.target=target;observed.count=count;
+    observed.args[0]=(u32)a;observed.args[1]=(u32)b;
+    observed.args[2]=(u32)c;observed.args[3]=(u32)d;
+    state[0]=(s32)((u32)returned^initial_handle^initial_command);
+    if(mutate) {
+        state[8]=(s32)((u32)state[8]^0xdeadbeefu);
+        if(active_packet) {
+            active_packet[2]=(s32)((u32)active_packet[2]^0x55aa55aau);
+            active_packet[3]=(s32)((u32)active_packet[3]^0xa5a55a5au);
+        }
+    }
+    return returned;
+}
+void func_1000D96C(s32 a,s32 b,s32 c){(void)provider(0x1000d96c,3,a,b,c,0);}
+void func_1000DE1C(s32 a,s32 b){(void)provider(0x1000de1c,2,a,b,0,0);}
+void func_1000DF68(s32 a,s32 b,s32 c){(void)provider(0x1000df68,3,a,b,c,0);}
+s32 func_1000E46C(s32 a,s32 b,s32 c,s32 d){return provider(0x1000e46c,4,a,b,c,d);}
+s32 func_1000E654(s32 a,s32 b,s32 c,s32 d){return provider(0x1000e654,4,a,b,c,d);}
+void func_1000E054(s32 a,s32 b){(void)provider(0x1000e054,2,a,b,0,0);}
+void func_1001263C(s32 a,s32 b,s32 c){(void)a;(void)b;(void)c;}
+void func_151F2D6C(s32 a,s32 b){(void)a;(void)b;}
+void func_151F2BA8(void){}
+s32 func_151F2CDC(void){return 0;}
+s32 func_1000E0F8(s32 a){return a;}
+s32 func_1000E8F0(s32 a){return a;}
+static void initialize(u32 command,u32 version,u32 handle,u32 result,int mutation,int alias) {
+    static const u32 packet[6]={0x13579bdfu,0x2468ace0u,0x80000fffu,0xffffffffu,0xabcdf123u,0x7fffffffu};
+    unsigned i;
+    for(i=0;i<32;i++)state[i]=(s32)(0x51122300u+i*0x10203u);
+    active_packet=state+(alias?6:16);
+    for(i=0;i<6;i++)active_packet[i]=(s32)packet[i];
+    state[8]=(s32)version;returned=(s32)result;mutate=mutation;
+    initial_handle=handle;initial_command=command;
+    if(command>=7 && (command&1))active_packet=0;
+    bytes_zero(&observed,sizeof(observed));
+}
+static s32 reference(s32 handle,u32 command) {
+    s32 *p=active_packet,version=state[8];handle&=0xfff;
+    switch(command) {
+        case 0:(void)provider(0x1000d96c,3,handle,p[2],p[3],0);return 1;
+        case 1:(void)provider(0x1000de1c,2,handle,p[2],0,0);return 1;
+        case 2:(void)provider(0x1000df68,3,handle,p[2],0,0);return 1;
+        case 3:return provider(0x1000e46c,4,handle,p[2],p[3],version==5?p[4]:60);
+        case 4:return provider(0x1000e654,4,handle,p[2],p[3],version==5?(p[4]&0xfff):handle);
+        case 5:(void)provider(0x1000df68,3,handle,p[2],1,0);return 1;
+        case 6:(void)provider(0x1000e054,2,handle,version==3?p[2]:1,0,0);return 1;
+        default:return 0;
+    }
+}
+static int run(void) {
+    static const u32 commands[]={0,1,2,3,4,5,6,7,8,255,256,0xffffffffu,0x80000000u,0x7fffffffu,0x10007u,0x80000006u};
+    static const u32 versions[]={0,3,4,5,0xffffffffu,0x7fffffffu};
+    static const u32 handles[]={0,1,0xfff,0x1000,0x1234f123u,0x80000fffu,0xffffffffu};
+    static const u32 returns[]={0,1,0xffffffffu,0x80000000u,0x13579bdfu};
+    unsigned c,v,h,r,m,a,cases=0; s32 expected_state[32],expected_result,actual;
+    unsigned char expected_observation[sizeof(observed)];
+    for(c=0;c<sizeof(commands)/sizeof(*commands);c++)for(v=0;v<6;v++)for(h=0;h<7;h++)
+    for(r=0;r<5;r++)for(m=0;m<2;m++)for(a=0;a<2;a++) {
+        initialize(commands[c],versions[v],handles[h],returns[r],m,a);
+        expected_result=reference((s32)handles[h],commands[c]);
+        bytes_copy(expected_state,state,sizeof(state));bytes_copy(expected_observation,&observed,sizeof(observed));
+        initialize(commands[c],versions[v],handles[h],returns[r],m,a);
+        actual=func_1509E730((s32)handles[h],(s32)commands[c],active_packet);
+        if(actual!=expected_result || bytes_differ(state,expected_state,sizeof(state)) || bytes_differ(&observed,expected_observation,sizeof(observed))) {
+            report(cases,commands[c],(u32)actual,(u32)expected_result,2);return 12;
+        }
+        cases++;
+    }
+    report(cases,0,0,0,1);
+    return 0;
+}
+__attribute__((force_align_arg_pointer)) void _start(void) {
+    int result=run();
+    __asm__ volatile(".byte 0xcd,0x80" : : "a"(1),"b"(result) : "memory");
+    __builtin_unreachable();
+}
