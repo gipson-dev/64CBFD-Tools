@@ -1,0 +1,81 @@
+#include <ultra64.h>
+#include "structs.h"
+@@VIEW@@
+_Static_assert(sizeof(void*)==4 && sizeof(struct17)==12,"SDK32 ABI");
+_Static_assert(sizeof(CameraShiftC3E20)==0x9A0 && sizeof(struct108)==0x9A0,"camera extent");
+#define OFF(t,n) __builtin_offsetof(t,n)
+_Static_assert(OFF(CameraShiftC3E20,origin)==0x2A4 && OFF(CameraShiftC3E20,target)==0x2F8,"view vectors");
+_Static_assert(OFF(struct108,unk2A4)==0x2A4 && OFF(struct108,unk2A8)==0x2A8 && OFF(struct108,unk2AC)==0x2AC,"SDK origin offsets");
+_Static_assert(OFF(struct108,unk2F8)==0x2F8 && OFF(struct108,unk2FC)==0x2FC && OFF(struct108,unk300)==0x300,"SDK target offsets");
+struct Case{u32 gate,view,scale,pattern,mutation;};
+static const struct Case cases[]={@@CASES@@};
+static const f32 positions[6][6]={{1,2,3,4,6,3},{0,0,0,0,0,0},{-3,7,-.5,2,-1,4},{1.25,-2.5,3.75,7.5,1.125,-9.25},{-0.f,0.f,-0.f,0.f,-0.f,0.f},{1e-20f,-1e-20f,2e-20f,2e-20f,3e-20f,-2e-20f}};
+struct World{union{struct108 sdk[4];CameraShiftC3E20 view[4];}camera,other;};
+static struct World world,initial,expected;
+static CameraShiftC3E20 *D_800DBFF0,*expectedBase;
+static s32 D_800D2DB4,D_800D2E30[4],initialScale[4],expectedScale[4],expectedGate;
+static struct17 *scratch;
+static const struct Case *current;
+static u32 calls[8][4],expectedCalls[8][4],count,expectedCount,error;
+static void copy(void*a,const void*b,u32 n){u8*d=a;const u8*s=b;for(u32 i=0;i<n;i++)d[i]=s[i];}
+static int equal(const void*a,const void*b,u32 n){const u8*x=a,*y=b;for(u32 i=0;i<n;i++)if(x[i]!=y[i])return 0;return 1;}
+static u32 tag(const void*p){u32 a=(u32)p,b=(u32)&world;if(p==scratch)return 0xFFFFFFFCu;if(a>=b&&a-b<sizeof(world))return a-b;error=1;return 0xFFFFFFFFu;}
+static void record(u32 t,u32 a,u32 b,u32 c){if(count>=8){error=1;return;}calls[count][0]=t;calls[count][1]=a;calls[count][2]=b;calls[count++][3]=c;}
+static f32 times(f32 a,f32 b){volatile f32 v=a*b;return v;}
+static f32 plus(f32 a,f32 b){volatile f32 v=a+b;return v;}
+static f32 minus(f32 a,f32 b){volatile f32 v=a-b;return v;}
+static f32 divide(f32 a,f32 b){volatile f32 v=a/b;return v;}
+static f32 square_root(f32 a){f32 v;__asm__("sqrtss %1,%0":"=x"(v):"x"(a));return v;}
+static f32 length_value(struct17*p){return square_root(plus(plus(times(p->unk0,p->unk0),times(p->unk4,p->unk4)),times(p->unk8,p->unk8)));}
+static f32 func_150AD930(struct17*p){record(3,tag(p),0,0);return length_value(p);}
+@@HELPERS@@
+static void effect(u32 stage){
+ CameraShiftC3E20*p=&world.camera.view[current->view];u32 m=current->mutation;
+ if(stage==1){
+  if(m&1)D_800DBFF0=world.other.view;
+  if(m&2)D_800D2E30[current->view]=-3;
+  if(m&4)D_800D2DB4=0;
+  if(m&8){p->origin.unk0=9.5f;p->target.unk4=-7.25f;}
+ }
+ if(stage==2&&(m&16)){scratch->unk0=.125f;scratch->unk4=-.25f;scratch->unk8=.5f;}
+}
+static void func_15048F90(struct17*a,struct17*b,struct17*d){scratch=d;record(1,tag(a),tag(b),tag(d));delta_real(a,b,d);effect(1);}
+static void func_1504917C(struct17*a,struct17*d){record(2,tag(a),tag(d),0);normalize_real(a,d);effect(2);}
+@@FUNCTIONS@@
+/* Separate staged float model, keeping every single-precision rounding boundary. */
+static void model(s32 view){
+ CameraShiftC3E20*p=&D_800DBFF0[view];struct17 direction;
+ if(D_800D2DB4){
+  scratch=&direction;record(1,tag(&p->origin),tag(&p->target),tag(scratch));
+  direction.unk0=minus(p->target.unk0,p->origin.unk0);direction.unk4=minus(p->target.unk4,p->origin.unk4);direction.unk8=minus(p->target.unk8,p->origin.unk8);effect(1);
+  record(2,tag(scratch),tag(scratch),0);record(3,tag(scratch),0,0);
+  f32 length=length_value(&direction),factor=length!=0.f?divide(1.f,length):length;
+  direction.unk0=times(direction.unk0,factor);direction.unk4=times(direction.unk4,factor);direction.unk8=times(direction.unk8,factor);effect(2);
+  f32 *values[]={&p->origin.unk0,&p->origin.unk4,&p->origin.unk8,&p->target.unk0,&p->target.unk4,&p->target.unk8};
+  f32 *directions[]={&direction.unk0,&direction.unk4,&direction.unk8};
+  for(u32 i=0;i<6;i++){f32 coefficient=(i==1||i==4)?-2.f:-2.5f;f32 move=times(times(*directions[i%3],coefficient),(f32)D_800D2E30[view]);*values[i]=plus(*values[i],move);}
+ }
+}
+static void reset(void){
+ D_800D2DB4=(s32)current->gate;D_800DBFF0=world.camera.view;scratch=0;count=error=0;
+ for(u32 i=0;i<4;i++)D_800D2E30[i]=(s32)current->scale;
+ for(u32 i=0;i<8;i++)for(u32 j=0;j<4;j++)calls[i][j]=0;
+}
+static int check(void(*fn)(s32)){
+ for(u32 row=0;row<sizeof(cases)/sizeof(cases[0]);row++){
+  current=&cases[row];u8*b=(u8*)&world;for(u32 j=0;j<sizeof(world);j++)b[j]=(u8)(j*29+0x35);
+  for(u32 i=0;i<4;i++){
+   CameraShiftC3E20*p=&world.camera.view[i],*q=&world.other.view[i];
+   f32 *v[]={&p->origin.unk0,&p->origin.unk4,&p->origin.unk8,&p->target.unk0,&p->target.unk4,&p->target.unk8};
+   f32 *w[]={&q->origin.unk0,&q->origin.unk4,&q->origin.unk8,&q->target.unk0,&q->target.unk4,&q->target.unk8};
+   for(u32 k=0;k<6;k++)*w[k]=*v[k]=positions[current->pattern][k];
+  }
+  copy(&initial,&world,sizeof(world));reset();copy(initialScale,D_800D2E30,sizeof(initialScale));model((s32)current->view);if(error)return 1;
+  copy(&expected,&world,sizeof(world));copy(expectedScale,D_800D2E30,sizeof(expectedScale));copy(expectedCalls,calls,sizeof(calls));expectedCount=count;expectedGate=D_800D2DB4;expectedBase=D_800DBFF0;
+  copy(&world,&initial,sizeof(world));reset();copy(D_800D2E30,initialScale,sizeof(initialScale));fn((s32)current->view);
+  if(error||count!=expectedCount||D_800D2DB4!=expectedGate||D_800DBFF0!=expectedBase||!equal(&world,&expected,sizeof(world))||!equal(D_800D2E30,expectedScale,sizeof(expectedScale))||!equal(calls,expectedCalls,sizeof(calls)))return 1;
+ }
+ return 0;
+}
+static int run(void){if(check(selected))return 2;@@CONTROLS@@return 0;}
+@@START@@
