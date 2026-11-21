@@ -60,6 +60,10 @@
     {
       "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
       "guards_sha256": "296433d583af25c536d58a58d111c34c3f6920a018ccb2c3946cfda9c8759b11"
+    },
+    {
+      "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+      "guards_sha256": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
     }
   ],
   "historical_image_dependencies": [
@@ -138,6 +142,28 @@
           "source_sha256": "021e835bf1111d3afbf6ff9e25b489dfde9b0bee1bded7ec637ddfeaa0de4886",
           "object": "conker/build/src/game/generated_61D10.c.o",
           "live_sha256": "4463ce5abefb99cb422abc23a5b36a140c0ca7459fb12148c1f9b8e9b8795600",
+          "frozen": "conker/build/game-projection-record-draw-15035fe8-private/baseline/conker/build/src/game/generated_61D10.c.o",
+          "frozen_sha256": "3ce3749fe9ce436c166a9882e7c13ecb4ccddf97ba6d48c7d7fe1aabfbb71b27"
+        }
+      ]
+    },
+    {
+      "source_sha256": "ec8260542aedfc7a477dc2942e84204c8c5b4bf07a29e02a5e57d88ab4f3ee10",
+      "guards_sha256": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df",
+      "overrides": [
+        {
+          "source": "conker/src/game/generated_124920.c",
+          "source_sha256": "da3a6a46869a46d6806a16660540411eb67cd3d166ab85eb62672d62bf0328cd",
+          "object": "conker/build/src/game/generated_124920.c.o",
+          "live_sha256": "131c10954c22bba89b27a80ea847d939030f6b382e7d5ba6dbcdcf0940a157c3",
+          "frozen": "conker/build/game-actor-randomized-effect-150f97ec-private/baseline/conker/build/src/game/generated_124920.c.o",
+          "frozen_sha256": "c0a46d99f9f59bd861514b0baca9814773cfdef8ebbad5071c8c41ac7026722d"
+        },
+        {
+          "source": "conker/src/game/generated_61D10.c",
+          "source_sha256": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+          "object": "conker/build/src/game/generated_61D10.c.o",
+          "live_sha256": "7927118934c7dad6e037c92ea5c79c9d6999f0a89254d06302e96290b90c34c4",
           "frozen": "conker/build/game-projection-record-draw-15035fe8-private/baseline/conker/build/src/game/generated_61D10.c.o",
           "frozen_sha256": "3ce3749fe9ce436c166a9882e7c13ecb4ccddf97ba6d48c7d7fe1aabfbb71b27"
         }

@@ -160,5 +160,11 @@
   "guard_rows": 29,
   "omissions": 1,
   "insertions": 0,
-  "predicted_ELF_sha256": "03b19221851e515be5260005df27ebc960700e40010bbc84fa35c80bfec097d6"
+  "predicted_ELF_sha256": "03b19221851e515be5260005df27ebc960700e40010bbc84fa35c80bfec097d6",
+  "compatible_installed_snapshots": [
+    {
+      "conker/src/game/generated_61D10.c": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+      "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
+    }
+  ]
 }

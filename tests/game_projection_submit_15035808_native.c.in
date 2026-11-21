@@ -1,0 +1,137 @@
+#include <ultra64.h>
+#include "structs.h"
+TYPES
+static const u32 cases[][13]={ROWS};
+static const u32 *current;
+struct127 D_800CC2D0[3];
+static union {struct108 state;u8 bytes[0x1000];} view;
+struct108 *D_800DBFF0;
+u8 D_800C3F00,D_800C35EA,D_800BE9C0;
+u16 D_800C3E7A,D_800C3E7C;
+u8 *D_800C3E88,*D_800C3E8C;
+ProjectionDrawRecord61D10 D_800C3F08[255];
+static struct NodeStorage {ProjectionDisplayDescriptor61D10 node;u8 unused[0x100-sizeof(ProjectionDisplayDescriptor61D10)];} nodes[3];
+ProjectionDisplayDescriptor61D10 *D_800C3EE0;
+static u32 bank[4096] __attribute__((aligned(16))),cache[4096] __attribute__((aligned(16)));
+static u32 primaryBank[1024] __attribute__((aligned(16))),otherBank[1024] __attribute__((aligned(16)));
+static u8 attachments[3][0x1000];
+static s32 *colorHome;
+static Mtx **primaryHome,**secondaryHome;
+static ProjectionDisplayDescriptor61D10 *activeDescriptor;
+static u32 trace,ordinal,allocations;
+static u32 word(f32 f){union {f32 f;u32 u;}v;v.f=f;return v.u;}
+static u32 hash(u32 h,u32 v){return(h^v)*16777619u;}
+static void fill(void*p,u32 n){u8*b=p;u32 i;for(i=0;i<n;i++)b[i]=0xA5;}
+static u32 norm(u32 v){
+ if(v>=(u32)D_800CC2D0&&v<(u32)D_800CC2D0+sizeof(D_800CC2D0))return 0x800CC2D0u+v-(u32)D_800CC2D0;
+ if(v>=(u32)D_800C3F08&&v<(u32)D_800C3F08+sizeof(D_800C3F08))return 0x800C3F08u+v-(u32)D_800C3F08;
+ if(v>=(u32)nodes&&v<(u32)nodes+sizeof(nodes))return 0x100000u+v-(u32)nodes;
+ if(v>=(u32)&view&&v<(u32)&view+sizeof(view))return 0x30000u+v-(u32)&view;
+ if(v>=(u32)bank&&v<(u32)bank+sizeof(bank))return 0x50000u+v-(u32)bank;
+ if(v>=(u32)cache&&v<(u32)cache+sizeof(cache))return 0x60000u+v-(u32)cache;
+ if(v>=(u32)attachments&&v<(u32)attachments+sizeof(attachments))return 0x70000u+v-(u32)attachments;
+ if(v>=(u32)primaryBank&&v<(u32)primaryBank+sizeof(primaryBank))return 0x80000u+v-(u32)primaryBank;
+ if(v>=(u32)otherBank&&v<(u32)otherBank+sizeof(otherBank))return 0x90000u+v-(u32)otherBank;
+ return v;}
+static void effect(u32 target,const u32*args,u32 n,u32*answer){
+ u32 i,index;struct127*actor=&D_800CC2D0[current[2]];
+ trace=hash(trace,target);trace=hash(trace,n);for(i=0;i<n;i++)trace=hash(trace,norm(args[i]));ordinal++;
+ *answer=0xA5100000u|ordinal;
+ switch(target){
+ case 0x1502DB20:
+  *answer=1+current[0]%3;
+  if(current[6]==6){actor->unk7=17;D_800C3E88=(u8*)bank+64;actor->x_position=-17.25f;}
+  if(current[6]==8)D_800C3F00=15;break;
+ case 0x150AD9A0:
+  *answer=current[8]!=0xFFFFFFFFu?current[8]:current[4]==6?1401u:current[4]==8?9999u:(const u32[]){0,1199,1200,1201,1399,1400}[current[0]%6];break;
+ case 0x150356C8:
+  if(D_800C3F00==15)*answer=0;
+  else{*answer=(u32)&D_800C3F08[D_800C3F00];D_800C3F00++;}break;
+ case 0x1502D54C:
+  for(i=0;i<3;i++)colorHome[i]=(current[0]*3+i*71)&255;
+  if(current[6]==7)D_800C3F00=15;break;
+ case 0x15034F30:
+  ((ProjectionDrawRecord61D10*)args[1])->alpha=(current[0]*7+ordinal*29)&255;
+  if(args[4])*(u32*)args[4]=0xBC000000u|ordinal;
+  if(current[6]==1)for(i=0;i<3;i++)colorHome[i]=(colorHome[i]+11)&255;
+  if(current[6]==5)actor->y_position=33.5f+(f32)ordinal;break;
+ case 0x15035714:*answer=current[4]==7;break;
+ case 0x15031070:
+  activeDescriptor=(ProjectionDisplayDescriptor61D10*)args[0];index=((u32)activeDescriptor-(u32)nodes)/0x100;
+  *primaryHome=(Mtx*)((u8*)primaryBank+index*0x200);*secondaryHome=(Mtx*)((u8*)otherBank+index*0x200);
+  *answer=!(current[5]==6&&index==1);
+  if(current[6]==4)activeDescriptor->next=0;break;
+ case 0x10003C40:
+  allocations++;*answer=(u32)((u8*)cache+allocations*0x400);
+  if(current[6]==2)D_800BE9C0^=1;
+  if(current[6]==3){*primaryHome=(Mtx*)((u8*)otherBank+(u32)activeDescriptor-(u32)nodes);*secondaryHome=(Mtx*)primaryBank;}
+  if(current[6]==5){activeDescriptor->alpha=31;activeDescriptor->fixedMatrices=0;activeDescriptor->attachment=0;}break;
+ default:__builtin_trap();
+ }}
+s32 func_1502DB20(s32 id){u32 answer,args[]={(u32)id};effect(0x1502DB20,args,1,&answer);return(s32)answer;}
+s32 func_150AD9A0(s32 x,s32 y,s32 z){u32 answer,args[]={(u32)x,(u32)y,(u32)z};effect(0x150AD9A0,args,3,&answer);return(s32)answer;}
+u8*func_150356C8(void){u32 answer;effect(0x150356C8,0,0,&answer);return(u8*)answer;}
+void func_1502D54C(s32 slot,s32*colors){u32 answer,args[]={(u32)slot,0xE0000010u};colorHome=colors;effect(0x1502D54C,args,2,&answer);}
+s32 func_15031070(u8*node,u8*actor,Mtx**primary,Mtx**secondary){u32 answer,args[]={(u32)node,(u32)actor,0xE0000020u,0xE0000030u};
+ primaryHome=primary;secondaryHome=secondary;effect(0x15031070,args,4,&answer);return(s32)answer;}
+s32 allocate_memory(s32 size,s32 a,s32 b,s32 c){u32 answer,args[]={(u32)size,(u32)a,(u32)b,(u32)c};effect(0x10003C40,args,4,&answer);return(s32)answer;}
+s32 func_15035714(s32 mode,u8*actor,u8*projection,f32 y){u32 answer,args[]={(u32)mode,(u32)actor,(u32)projection,word(y)};effect(0x15035714,args,4,&answer);return(s32)answer;}
+void func_15034F30(u8*actor,u8*record,volatile s32 mode,Mtx*input,u8*volatile output,volatile s32 count,
+ f32 x,f32 y,f32 z,f32 unused,f32 angle,f32 ax,f32 ay,f32 az,f32 near,f32 far,f32 alpha,s32 fixed,s32 converted){
+ u32 answer,args[]={(u32)actor,(u32)record,(u32)mode,(u32)input,(u32)output,(u32)count,word(x),word(y),word(z),word(unused),word(angle),
+ word(ax),word(ay),word(az),word(near),word(far),word(alpha),(u32)fixed,(u32)converted};effect(0x15034F30,args,19,&answer);}
+BODY
+static u32 raw(const u8*p){return(u32)p[0]|(u32)p[1]<<8|(u32)p[2]<<16|(u32)p[3]<<24;}
+static u8 be(u32 v,u32 i){return(u8)(v>>(8*(3-i)));}
+static u32 bytes(u32 h,const u8*p,u32 n,u32 kind){u32 i,off,slot,v;
+ for(i=0;i<n;i++){
+  off=kind==1?i%0x32C:kind==2?i%0x100:kind==3?i%12:i;slot=off&~3u;
+  if((kind==1&&(slot==0||slot==0x14||slot==0x18||slot==0x1C||slot==0x1D4))||
+     (kind==2&&(slot==0x24||slot==0x34||slot==0x48||slot==0x4C||slot==0x50||slot==0x54||slot==0x58))||
+     (kind==3&&slot==0)||(kind==4&&(slot==0x2F8||slot==0x2FC||slot==0x300))||kind==5){
+   v=raw(p+i-(off-slot));if((kind==1&&slot==0x1D4)||kind==2||kind==3)v=norm(v);
+   h=hash(h,be(v,off-slot));
+  }else h=hash(h,p[i]);
+ }return h;}
+static u32 scalar(u32 h,u32 v,u32 n){u32 i;for(i=0;i<n;i++)h=hash(h,(v>>(8*(n-i-1)))&255);return h;}
+static u32 checksum(void){u32 h=2166136261u;
+ h=bytes(h,(const u8*)&view,0x600,4);h=bytes(h,(const u8*)bank,sizeof(bank),5);h=bytes(h,(const u8*)cache,sizeof(cache),5);
+ h=bytes(h,(const u8*)attachments,sizeof(attachments),0);h=bytes(h,(const u8*)primaryBank,sizeof(primaryBank),5);
+ h=bytes(h,(const u8*)otherBank,sizeof(otherBank),5);h=bytes(h,(const u8*)nodes,sizeof(nodes),2);
+ h=scalar(h,D_800BE9C0,1);h=scalar(h,D_800C35EA,1);h=scalar(h,D_800C3E7A,2);h=scalar(h,D_800C3E7C,2);
+ h=scalar(h,norm((u32)D_800C3E88),4);h=scalar(h,norm((u32)D_800C3E8C),4);h=scalar(h,norm((u32)D_800C3EE0),4);
+ h=scalar(h,D_800C3F00,1);h=bytes(h,(const u8*)D_800C3F08,sizeof(D_800C3F08),3);
+ h=bytes(h,(const u8*)D_800CC2D0,sizeof(D_800CC2D0),1);h=scalar(h,norm((u32)D_800DBFF0),4);return h;}
+static void setup(void){u32 i,j;struct127*actor=&D_800CC2D0[current[2]];
+ fill(D_800CC2D0,sizeof(D_800CC2D0));fill(&view,sizeof(view));fill(nodes,sizeof(nodes));fill(bank,sizeof(bank));fill(cache,sizeof(cache));
+ fill(attachments,sizeof(attachments));fill(primaryBank,sizeof(primaryBank));fill(otherBank,sizeof(otherBank));fill(D_800C3F08,sizeof(D_800C3F08));
+ actor->interaction_state=current[4]==1?0:1;actor->id=59;actor->unk7=(const u8[]){255,1,127,254}[current[0]%4];
+ if(current[4]==4)actor->unk7=0;actor->unique_id=7+current[0];actor->unk74=current[4]==3?15:0;
+ actor->unk1D4=current[4]==2?0:(void*)primaryBank;actor->x_position=17.25f;actor->y_position=-13.5f;actor->z_position=0.125f;
+ D_800DBFF0=&view.state;view.state.unk2F8=23.75f;view.state.unk2FC=-1.25f;view.state.unk300=71.875f;
+ D_800C3F00=current[3];D_800BE9C0=current[0]&1;D_800C35EA=current[4]==8;
+ D_800C3E88=D_800C3E8C=(u8*)bank;D_800C3E7C=current[4]==5?0:64;D_800C3E7A=0xFFFE;D_800C3EE0=&nodes[0].node;
+ for(i=0;i<3;i++){ProjectionDisplayDescriptor61D10*d=&nodes[i].node;d->id=actor->unique_id;d->alpha=(const u8[]){255,127,1}[i];d->variant=i+3;
+  if(current[5]==1&&i==0)d->id^=1;if(current[5]==2&&i==1)d->alpha=0;
+  d->fixedMatrices=current[5]==5?(Mtx*)((u8*)primaryBank+0x400):0;
+  d->attachment=current[5]==4||current[5]==7?attachments[i]:0;attachments[i][0x3F4]=i+1;
+  for(j=0;j<2;j++)d->cachedMatrices[j]=current[5]==3?(Mtx*)((u8*)cache+0x2000+i*0x200):0;
+  d->next=i<2?&nodes[i+1].node:0;d->previous=i?&nodes[i-1].node:0;
+ }
+ trace=2166136261u;ordinal=allocations=0;colorHome=0;primaryHome=secondaryHome=0;activeDescriptor=0;
+}
+static void report(u32 k,u32 reason,u32 actual,u32 wanted){char b[36];u32 values[]={k,reason,actual,wanted},i,j;
+ for(i=0;i<4;i++){for(j=0;j<8;j++)b[i*9+j]="0123456789abcdef"[(values[i]>>(28-j*4))&15];b[i*9+8]=i==3?'\n':' ';}
+ __asm__ volatile(".byte 0xcd,0x80" : : "a"(4),"b"(2),"c"(b),"d"(36) : "memory");}
+static int run(void){u32 k,h;f32 alpha;
+ if(sizeof(void*)!=4||sizeof(struct127)!=0x32C||sizeof(ProjectionDrawRecord61D10)!=12||sizeof(ProjectionDisplayDescriptor61D10)!=0x5C||
+    sizeof(nodes[0])!=0x100||__builtin_offsetof(ProjectionDisplayDescriptor61D10,cachedMatrices)!=0x4C||
+    __builtin_offsetof(ProjectionDisplayDescriptor61D10,next)!=0x54)return 10;
+ for(k=0;k<sizeof(cases)/sizeof(cases[0]);k++){
+  current=cases[k];setup();alpha=(const f32[]){0.f,1.f,127.5f,255.f}[current[0]%4];
+  func_15035808((s32)current[1],(s32)current[2],13.25f,-7.5f,31.0f,0.0f,0.25f,100.0f,150.0f,alpha);
+  if(trace!=current[9]||ordinal!=current[11]||allocations!=current[12]){report(k,11,trace,current[9]);return 11;}
+  h=checksum();if(h!=current[10]){report(k,12,h,current[10]);return 12;}
+ }return 0;}
+__attribute__((force_align_arg_pointer)) void _start(void){int result=run();
+ __asm__ volatile(".byte 0xcd,0x80" : : "a"(1),"b"(result) : "memory");__builtin_unreachable();}

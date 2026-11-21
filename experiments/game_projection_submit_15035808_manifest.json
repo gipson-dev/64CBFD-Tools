@@ -1,0 +1,1152 @@
+{
+  "function": "func_15035808",
+  "source": "conker/src/game/generated_61D10.c",
+  "caller": "conker/src/game/generated_CDE80.c",
+  "entry": 352540680,
+  "rom": 404664,
+  "body_words": 345,
+  "replacements": [
+    [
+      "#include <ultra64.h>\n#include \"structs.h\"\n\nextern struct127 D_800CC2D0[26];\nextern struct108 *D_800DBFF0;\nvoid func_1507C3E0(struct127 *, u16 *, u16 *, u16 *);\n\n\ntypedef struct {\n    u8 *matrix;\n    u8 alpha;\n    u8 color[3];\n    u8 slot;\n    u8 descriptorId;\n    u8 descriptorVariant;\n    u8 renderMode;\n} ProjectionDrawRecord61D10;\n\ntypedef struct {\n    u8 id;\n    u8 reserved01[2];\n    u8 alpha;\n    u8 reserved04[2];\n    u8 variant;\n    u8 reserved07[12];\n    u8 disabledLists;\n    u8 displayListCount;\n    u8 reserved15[15];\n    Gfx **displayLists;\n} ProjectionDisplayDescriptor61D10;\n\nextern Gfx D_80083140[], D_80082FC0[];\n\nextern ProjectionDrawRecord61D10 D_800C3F08[];\nGfx *func_1502CCFC(Gfx *, s32, s32, u8 *, s32, s32 *, s32, s32);\n\n\n",
+      "#include <ultra64.h>\n#include \"structs.h\"\n\nextern struct127 D_800CC2D0[26];\nextern struct108 *D_800DBFF0;\nvoid func_1507C3E0(struct127 *, u16 *, u16 *, u16 *);\n\n\ntypedef struct {\n    u8 *matrix;\n    u8 alpha;\n    u8 color[3];\n    u8 slot;\n    u8 descriptorId;\n    u8 descriptorVariant;\n    u8 renderMode;\n} ProjectionDrawRecord61D10;\n\ntypedef struct ProjectionDisplayDescriptor61D10 {\n    u8 id;\n    u8 reserved01[2];\n    u8 alpha;\n    u8 reserved04[2];\n    u8 variant;\n    u8 reserved07[12];\n    u8 disabledLists;\n    u8 displayListCount;\n    u8 reserved15[15];\n    Gfx **displayLists;\n    u8 reserved28[12];\n    Mtx *fixedMatrices;\n    u8 reserved38[16];\n    u8 *attachment;\n    Mtx *cachedMatrices[2];\n    struct ProjectionDisplayDescriptor61D10 *next;\n    struct ProjectionDisplayDescriptor61D10 *previous;\n} ProjectionDisplayDescriptor61D10;\n\nextern Gfx D_80083140[], D_80082FC0[];\n\nextern ProjectionDrawRecord61D10 D_800C3F08[];\nGfx *func_1502CCFC(Gfx *, s32, s32, u8 *, s32, s32 *, s32, s32);\n\n\n"
+    ],
+    [
+      "/* Unrecovered submission body; preserve its measured ten-argument ABI. */\ns32 func_15035808(s32 mode, s32 actorIndex, f32 x, f32 y, f32 z,\n    f32 angle0, f32 angle1, f32 innerRadius, f32 outerRadius, f32 alpha) {\n    return 0;\n}\n\n",
+      "extern u8 *D_800C3E88, *D_800C3E8C;\nextern u16 D_800C3E7A, D_800C3E7C;\nextern u8 D_800C35EA, D_800BE9C0;\nextern ProjectionDisplayDescriptor61D10 *D_800C3EE0;\ns32 func_1502DB20(s32);\ns32 func_150AD9A0(s32, s32, s32);\nvoid func_1502D54C(s32, s32 *);\ns32 func_15031070(u8 *, u8 *, Mtx **, Mtx **);\ns32 allocate_memory(s32, s32, s32, s32);\n\n/* Queue an actor's reflected projection and its matching linked descriptors. */\nvoid func_15035808(s32 mode, s32 actorIndex, f32 x, f32 y, f32 z,\n    f32 angle0, f32 angle1, f32 innerRadius, f32 outerRadius, f32 alpha) {\n    s32 opacity;\n    s32 distanceLimit;\n    s32 colors[3];\n    Mtx *primary;\n    s32 matrixCount;\n    ProjectionDisplayDescriptor61D10 *descriptor;\n    ProjectionDisplayDescriptor61D10 *next;\n    Mtx *secondary;\n    ProjectionDrawRecord61D10 *record;\n    struct127 *actor;\n    s32 factor;\n    s32 inputFixed;\n    f32 distance;\n    s32 deltaX;\n    s32 deltaY;\n    s32 *slotIndex;\n    Mtx *matrixOutput;\n    s32 descriptorAlpha;\n\n    if (D_800C3F00 == 15) return;\n    distanceLimit = 1400;\n    if (mode == 0 && D_800CC2D0[actorIndex].interaction_state != 1) return;\n    actor = &D_800CC2D0[actorIndex];\n    if (actor->unk1D4 == 0 || (actor->unk74 & 15) == 15) return;\n    opacity = actor->unk7;\n    if (opacity == 0) return;\n    slotIndex = &actorIndex;\n    matrixCount = func_1502DB20(actor->id);\n    if ((u32)D_800C3E88 + ((u32)matrixCount << 6) - (u32)D_800C3E8C >\n        ((u32)D_800C3E7C << 6)) return;\n    if (D_800C35EA == 1) distanceLimit = 10000;\n    deltaX = (s32)(D_800DBFF0->unk2F8 - actor->x_position);\n    deltaY = (s32)(D_800DBFF0->unk2FC - actor->y_position);\n    distance = (f32)func_150AD9A0(deltaX, deltaY, (s32)(D_800DBFF0->unk300 - actor->z_position));\n    if ((f32)distanceLimit < distance) return;\n    factor = 256;\n    if ((f32)(distanceLimit - 200) < distance) {\n        factor = (s32)((((f32)distanceLimit - distance) * 256.0f) /\n            (f32)(distanceLimit - 200));\n    }\n    if (opacity != 255) factor = (factor * opacity) >> 8;\n    record = (ProjectionDrawRecord61D10 *)func_150356C8();\n    if (record == 0) return;\n    record->matrix = D_800C3E88;\n    func_1502D54C(*slotIndex, colors);\n    record->color[0] = colors[0];\n    record->color[1] = colors[1];\n    record->color[2] = colors[2];\n    record->renderMode = 0;\n    record->slot = *slotIndex;\n    record->descriptorId = actor->unique_id;\n    primary = (Mtx *)actor->unk1D4;\n    func_15034F30((u8 *)actor, (u8 *)record, mode, primary, record->matrix,\n        matrixCount, x, y, z, angle0, angle1, actor->x_position,\n        actor->y_position, actor->z_position, innerRadius, outerRadius,\n        alpha, 0, 0);\n    record->alpha = (record->alpha * factor) >> 8;\n    if (func_15035714(mode, (u8 *)actor, (u8 *)primary, y) != 0) {\n        D_800C3F00--;\n        return;\n    }\n    D_800C3E88 = (u8 *)((u32)D_800C3E88 + ((u32)matrixCount << 6));\n    D_800C3E7A += matrixCount;\n    descriptor = D_800C3EE0;\n    if (descriptor != 0) {\n        do {\n            next = descriptor->next;\n            if (descriptor->id != actor->unique_id || descriptor->alpha == 0) {\n                descriptor = next;\n                continue;\n            }\n            {\n                record = (ProjectionDrawRecord61D10 *)func_150356C8();\n                if (record == 0) return;\n                record->color[0] = colors[0];\n                record->color[1] = colors[1];\n                record->color[2] = colors[2];\n                record->renderMode = 1;\n                record->slot = *slotIndex;\n                record->descriptorId = actor->unique_id;\n                record->descriptorVariant = descriptor->variant;\n                if (func_15031070((u8 *)descriptor, (u8 *)actor, &primary, &secondary) == 0) {\n                    descriptor = next;\n                    continue;\n                }\n                {\n                    descriptorAlpha = (s32)alpha;\n                    matrixCount = 1;\n                    if (descriptor->attachment != 0) matrixCount = descriptor->attachment[0x3F4];\n                    if (descriptor->cachedMatrices[D_800BE9C0] == 0) {\n                        descriptor->cachedMatrices[D_800BE9C0] = (Mtx *)allocate_memory(matrixCount << 6, 1, 2, 0);\n                    }\n                    matrixOutput = descriptor->cachedMatrices[D_800BE9C0];\n                    record->matrix = (u8 *)matrixOutput;\n                    descriptorAlpha = (descriptorAlpha * descriptor->alpha) >> 8;\n                    inputFixed = descriptor->fixedMatrices != 0 || descriptor->attachment != 0;\n                    func_15034F30(0, (u8 *)record, mode, primary, (u8 *)matrixOutput,\n                        matrixCount, x, y, z, angle0, angle1, actor->x_position,\n                        actor->y_position, actor->z_position, innerRadius, outerRadius,\n                        (f32)descriptorAlpha, inputFixed, 1);\n                    record->alpha = (record->alpha * factor) >> 8;\n                }\n            }\n            descriptor = next;\n        } while (descriptor != 0);\n    }\n}\n\n"
+    ]
+  ],
+  "caller_replacement": [
+    "s32 func_15035808(s32, s32, f32, f32, f32, f32, f32, f32, f32, f32);",
+    "void func_15035808(s32, s32, f32, f32, f32, f32, f32, f32, f32, f32);"
+  ],
+  "inputs": {
+    "conker/src/game/generated_61D10.c": "021e835bf1111d3afbf6ff9e25b489dfde9b0bee1bded7ec637ddfeaa0de4886",
+    "conker/src/game/generated_CDE80.c": "f6fd69b20396eb1143689d21611060d2cd1eaaca633b89248117378fa0eefeda",
+    "conker/retail_word_patches.us.csv": "296433d583af25c536d58a58d111c34c3f6920a018ccb2c3946cfda9c8759b11",
+    "conker/Makefile": "94141fe5474af30f4aa757fdf09bfb023bab819e4bf4d7ada94a89ac89ac1766",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/symbol_addrs.us.txt": "2eb50e08f06c79454d9ca57a5e4ba1f1670447de73d65302e7225fed6870e644",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "conker/include/2.0L/PR/gbi.h": "155141ca4e38735b9a5642521fb78ac735e4b32ee7509fb8df89966dc12c05b6",
+    "conker/asm/61D10.s": "87052fbff2aa1677dcfb8efc3b94b407037e58e47500164e603d5a238883ec14",
+    "conker/asm/CDE80.s": "95904fbecd5afa084a49b575c41494f0e275754359e2eefc3e1068d5efc15ec1",
+    "conker/src/game/generated_58F80.c": "b2c68fe7dec3e7050f40e5806c296eca53429502e15e3eb7e72ab9604a6358ca",
+    "conker/asm/58F80.s": "fa4472b7643a9b3ae837eea6d1220122c59f05b34e50d6df608bab0bffc96884",
+    "conker/src/game/generated_5D2C0.c": "1baa9e2b5a29576bd313d46f5c217ea930b8dead26999c8fc3919e16943236a5",
+    "conker/asm/5D2C0.s": "fae7f4cef62e47f676f42bfc5998932f92f0b807b6fb694a3000d7a15ae2074d",
+    "conker/src/init_3C40.c": "7345e09fd962a1ddde96f352e3ce0ba3f1bdcff8ad512b306e3b860fb1682bdb",
+    "conker/src/game_DAE50.c": "ca6779c0fd3e2cd16b2f8ce758865df59310da359987cce07781cc5005733729",
+    "conker/asm/nonmatchings/game_DAE50/func_150AD9A0.s": "9221ce3e8cebeb855b26bc9909413c3e855a3ba4b54b00a0cb800d1b02182ebf",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+    "conker/asm/nonmatchings/generated_CDE80/func_150A2CA4.s": "547220090fa9491b63484207eca05ef1f4588785edffc1468040adbc52e55641",
+    "conker/asm/nonmatchings/generated_CDE80/func_150A2D84.s": "5ccbb4f66106c737c5eb2b29c8241b35c849dd63b51ee7987fd2367c6501114c"
+  },
+  "installed_snapshot": {
+    "conker/src/game/generated_61D10.c": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+    "conker/src/game/generated_CDE80.c": "90158b02a9687df644479e12b164d90bb9dcb861e8ed2d41df153a5cf710641a",
+    "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
+  },
+  "schedule_plan": {
+    "source_raw_sha256": "0c57b385f9bf139b75ad4e3bd9e1625fcb5a504b90757faecccab200c2de7222",
+    "source_refs": {
+      "8": [
+        [
+          "R_MIPS_HI16",
+          "D_800C3F00"
+        ]
+      ],
+      "12": [
+        [
+          "R_MIPS_LO16",
+          "D_800C3F00"
+        ]
+      ],
+      "124": [
+        [
+          "R_MIPS_HI16",
+          "D_800CC2D0"
+        ]
+      ],
+      "132": [
+        [
+          "R_MIPS_LO16",
+          "D_800CC2D0"
+        ]
+      ],
+      "176": [
+        [
+          "R_MIPS_HI16",
+          "D_800CC2D0"
+        ]
+      ],
+      "180": [
+        [
+          "R_MIPS_LO16",
+          "D_800CC2D0"
+        ]
+      ],
+      "240": [
+        [
+          "R_MIPS_26",
+          "func_1502DB20"
+        ]
+      ],
+      "248": [
+        [
+          "R_MIPS_HI16",
+          "D_800C3E88"
+        ]
+      ],
+      "252": [
+        [
+          "R_MIPS_LO16",
+          "D_800C3E88"
+        ]
+      ],
+      "260": [
+        [
+          "R_MIPS_HI16",
+          "D_800C3E7C"
+        ]
+      ],
+      "272": [
+        [
+          "R_MIPS_LO16",
+          "D_800C3E7C"
+        ]
+      ],
+      "264": [
+        [
+          "R_MIPS_HI16",
+          "D_800C3E8C"
+        ]
+      ],
+      "268": [
+        [
+          "R_MIPS_LO16",
+          "D_800C3E8C"
+        ]
+      ],
+      "304": [
+        [
+          "R_MIPS_HI16",
+          "D_800C35EA"
+        ]
+      ],
+      "308": [
+        [
+          "R_MIPS_LO16",
+          "D_800C35EA"
+        ]
+      ],
+      "316": [
+        [
+          "R_MIPS_HI16",
+          "D_800DBFF0"
+        ]
+      ],
+      "332": [
+        [
+          "R_MIPS_LO16",
+          "D_800DBFF0"
+        ]
+      ],
+      "396": [
+        [
+          "R_MIPS_26",
+          "func_150AD9A0"
+        ]
+      ],
+      "532": [
+        [
+          "R_MIPS_26",
+          "func_150356C8"
+        ]
+      ],
+      "560": [
+        [
+          "R_MIPS_26",
+          "func_1502D54C"
+        ]
+      ],
+      "736": [
+        [
+          "R_MIPS_26",
+          "func_15034F30"
+        ]
+      ],
+      "776": [
+        [
+          "R_MIPS_26",
+          "func_15035714"
+        ]
+      ],
+      "808": [
+        [
+          "R_MIPS_HI16",
+          "D_800C3E7A"
+        ]
+      ],
+      "812": [
+        [
+          "R_MIPS_LO16",
+          "D_800C3E7A"
+        ]
+      ],
+      "844": [
+        [
+          "R_MIPS_HI16",
+          "D_800C3EE0"
+        ]
+      ],
+      "848": [
+        [
+          "R_MIPS_LO16",
+          "D_800C3EE0"
+        ]
+      ],
+      "856": [
+        [
+          "R_MIPS_HI16",
+          "D_800BE9C0"
+        ]
+      ],
+      "860": [
+        [
+          "R_MIPS_LO16",
+          "D_800BE9C0"
+        ]
+      ],
+      "904": [
+        [
+          "R_MIPS_26",
+          "func_150356C8"
+        ]
+      ],
+      "988": [
+        [
+          "R_MIPS_26",
+          "func_15031070"
+        ]
+      ],
+      "1076": [
+        [
+          "R_MIPS_26",
+          "allocate_memory"
+        ]
+      ],
+      "1300": [
+        [
+          "R_MIPS_26",
+          "func_15034F30"
+        ]
+      ]
+    },
+    "raw_words": 345,
+    "output_words": 345,
+    "frame": 216,
+    "origins": {
+      "0": 0,
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "5": 5,
+      "6": 6,
+      "7": 7,
+      "8": 8,
+      "9": 9,
+      "10": 10,
+      "11": 11,
+      "12": 13,
+      "13": 14,
+      "14": 15,
+      "15": 16,
+      "17": 17,
+      "18": 18,
+      "19": 19,
+      "20": 20,
+      "21": 22,
+      "22": 23,
+      "23": 24,
+      "24": 25,
+      "25": 26,
+      "26": 27,
+      "27": 28,
+      "28": 29,
+      "29": 30,
+      "30": 31,
+      "31": 32,
+      "32": 33,
+      "33": 34,
+      "34": 35,
+      "35": 36,
+      "36": 37,
+      "37": 38,
+      "38": 39,
+      "39": 40,
+      "40": 41,
+      "41": 42,
+      "42": 43,
+      "43": 44,
+      "44": 45,
+      "45": 46,
+      "46": 47,
+      "47": 48,
+      "48": 51,
+      "49": 52,
+      "50": 53,
+      "51": 54,
+      "52": 55,
+      "53": 56,
+      "54": 57,
+      "55": 58,
+      "56": 59,
+      "58": 60,
+      "60": 62,
+      "61": 63,
+      "62": 64,
+      "63": 65,
+      "64": 66,
+      "65": 67,
+      "66": 68,
+      "67": 69,
+      "68": 70,
+      "69": 71,
+      "70": 72,
+      "71": 73,
+      "72": 74,
+      "73": 75,
+      "74": 76,
+      "75": 77,
+      "76": 78,
+      "77": 79,
+      "78": 80,
+      "79": 81,
+      "80": 82,
+      "81": 83,
+      "82": 84,
+      "83": 85,
+      "84": 86,
+      "85": 87,
+      "86": 88,
+      "87": 89,
+      "88": 90,
+      "89": 91,
+      "90": 92,
+      "91": 93,
+      "92": 94,
+      "93": 95,
+      "94": 96,
+      "95": 97,
+      "96": 98,
+      "97": 99,
+      "98": 100,
+      "99": 101,
+      "100": 102,
+      "101": 103,
+      "102": 104,
+      "103": 105,
+      "104": 106,
+      "105": 107,
+      "106": 108,
+      "107": 109,
+      "108": 110,
+      "110": 111,
+      "111": 113,
+      "112": 114,
+      "113": 115,
+      "116": 118,
+      "117": 119,
+      "118": 120,
+      "119": 121,
+      "120": 122,
+      "121": 123,
+      "122": 124,
+      "125": 126,
+      "126": 127,
+      "127": 128,
+      "128": 129,
+      "129": 130,
+      "130": 131,
+      "131": 132,
+      "132": 133,
+      "133": 134,
+      "134": 135,
+      "135": 136,
+      "136": 137,
+      "137": 138,
+      "138": 139,
+      "139": 140,
+      "140": 141,
+      "141": 142,
+      "142": 143,
+      "143": 144,
+      "144": 145,
+      "145": 146,
+      "146": 147,
+      "147": 148,
+      "148": 150,
+      "149": 151,
+      "151": 152,
+      "152": 153,
+      "153": 154,
+      "154": 155,
+      "155": 156,
+      "156": 157,
+      "157": 158,
+      "158": 159,
+      "159": 160,
+      "160": 161,
+      "161": 162,
+      "162": 164,
+      "163": 165,
+      "164": 167,
+      "165": 168,
+      "166": 169,
+      "169": 171,
+      "170": 172,
+      "171": 175,
+      "173": 179,
+      "174": 180,
+      "180": 181,
+      "181": 182,
+      "182": 183,
+      "183": 184,
+      "185": 186,
+      "186": 187,
+      "187": 188,
+      "188": 189,
+      "189": 190,
+      "190": 191,
+      "191": 192,
+      "192": 193,
+      "193": 194,
+      "194": 195,
+      "195": 196,
+      "196": 197,
+      "197": 198,
+      "198": 199,
+      "199": 200,
+      "200": 201,
+      "201": 202,
+      "202": 203,
+      "203": 204,
+      "204": 205,
+      "205": 206,
+      "206": 207,
+      "207": 208,
+      "208": 209,
+      "209": 210,
+      "210": 211,
+      "211": 212,
+      "212": 213,
+      "213": 214,
+      "214": 215,
+      "216": 216,
+      "217": 218,
+      "218": 219,
+      "219": 220,
+      "220": 221,
+      "221": 222,
+      "222": 223,
+      "223": 224,
+      "224": 225,
+      "225": 226,
+      "226": 227,
+      "227": 228,
+      "228": 229,
+      "229": 230,
+      "230": 231,
+      "231": 232,
+      "232": 233,
+      "233": 234,
+      "234": 235,
+      "235": 236,
+      "236": 237,
+      "237": 238,
+      "238": 240,
+      "239": 241,
+      "240": 242,
+      "242": 243,
+      "243": 244,
+      "244": 245,
+      "245": 246,
+      "246": 247,
+      "247": 248,
+      "248": 249,
+      "249": 250,
+      "250": 251,
+      "251": 252,
+      "252": 253,
+      "253": 254,
+      "254": 255,
+      "255": 256,
+      "256": 257,
+      "257": 258,
+      "258": 259,
+      "259": 260,
+      "260": 261,
+      "261": 262,
+      "262": 263,
+      "263": 264,
+      "264": 265,
+      "265": 266,
+      "266": 267,
+      "267": 268,
+      "268": 269,
+      "270": 271,
+      "272": 273,
+      "273": 274,
+      "274": 275,
+      "275": 276,
+      "276": 277,
+      "277": 278,
+      "278": 279,
+      "279": 280,
+      "280": 281,
+      "281": 282,
+      "282": 283,
+      "283": 284,
+      "285": 287,
+      "286": 288,
+      "287": 289,
+      "288": 290,
+      "289": 291,
+      "290": 292,
+      "291": 293,
+      "292": 294,
+      "293": 295,
+      "294": 296,
+      "298": 298,
+      "301": 299,
+      "304": 300,
+      "305": 301,
+      "306": 302,
+      "309": 306,
+      "310": 307,
+      "311": 308,
+      "312": 309,
+      "313": 313,
+      "316": 315,
+      "321": 320,
+      "322": 323,
+      "323": 324,
+      "325": 325,
+      "327": 327,
+      "328": 328,
+      "329": 329,
+      "330": 330,
+      "331": 331,
+      "332": 332,
+      "333": 333,
+      "335": 335,
+      "336": 336,
+      "337": 337,
+      "338": 338,
+      "339": 339,
+      "340": 340,
+      "341": 341,
+      "342": 342,
+      "343": 343,
+      "344": 344,
+      "16": 21,
+      "57": 61,
+      "59": 12,
+      "109": 112,
+      "114": 116,
+      "115": 125,
+      "123": 200,
+      "124": 117,
+      "150": 149,
+      "167": 174,
+      "168": 178,
+      "172": 170,
+      "175": 163,
+      "176": 176,
+      "177": 166,
+      "178": 177,
+      "179": 185,
+      "184": 173,
+      "215": 217,
+      "241": 239,
+      "269": 270,
+      "271": 272,
+      "284": 291,
+      "295": 294,
+      "296": 125,
+      "297": 200,
+      "299": 303,
+      "300": 311,
+      "302": 310,
+      "303": 312,
+      "307": 314,
+      "308": 316,
+      "314": 317,
+      "315": 319,
+      "317": 322,
+      "318": 304,
+      "319": 305,
+      "320": 321,
+      "324": 326,
+      "326": 318,
+      "334": 217
+    },
+    "gpr_roles": {
+      "14": {
+        "3": 2
+      },
+      "16": {
+        "16": 17
+      },
+      "18": {
+        "3": 2
+      },
+      "35": {
+        "10": 11
+      },
+      "36": {
+        "10": 11
+      },
+      "37": {
+        "10": 11
+      },
+      "38": {
+        "10": 11
+      },
+      "39": {
+        "10": 11
+      },
+      "40": {
+        "10": 11
+      },
+      "41": {
+        "10": 11
+      },
+      "42": {
+        "10": 11
+      },
+      "43": {
+        "11": 12
+      },
+      "44": {
+        "11": 12
+      },
+      "45": {
+        "10": 11
+      },
+      "46": {
+        "10": 11,
+        "11": 12,
+        "2": 20
+      },
+      "47": {
+        "2": 20,
+        "12": 13
+      },
+      "48": {
+        "12": 13
+      },
+      "50": {
+        "2": 20,
+        "13": 14
+      },
+      "51": {
+        "13": 14,
+        "14": 15
+      },
+      "52": {
+        "3": 2,
+        "14": 15
+      },
+      "54": {
+        "2": 20,
+        "17": 16
+      },
+      "55": {
+        "17": 16
+      },
+      "57": {
+        "2": 20
+      },
+      "60": {
+        "18": 19
+      },
+      "61": {
+        "18": 19
+      },
+      "62": {
+        "18": 19,
+        "25": 11
+      },
+      "63": {
+        "15": 24
+      },
+      "64": {
+        "12": 14
+      },
+      "65": {
+        "12": 14
+      },
+      "66": {
+        "15": 24
+      },
+      "67": {
+        "10": 12
+      },
+      "68": {
+        "25": 11,
+        "10": 12,
+        "11": 13
+      },
+      "69": {
+        "11": 13,
+        "12": 14,
+        "13": 15
+      },
+      "70": {
+        "15": 24,
+        "24": 25
+      },
+      "71": {
+        "24": 25,
+        "13": 15
+      },
+      "73": {
+        "20": 18
+      },
+      "74": {
+        "14": 24
+      },
+      "75": {
+        "14": 24
+      },
+      "78": {
+        "14": 24
+      },
+      "80": {
+        "16": 17
+      },
+      "82": {
+        "19": 20
+      },
+      "83": {
+        "19": 20
+      },
+      "92": {
+        "19": 20
+      },
+      "99": {
+        "16": 17
+      },
+      "101": {
+        "16": 17,
+        "11": 14
+      },
+      "108": {
+        "11": 14
+      },
+      "126": {
+        "17": 16
+      },
+      "128": {
+        "17": 16
+      },
+      "130": {
+        "24": 15
+      },
+      "131": {
+        "24": 15
+      },
+      "136": {
+        "18": 19,
+        "13": 24
+      },
+      "138": {
+        "13": 24
+      },
+      "141": {
+        "14": 11
+      },
+      "142": {
+        "19": 20
+      },
+      "144": {
+        "14": 11
+      },
+      "145": {
+        "15": 12
+      },
+      "146": {
+        "15": 12
+      },
+      "147": {
+        "25": 13
+      },
+      "148": {
+        "25": 13
+      },
+      "149": {
+        "10": 14
+      },
+      "151": {
+        "10": 14
+      },
+      "152": {
+        "19": 20,
+        "11": 25
+      },
+      "153": {
+        "11": 25
+      },
+      "154": {
+        "19": 20
+      },
+      "158": {
+        "24": 9
+      },
+      "167": {
+        "19": 20
+      },
+      "168": {
+        "19": 20
+      },
+      "172": {
+        "19": 20
+      },
+      "175": {
+        "20": 18
+      },
+      "177": {
+        "24": 9
+      },
+      "185": {
+        "13": 24
+      },
+      "186": {
+        "19": 20
+      },
+      "187": {
+        "13": 24
+      },
+      "188": {
+        "14": 11
+      },
+      "189": {
+        "14": 11,
+        "15": 12
+      },
+      "190": {
+        "15": 12
+      },
+      "197": {
+        "25": 13
+      },
+      "198": {
+        "25": 13,
+        "10": 14
+      },
+      "200": {
+        "10": 14
+      },
+      "203": {
+        "18": 19,
+        "11": 25
+      },
+      "204": {
+        "13": 12
+      },
+      "205": {
+        "20": 18,
+        "12": 24
+      },
+      "206": {
+        "11": 25,
+        "12": 24,
+        "24": 11
+      },
+      "207": {
+        "13": 12,
+        "20": 18,
+        "14": 13
+      },
+      "208": {
+        "18": 19,
+        "24": 11
+      },
+      "209": {
+        "14": 13
+      },
+      "215": {
+        "25": 14
+      },
+      "216": {
+        "19": 20
+      },
+      "217": {
+        "18": 19
+      },
+      "218": {
+        "15": 14,
+        "25": 15
+      },
+      "220": {
+        "10": 25
+      },
+      "221": {
+        "10": 25
+      },
+      "224": {
+        "18": 19
+      },
+      "229": {
+        "11": 24
+      },
+      "230": {
+        "13": 14
+      },
+      "232": {
+        "11": 24
+      },
+      "233": {
+        "12": 11
+      },
+      "234": {
+        "19": 20
+      },
+      "236": {
+        "12": 11
+      },
+      "237": {
+        "24": 12
+      },
+      "239": {
+        "24": 12
+      },
+      "240": {
+        "14": 13
+      },
+      "241": {
+        "13": 14
+      },
+      "242": {
+        "14": 13
+      },
+      "243": {
+        "19": 20
+      },
+      "251": {
+        "18": 19
+      },
+      "254": {
+        "20": 18
+      },
+      "256": {
+        "9": 10
+      },
+      "259": {
+        "20": 18
+      },
+      "261": {
+        "20": 18
+      },
+      "264": {
+        "24": 13
+      },
+      "265": {
+        "24": 13
+      },
+      "269": {
+        "9": 10
+      },
+      "270": {
+        "13": 14
+      },
+      "271": {
+        "9": 10
+      },
+      "272": {
+        "13": 14,
+        "14": 15
+      },
+      "273": {
+        "14": 15,
+        "15": 25
+      },
+      "274": {
+        "15": 25
+      },
+      "275": {
+        "25": 24
+      },
+      "276": {
+        "25": 24,
+        "10": 11
+      },
+      "277": {
+        "10": 11,
+        "11": 12
+      },
+      "278": {
+        "11": 12
+      },
+      "280": {
+        "12": 13
+      },
+      "281": {
+        "2": 15
+      },
+      "282": {
+        "8": 9
+      },
+      "283": {
+        "12": 10,
+        "9": 13
+      },
+      "284": {
+        "15": 2
+      },
+      "289": {
+        "15": 24
+      },
+      "290": {
+        "9": 8
+      },
+      "291": {
+        "9": 8,
+        "24": 14
+      },
+      "292": {
+        "13": 15
+      },
+      "293": {
+        "24": 14,
+        "9": 8
+      },
+      "294": {
+        "2": 25
+      },
+      "295": {
+        "13": 25
+      },
+      "298": {
+        "14": 0
+      },
+      "300": {
+        "19": 20
+      },
+      "303": {
+        "9": 8
+      },
+      "315": {
+        "19": 20
+      },
+      "316": {
+        "19": 20
+      },
+      "318": {
+        "8": 9
+      },
+      "319": {
+        "20": 18
+      },
+      "321": {
+        "15": 24
+      },
+      "327": {
+        "25": 11
+      },
+      "328": {
+        "18": 19
+      },
+      "329": {
+        "25": 11
+      },
+      "330": {
+        "10": 12
+      },
+      "331": {
+        "10": 12,
+        "11": 13
+      },
+      "332": {
+        "11": 13
+      },
+      "334": {
+        "25": 14
+      }
+    },
+    "fp_roles": {},
+    "branch_destinations": {
+      "18": 336,
+      "20": 35,
+      "34": 335,
+      "48": 336,
+      "52": 336,
+      "55": 336,
+      "72": 335,
+      "78": 81,
+      "106": 336,
+      "114": 125,
+      "123": 126,
+      "126": 132,
+      "134": 335,
+      "195": 201,
+      "199": 335,
+      "212": 335,
+      "218": 223,
+      "221": 225,
+      "223": 333,
+      "227": 335,
+      "248": 252,
+      "250": 333,
+      "257": 260,
+      "266": 280,
+      "292": 299,
+      "295": 299,
+      "297": 299,
+      "333": 216
+    },
+    "stack_offsets": {
+      "269": 128,
+      "271": 128
+    },
+    "control_actions": {
+      "114": "nonlikely-fp-branch",
+      "284": "initial-true-flag",
+      "295": "attachment-nonzero-branch",
+      "298": "false-flag-zero"
+    },
+    "omitted_origins": [
+      49,
+      50,
+      285,
+      286,
+      297,
+      334
+    ],
+    "duplicated_origins": {
+      "200": 3,
+      "291": 2,
+      "294": 2,
+      "125": 2,
+      "217": 2
+    },
+    "role_scope": "Closed expected-payload caller/callee, opacity, matrix-count, actor, temporary and FP lifetimes; physical save homes unchanged",
+    "scheduling_scope": "Independent prologue stores, nineteen-argument packets, loop-header lookahead, and explicit boolean continuation",
+    "output_instruction_words_stored": 0,
+    "matching_credit": 0
+  },
+  "predicted_ELF_sha256": "17080b77c6fccf01ed110cf372fa8acd41799dc1ed1be27d8d7ae23b0807e1e1",
+  "guard_rows": 316,
+  "compatible_installed_snapshots": [],
+  "caller_asm_frozen_baseline": {
+    "assembly": "conker/asm/CDE80.s",
+    "sha256": "95904fbecd5afa084a49b575c41494f0e275754359e2eefc3e1068d5efc15ec1",
+    "generated_fragments": [
+      "conker/asm/nonmatchings/generated_CDE80/func_150A2CA4.s",
+      "conker/asm/nonmatchings/generated_CDE80/func_150A2D84.s"
+    ]
+  }
+}

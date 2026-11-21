@@ -121,6 +121,11 @@
       "conker/src/game/generated_61D10.c": "021e835bf1111d3afbf6ff9e25b489dfde9b0bee1bded7ec637ddfeaa0de4886",
       "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
       "conker/retail_word_patches.us.csv": "296433d583af25c536d58a58d111c34c3f6920a018ccb2c3946cfda9c8759b11"
+    },
+    {
+      "conker/src/game/generated_61D10.c": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+      "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
+      "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
     }
   ]
 }
