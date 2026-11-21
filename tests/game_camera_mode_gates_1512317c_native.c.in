@@ -1,0 +1,89 @@
+#include <ultra64.h>
+#include "functions.h"
+typedef s16 CameraFlagShort14FF90 __attribute__((__may_alias__));
+typedef f32 ScalarAlias __attribute__((__may_alias__));
+void func_150495B0(f32*,f32,f32*,f32,f32,f32);struct127*func_15125490(struct108*);void func_1511FC60(struct108*);
+struct SpringView{u8 a[0x74C];f32 x;u8 b[4];f32 z;u8 c[0x44];f32 vx,vz;u8 d[0x1FC];};
+_Static_assert(sizeof(struct108)==0x9A0 && sizeof(struct SpringView)==0x9A0,"camera extent");
+_Static_assert(sizeof(void*)==4 && sizeof(f32)==4 && sizeof(s16)==2 && sizeof(u8)==1,"SDK32 ABI");
+#define OFFSET(t,n,v) _Static_assert(__builtin_offsetof(t,n)==v,"offset " #n)
+OFFSET(struct108,unk2C,0x2C);OFFSET(struct108,unk84,0x84);OFFSET(struct108,unk134,0x134);OFFSET(struct108,unk23E,0x23E);
+OFFSET(struct108,unk36A,0x36A);OFFSET(struct108,unk36C,0x36C);OFFSET(struct108,unk3D0,0x3D0);OFFSET(struct108,unk3D4,0x3D4);
+OFFSET(struct108,unk5F0,0x5F0);OFFSET(struct108,unk5FC,0x5FC);OFFSET(struct108,unk73C,0x73C);OFFSET(struct108,unk7B4,0x7B4);
+OFFSET(struct SpringView,x,0x74C);OFFSET(struct SpringView,z,0x754);OFFSET(struct SpringView,vx,0x79C);OFFSET(struct SpringView,vz,0x7A0);
+OFFSET(struct127,stunned,0x104);OFFSET(struct127,in_water,0xAD);OFFSET(struct127,unk65,0x65);OFFSET(struct127,health,0x1CA);OFFSET(struct127,xz_velocity,0x3C);OFFSET(struct127,unk9C,0x9C);OFFSET(struct127,unk197,0x197);OFFSET(struct127,unk198,0x198);
+@@FUNCTIONS@@
+@@HELPERS@@
+struct Case{u32 mode,flags,old,stunned,state,value,water,secondary_flags,actor65,query,health,kind,speed,secondary_ac,input,edge,slot,substate,mutation,alias,pattern,dt;};
+static const struct Case cases[]={@@CASES@@};
+struct World{union{struct108 sdk;struct SpringView spring;}camera;struct127 primary,secondary,other;u16 input,alt;};
+static struct World actual,expected,snapshot;static struct World*active;static const struct Case*current;
+static u32 calls[10][7],expected_calls[10][7];static int count,expected_count,error,model_mode;
+static void bytes(void*p,int n,u8 seed){u8*d=p;for(int i=0;i<n;i++)d[i]=(u8)(i*29+seed);}
+static void copy(void*p,const void*q,int n){u8*a=p;const u8*b=q;for(int i=0;i<n;i++)a[i]=b[i];}
+static int equal(const void*p,const void*q,int n){const u8*a=p,*b=q;for(int i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static u32 word(f32 f){union{f32 f;u32 u;}v;v.f=f;return v.u;}
+static f32 real(u32 u){union{f32 f;u32 u;}v;v.u=u;return v.f;}
+static u32 offset(const void*p){return(u32)((const u8*)p-(const u8*)active);}
+static void record(u32 kind,u32 a,u32 b,u32 c,u32 d,u32 e,u32 f){u32(*p)[7]=model_mode?expected_calls:calls;int*i=model_mode?&expected_count:&count;if(*i>=10){error=1;return;}u32 row[7]={kind,a,b,c,d,e,f};for(int j=0;j<7;j++)p[*i][j]=row[j];(*i)++;}
+static u16 half(struct108*c,u32 at){return *(u16*)((u8*)c+at);}
+static void sethalf(struct108*c,u32 at,u16 value){*(CameraFlagShort14FF90*)((u8*)c+at)=(s16)value;}
+static void effect(u32 t){struct108*c=&active->camera.sdk;
+ if(t==1&&(current->mutation&1))c->unk3D0=&active->other;
+ if(t==7&&(current->mutation&2)){c->unk3D4=&active->other;c->unk73C=3;c->unk2C=(current->pattern&1)?0x100:0x20;c->unk36C=&active->alt;}
+ if(t==5&&(current->mutation&4))c->unk7B4=.5f;
+ if(t==4)c->unk7C8=0x13579BDF;
+}
+struct127*func_15125490(struct108*c){if(c!=&active->camera.sdk)error=1;record(1,0,0,0,0,0,0);effect(1);return current->query?&active->other:0;}
+void func_1511FC60(struct108*c){if(c!=&active->camera.sdk)error=1;record(4,0,0,0,0,0,0);effect(4);}
+void func_15125394(struct108*c){record(6,0,0,0,0,0,0);u32 mode=(u32)c->unk2C;u32 i=0;if(!mode){error=1;return;}while(!(mode&1)){mode>>=1;i++;}c->unk0=(u16)i;}
+void func_15124B18(struct108*c){record(7,0,0,0,0,0,0);c->unk7C8=0x2468ACE0;effect(7);}
+s32 func_15123934(struct108*c,s32 a,s32 b,s32 d,s32 slot){record(2,0,(u32)a,(u32)b,(u32)d,(u32)slot,0);return save_real(c,a,b,d,slot);}
+s32 func_151239CC(struct108*c,s32 slot){record(3,0,(u32)slot,0,0,0,0);return restore_real(c,slot);}
+void func_150495B0(f32*p,f32 t,f32*v,f32 k,f32 d,f32 dt){record(5,offset(p),word(t),offset(v),word(k),word(d),word(dt));spring_real(p,t,v,k,d,dt);effect(5);}
+static f32 plus(f32 a,f32 b){volatile f32 v=a+b;return v;}
+static f32 minus(f32 a,f32 b){volatile f32 v=a-b;return v;}
+static f32 times(f32 a,f32 b){volatile f32 v=a*b;return v;}
+static void model_spring(f32*p,f32*v){f32 t=0.f,k=4.f,d=9.f,dt=active->camera.sdk.unk7B4;record(5,offset(p),word(t),offset(v),word(k),word(d),word(dt));
+ f32 distance=minus(t,*p),direction=distance<0.f?-1.f:1.f;
+ *v=plus(*v,times(times(minus(times(distance,k),*v),d),dt));f32 next=plus(times(*v,dt),*p),next_direction=t<next?-1.f:1.f;
+ if(direction==next_direction)*p=next;else{*p=t;*v=0.f;}effect(5);
+}
+static s32 model_save(struct108*c){record(2,0,0x100,4,(u32)c->unk134,1,0);if(half(c,0x20E))return 0;
+ sethalf(c,4,c->unk0);*(s32*)((u8*)c+0x34)=c->unk2C;*(s32*)((u8*)c+0x8C)=c->unk84;*(s32*)((u8*)c+0xE4)=c->unkDC;*(s32*)((u8*)c+0x13C)=c->unk134;
+ sethalf(c,0x1B8,(u16)c->unk1B4);sethalf(c,0x1E4,(u16)c->unk1E0);c->unk2C=0x100;c->unkDC=4;sethalf(c,0x20E,1);func_15125394(c);return 1;
+}
+static void model_restore(struct108*c){record(3,0,1,0,0,0,0);if(!half(c,0x20E))return;
+ c->unk0=half(c,4);c->unk2C=*(s32*)((u8*)c+0x34);c->unkDC=*(s32*)((u8*)c+0xE4);c->unk84=*(s32*)((u8*)c+0x8C);c->unk134=*(s32*)((u8*)c+0x13C);
+ c->unk1B4=(s16)half(c,0x1B8);c->unk1E0=(s16)half(c,0x1E4);func_15124B18(c);sethalf(c,0x20E,0);
+}
+static void model(void){struct108*c=&active->camera.sdk;struct127*p=c->unk3D0;u32 old=(u32)c->unk5F0;int blocked=0;
+ static const u8 exceptions[]={9,0x38,0x39,0x3B,0x37,0x15,0x26,0x3A};int stunned=p->stunned!=0;
+ for(u32 i=0;i<sizeof(exceptions);i++)if(c->unk23E==exceptions[i])stunned=0;
+ if((c->unk2C&0x80)||(c->unk84&0x1000000))blocked=1;
+ if(!blocked&&p->unk28!=0.f&&!p->in_water&&!c->unk3D4->unk9C&&!(old&0x300)&&c->unk23E!=3)blocked=1;
+ if(!blocked&&p->unk65&&!(old&0x300))blocked=1;
+ if(stunned)blocked=1;
+ if(!blocked){blocked=func_15125490(c)!=0;if(!blocked){p=c->unk3D0;struct127*s=c->unk3D4;blocked=!p->health||((((u8*)s)[0x4E]&15)==1&&p->xz_velocity>15.f)||((u8*)s)[0x1AC];}}
+ if((*c->unk36C&16)&&!blocked){if((c->unk36A&16)&&model_save(c))func_1511FC60(c);return;}
+ if(c->unk2C==0x100&&!c->unk73C){model_restore(c);c->unk3D4->unk198=0;c->unk3D4->unk197=0;sethalf(c,0x5F8,1);c->unk5FC=2;c->unk36A&=~16;*c->unk36C&=~16;}
+ if(c->unk2C==0x100||c->unk73C){c->unk36A&=~16;*c->unk36C&=~16;}
+ c->unk3D4->unk198=(u8)c->unk73C;
+ if(c->unk73C){model_spring(&active->camera.spring.x,&active->camera.spring.vx);model_spring(&active->camera.spring.z,&active->camera.spring.vz);}
+ if(c->unk2C!=0x100&&c->unk73C)c->unk73C=0;
+}
+static void fixture(struct World*w){const struct Case*c=current;bytes(w,sizeof(*w),0x35);struct127*p=&w->primary,*s=c->alias==1?p:&w->secondary;struct127*actors[]={p,s,&w->other};
+ for(int j=0;j<3;j++){struct127*a=actors[j];a->stunned=(u8)c->stunned;a->in_water=(u8)c->water;a->unk65=(u8)c->actor65;a->health=(u8)c->health;((u8*)a)[0x4E]=(u8)c->kind;((u8*)a)[0x1AC]=(u8)c->secondary_ac;a->unk28=real(c->value);a->xz_velocity=real(c->speed);a->unk9C=c->secondary_flags;}
+ w->other.health=(u8)(c->pattern&1);w->other.xz_velocity=16.f;struct108*a=&w->camera.sdk;a->unk2C=(s32)c->mode;a->unk84=(s32)c->flags;a->unk5F0=(s32)c->old;a->unk3D0=p;a->unk3D4=s;a->unk134=0x12345678;
+ a->unk36C=c->alias==2?&a->unk36A:c->alias==3?(u16*)((u8*)a+0x20E):&w->input;a->unk23E=(u8)c->state;
+ a->unk36A=(u16)c->edge;sethalf(a,0x20E,(u16)c->slot);a->unk73C=(s16)c->substate;a->unk0=3;a->unk1B4=5;a->unk1E0=7;sethalf(a,4,2);sethalf(a,0x1B8,9);sethalf(a,0x1E4,11);
+ *(s32*)((u8*)a+0x34)=0x20;*(s32*)((u8*)a+0x8C)=0x101;*(s32*)((u8*)a+0xE4)=8;*(s32*)((u8*)a+0x13C)=(s32)0x87654321u;
+ static const f32 xs[]={2.f,-.5f,1.f,0.f},zs[]={-1.f,2.f,-.25f,0.f};w->camera.spring.x=xs[c->pattern%4];w->camera.spring.z=zs[c->pattern%4];w->camera.spring.vx=.5f;w->camera.spring.vz=-.5f;a->unk7B4=real(c->dt);*a->unk36C=(u16)c->input;w->alt=(u16)(c->input^16);
+}
+typedef void(*Fn)(struct108*);
+static int check(Fn fn){for(u32 i=0;i<sizeof(cases)/sizeof(cases[0]);i++){current=&cases[i];fixture(&actual);fixture(&expected);count=expected_count=error=0;model_mode=1;active=&expected;model();model_mode=0;active=&actual;fn(&actual.camera.sdk);
+ copy(&snapshot,&expected,sizeof(snapshot));snapshot.camera.sdk.unk3D0=(struct127*)((u8*)&actual+((u8*)expected.camera.sdk.unk3D0-(u8*)&expected));snapshot.camera.sdk.unk3D4=(struct127*)((u8*)&actual+((u8*)expected.camera.sdk.unk3D4-(u8*)&expected));snapshot.camera.sdk.unk36C=(u16*)((u8*)&actual+((u8*)expected.camera.sdk.unk36C-(u8*)&expected));
+ if(error||count!=expected_count||!equal(&actual,&snapshot,sizeof(actual)))return 1;for(int j=0;j<count;j++)for(int k=0;k<7;k++)if(calls[j][k]!=expected_calls[j][k])return 1;
+ }return 0;}
+static int run(void){if(check(selected))return 10;@@CONTROLS@@return 0;}
+@@START@@
