@@ -11,6 +11,11 @@ OUT=ROOT/'conker/build/game-actor-projection-scan-15036148-private';BASE=OUT/'ba
 SPEC=json.loads(Path(__file__).with_name('game_actor_projection_scan_15036148_manifest.json').read_text())
 FUNCTION,SOURCE,CALLER,BODY,ENTRY,ROM=(SPEC[k]for k in('function','source','caller','body','entry','rom'))
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+
+def input_matches(snapshot,name,digest):
+    if digest==SPEC['inputs'][name]:return True
+    return any(entry['snapshot']==snapshot and entry['inputs'].get(name)==digest
+        for entry in SPEC.get('compatible_input_snapshots',[]))
 def bind(raw,refs,code_shift=0,data_shift=0):
     anchors={n:(0x80097D74 if n=='.rodata'else int(n.split('_')[1],16))+(code_shift if n.startswith('func_')else data_shift)for rs in refs.values()for _,n in rs}
     return tuple(bound_blob(raw,refs,anchors))
@@ -20,7 +25,7 @@ def screen():
     before_snapshot={n:SPEC['inputs'][n]for n in snapshot}
     assert snapshot in([before_snapshot,SPEC['installed_snapshot']]+SPEC.get('compatible_installed_snapshots',[])),snapshot
     for n,d in SPEC['inputs'].items():
-        if n not in snapshot:assert sha(ROOT/n)==d,n
+        if n not in snapshot:assert input_matches(snapshot,n,sha(ROOT/n)),n
     def frozen(n):
         assert sha(BASE/n)==SPEC['inputs'][n],n
         return(BASE/n).read_text()

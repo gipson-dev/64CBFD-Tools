@@ -127,5 +127,17 @@
       "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
       "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
     }
+  ],
+  "compatible_input_snapshots": [
+    {
+      "snapshot": {
+        "conker/src/game/generated_61D10.c": "f6f4d1e8028bc9e8acae5c9f84c253bdf70d65f4e17c93103bd52c71bc6d6cd6",
+        "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
+        "conker/retail_word_patches.us.csv": "0b024c82a3d49920a97452d7ff9177c3802d74341aa56811c6605c9e4c71f8df"
+      },
+      "inputs": {
+        "conker/src/game/generated_CDE80.c": "90158b02a9687df644479e12b164d90bb9dcb861e8ed2d41df153a5cf710641a"
+      }
+    }
   ]
 }
