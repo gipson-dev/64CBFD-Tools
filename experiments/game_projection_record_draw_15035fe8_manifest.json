@@ -133,6 +133,11 @@
       "conker/src/game/generated_61D10.c": "13272774930daac4be2d116004b18efb2eb186e6d31355b41e1ebc92efa0489c",
       "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
       "conker/retail_word_patches.us.csv": "1089fb4a8e2df9710fd3e3f5e6c9e724b2ea360732bbebfcfef3d49290b0e9e8"
+    },
+    {
+      "conker/src/game/generated_61D10.c": "021e835bf1111d3afbf6ff9e25b489dfde9b0bee1bded7ec637ddfeaa0de4886",
+      "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
+      "conker/retail_word_patches.us.csv": "296433d583af25c536d58a58d111c34c3f6920a018ccb2c3946cfda9c8759b11"
     }
   ]
 }

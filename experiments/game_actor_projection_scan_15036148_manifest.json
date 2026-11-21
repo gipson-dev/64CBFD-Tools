@@ -115,5 +115,12 @@
   "guards": 8,
   "scheduling_guards": 6,
   "pool_binding_guards": 2,
-  "predicted_ELF_sha256": "54f26fb2e102dd9717fde68acaf821f9ceaf2847a93ded129fe42ccb1aafbf7e"
+  "predicted_ELF_sha256": "54f26fb2e102dd9717fde68acaf821f9ceaf2847a93ded129fe42ccb1aafbf7e",
+  "compatible_installed_snapshots": [
+    {
+      "conker/src/game/generated_61D10.c": "021e835bf1111d3afbf6ff9e25b489dfde9b0bee1bded7ec637ddfeaa0de4886",
+      "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
+      "conker/retail_word_patches.us.csv": "296433d583af25c536d58a58d111c34c3f6920a018ccb2c3946cfda9c8759b11"
+    }
+  ]
 }

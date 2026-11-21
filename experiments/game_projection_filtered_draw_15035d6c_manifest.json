@@ -1,0 +1,164 @@
+{
+  "function": "func_15035D6C",
+  "source": "conker/src/game/generated_61D10.c",
+  "entry": 352542060,
+  "rom": 406044,
+  "raw_words": 160,
+  "retail_words": 159,
+  "slot_words": 159,
+  "frame": 32,
+  "raw_sha256": "c46837ea7e3435857bd1362a9c9418a22f7d68c3ee9c76c88d554a33830c254a",
+  "raw_refs": {
+    "12": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F00"
+      ]
+    ],
+    "16": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F00"
+      ]
+    ],
+    "96": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "100": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ],
+    "108": [
+      [
+        "R_MIPS_HI16",
+        "D_80083140"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_LO16",
+        "D_80083140"
+      ]
+    ],
+    "112": [
+      [
+        "R_MIPS_HI16",
+        "D_80082FC0"
+      ]
+    ],
+    "132": [
+      [
+        "R_MIPS_LO16",
+        "D_80082FC0"
+      ]
+    ],
+    "180": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "184": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ],
+    "220": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "224": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ],
+    "260": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "264": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ],
+    "528": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F00"
+      ]
+    ],
+    "532": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F00"
+      ]
+    ],
+    "536": [
+      [
+        "R_MIPS_HI16",
+        "D_800C3F08"
+      ]
+    ],
+    "540": [
+      [
+        "R_MIPS_LO16",
+        "D_800C3F08"
+      ]
+    ]
+  },
+  "selected_owner_sha256": "021e835bf1111d3afbf6ff9e25b489dfde9b0bee1bded7ec637ddfeaa0de4886",
+  "neighbors": 9,
+  "pools_unchanged": true,
+  "existing_submit_placeholder_words": 7,
+  "new_matching_credit": 0,
+  "body": "/* Draw matching projection records through the descriptor's enabled lists. */\nGfx *func_15035D6C(Gfx *commands, ProjectionDisplayDescriptor61D10 *descriptor,\n    s32 red, s32 green, s32 blue) {\n    ProjectionDrawRecord61D10 *record;\n    s32 alpha;\n    s32 list;\n\n    if (D_800C3F00 == 0) {\n        return commands;\n    }\n    gSPSetGeometryMode(commands++, G_CULL_FRONT);\n    record = D_800C3F08;\n    if (D_800C3F00 > 0) {\n        for (;;) {\n            if (record->renderMode != 1) goto next_record;\n            if (record->descriptorId != descriptor->id) goto next_record;\n            if (record->descriptorVariant != descriptor->variant) goto next_record;\n            alpha = (record->alpha * descriptor->alpha) >> 8;\n            gDPPipeSync(commands++);\n            gSPSegment(commands++, 3, record->matrix);\n            gDPSetEnvColor(commands++, red, green, blue, alpha);\n            if (alpha < 255) {\n                gSPSegment(commands++, 8, D_80082FC0);\n            } else {\n                gSPSegment(commands++, 8, D_80083140);\n            }\n            for (list = 0; list < descriptor->displayListCount; list++) {\n                if ((descriptor->disabledLists & (1u << (list & 31))) == 0) {\n                    gSPDisplayList(commands++, descriptor->displayLists[list]);\n                }\n            }\nnext_record:\n            record++;\n            if (record >= D_800C3F08 + D_800C3F00) break;\n        }\n    }\n    gSPClearGeometryMode(commands++, G_CULL_FRONT);\n    return commands;\n}",
+  "replacements": [
+    [
+      "#include <ultra64.h>\n#include \"structs.h\"\n\nextern struct127 D_800CC2D0[26];\nextern struct108 *D_800DBFF0;\nvoid func_1507C3E0(struct127 *, u16 *, u16 *, u16 *);\n\n\ntypedef struct {\n    u8 *matrix;\n    u8 alpha;\n    u8 color[3];\n    u8 slot;\n    u8 reserved09[2];\n    u8 skip;\n} ProjectionDrawRecord61D10;\n\nextern ProjectionDrawRecord61D10 D_800C3F08[];\nGfx *func_1502CCFC(Gfx *, s32, s32, u8 *, s32, s32 *, s32, s32);\n\n\n",
+      "#include <ultra64.h>\n#include \"structs.h\"\n\nextern struct127 D_800CC2D0[26];\nextern struct108 *D_800DBFF0;\nvoid func_1507C3E0(struct127 *, u16 *, u16 *, u16 *);\n\n\ntypedef struct {\n    u8 *matrix;\n    u8 alpha;\n    u8 color[3];\n    u8 slot;\n    u8 descriptorId;\n    u8 descriptorVariant;\n    u8 renderMode;\n} ProjectionDrawRecord61D10;\n\ntypedef struct {\n    u8 id;\n    u8 reserved01[2];\n    u8 alpha;\n    u8 reserved04[2];\n    u8 variant;\n    u8 reserved07[12];\n    u8 disabledLists;\n    u8 displayListCount;\n    u8 reserved15[15];\n    Gfx **displayLists;\n} ProjectionDisplayDescriptor61D10;\n\nextern Gfx D_80083140[], D_80082FC0[];\n\nextern ProjectionDrawRecord61D10 D_800C3F08[];\nGfx *func_1502CCFC(Gfx *, s32, s32, u8 *, s32, s32 *, s32, s32);\n\n\n"
+    ],
+    [
+      "s32 func_15035D6C() {\n    return 0;\n}",
+      "/* Draw matching projection records through the descriptor's enabled lists. */\nGfx *func_15035D6C(Gfx *commands, ProjectionDisplayDescriptor61D10 *descriptor,\n    s32 red, s32 green, s32 blue) {\n    ProjectionDrawRecord61D10 *record;\n    s32 alpha;\n    s32 list;\n\n    if (D_800C3F00 == 0) {\n        return commands;\n    }\n    gSPSetGeometryMode(commands++, G_CULL_FRONT);\n    record = D_800C3F08;\n    if (D_800C3F00 > 0) {\n        for (;;) {\n            if (record->renderMode != 1) goto next_record;\n            if (record->descriptorId != descriptor->id) goto next_record;\n            if (record->descriptorVariant != descriptor->variant) goto next_record;\n            alpha = (record->alpha * descriptor->alpha) >> 8;\n            gDPPipeSync(commands++);\n            gSPSegment(commands++, 3, record->matrix);\n            gDPSetEnvColor(commands++, red, green, blue, alpha);\n            if (alpha < 255) {\n                gSPSegment(commands++, 8, D_80082FC0);\n            } else {\n                gSPSegment(commands++, 8, D_80083140);\n            }\n            for (list = 0; list < descriptor->displayListCount; list++) {\n                if ((descriptor->disabledLists & (1u << (list & 31))) == 0) {\n                    gSPDisplayList(commands++, descriptor->displayLists[list]);\n                }\n            }\nnext_record:\n            record++;\n            if (record >= D_800C3F08 + D_800C3F00) break;\n        }\n    }\n    gSPClearGeometryMode(commands++, G_CULL_FRONT);\n    return commands;\n}"
+    ],
+    [
+      "record->skip == 0",
+      "record->renderMode == 0"
+    ]
+  ],
+  "inputs": {
+    "conker/src/game/generated_61D10.c": "13272774930daac4be2d116004b18efb2eb186e6d31355b41e1ebc92efa0489c",
+    "conker/src/game/generated_5D2C0.c": "1baa9e2b5a29576bd313d46f5c217ea930b8dead26999c8fc3919e16943236a5",
+    "conker/retail_word_patches.us.csv": "1089fb4a8e2df9710fd3e3f5e6c9e724b2ea360732bbebfcfef3d49290b0e9e8",
+    "conker/Makefile": "94141fe5474af30f4aa757fdf09bfb023bab819e4bf4d7ada94a89ac89ac1766",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/symbol_addrs.us.txt": "2eb50e08f06c79454d9ca57a5e4ba1f1670447de73d65302e7225fed6870e644",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "conker/include/2.0L/PR/gbi.h": "155141ca4e38735b9a5642521fb78ac735e4b32ee7509fb8df89966dc12c05b6",
+    "conker/asm/61D10.s": "87052fbff2aa1677dcfb8efc3b94b407037e58e47500164e603d5a238883ec14",
+    "conker/asm/5D2C0.s": "fae7f4cef62e47f676f42bfc5998932f92f0b807b6fb694a3000d7a15ae2074d",
+    "conker/build/src/game/generated_5D2C0.c.o": "717f411f525b93365de5cc2302afe2923ba990fea6ee93ba6e09bcce164f1d7c",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382"
+  },
+  "installed_snapshot": {
+    "conker/src/game/generated_61D10.c": "021e835bf1111d3afbf6ff9e25b489dfde9b0bee1bded7ec637ddfeaa0de4886",
+    "conker/retail_word_patches.us.csv": "296433d583af25c536d58a58d111c34c3f6920a018ccb2c3946cfda9c8759b11"
+  },
+  "guard_rows": 29,
+  "omissions": 1,
+  "insertions": 0,
+  "predicted_ELF_sha256": "03b19221851e515be5260005df27ebc960700e40010bbc84fa35c80bfec097d6"
+}
