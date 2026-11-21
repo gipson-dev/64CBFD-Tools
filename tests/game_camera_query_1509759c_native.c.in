@@ -1,0 +1,94 @@
+#include <ultra64.h>
+#include "structs.h"
+@@TYPES@@
+#define OFF(t,n) __builtin_offsetof(t,n)
+_Static_assert(sizeof(void*)==4 && sizeof(struct17)==12,"SDK32 ABI");
+_Static_assert(sizeof(CameraShiftC3E20)==0x9A0 && sizeof(struct108)==0x9A0,"camera extent");
+_Static_assert(OFF(CameraShiftC3E20,target)==0x2F8 && OFF(CameraShiftC3E20,value37C)==0x37C && OFF(CameraShiftC3E20,value390)==0x390 && OFF(CameraShiftC3E20,heading)==0x39C,"view offsets");
+_Static_assert(OFF(struct108,unk2F8)==0x2F8 && OFF(struct108,unk37C)==0x37C && OFF(struct108,unk390)==0x390 && OFF(struct108,unk39C)==0x39C,"SDK offsets");
+_Static_assert(OFF(struct127,x_position)==0x14 && OFF(struct127,y_position)==0x18 && OFF(struct127,z_position)==0x1C,"SDK actor position");
+_Static_assert(sizeof(CameraQueryPoint)==24 && OFF(CameraQueryPoint,z)==4,"packed signed point");
+struct Case{u32 view,limit,command,key,pattern,outcome,mutation;};
+static const struct Case cases[]={@@CASES@@};
+static const f32 patterns[5][13]={{2,9,5,3,-4,9,-3,1,-.25,.5,0,.5,.75},{0,0,0,0,0,0,0,0,0,-0.f,-1.5707963705062866f,0,1},{-12.25,100,.5,4.5,-200,-9,-32768,32767,1.125,-2.5,1,-.5,.25},{0,1,2,4,5,6,1,-1,.25,-.75,0,0,.5},{-0.f,0,-0.f,0,0,0,0,0,-.125,.125,-.5,-0.f,-1}};
+union CameraStorage{struct108 sdk[4];CameraShiftC3E20 view[4];};
+union ActorStorage{struct127 sdk;struct{u8 prefix[0x14];struct17 position;}view;};
+static union CameraStorage cameras,others;
+static union ActorStorage actor;
+static CameraQueryPoint points[3],*D_800DC020;
+static CameraShiftC3E20 *D_800DBFF0;
+static s32 D_80082FA0;
+static u8 D_800D2DC0[3*36];
+static f32 D_8009DF4C;
+static s32 parameters[4];
+static const struct Case *current;
+static u32 events[8][8],event_count,error;
+static void fill(void*p,u32 n,u8 b){u8*d=p;for(u32 i=0;i<n;i++)d[i]=b;}
+static u32 word(f32 v){union{f32 f;u32 u;}x={.f=v};return x.u;}
+static f32 real(u32 v){union{f32 f;u32 u;}x={.u=v};return x.f;}
+static f32 add(f32 a,f32 b){volatile f32 r=a+b;return r;}
+static f32 sub(f32 a,f32 b){volatile f32 r=a-b;return r;}
+static f32 mul(f32 a,f32 b){volatile f32 r=a*b;return r;}
+f32 sqrtf(f32 a){f32 r;__asm__("sqrtss %1,%0":"=x"(r):"x"(a));return r;}
+static void event(u32 t){if(event_count>=8){error=1;return;}fill(events[event_count],sizeof(events[0]),0);events[event_count++][0]=t;}
+static CameraShiftC3E20 *camera(void){return &cameras.view[current->view];}
+static void effects(u32 stage){
+ CameraShiftC3E20*p=camera();u32 m=current->mutation;
+ if(stage==1){if(m&1)D_800DBFF0=others.view;if(m&2)p->heading=-.75f;if(m&4)D_8009DF4C=.25f;if(m&8)parameters[2]=-1;}
+ if(stage==2 && (m&16)){p->target.unk0=7.25f;p->heading=9.f;}
+ if(stage==3 && (m&32))p->target.unk8=-6.5f;
+}
+static struct127 *func_1505EEF4(s32 key){event(1);events[event_count-1][1]=(u32)key;effects(1);return current->outcome?&actor.sdk:0;}
+f32 sinf(f32 angle){event(2);events[event_count-1][1]=word(angle);effects(2);return current->pattern==3?real(0x7FC00000u):patterns[current->pattern][11];}
+f32 cosf(f32 angle){event(3);events[event_count-1][1]=word(angle);effects(3);return patterns[current->pattern][12];}
+@@HELPER@@
+static void func_15048F90(struct17*a,struct17*b,struct17*d){
+ event(4);events[event_count-1][1]=(u32)a;events[event_count-1][2]=(u32)b;
+ if(((u32)d&3)||a==d||b==d)error=1;delta_real(a,b,d);
+}
+static f32 dot_value(struct17*a,struct17*b){return add(add(mul(a->unk0,b->unk0),mul(a->unk4,b->unk4)),mul(a->unk8,b->unk8));}
+static f32 func_150AD900(struct17*a,struct17*b){
+ event(5);events[event_count-1][1]=word(a->unk0);events[event_count-1][2]=word(a->unk4);events[event_count-1][3]=word(a->unk8);
+ events[event_count-1][4]=word(b->unk0);events[event_count-1][5]=word(b->unk4);events[event_count-1][6]=word(b->unk8);
+ if(((u32)a&3)||((u32)b&3)||a==b)error=1;return dot_value(a,b);
+}
+@@FUNCTIONS@@
+static void reset(const struct Case*c){
+ current=c;fill(&cameras,sizeof(cameras),0x35);fill(&others,sizeof(others),0x35);fill(&actor,sizeof(actor),0x35);fill(points,sizeof(points),0x35);fill(D_800D2DC0,sizeof(D_800D2DC0),0x35);fill(events,sizeof(events),0);event_count=error=0;
+ for(u32 j=0;j<4;j++){
+  CameraShiftC3E20*p=&cameras.view[j];const f32*v=patterns[c->pattern];
+  p->target.unk0=c->pattern==3?real(0x7FC00000u):v[0];p->target.unk4=v[1];p->target.unk8=v[2];p->value37C=v[8];p->value390=v[9];p->heading=c->pattern==3?real(0x7FC00000u):v[10];others.view[j]=*p;
+ }
+ const f32*v=patterns[c->pattern];actor.view.position.unk0=v[3];actor.view.position.unk4=v[4];actor.view.position.unk8=v[5];
+ for(u32 j=0;j<3;j++){points[j].x=(s16)v[6];points[j].y=12345;points[j].z=(s16)v[7];}
+ D_800DC020=points;D_800DBFF0=cameras.view;D_80082FA0=(s32)c->limit;D_8009DF4C=real(0x3FC90FDBu);D_800D2DC0[c->key*36]=0x87;
+ parameters[0]=(s32)c->view;parameters[1]=(s32)c->command;parameters[2]=(s32)c->key;parameters[3]=0x12345678;
+}
+static s32 reference(s32 view,s32 command,s32*args){
+ CameraShiftC3E20*p=&D_800DBFF0[view];
+ if(D_80082FA0<view)return 0;
+ if(command==29)return D_800D2DC0[args[2]*36];
+ if(command==30||command==31)return(s32)mul(command==30?p->value37C:p->value390,65536.f);
+ if(command==32){u32 index=(u32)args[2]&4095;f32 x=sub(p->target.unk0,(f32)points[index].x),z=sub(p->target.unk8,(f32)points[index].z);return(s32)sqrtf(add(mul(x,x),mul(z,z)));}
+ if(command!=33)return 0;
+ event(1);events[event_count-1][1]=(u32)args[2]&4095;effects(1);if(!current->outcome)return-1;
+ f32 angle=add(p->heading,D_8009DF4C);struct17 forward,offset;
+ event(2);events[event_count-1][1]=word(angle);effects(2);forward.unk0=current->pattern==3?real(0x7FC00000u):patterns[current->pattern][11];forward.unk4=0;
+ event(3);events[event_count-1][1]=word(angle);effects(3);forward.unk8=patterns[current->pattern][12];
+ event(4);events[event_count-1][1]=(u32)&p->target;events[event_count-1][2]=(u32)&actor.view.position;
+ offset.unk0=sub(actor.view.position.unk0,p->target.unk0);offset.unk4=0;offset.unk8=sub(actor.view.position.unk8,p->target.unk8);
+ event(5);events[event_count-1][1]=word(forward.unk0);events[event_count-1][2]=word(forward.unk4);events[event_count-1][3]=word(forward.unk8);events[event_count-1][4]=word(offset.unk0);events[event_count-1][5]=word(offset.unk4);events[event_count-1][6]=word(offset.unk8);
+ f32 value=add(add(mul(forward.unk0,offset.unk0),mul(forward.unk4,offset.unk4)),mul(forward.unk8,offset.unk8));return 0.f<=value?-1:1;
+}
+static u32 hash(const void*p,u32 n,u32 h){const u8*b=p;for(u32 i=0;i<n;i++){h^=b[i];h*=16777619u;}return h;}
+static u32 digest(void){
+ u32 h=hash(&cameras,sizeof(cameras),2166136261u);h=hash(&others,sizeof(others),h);h=hash(&actor,sizeof(actor),h);h=hash(points,sizeof(points),h);h=hash(parameters,sizeof(parameters),h);h=hash(events,sizeof(events),h);h=hash(&D_800DBFF0,sizeof(D_800DBFF0),h);h=hash(&D_8009DF4C,4,h);h=hash(&event_count,4,h);return hash(&error,4,h);
+}
+static int check(s32(*function)(s32,s32,s32*)){
+ for(u32 i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
+  const struct Case*c=&cases[i];reset(c);s32 expected=reference(c->view,c->command,parameters);u32 wanted=digest();reset(c);
+  s32 actual=function(c->view,c->command,parameters);if(actual!=expected||digest()!=wanted||error)return 0;
+ }return 1;
+}
+static int run(void){if(!check(selected))return 10;@@CONTROLS@@return 0;}
+@@START@@
