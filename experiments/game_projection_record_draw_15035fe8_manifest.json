@@ -127,5 +127,12 @@
     "conker/src/game/generated_61D10.c": "21dd74147fbf420bf47bb786307d9724a9c38d47f5aceec7e044097d3886719a",
     "conker/src/game_45B80.c": "3799c0c770cfe8b7773a8937670a230d2f4f599b77aa033286d25832369409f1",
     "conker/retail_word_patches.us.csv": "aad592d568239e2c2916265eafe72f1386f99086189f966c4ebe4ae8b012a369"
-  }
+  },
+  "compatible_installed_snapshots": [
+    {
+      "conker/src/game/generated_61D10.c": "13272774930daac4be2d116004b18efb2eb186e6d31355b41e1ebc92efa0489c",
+      "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
+      "conker/retail_word_patches.us.csv": "1089fb4a8e2df9710fd3e3f5e6c9e724b2ea360732bbebfcfef3d49290b0e9e8"
+    }
+  ]
 }

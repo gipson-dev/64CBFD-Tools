@@ -1,0 +1,119 @@
+{
+  "words": 112,
+  "frame": 152,
+  "raw_sha256": "7d4d50dbd89d5fc69a4c18ef41bb975244be1cfc60b7cc5acf574a2d22d5e513",
+  "raw_refs": {
+    "68": [
+      [
+        "R_MIPS_HI16",
+        "D_800CC2D0"
+      ]
+    ],
+    "72": [
+      [
+        "R_MIPS_LO16",
+        "D_800CC2D0"
+      ]
+    ],
+    "60": [
+      [
+        "R_MIPS_HI16",
+        "D_800DBFF0"
+      ]
+    ],
+    "64": [
+      [
+        "R_MIPS_LO16",
+        "D_800DBFF0"
+      ]
+    ],
+    "128": [
+      [
+        "R_MIPS_HI16",
+        ".rodata"
+      ]
+    ],
+    "136": [
+      [
+        "R_MIPS_LO16",
+        ".rodata"
+      ]
+    ],
+    "276": [
+      [
+        "R_MIPS_26",
+        "func_1507C3E0"
+      ]
+    ],
+    "364": [
+      [
+        "R_MIPS_26",
+        "func_15035808"
+      ]
+    ]
+  },
+  "selected_owner_sha256": "13272774930daac4be2d116004b18efb2eb186e6d31355b41e1ebc92efa0489c",
+  "selected_caller_sha256": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
+  "neighbors_unchanged": 8,
+  "caller_raw_functions_unchanged": 16,
+  "caller_Warning_712": 3,
+  "helper_words": 7,
+  "helper_preexisting_words": 3,
+  "helper_new_words": "afa40000afa50004afa60008afa7000c",
+  "helper_still_unrecovered": true,
+  "new_rodata": "c61c4000 plus 12 alignment bytes",
+  "matching_credit": 0,
+  "function": "func_15036148",
+  "source": "conker/src/game/generated_61D10.c",
+  "caller": "conker/src/game_45B80.c",
+  "entry": 352543048,
+  "rom": 407032,
+  "body": "void func_15036148(void) {\n    f32 absentHeight;\n    u16 heightExtent;\n    u16 baseRadius;\n    u16 radius;\n    struct127 *actor;\n    s32 index;\n\n    actor = D_800CC2D0;\n    index = 0;\n    if ((D_800DBFF0->unk5F0 & 1) == 0) {\n        absentHeight = -10000.0f;\n        do {\n            if (actor->interaction_state != 0 &&\n                (actor->unk5 == 0 || actor->unk5 == 1) &&\n                actor->unk118 != absentHeight &&\n                actor->unk118 < actor->y_position &&\n                actor->unk180 < actor->unk118 && actor->unk28 > 5.0f) {\n                func_1507C3E0(actor, &heightExtent, &baseRadius, &radius);\n                if ((f32)(s16)heightExtent < actor->unk118 - actor->unk180) {\n                    func_15035808(1, index, actor->x_position, actor->unk118,\n                        actor->z_position, 0.0f, 0.0f, 100.0f, 150.0f, 127.0f);\n                }\n            }\n            index++;\n            actor++;\n        } while (index != 25);\n    }\n}",
+  "replacements": [
+    [
+      "#include <ultra64.h>\n\n",
+      "#include <ultra64.h>\n#include \"structs.h\"\n\nextern struct127 D_800CC2D0[26];\nextern struct108 *D_800DBFF0;\nvoid func_1507C3E0(struct127 *, u16 *, u16 *, u16 *);\n\n\n"
+    ],
+    [
+      "s32 func_15035808() {\n    return 0;\n}",
+      "/* Unrecovered submission body; preserve its measured ten-argument ABI. */\ns32 func_15035808(s32 mode, s32 actorIndex, f32 x, f32 y, f32 z,\n    f32 angle0, f32 angle1, f32 innerRadius, f32 outerRadius, f32 alpha) {\n    return 0;\n}"
+    ],
+    [
+      "s32 func_15036148() {\n    return 0;\n}",
+      "/* Submit projected effects for active actors crossing their recorded height. */\nvoid func_15036148(void) {\n    f32 absentHeight;\n    u16 heightExtent;\n    u16 baseRadius;\n    u16 radius;\n    struct127 *actor;\n    s32 index;\n\n    actor = D_800CC2D0;\n    index = 0;\n    if ((D_800DBFF0->unk5F0 & 1) == 0) {\n        absentHeight = -10000.0f;\n        do {\n            if (actor->interaction_state != 0 &&\n                (actor->unk5 == 0 || actor->unk5 == 1) &&\n                actor->unk118 != absentHeight &&\n                actor->unk118 < actor->y_position &&\n                actor->unk180 < actor->unk118 && actor->unk28 > 5.0f) {\n                func_1507C3E0(actor, &heightExtent, &baseRadius, &radius);\n                if ((f32)(s16)heightExtent < actor->unk118 - actor->unk180) {\n                    func_15035808(1, index, actor->x_position, actor->unk118,\n                        actor->z_position, 0.0f, 0.0f, 100.0f, 150.0f, 127.0f);\n                }\n            }\n            index++;\n            actor++;\n        } while (index != 25);\n    }\n}"
+    ]
+  ],
+  "caller_replacements": [
+    [
+      "s32 func_15036148(void);",
+      "void func_15036148(void);"
+    ]
+  ],
+  "inputs": {
+    "conker/src/game/generated_61D10.c": "21dd74147fbf420bf47bb786307d9724a9c38d47f5aceec7e044097d3886719a",
+    "conker/src/game_45B80.c": "3799c0c770cfe8b7773a8937670a230d2f4f599b77aa033286d25832369409f1",
+    "conker/retail_word_patches.us.csv": "aad592d568239e2c2916265eafe72f1386f99086189f966c4ebe4ae8b012a369",
+    "conker/Makefile": "94141fe5474af30f4aa757fdf09bfb023bab819e4bf4d7ada94a89ac89ac1766",
+    "conker/retail_layout.us.txt": "2e354c2be1de84126bb0d15b716a1af2eb21aea8e5befe669c7c03c1731a3365",
+    "conker/symbol_addrs.us.txt": "2eb50e08f06c79454d9ca57a5e4ba1f1670447de73d65302e7225fed6870e644",
+    "conker/include/structs.h": "0103b809787d88d65a2262cf619aaf537bb85cea25bd2aca5c312f2db28eafde",
+    "conker/include/2.0L/ultra64.h": "334dac734e99fcd8b227322092501397cfcdfb89af3529de6f81953b8feff65d",
+    "conker/include/2.0L/PR/gbi.h": "155141ca4e38735b9a5642521fb78ac735e4b32ee7509fb8df89966dc12c05b6",
+    "conker/asm/61D10.s": "87052fbff2aa1677dcfb8efc3b94b407037e58e47500164e603d5a238883ec14",
+    "conker/asm/data/23C830.rodata.s": "ab267c25a03c14d35009a1da81432278020a0d858d383576c5b8292f5b20fbd8",
+    "conker/src/game/generated_A9260.c": "99c266a1d8bcad6e09594d5235179141eb3e5921d9b20541b1c67013f5883539",
+    "conker/asm/A9260.s": "9a2af1a71437e7e0fbb3b6e490a87cce278a440023cf95eab4aee5b903613c41",
+    "conker/src/game/generated_CDE80.c": "f6fd69b20396eb1143689d21611060d2cd1eaaca633b89248117378fa0eefeda",
+    "conker/conker.us.bin": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382"
+  },
+  "installed_snapshot": {
+    "conker/src/game/generated_61D10.c": "13272774930daac4be2d116004b18efb2eb186e6d31355b41e1ebc92efa0489c",
+    "conker/src/game_45B80.c": "d69dbfd0e15a7eb79e63fd520ce735bdbc953cf119d5a1fe748f735106214576",
+    "conker/retail_word_patches.us.csv": "1089fb4a8e2df9710fd3e3f5e6c9e724b2ea360732bbebfcfef3d49290b0e9e8"
+  },
+  "Makefile_unchanged": true,
+  "guards": 8,
+  "scheduling_guards": 6,
+  "pool_binding_guards": 2,
+  "predicted_ELF_sha256": "54f26fb2e102dd9717fde68acaf821f9ceaf2847a93ded129fe42ccb1aafbf7e"
+}

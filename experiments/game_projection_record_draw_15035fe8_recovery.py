@@ -16,7 +16,7 @@ def screen():
     WHERE.mkdir(parents=True,exist_ok=True)
     snapshot={n:sha(ROOT/n)for n in SPEC['installed_snapshot']}
     before_snapshot={n:SPEC['inputs'][n]for n in snapshot}
-    assert snapshot in(before_snapshot,SPEC['installed_snapshot']),snapshot
+    assert snapshot in([before_snapshot,SPEC['installed_snapshot']]+SPEC.get('compatible_installed_snapshots',[])),snapshot
     for n,d in SPEC['inputs'].items():
         if n not in snapshot:assert sha(ROOT/n)==d,n
     def frozen(n):
