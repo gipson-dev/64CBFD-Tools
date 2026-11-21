@@ -1,0 +1,85 @@
+#include <ultra64.h>
+#include "functions.h"
+#include "variables.h"
+@@VIEW@@
+_Static_assert(__builtin_offsetof(CameraControlTimer14FF90,timer)==0x84A,"timer offset");
+_Static_assert(__builtin_offsetof(struct108,unk36A)==0x36A,"flags offset");
+_Static_assert(sizeof(struct108)>=0x84C,"camera extent");
+@@FUNCTIONS@@
+s16 D_80084480;u16 D_800BE710[8];u8 D_800C3671;s32 D_800BE9E4;
+struct Case {s32 mode,pre_busy,global_busy,flags,flags84,runtime,external,ad,physics,extra,running,state95,lock,equipped,selector,index,timer,ticks,alias,mutation,table,state197;};
+static const struct Case cases[]={@@CASES@@};
+static struct108 actual,expected;static struct127 actor,actor_state,alternate_state;
+static u16 actual_flags,actual_flags2,expected_flags,expected_flags2;
+static const struct Case *current;static int calls,expected_calls,error;
+static void bytes(void *p,int n,u8 seed){u8*d=p;for(int i=0;i<n;i++)d[i]=(u8)(i*29+seed);}
+static void copy(void*p,const void*q,int n){u8*a=p;const u8*b=q;for(int i=0;i<n;i++)a[i]=b[i];}
+static int equal(const void*p,const void*q,int n){const u8*a=p,*b=q;for(int i=0;i<n;i++)if(a[i]!=b[i])return 0;return 1;}
+static u16 *expected_link(void){
+ if(expected.unk36C==&actual_flags)return &expected_flags;
+ if(expected.unk36C==&actual_flags2)return &expected_flags2;
+ if(expected.unk36C==&actual.unk36A)return &expected.unk36A;
+ error=1;return &expected_flags;
+}
+static void cam_clear(u16 mask){expected.unk36A&=(u16)~mask;}
+static void link_clear(u16 mask){*expected_link()&=(u16)~mask;}
+static void cam_set(u16 mask){expected.unk36A|=mask;}
+static void link_set(u16 mask){*expected_link()|=mask;}
+static void effect(struct108 *p){
+ if(current->mutation==1){p->unk36C=&actual_flags2;p->unk3D4=&alternate_state;p->unk36A=0xF5DF;p->unk23E=0x29;}
+ else if(current->mutation==2){p->unk5F0^=0x80;}
+}
+void func_1509BFB0(s32 num,s32 handle,s32 command,...){
+ __builtin_va_list ap;calls++;
+ if(num!=3||handle!=0x9000||command!=0x18)error=1;
+ __builtin_va_start(ap,command);
+ if(__builtin_va_arg(ap,s32)!=0x25||__builtin_va_arg(ap,s32)!=0x13||__builtin_va_arg(ap,s32)!=480)error=1;
+ __builtin_va_end(ap);effect(&actual);
+ if(current->mutation==2){D_800C3671^=1;D_800BE9E4=2;}
+}
+static void model(const struct Case *c){
+ int mode=c->mode;u8 external=(u8)c->external;s32 ticks=c->ticks;
+ if(c->pre_busy||c->global_busy){expected.unk36A=0;link_clear(31);return;}
+ if(mode){
+  int group=mode==2||mode==18||mode==19||mode==10||mode==52||mode==16||mode==15;
+  if(group){
+   if(mode==15){expected_calls++;effect(&expected);if(c->mutation==2){external^=1;ticks=2;}}
+   link_set(16);cam_set(16);link_clear(15);
+  }else expected.unk36A=(u16)c->table;
+  if(mode==3||mode==13||mode==26||mode==42){cam_clear(15);link_clear(15);}
+  if(mode==41){link_set(16);cam_set(16);}
+ }else if(c->flags&0x100){cam_clear(15);link_clear(15);}
+ if(c->ad==1&&(c->flags&0x80)){cam_clear(28);link_clear(12);}
+ if(c->flags84&0x200000)cam_clear(15);
+ if(external||(expected.unk5F0&0x80)){cam_clear(31);link_clear(31);}
+ if(c->physics||c->extra||c->running){cam_clear(16);link_clear(16);}
+ if((c->mutation==1&&expected_calls)||c->state95||((s16)c->lock&&c->equipped)){cam_clear(31);link_clear(31);}
+ if(((c->flags&0x100)&&c->selector==0)||c->selector==3){cam_clear(16);link_clear(16);}
+ CameraControlTimer14FF90 *view=(CameraControlTimer14FF90*)&expected;
+ if((c->flags&0x40)&&view->timer){view->timer=(s16)(view->timer-ticks);cam_clear(16);link_clear(16);if(view->timer<=0)view->timer=0;}
+}
+typedef void(*Fn)(struct108*);
+static int check(Fn fn){
+ for(u32 i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
+  const struct Case*c=&cases[i];current=c;
+  bytes(&actual,sizeof(actual),0x35);bytes(&actor,sizeof(actor),0x51);bytes(&actor_state,sizeof(actor_state),0x35);bytes(&alternate_state,sizeof(alternate_state),0x35);
+  actual.unk23E=(u8)c->mode;actual.unk2C=c->flags;actual.unk84=c->flags84;actual.unk5F0=c->runtime;
+  actual.unk36A=0xA5FF;actual.unk368=(s16)c->index;actual.unk5FC=(u16)c->lock;actual.unk73C=(s16)c->selector;
+  ((CameraControlTimer14FF90*)&actual)->timer=(s16)c->timer;
+  actual.unk3D0=&actor;actual.unk3D4=&actor_state;actual.unk36C=c->alias?&actual.unk36A:&actual_flags;
+  ((u8*)&actor)[0xAD]=(u8)c->ad;
+  ((u8*)&actor_state)[0x120]=(u8)c->pre_busy;((u8*)&actor_state)[0x7D]=(u8)c->physics;((u8*)&actor_state)[0x1AC]=(u8)c->extra;
+  ((u8*)&actor_state)[0x27]=(u8)c->running;((u8*)&actor_state)[0x95]=(u8)c->state95;((u8*)&actor_state)[0x1B3]=(u8)c->equipped;
+  ((u8*)&alternate_state)[0x120]=1;((u8*)&alternate_state)[0x7D]=0;((u8*)&alternate_state)[0x1AC]=0;
+  ((u8*)&alternate_state)[0x27]=0;((u8*)&alternate_state)[0x95]=1;((u8*)&alternate_state)[0x1B3]=0;
+  D_80084480=(s16)c->global_busy;D_800C3671=(u8)c->external;D_800BE9E4=c->ticks;D_800BE710[c->index]=(u16)c->table;
+  actual_flags=expected_flags=0xC3FF;actual_flags2=expected_flags2=0xF5F3;
+  copy(&expected,&actual,sizeof(actual));calls=expected_calls=error=0;model(c);fn(&actual);
+  u8 want_external=(u8)c->external;s32 want_ticks=c->ticks;
+  if(expected_calls&&c->mutation==2){want_external^=1;want_ticks=2;}
+  if(error||calls!=expected_calls||actual_flags!=expected_flags||actual_flags2!=expected_flags2||D_800C3671!=want_external||D_800BE9E4!=want_ticks||!equal(&actual,&expected,sizeof(actual)))return 1;
+ }
+ return 0;
+}
+static int run(void){if(check(selected))return 10;@@CONTROLS@@return 0;}
+@@START@@
