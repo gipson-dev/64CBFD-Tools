@@ -95,8 +95,11 @@ def normalize():
             insert_after='0x00000000'if index==57 else '',insert_after_relocations='-'if index==57 else '',omit='false')
         added.append(row)
     guards=out/'private-word-patches.csv'
-    with guards.open('w',newline='')as f:
-        writer=csv.DictWriter(f,fieldnames=fields);writer.writeheader();writer.writerows(rows+added)
+    import io
+    tail=io.StringIO(newline='')
+    csv.DictWriter(tail,fieldnames=fields).writerows(added)
+    original_guards=source.read_bytes();assert original_guards.endswith(b'\n')
+    guards.write_bytes(original_guards+tail.getvalue().encode())
     def assemble(text,name):
         path=out/(name+'.s');path.write_text(text);target=path.with_suffix('.o')
         q=subprocess.run(['mips-linux-gnu-as','-EB','-mtune=vr4300','-march=vr4300','-mabi=32','-I',str(root/'conker/include'),'-o',str(target),str(path)],capture_output=True,text=True)
