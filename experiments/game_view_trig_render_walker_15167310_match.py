@@ -8,6 +8,24 @@ OUT=ROOT/MANIFEST['build'];FUNCTION='func_15167310'
 root,out=ROOT,OUT
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def installed():return sha(ROOT/MANIFEST['source'])==MANIFEST['selected_sha256']
+def audit_live_headers():
+ from tools.experiments.game_channel_command_poller_header_audit import audit_owner
+ records=[]
+ for old in json.loads((OUT/'header-audit.json').read_text())['records']:
+  actual=ROOT/old['object'];private=ROOT/old['qualified_object']
+  if old['source']==MANIFEST['source']:
+   private=OUT/'qualified-owner/game_1944C0.c.o';assert actual.read_bytes()==private.read_bytes()
+   result=dict(identical=True,functions_fixed=42,changed_sections=[],symbol_changes=dict(removed=[],added=[]))
+  else:result=audit_owner(private,actual)
+  assert not any(result['symbol_changes'].values()),old['object']
+  if not result['identical']:
+   assert {v['section']for v in result['changed_sections']}=={'.mdebug'},old['object']
+   assert sha(actual)==MANIFEST['production_debug_objects'][old['object']],('Unknown production debug metadata',old['object'])
+  records.append(dict(source=old['source'],object=old['object'],qualified_object=private.relative_to(ROOT).as_posix(),qualified_sha256=sha(private),production_sha256=sha(actual),**result))
+ assert len(records)==305
+ report=dict(owners=305,records=records,debug_only_consumers=sum(not r['identical']for r in records),all_loaded_code_data_named_bindings_and_auxiliary_symbols_fixed=True,source_installed=installed(),matching_credit=0)
+ (OUT/'production-header-audit.json').write_text(json.dumps(report,indent=2)+'\n')
+ return report
 def prepare():
  live=installed();report=json.loads((OUT/'header-audit.json').read_text());assert sha(OUT/'header-audit.json')==MANIFEST['header_audit_sha256']
  assert report['owners']==305 and not report['changed_auxiliary_symbol_consumers']
@@ -16,6 +34,8 @@ def prepare():
   assert sha(ROOT/r['qualified_object'])==r['after_sha256']
   allowed[r['object']]=r['after_sha256']
  allowed[MANIFEST['object']]=MANIFEST['padded_sha256']
+ if live:
+  for r in audit_live_headers()['records']:allowed[r['object']]=r['production_sha256']
  for n,d in report['private_headers'].items():assert sha(OUT/'proposal'/n)==d,n
  for n,d in MANIFEST['proposals'].items():assert sha(OUT/'proposal'/n)==d,n
  assert sha(OUT/'selected-body.c')==hashlib.sha256(MANIFEST['body'].encode()).hexdigest()

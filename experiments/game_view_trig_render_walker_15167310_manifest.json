@@ -2881,5 +2881,14 @@
   "guards_sha256": "c860eb3fc9b2b09f18238b6d1b1b60cd4fe757a331d1103a5440be5b49b544aa",
   "padded_sha256": "0c9f10b055ec941d8698d062c1a9a346b2122f143aef90ef7a6ff1b0c1798651",
   "predicted_ELF_sha256": "f208907a9e34917842d66e6cc78606004b9755f60816bbc1013216f10f09682f",
-  "header_audit_sha256": "9f1dbf4dbbdd8c5d376141309564bffcc0dc31d3d92a4d526fa4b3ead923eddb"
+  "header_audit_sha256": "9f1dbf4dbbdd8c5d376141309564bffcc0dc31d3d92a4d526fa4b3ead923eddb",
+  "production_debug_objects": {
+    "conker/build/src/debugger_258ED0.c.o": "8720e5041b81bb6c4392f435d8c274ed90c4dd90b1a980c3bc3650371a79e33c",
+    "conker/build/src/game/done/game_75810.c.o": "dc1ac037db96401d26088c75bacc0d69dea7f96be00db20e911acc35b0cedce7",
+    "conker/build/src/game/done/game_75950.c.o": "27e9c077f603ab731b9dc0f9ac7cc7a389e6549dec7562bf0c1624ca2418f51c",
+    "conker/build/src/libultra/audio/init_128D0.c.o": "04f1bedf31100aa2e1da5b9e50b2b08a69f972adf51a774c62670680b1ecb31f",
+    "conker/build/src/libultra/gu/guPerspectiveF.c.o": "99f3a9d64c0994963c5e3731a5035fc9da9ddded43a70d069c80fde4ce86970d",
+    "conker/build/src/libultra/gu/guRotateF.c.o": "19638916fdb4e06195451dec1c8235146e38b29fca9a0637d98a01395a38b237",
+    "conker/build/src/libultra/gu/sinf.c.o": "5c126e2b123501972bf77c2b4115ecba85bc377a49bd7753369419dc37927ed6"
+  }
 }
