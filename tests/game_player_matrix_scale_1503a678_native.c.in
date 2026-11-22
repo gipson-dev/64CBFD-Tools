@@ -1,0 +1,99 @@
+#include <ultra64.h>
+u8 D_800CC2D0[812 * 4] __attribute__((aligned(4)));
+u8 D_800C3E78, D_800C3FFA, D_80084404[256];
+static f32 matrices[2][4][4], wanted[2][4][4];
+static u32 calls, error, mutation, ownerIndex, pageIndex, originalPhase;
+static f32 planar;
+static u32 word(f32 value) { union { f32 value; u32 word; } v = {value}; return v.word; }
+static void copy_bytes(void *destination,const void *source,u32 count) {
+    for(u32 i=0;i<count;i++)((u8 *)destination)[i]=((const u8 *)source)[i];
+}
+static void mutate(void) {
+    if((mutation&1)&&calls==1) {
+        D_800C3E78=(ownerIndex+1)&255;D_800C3FFA=255;D_80084404[originalPhase]=1-pageIndex;
+        D_800CC2D0[812*ownerIndex+4]=0;D_800CC2D0[812*ownerIndex+0x20A]=0;
+    }
+    if((mutation&2)&&calls==2)for(u32 i=0;i<3;i++)matrices[pageIndex][3][i]=10.0f+i;
+}
+__attribute__((noinline,noclone))
+void guMtxIdentF(f32 matrix[4][4]) {
+    if(++calls!=1)error=1;
+    for(u32 r=0;r<4;r++)for(u32 c=0;c<4;c++)matrix[r][c]=r==c?1.0f:0.0f;
+    mutate();
+}
+__attribute__((noinline,noclone))
+void func_150A7CB0(f32 matrix[4][4],f32 x,f32 y,f32 z) {
+    if(++calls!=2||word(x)!=word(planar)||word(y)!=0x3F800000||word(z)!=word(planar))error=2;
+    for(u32 r=0;r<4;r++)for(u32 c=0;c<4;c++)matrix[r][c]=0.0f;
+    matrix[0][0]=x;matrix[1][1]=y;matrix[2][2]=z;matrix[3][3]=1.0f;
+    mutate();
+}
+static void multiply(f32 left[4][4],f32 right[4][4],f32 result[4][4]) {
+    for(u32 r=0;r<4;r++)for(u32 c=0;c<4;c++) {
+        f32 sum=left[r][0]*right[0][c];
+        for(u32 k=1;k<4;k++){f32 product=left[r][k]*right[k][c];sum=sum+product;}
+        result[r][c]=sum;
+    }
+}
+__attribute__((noinline,noclone))
+void func_150A7A48(f32 left[4][4],f32 right[4][4],f32 result[4][4]) {
+    if(++calls!=3||left!=matrices[pageIndex])error=3;
+    multiply(left,right,result);
+}
+__attribute__((noinline,noclone))
+void bcopy(const void *source,void *destination,int count) {
+    if(++calls!=4||destination!=matrices[pageIndex]||count!=64)error=4;
+    if(count==64)copy_bytes(destination,source,64);
+}
+
+@@FUNCTIONS@@
+
+typedef void (*Subject)(void);
+typedef struct {u8 before[0x1D4];u8 *matrix;u8 pad1D8[0x32];u8 scale;u8 pad20B[0x121];} NativeActorView;
+_Static_assert(sizeof(void *)==4&&sizeof(f32)==4,"SDK32 ABI");
+_Static_assert(sizeof(NativeActorView)==812&&sizeof(matrices[0])==64,"owner and matrix extents");
+_Static_assert(__builtin_offsetof(NativeActorView,matrix)==0x1D4&&__builtin_offsetof(NativeActorView,scale)==0x20A,"owner field offsets");
+
+static int one(Subject subject,u32 index,u32 kind,u32 scale,u32 counter,u32 page,u32 changes) {
+    u8 *base=D_800CC2D0+812*index;u8 *pointer=(u8 *)matrices;
+    calls=error=0;mutation=changes;ownerIndex=index;pageIndex=page;originalPhase=counter;
+    for(u32 i=0;i<sizeof(D_800CC2D0);i++)D_800CC2D0[i]=(i*13+0x35)&255;
+    D_800C3E78=index;D_800C3FFA=counter;
+    for(u32 i=0;i<256;i++)D_80084404[i]=page;
+    base[4]=kind;base[0x20A]=scale;copy_bytes(base+0x1D4,&pointer,4);
+    for(u32 p=0;p<2;p++)for(u32 i=0;i<16;i++) {
+        f32 value=((s32)((i*5+p*3)%19)-9)*0.25f;
+        ((f32 *)matrices[p])[i]=value;((f32 *)wanted[p])[i]=value;
+    }
+    planar=(f32)scale*0.015625f+1.0f;
+    if(counter!=0)planar=1.0f/planar;
+    if(kind==0x22) {
+        f32 copy[4][4],diagonal[4][4],translation[3];
+        for(u32 i=0;i<3;i++)translation[i]=wanted[page][3][i];
+        for(u32 i=0;i<3;i++)wanted[page][i][3]=0.0f;
+        wanted[page][3][3]=1.0f;
+        if(changes&2)for(u32 i=0;i<3;i++)wanted[page][3][i]=10.0f+i;
+        for(u32 r=0;r<4;r++)for(u32 c=0;c<4;c++)diagonal[r][c]=0.0f;
+        diagonal[0][0]=diagonal[2][2]=planar;diagonal[1][1]=diagonal[3][3]=1.0f;
+        multiply(wanted[page],diagonal,copy);copy_bytes(wanted[page],copy,64);
+        for(u32 i=0;i<3;i++)wanted[page][3][i]=translation[i];
+    }
+    subject();
+    if(error||calls!=(kind==0x22?4U:0U))return 1;
+    if(D_800C3FFA!=(u8)(kind==0x22?((changes&1)?0:counter+1):counter))return 2;
+    for(u32 p=0;p<2;p++)for(u32 r=0;r<4;r++)for(u32 c=0;c<4;c++)if(word(matrices[p][r][c])!=word(wanted[p][r][c]))return 3;
+    return 0;
+}
+static int check(Subject subject) {
+    const u32 kinds[]={0,0x22,255},scales[]={0,1,63,64,254,255},phases[]={0,1,255};
+    for(u32 index=0;index<4;index++)for(u32 k=0;k<3;k++)for(u32 s=0;s<6;s++)for(u32 c=0;c<3;c++)for(u32 p=0;p<2;p++)for(u32 m=0;m<4;m++)
+        if(one(subject,index,kinds[k],scales[s],phases[c],p,m))return 1;
+    for(u32 s=0;s<256;s++)for(u32 c=0;c<3;c++)if(one(subject,0,0x22,s,phases[c],s&1,0))return 1;
+    return 0;
+}
+static int run(void) {
+    if(check(selected))return 10;
+    @@CONTROLS@@
+    return 0;
+}
+@@START@@
