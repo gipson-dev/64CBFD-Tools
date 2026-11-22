@@ -1,0 +1,97 @@
+#include <ultra64.h>
+@@DECL@@
+
+MaskEffectOwner1E73B0 D_800CC2D0[4];
+s8 D_800E0BCE[4];
+s8 D_8008FD90;
+static union { u64 alignment; u8 bytes[512]; } output;
+static MaskEffectOwner1E73B0 *expectedOwner;
+static u8 expectedIdentity, expectedMask, expectedPriority;
+static u32 calls, copies, outcome, mutation, offset, error;
+
+static void copy_bytes(void *destination, const void *source, u32 count) {
+    for (u32 i = 0; i < count; i++) ((u8 *)destination)[i] = ((const u8 *)source)[i];
+}
+
+__attribute__((noinline,noclone))
+s32 func_1513B5E0(MaskEffectDescriptor *descriptor, u8 mode, s32 extraSize, u8 priority, s32 context) {
+    calls++;
+    if (mode != 1 || extraSize != 8 || priority != expectedPriority || context != 0x13579BDF) error = 1;
+    if (descriptor->field0 != 2 || descriptor->field1 != -1 || descriptor->field2 != 3 || descriptor->lifetime != 300) error = 2;
+    if (descriptor->field8 != 1 || descriptor->fieldC != 0x200205 || descriptor->field10 != 0x60600) error = 3;
+    if (descriptor->field14 != 1 || descriptor->field18 != 54 || descriptor->field1C != 128 || descriptor->field20 != 32) error = 4;
+    if (descriptor->field24 || descriptor->field25 || descriptor->field30 != 9 || descriptor->field34 != 429 || descriptor->field38 != 2 || descriptor->mask != expectedMask) error = 5;
+    if (mutation) {
+        expectedOwner->identity ^= 0x55;
+        D_8008FD90 = 4;
+        D_800E0BCE[0] = D_800E0BCE[1] = 0;
+    }
+    copy_bytes(output.bytes + 0x50, &offset, sizeof(offset));
+    return outcome ? (s32)(u32)output.bytes : 0;
+}
+
+__attribute__((noinline,noclone))
+void *memcpy(void *destination, const void *source, u32 count) {
+    MaskEffectOwner1E73B0 *owner;
+    copies++;
+    copy_bytes(&owner, source, sizeof(owner));
+    if (count != 8 || destination != output.bytes + 0xF8 + offset || owner != expectedOwner || ((const u8 *)source)[4] != expectedIdentity) error = 6;
+    if (count <= 8) copy_bytes(destination, source, count);
+    return destination;
+}
+
+@@FUNCTIONS@@
+typedef void *(*Subject)(MaskEffectOwner1E73B0 *, u8, s32);
+_Static_assert(sizeof(void *) == 4 && sizeof(MaskEffectOwner1E73B0) == 0x32C, "SDK32 owner stride");
+_Static_assert(sizeof(MaskEffectDescriptor) == 60 && sizeof(MaskEffectScratch) == 68, "descriptor and scratch extents");
+_Static_assert(__builtin_offsetof(MaskEffectDescriptor, mask) == 0x39, "mask byte offset");
+
+static int check(Subject subject) {
+    static const u8 modes[] = {0, 2, 4, 255};
+    static const u8 priorities[] = {0, 1, 128, 255};
+    for (s32 index = -1; index < 4; index++) {
+        for (u32 modeIndex = 0; modeIndex < 4; modeIndex++) {
+            for (u32 flags = 0; flags < 4; flags++) {
+                for (u32 priorityIndex = 0; priorityIndex < 4; priorityIndex++) {
+                    for (outcome = 0; outcome < 2; outcome++) {
+                        for (mutation = 0; mutation < 2; mutation++) {
+                            for (offset = 0; offset <= 32; offset += 16) {
+                                for (u32 i = 0; i < 4; i++) D_800CC2D0[i].identity = (u8)(i * 17 + priorityIndex);
+                                expectedOwner = index == -1 ? NULL : &D_800CC2D0[index];
+                                expectedIdentity = expectedOwner ? expectedOwner->identity : 0;
+                                expectedPriority = priorities[priorityIndex];
+                                D_8008FD90 = (s8)modes[modeIndex];
+                                D_800E0BCE[0] = (flags & 1) ? -128 : 0;
+                                D_800E0BCE[1] = (flags & 2) ? 127 : 0;
+                                expectedMask = 255;
+                                if (index >= 0 && index < 2 && D_800E0BCE[index]) {
+                                    if (modes[modeIndex] == 2) expectedMask = 253;
+                                    else if (modes[modeIndex] == 4) expectedMask = index == 0 ? 251 : 247;
+                                }
+                                calls = copies = error = 0;
+                                for (u32 i = 0; i < sizeof(output.bytes); i++) output.bytes[i] = (u8)(i * 11 + flags);
+                                void *result = subject(expectedOwner, expectedPriority, 0x13579BDF);
+                                u32 active = index != -1;
+                                if (error || calls != active || copies != (active && outcome)) return 1;
+                                if (result != (active && outcome ? output.bytes : NULL)) return 1;
+                                if (active && outcome) {
+                                    MaskEffectOwner1E73B0 *copied;
+                                    copy_bytes(&copied, output.bytes + 0xF8 + offset, sizeof(copied));
+                                    if (copied != expectedOwner || output.bytes[0xFC + offset] != expectedIdentity) return 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+static int run(void) {
+    if (check(selected)) return 1;
+    @@CONTROLS@@
+    return 0;
+}
+@@START@@
