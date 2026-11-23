@@ -1,0 +1,1788 @@
+{
+  "raw_sha256": "7a800beed8aa107ed8385a71dec943fe5c2b3acbd7022e13a73bf8735e597974",
+  "bindings": {
+    "104": [
+      [
+        "R_MIPS_HI16",
+        "D_8008F870"
+      ]
+    ],
+    "120": [
+      [
+        "R_MIPS_LO16",
+        "D_8008F870"
+      ]
+    ],
+    "168": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "188": [
+      [
+        "R_MIPS_26",
+        "func_15143134"
+      ]
+    ],
+    "196": [
+      [
+        "R_MIPS_HI16",
+        "D_800BE9A4"
+      ]
+    ],
+    "200": [
+      [
+        "R_MIPS_LO16",
+        "D_800BE9A4"
+      ]
+    ],
+    "616": [
+      [
+        "R_MIPS_26",
+        "func_15198D88"
+      ]
+    ],
+    "664": [
+      [
+        "R_MIPS_26",
+        "func_151990AC"
+      ]
+    ],
+    "980": [
+      [
+        "R_MIPS_26",
+        "func_150ADA20"
+      ]
+    ]
+  },
+  "rows": [
+    {
+      "source": 0,
+      "operands": 65248,
+      "old_private_offset": -288,
+      "new_private_offset": -288
+    },
+    {
+      "source": 1,
+      "operands": 1048648,
+      "old_private_offset": 72,
+      "new_private_offset": 72
+    },
+    {
+      "source": 2,
+      "operands": 8421376
+    },
+    {
+      "source": 3,
+      "operands": 100,
+      "old_private_offset": 100,
+      "new_private_offset": 100
+    },
+    {
+      "source": 4,
+      "operands": 1441888,
+      "old_private_offset": 96,
+      "new_private_offset": 96
+    },
+    {
+      "source": 5,
+      "operands": 1376348,
+      "old_private_offset": 92,
+      "new_private_offset": 92
+    },
+    {
+      "source": 6,
+      "operands": 1310808,
+      "old_private_offset": 88,
+      "new_private_offset": 88
+    },
+    {
+      "source": 7,
+      "operands": 1245268,
+      "old_private_offset": 84,
+      "new_private_offset": 84
+    },
+    {
+      "source": 8,
+      "operands": 1179728,
+      "old_private_offset": 80,
+      "new_private_offset": 80
+    },
+    {
+      "source": 9,
+      "operands": 1114188,
+      "old_private_offset": 76,
+      "new_private_offset": 76
+    },
+    {
+      "source": 10,
+      "operands": 1966144,
+      "old_private_offset": 64,
+      "new_private_offset": 64
+    },
+    {
+      "source": 11,
+      "operands": 1835064,
+      "old_private_offset": 56,
+      "new_private_offset": 56
+    },
+    {
+      "source": 12,
+      "operands": 1703984,
+      "old_private_offset": 48,
+      "new_private_offset": 48
+    },
+    {
+      "source": 13,
+      "operands": 1572904,
+      "old_private_offset": 40,
+      "new_private_offset": 40
+    },
+    {
+      "source": 14,
+      "operands": 1441824,
+      "old_private_offset": 32,
+      "new_private_offset": 32
+    },
+    {
+      "source": 15,
+      "operands": 1310744,
+      "old_private_offset": 24,
+      "new_private_offset": 24
+    },
+    {
+      "source": 16,
+      "operands": 34734080
+    },
+    {
+      "source": 17,
+      "operands": 34799616
+    },
+    {
+      "source": 18,
+      "operands": 38666240
+    },
+    {
+      "source": 19,
+      "operands": 29491200
+    },
+    {
+      "source": 20,
+      "operands": 4194308,
+      "target": 25
+    },
+    {
+      "source": 21,
+      "operands": 37945344
+    },
+    {
+      "source": 22,
+      "operands": 344,
+      "target": 367
+    },
+    {
+      "source": 23,
+      "operands": 4096
+    },
+    {
+      "source": 24,
+      "operands": 37945344
+    },
+    {
+      "source": 25,
+      "operands": 65536
+    },
+    {
+      "source": 26,
+      "operands": 1638400
+    },
+    {
+      "source": 27,
+      "operands": 6357001,
+      "target": 37
+    },
+    {
+      "source": 28,
+      "operands": 227328
+    },
+    {
+      "source": 29,
+      "operands": 53463040
+    },
+    {
+      "source": 30,
+      "operands": 54067200
+    },
+    {
+      "source": 31,
+      "operands": 33562624
+    },
+    {
+      "source": 32,
+      "operands": 52428800
+    },
+    {
+      "source": 33,
+      "operands": 0
+    },
+    {
+      "source": 34,
+      "operands": 39321600
+    },
+    {
+      "source": 35,
+      "operands": 37748736
+    },
+    {
+      "source": 36,
+      "operands": 50462720
+    },
+    {
+      "source": 37,
+      "operands": 38273024
+    },
+    {
+      "source": 38,
+      "operands": 38010880
+    },
+    {
+      "source": 39,
+      "operands": 33882112
+    },
+    {
+      "source": 40,
+      "operands": 542720
+    },
+    {
+      "source": 41,
+      "operands": 4818944
+    },
+    {
+      "source": 42,
+      "operands": 0
+    },
+    {
+      "source": 43,
+      "operands": 35663872
+    },
+    {
+      "source": 44,
+      "operands": 1310988,
+      "old_private_offset": 268,
+      "new_private_offset": 268
+    },
+    {
+      "source": 45,
+      "operands": 41953280
+    },
+    {
+      "source": 46,
+      "operands": 38010880
+    },
+    {
+      "source": 47,
+      "operands": 0
+    },
+    {
+      "source": 48,
+      "operands": 35663872
+    },
+    {
+      "source": 49,
+      "operands": 131072
+    },
+    {
+      "source": 50,
+      "operands": 4325376
+    },
+    {
+      "source": 51,
+      "operands": 4587520
+    },
+    {
+      "source": 52,
+      "operands": 38010880
+    },
+    {
+      "source": 53,
+      "operands": 38404096
+    },
+    {
+      "source": 54,
+      "operands": 65536
+    },
+    {
+      "source": 55,
+      "operands": 401920
+    },
+    {
+      "source": 56,
+      "operands": 114688
+    },
+    {
+      "source": 66,
+      "operands": 38404096
+    },
+    {
+      "source": 70,
+      "operands": 721104,
+      "old_private_offset": 212,
+      "new_private_offset": 208
+    },
+    {
+      "source": 57,
+      "operands": 545024
+    },
+    {
+      "source": 58,
+      "operands": 38010880
+    },
+    {
+      "source": 59,
+      "operands": 37879808
+    },
+    {
+      "source": 60,
+      "operands": 180224
+    },
+    {
+      "source": 61,
+      "operands": 0
+    },
+    {
+      "source": 62,
+      "operands": 302,
+      "target": 367
+    },
+    {
+      "source": 63,
+      "operands": 131072
+    },
+    {
+      "source": 65,
+      "operands": 38141952
+    },
+    {
+      "source": 67,
+      "operands": 655504,
+      "old_private_offset": 124,
+      "new_private_offset": 144
+    },
+    {
+      "source": 68,
+      "operands": 21037056
+    },
+    {
+      "source": 64,
+      "operands": 180224
+    },
+    {
+      "source": 69,
+      "operands": 4849664
+    },
+    {
+      "source": 71,
+      "operands": 23134208
+    },
+    {
+      "source": 72,
+      "operands": 21954560
+    },
+    {
+      "source": 73,
+      "operands": 39387136
+    },
+    {
+      "source": 74,
+      "operands": 1573060,
+      "old_private_offset": 200,
+      "new_private_offset": 196
+    },
+    {
+      "source": 75,
+      "operands": 24051712
+    },
+    {
+      "source": 76,
+      "operands": 21037056
+    },
+    {
+      "source": 85,
+      "operands": 668928
+    },
+    {
+      "source": 77,
+      "operands": 1441792
+    },
+    {
+      "source": 79,
+      "operands": 23134208
+    },
+    {
+      "source": 80,
+      "operands": 1638540,
+      "old_private_offset": 116,
+      "new_private_offset": 140
+    },
+    {
+      "source": 81,
+      "operands": 52494336
+    },
+    {
+      "source": 78,
+      "operands": 1376256
+    },
+    {
+      "source": 82,
+      "operands": 1114112
+    },
+    {
+      "source": 83,
+      "operands": 50397184
+    },
+    {
+      "source": 84,
+      "operands": 53346304
+    },
+    {
+      "source": 86,
+      "operands": 51249152
+    },
+    {
+      "source": 87,
+      "operands": 52494336
+    },
+    {
+      "source": 89,
+      "operands": 50397184
+    },
+    {
+      "source": 88,
+      "operands": 42752
+    },
+    {
+      "source": 91,
+      "operands": 38273024
+    },
+    {
+      "source": 95,
+      "operands": 38535168
+    },
+    {
+      "source": 92,
+      "operands": 38404096
+    },
+    {
+      "source": 94,
+      "operands": 1327360
+    },
+    {
+      "source": 93,
+      "operands": 33947648
+    },
+    {
+      "source": 101,
+      "operands": 34078720
+    },
+    {
+      "source": 97,
+      "operands": 39190528
+    },
+    {
+      "source": 96,
+      "operands": 668672
+    },
+    {
+      "source": 105,
+      "operands": 38404096
+    },
+    {
+      "source": 106,
+      "operands": 33947648
+    },
+    {
+      "source": 99,
+      "operands": 288384
+    },
+    {
+      "source": 100,
+      "operands": 38010880
+    },
+    {
+      "source": 123,
+      "operands": 34688
+    },
+    {
+      "source": 102,
+      "operands": 279680
+    },
+    {
+      "source": 103,
+      "operands": 262412,
+      "old_private_offset": 268,
+      "new_private_offset": 268
+    },
+    {
+      "source": 107,
+      "operands": 668160
+    },
+    {
+      "source": 90,
+      "operands": 524536,
+      "old_private_offset": 260,
+      "new_private_offset": 248
+    },
+    {
+      "source": 110,
+      "operands": 38141952
+    },
+    {
+      "source": 108,
+      "operands": 524560,
+      "old_private_offset": 272,
+      "new_private_offset": 272
+    },
+    {
+      "source": 111,
+      "operands": 402048
+    },
+    {
+      "source": 98,
+      "operands": 655588,
+      "old_private_offset": 184,
+      "new_private_offset": 228
+    },
+    {
+      "source": 114,
+      "operands": 38010880
+    },
+    {
+      "source": 115,
+      "operands": 278912
+    },
+    {
+      "source": 112,
+      "operands": 524564,
+      "old_private_offset": 276,
+      "new_private_offset": 276
+    },
+    {
+      "source": 104,
+      "operands": 393448,
+      "old_private_offset": 188,
+      "new_private_offset": 232
+    },
+    {
+      "source": 117,
+      "operands": 38010880
+    },
+    {
+      "source": 118,
+      "operands": 278656
+    },
+    {
+      "source": 124,
+      "operands": 1729024
+    },
+    {
+      "source": 109,
+      "operands": 524512,
+      "old_private_offset": 192,
+      "new_private_offset": 224
+    },
+    {
+      "source": 122,
+      "operands": 38010880
+    },
+    {
+      "source": 126,
+      "operands": 1450496
+    },
+    {
+      "source": 128,
+      "operands": 37120
+    },
+    {
+      "source": 113,
+      "operands": 524508,
+      "old_private_offset": 172,
+      "new_private_offset": 220
+    },
+    {
+      "source": 119,
+      "operands": 524536,
+      "old_private_offset": 184,
+      "new_private_offset": 248
+    },
+    {
+      "source": 116,
+      "operands": 262280,
+      "old_private_offset": 176,
+      "new_private_offset": 136
+    },
+    {
+      "source": 130,
+      "operands": 16640
+    },
+    {
+      "source": 120,
+      "operands": 262276,
+      "old_private_offset": 180,
+      "new_private_offset": 132
+    },
+    {
+      "source": 132,
+      "operands": 20992
+    },
+    {
+      "source": 129,
+      "operands": 0
+    },
+    {
+      "source": 134,
+      "operands": 12544
+    },
+    {
+      "source": 135,
+      "operands": 524416,
+      "old_private_offset": 240,
+      "new_private_offset": 128
+    },
+    {
+      "source": 136,
+      "operands": 4736
+    },
+    {
+      "source": 125,
+      "operands": 524512,
+      "old_private_offset": 188,
+      "new_private_offset": 224
+    },
+    {
+      "source": 137,
+      "operands": 262268,
+      "old_private_offset": 236,
+      "new_private_offset": 124
+    },
+    {
+      "source": 127,
+      "operands": 262364,
+      "old_private_offset": 192,
+      "new_private_offset": 220
+    },
+    {
+      "source": 138,
+      "operands": 16768
+    },
+    {
+      "source": 139,
+      "operands": 655480,
+      "old_private_offset": 232,
+      "new_private_offset": 120
+    },
+    {
+      "source": 140,
+      "operands": 8832
+    },
+    {
+      "source": 141,
+      "operands": 393332,
+      "old_private_offset": 228,
+      "new_private_offset": 116
+    },
+    {
+      "source": 142,
+      "operands": 655472,
+      "old_private_offset": 120,
+      "new_private_offset": 112
+    },
+    {
+      "source": 144,
+      "operands": 38273024
+    },
+    {
+      "source": 145,
+      "operands": 38141952
+    },
+    {
+      "source": 146,
+      "operands": 33562624
+    },
+    {
+      "source": 147,
+      "operands": 409856
+    },
+    {
+      "source": 148,
+      "operands": 38010880
+    },
+    {
+      "source": 149,
+      "operands": 38404096
+    },
+    {
+      "source": 150,
+      "operands": 704512
+    },
+    {
+      "source": 131,
+      "operands": 0
+    },
+    {
+      "source": 152,
+      "operands": 4,
+      "target": 153
+    },
+    {
+      "source": 153,
+      "operands": 38273024
+    },
+    {
+      "source": 154,
+      "operands": 0
+    },
+    {
+      "source": 155,
+      "operands": 41953280
+    },
+    {
+      "source": 156,
+      "operands": 38273024
+    },
+    {
+      "source": 157,
+      "operands": 38141952
+    },
+    {
+      "source": 158,
+      "operands": 33562624
+    },
+    {
+      "source": 159,
+      "operands": 409856
+    },
+    {
+      "source": 160,
+      "operands": 38010880
+    },
+    {
+      "source": 161,
+      "operands": 38404096
+    },
+    {
+      "source": 162,
+      "operands": 704512
+    },
+    {
+      "source": 133,
+      "operands": 0
+    },
+    {
+      "source": 164,
+      "operands": 4,
+      "target": 165
+    },
+    {
+      "source": 165,
+      "operands": 34406400
+    },
+    {
+      "source": 166,
+      "operands": 0
+    },
+    {
+      "source": 167,
+      "operands": 41953280
+    },
+    {
+      "source": 168,
+      "operands": 34406400
+    },
+    {
+      "source": 169,
+      "operands": 28377088
+    },
+    {
+      "source": 170,
+      "operands": 22528
+    },
+    {
+      "source": 171,
+      "operands": 40591360
+    },
+    {
+      "source": 172,
+      "operands": 25165824
+    },
+    {
+      "source": 173,
+      "operands": 34537472
+    },
+    {
+      "source": 174,
+      "operands": 524496,
+      "old_private_offset": 212,
+      "new_private_offset": 208
+    },
+    {
+      "source": 175,
+      "operands": 32571392
+    },
+    {
+      "source": 176,
+      "operands": 51200
+    },
+    {
+      "source": 177,
+      "operands": 41504768
+    },
+    {
+      "source": 178,
+      "operands": 21495808
+    },
+    {
+      "source": 179,
+      "operands": 34144256
+    },
+    {
+      "source": 180,
+      "operands": 393428,
+      "old_private_offset": 216,
+      "new_private_offset": 212
+    },
+    {
+      "source": 181,
+      "operands": 19988480
+    },
+    {
+      "source": 182,
+      "operands": 49152
+    },
+    {
+      "source": 183,
+      "operands": 41435136
+    },
+    {
+      "source": 184,
+      "operands": 17170432
+    },
+    {
+      "source": 185,
+      "operands": 34471936
+    },
+    {
+      "source": 186,
+      "operands": 262360,
+      "old_private_offset": 220,
+      "new_private_offset": 216
+    },
+    {
+      "source": 187,
+      "operands": 30474240
+    },
+    {
+      "source": 188,
+      "operands": 26624
+    },
+    {
+      "source": 189,
+      "operands": 40720384
+    },
+    {
+      "source": 190,
+      "operands": 23330816
+    },
+    {
+      "source": 191,
+      "operands": 34340864
+    },
+    {
+      "source": 192,
+      "operands": 524496,
+      "old_private_offset": 212,
+      "new_private_offset": 208
+    },
+    {
+      "source": 193,
+      "operands": 655556,
+      "old_private_offset": 200,
+      "new_private_offset": 196
+    },
+    {
+      "source": 194,
+      "operands": 26279936
+    },
+    {
+      "source": 195,
+      "operands": 545152
+    },
+    {
+      "source": 196,
+      "operands": 1454336
+    },
+    {
+      "source": 197,
+      "operands": 30720
+    },
+    {
+      "source": 198,
+      "operands": 40880128
+    },
+    {
+      "source": 199,
+      "operands": 52690944
+    },
+    {
+      "source": 200,
+      "operands": 34209792
+    },
+    {
+      "source": 201,
+      "operands": 524500,
+      "old_private_offset": 216,
+      "new_private_offset": 212
+    },
+    {
+      "source": 202,
+      "operands": 655560,
+      "old_private_offset": 204,
+      "new_private_offset": 200
+    },
+    {
+      "source": 203,
+      "operands": 22085632
+    },
+    {
+      "source": 204,
+      "operands": 545152
+    },
+    {
+      "source": 205,
+      "operands": 1454336
+    },
+    {
+      "source": 206,
+      "operands": 18432
+    },
+    {
+      "source": 207,
+      "operands": 40484864
+    },
+    {
+      "source": 208,
+      "operands": 50593792
+    },
+    {
+      "source": 209,
+      "operands": 34078720
+    },
+    {
+      "source": 210,
+      "operands": 524504,
+      "old_private_offset": 220,
+      "new_private_offset": 216
+    },
+    {
+      "source": 211,
+      "operands": 655564,
+      "old_private_offset": 208,
+      "new_private_offset": 204
+    },
+    {
+      "source": 212,
+      "operands": 17891328
+    },
+    {
+      "source": 213,
+      "operands": 545152
+    },
+    {
+      "source": 214,
+      "operands": 1454336
+    },
+    {
+      "source": 215,
+      "operands": 28672
+    },
+    {
+      "source": 216,
+      "operands": 40790016
+    },
+    {
+      "source": 217,
+      "operands": 27525120
+    },
+    {
+      "source": 218,
+      "operands": 34275328
+    },
+    {
+      "source": 219,
+      "operands": 24182784
+    },
+    {
+      "source": 220,
+      "operands": 24576
+    },
+    {
+      "source": 221,
+      "operands": 40663040
+    },
+    {
+      "source": 222,
+      "operands": 33161216
+    },
+    {
+      "source": 223,
+      "operands": 34209792
+    },
+    {
+      "source": 224,
+      "operands": 39387136
+    },
+    {
+      "source": 225,
+      "operands": 22085632
+    },
+    {
+      "source": 226,
+      "operands": 18432
+    },
+    {
+      "source": 227,
+      "operands": 40484864
+    },
+    {
+      "source": 228,
+      "operands": 51970048
+    },
+    {
+      "source": 229,
+      "operands": 34471936
+    },
+    {
+      "source": 230,
+      "operands": 38273024
+    },
+    {
+      "source": 231,
+      "operands": 30474240
+    },
+    {
+      "source": 232,
+      "operands": 26624
+    },
+    {
+      "source": 233,
+      "operands": 40720384
+    },
+    {
+      "source": 234,
+      "operands": 23592960
+    },
+    {
+      "source": 235,
+      "operands": 34340864
+    },
+    {
+      "source": 236,
+      "operands": 26279936
+    },
+    {
+      "source": 237,
+      "operands": 30720
+    },
+    {
+      "source": 238,
+      "operands": 40849408
+    },
+    {
+      "source": 239,
+      "operands": 22347776
+    },
+    {
+      "source": 240,
+      "operands": 35192832
+    },
+    {
+      "source": 241,
+      "operands": 38338560
+    },
+    {
+      "source": 242,
+      "operands": 53542912
+    },
+    {
+      "source": 243,
+      "operands": 49152
+    },
+    {
+      "source": 244,
+      "operands": 41447424
+    },
+    {
+      "source": 245,
+      "operands": 0
+    },
+    {
+      "source": 246,
+      "operands": 29949952
+    },
+    {
+      "source": 247,
+      "operands": 5636096
+    },
+    {
+      "source": 248,
+      "operands": 38600704
+    },
+    {
+      "source": 249,
+      "operands": 16384
+    },
+    {
+      "source": 250,
+      "operands": 38273024
+    },
+    {
+      "source": 251,
+      "operands": 27809792
+    },
+    {
+      "source": 252,
+      "operands": 23855104
+    },
+    {
+      "source": 253,
+      "operands": 38535168
+    },
+    {
+      "source": 254,
+      "operands": 34537472
+    },
+    {
+      "source": 255,
+      "operands": 1327488
+    },
+    {
+      "source": 256,
+      "operands": 46137346,
+      "target": 255
+    },
+    {
+      "source": 151,
+      "operands": 0
+    },
+    {
+      "source": 258,
+      "operands": 0
+    },
+    {
+      "source": 259,
+      "operands": 32571392
+    },
+    {
+      "source": 260,
+      "operands": 20480
+    },
+    {
+      "source": 261,
+      "operands": 40507392
+    },
+    {
+      "source": 262,
+      "operands": 6946816
+    },
+    {
+      "source": 263,
+      "operands": 413952
+    },
+    {
+      "source": 264,
+      "operands": 6553600
+    },
+    {
+      "source": 265,
+      "operands": 35192832
+    },
+    {
+      "source": 266,
+      "operands": 53542912
+    },
+    {
+      "source": 267,
+      "operands": 49152
+    },
+    {
+      "source": 268,
+      "operands": 41424896
+    },
+    {
+      "source": 269,
+      "operands": 6946816
+    },
+    {
+      "source": 270,
+      "operands": 6815744
+    },
+    {
+      "source": 271,
+      "operands": 1331584
+    },
+    {
+      "source": 272,
+      "operands": 409856
+    },
+    {
+      "source": 273,
+      "operands": 6553600
+    },
+    {
+      "source": 274,
+      "operands": 34144256
+    },
+    {
+      "source": 275,
+      "operands": 19988480
+    },
+    {
+      "source": 276,
+      "operands": 28672
+    },
+    {
+      "source": 277,
+      "operands": 40769536
+    },
+    {
+      "source": 278,
+      "operands": 6815744
+    },
+    {
+      "source": 279,
+      "operands": 6946816
+    },
+    {
+      "source": 280,
+      "operands": 1327488
+    },
+    {
+      "source": 281,
+      "operands": 413952
+    },
+    {
+      "source": 282,
+      "operands": 6553600
+    },
+    {
+      "source": 283,
+      "operands": 34406400
+    },
+    {
+      "source": 285,
+      "operands": 28377088
+    },
+    {
+      "source": 286,
+      "operands": 16384
+    },
+    {
+      "source": 287,
+      "operands": 40376320
+    },
+    {
+      "source": 288,
+      "operands": 6946816
+    },
+    {
+      "source": 289,
+      "operands": 6815744
+    },
+    {
+      "source": 290,
+      "operands": 1331584
+    },
+    {
+      "source": 291,
+      "operands": 1877248
+    },
+    {
+      "source": 292,
+      "operands": 409856
+    },
+    {
+      "source": 293,
+      "operands": 6553600
+    },
+    {
+      "source": 294,
+      "operands": 34275328
+    },
+    {
+      "source": 295,
+      "operands": 34537472
+    },
+    {
+      "source": 296,
+      "operands": 23855104
+    },
+    {
+      "source": 297,
+      "operands": 34340864
+    },
+    {
+      "source": 298,
+      "operands": 33685504
+    },
+    {
+      "source": 299,
+      "operands": 31588356,
+      "target": 299
+    },
+    {
+      "source": 300,
+      "operands": 34209792
+    },
+    {
+      "source": 301,
+      "operands": 33554432
+    },
+    {
+      "source": 302,
+      "operands": 33685504
+    },
+    {
+      "source": 303,
+      "operands": 34209792
+    },
+    {
+      "source": 304,
+      "operands": 33751040
+    },
+    {
+      "source": 305,
+      "operands": 22609920
+    },
+    {
+      "source": 306,
+      "operands": 6422539,
+      "target": 313
+    },
+    {
+      "source": 307,
+      "operands": 35192832
+    },
+    {
+      "source": 308,
+      "operands": 7864320
+    },
+    {
+      "source": 309,
+      "operands": 35127296
+    },
+    {
+      "source": 310,
+      "operands": 34471936
+    },
+    {
+      "source": 311,
+      "operands": 34144256
+    },
+    {
+      "source": 312,
+      "operands": 19791875,
+      "target": 311
+    },
+    {
+      "source": 313,
+      "operands": 34406400
+    },
+    {
+      "source": 314,
+      "operands": 33554432
+    },
+    {
+      "source": 315,
+      "operands": 34406400
+    },
+    {
+      "source": 316,
+      "operands": 27787264
+    },
+    {
+      "source": 317,
+      "operands": 34078720
+    },
+    {
+      "source": 284,
+      "operands": 655568,
+      "old_private_offset": 260,
+      "new_private_offset": 208
+    },
+    {
+      "source": 318,
+      "operands": 393428,
+      "old_private_offset": 212,
+      "new_private_offset": 212
+    },
+    {
+      "source": 319,
+      "operands": 262280,
+      "old_private_offset": 216,
+      "new_private_offset": 136
+    },
+    {
+      "source": 321,
+      "operands": 1987072
+    },
+    {
+      "source": 323,
+      "operands": 275072
+    },
+    {
+      "source": 143,
+      "operands": 524496,
+      "old_private_offset": 112,
+      "new_private_offset": 208
+    },
+    {
+      "source": 320,
+      "operands": 524504,
+      "old_private_offset": 220,
+      "new_private_offset": 216
+    },
+    {
+      "source": 322,
+      "operands": 393348,
+      "old_private_offset": 240,
+      "new_private_offset": 132
+    },
+    {
+      "source": 324,
+      "operands": 655572,
+      "old_private_offset": 212,
+      "new_private_offset": 212
+    },
+    {
+      "source": 325,
+      "operands": 655556,
+      "old_private_offset": 200,
+      "new_private_offset": 196
+    },
+    {
+      "source": 328,
+      "operands": 409856
+    },
+    {
+      "source": 326,
+      "operands": 524416,
+      "old_private_offset": 236,
+      "new_private_offset": 128
+    },
+    {
+      "source": 331,
+      "operands": 545152
+    },
+    {
+      "source": 327,
+      "operands": 262360,
+      "old_private_offset": 216,
+      "new_private_offset": 216
+    },
+    {
+      "source": 329,
+      "operands": 262344,
+      "old_private_offset": 232,
+      "new_private_offset": 200
+    },
+    {
+      "source": 330,
+      "operands": 655484,
+      "old_private_offset": 204,
+      "new_private_offset": 124
+    },
+    {
+      "source": 334,
+      "operands": 393412,
+      "old_private_offset": 220,
+      "new_private_offset": 196
+    },
+    {
+      "source": 332,
+      "operands": 393420,
+      "old_private_offset": 228,
+      "new_private_offset": 204
+    },
+    {
+      "source": 336,
+      "operands": 664064
+    },
+    {
+      "source": 333,
+      "operands": 262264,
+      "old_private_offset": 208,
+      "new_private_offset": 120
+    },
+    {
+      "source": 339,
+      "operands": 275072
+    },
+    {
+      "source": 335,
+      "operands": 524488,
+      "old_private_offset": 200,
+      "new_private_offset": 200
+    },
+    {
+      "source": 337,
+      "operands": 524400,
+      "old_private_offset": 112,
+      "new_private_offset": 112
+    },
+    {
+      "source": 338,
+      "operands": 393332,
+      "old_private_offset": 120,
+      "new_private_offset": 116
+    },
+    {
+      "source": 340,
+      "operands": 655564,
+      "old_private_offset": 204,
+      "new_private_offset": 204
+    },
+    {
+      "source": 343,
+      "operands": 38010880
+    },
+    {
+      "source": 341,
+      "operands": 570752
+    },
+    {
+      "source": 345,
+      "operands": 1581696
+    },
+    {
+      "source": 344,
+      "operands": 448128
+    },
+    {
+      "source": 346,
+      "operands": 38404096
+    },
+    {
+      "source": 347,
+      "operands": 38273024
+    },
+    {
+      "source": 348,
+      "operands": 573440
+    },
+    {
+      "source": 163,
+      "operands": 0
+    },
+    {
+      "source": 350,
+      "operands": 65330,
+      "target": 141
+    },
+    {
+      "source": 351,
+      "operands": 38273024
+    },
+    {
+      "source": 352,
+      "operands": 786640,
+      "old_private_offset": 212,
+      "new_private_offset": 208
+    },
+    {
+      "source": 353,
+      "operands": 25231360
+    },
+    {
+      "source": 354,
+      "operands": 721040,
+      "old_private_offset": 124,
+      "new_private_offset": 144
+    },
+    {
+      "source": 355,
+      "operands": 1573060,
+      "old_private_offset": 200,
+      "new_private_offset": 196
+    },
+    {
+      "source": 356,
+      "operands": 23134208
+    },
+    {
+      "source": 357,
+      "operands": 25821184
+    },
+    {
+      "source": 358,
+      "operands": 23724032
+    },
+    {
+      "source": 359,
+      "operands": 25231360
+    },
+    {
+      "source": 360,
+      "operands": 23134208
+    },
+    {
+      "source": 361,
+      "operands": 50397184
+    },
+    {
+      "source": 362,
+      "operands": 1638540,
+      "old_private_offset": 116,
+      "new_private_offset": 140
+    },
+    {
+      "source": 363,
+      "operands": 52494336
+    },
+    {
+      "source": 364,
+      "operands": 51249152
+    },
+    {
+      "source": 365,
+      "operands": 53346304
+    },
+    {
+      "source": 366,
+      "operands": 50397184
+    },
+    {
+      "source": 367,
+      "operands": 52494336
+    },
+    {
+      "source": 368,
+      "operands": 39190528
+    },
+    {
+      "source": 369,
+      "operands": 39059456
+    },
+    {
+      "source": 370,
+      "operands": 131072
+    },
+    {
+      "source": 371,
+      "operands": 100,
+      "old_private_offset": 100,
+      "new_private_offset": 100
+    },
+    {
+      "source": 372,
+      "operands": 1310744,
+      "old_private_offset": 24,
+      "new_private_offset": 24
+    },
+    {
+      "source": 373,
+      "operands": 1441824,
+      "old_private_offset": 32,
+      "new_private_offset": 32
+    },
+    {
+      "source": 374,
+      "operands": 1572904,
+      "old_private_offset": 40,
+      "new_private_offset": 40
+    },
+    {
+      "source": 375,
+      "operands": 1703984,
+      "old_private_offset": 48,
+      "new_private_offset": 48
+    },
+    {
+      "source": 376,
+      "operands": 1835064,
+      "old_private_offset": 56,
+      "new_private_offset": 56
+    },
+    {
+      "source": 377,
+      "operands": 1966144,
+      "old_private_offset": 64,
+      "new_private_offset": 64
+    },
+    {
+      "source": 378,
+      "operands": 1048648,
+      "old_private_offset": 72,
+      "new_private_offset": 72
+    },
+    {
+      "source": 379,
+      "operands": 1114188,
+      "old_private_offset": 76,
+      "new_private_offset": 76
+    },
+    {
+      "source": 380,
+      "operands": 1179728,
+      "old_private_offset": 80,
+      "new_private_offset": 80
+    },
+    {
+      "source": 381,
+      "operands": 1245268,
+      "old_private_offset": 84,
+      "new_private_offset": 84
+    },
+    {
+      "source": 382,
+      "operands": 1310808,
+      "old_private_offset": 88,
+      "new_private_offset": 88
+    },
+    {
+      "source": 383,
+      "operands": 1376348,
+      "old_private_offset": 92,
+      "new_private_offset": 92
+    },
+    {
+      "source": 384,
+      "operands": 1441888,
+      "old_private_offset": 96,
+      "new_private_offset": 96
+    },
+    {
+      "source": 385,
+      "operands": 0
+    },
+    {
+      "source": 386,
+      "operands": 288,
+      "old_private_offset": 288,
+      "new_private_offset": 288
+    }
+  ],
+  "omitted": [
+    121,
+    257,
+    342,
+    349
+  ],
+  "omitted_words": [
+    "0xc644005c",
+    "0x0",
+    "0xe7a400d0",
+    "0x0"
+  ],
+  "candidate_words": 387,
+  "retail_words": 383
+}
