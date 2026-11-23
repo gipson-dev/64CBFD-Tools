@@ -20,8 +20,8 @@ def program():
  body=p.MANIFEST['body'].replace('func_15195FF0(','subject(')
  src='#include <ultra64.h>\n'+r'''
 typedef struct Association Association;
-typedef struct Node {s32 previous;struct Node *next;s16 key,width,height;u16 u,v;s8 speedU,speedV;u8 maxTile,gap[3];Association *links;s16 primary[5],secondary[5];u8 primaryTiles[5],secondaryTiles[5],tail[198];} Node;
-struct Association {u8 reserved[8];s32 list;u16 index;u8 count,pad;Association *next;u8 tail[12];};
+typedef struct Node {s32 previous;u8 *next;s16 key,width,height;u16 u,v;s8 speedU,speedV;u8 maxTile,gap[3],*links;s16 primary[5],secondary[5];u8 primaryTiles[5],secondaryTiles[5],tail[198];} Node;
+struct Association {u8 reserved[8];s32 list;u16 index;u8 count,pad;u8 *next;u8 tail[12];};
 _Static_assert(sizeof(void*)==4&&sizeof(long)==4&&sizeof(Node)==256&&sizeof(Association)==32&&__builtin_offsetof(Node,u)==0xe&&__builtin_offsetof(Node,links)==0x18&&__builtin_offsetof(Node,primary)==0x1c&&__builtin_offsetof(Node,secondary)==0x26&&__builtin_offsetof(Node,primaryTiles)==0x30&&__builtin_offsetof(Node,secondaryTiles)==0x35&&__builtin_offsetof(Association,next)==0x10,"SDK32 texture record/list layout");
 typedef struct {u32 list,index,value;} Patch;
 typedef struct {u32 seed,count,gate,delta,width,height,u,v,speedU,speedV,tiles,primary,secondary,links,want[6],patches;Patch patch[312];} Vector;
@@ -38,9 +38,9 @@ static int run(void){u32 k,i,j,b,a,index,byte,value;Node*n;Association*l;const V
   for(i=0;i<sizeof(nodes);i++)((u8*)nodes)[i]=(u8)(i*29+v->seed*11+0x51);
   for(i=0;i<sizeof(links);i++)((u8*)links)[i]=(u8)(i*29+v->seed*11+0x51);
   for(i=0;i<3;i++){
-   n=&nodes[i];n->next=i+1<v->count?&nodes[i+1]:0;n->width=(s16)v->width;n->height=(s16)v->height;n->u=(u16)v->u;n->v=(u16)v->v;n->speedU=(s8)v->speedU;n->speedV=(s8)v->speedV;n->maxTile=(u8)v->tiles;n->links=v->links?&links[i*3]:0;
+   n=&nodes[i];n->next=i+1<v->count?(u8*)&nodes[i+1]:0;n->width=(s16)v->width;n->height=(s16)v->height;n->u=(u16)v->u;n->v=(u16)v->v;n->speedU=(s8)v->speedU;n->speedV=(s8)v->speedV;n->maxTile=(u8)v->tiles;n->links=v->links?(u8*)&links[i*3]:0;
    for(j=0;j<5;j++){index=2+j*24+i*160;n->primary[j]=(s16)(j<v->primary?index:0xffffffffu);n->secondary[j]=(s16)(j<v->secondary?index:0xffffffffu);n->primaryTiles[j]=(u8)((j+v->seed)%3?(v->tiles<8?v->tiles:8):0);n->secondaryTiles[j]=(u8)((j+v->seed)%4?(v->tiles<8?v->tiles:8):0);}
-   for(j=0;j<3;j++){l=&links[i*3+j];l->list=(s32)lists[2];l->index=(u16)(3+j*32+i*192);l->count=(u8)(j!=1?(v->tiles<8?v->tiles:8):0);l->next=j+1<v->links?&links[i*3+j+1]:0;}
+   for(j=0;j<3;j++){l=&links[i*3+j];l->list=(s32)lists[2];l->index=(u16)(3+j*32+i*192);l->count=(u8)(j!=1?(v->tiles<8?v->tiles:8):0);l->next=j+1<v->links?(u8*)&links[i*3+j+1]:0;}
    for(a=0;a<1024;a++){value=0;for(b=0;b<4;b++){byte=a*4+b;value=(value<<8)|((byte*13+v->seed*19+0xa3)&255);}lists[i][a]=value;}
   }
   copy(wantNodes,nodes,sizeof(nodes));copy(wantLinks,links,sizeof(links));copy(wantLists,lists,sizeof(lists));
