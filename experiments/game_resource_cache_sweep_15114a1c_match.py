@@ -5,6 +5,7 @@ ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2
 MANIFEST=json.loads(Path(__file__).with_name('game_resource_cache_sweep_15114a1c_manifest.json').read_text());OUT=ROOT/MANIFEST['build'];FUNCTION=MANIFEST['function'];sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 def installed():return sha(ROOT/MANIFEST['source'])==MANIFEST['selected_sha256']
 def prepare():
+ assert hashlib.sha256(MANIFEST['selected_caller_source'].encode()).hexdigest()==MANIFEST['selected_caller_sha256'],'Caller source pin is not canonical LF'
  live=installed();allowed={MANIFEST['source']:MANIFEST['selected_sha256'],MANIFEST['caller_source']:MANIFEST['selected_caller_sha256'],MANIFEST['object']:MANIFEST.get('padded_sha256'),'conker/build/conker.us.elf':MANIFEST.get('predicted_ELF_sha256'),'conker/retail_word_patches.us.csv':MANIFEST.get('selected_guards_sha256')}
  for n,d in MANIFEST['inputs'].items():
   f=OUT/'baseline'/n

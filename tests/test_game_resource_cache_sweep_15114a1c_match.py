@@ -1,5 +1,6 @@
 """Five bounded adoption gates for live resource-cache cleanup."""
 import unittest
+from unittest.mock import patch
 from tools.experiments import game_resource_cache_sweep_15114a1c_match as p
 from tools.experiments import game_resource_cache_sweep_15114a1c_qualification as q
 from tools.tests import game_resource_cache_sweep_15114a1c_guest as g
@@ -16,5 +17,7 @@ class ResourceCacheSweep(unittest.TestCase):
  def test_04_defined_native_SDK32_and_semantic_controls(self):
   v=n.main();self.assertEqual(set(v['profiles']),{'-O0','-O2','-O3'});self.assertTrue(all(x['cases']==576 and x['SDK32']and x['UBSan']and x['strict_aliasing']and x['typed_resource_and_pointer_arrays']for x in v['profiles'].values()));self.assertEqual(len(v['effective_source_controls']),7)
  def test_05_closed_guards_relocations_and_independent_proof_controls(self):
+  with patch.dict(p.MANIFEST,selected_caller_sha256='0'*64):
+   self.assertRaisesRegex(AssertionError,'Caller source pin',p.prepare)
   v=q.main();self.assertEqual((v['guards'],v['insertions'],v['omissions']),(92,2,0));self.assertEqual(v['effective_word_and_binding_guard_rejections'],220);self.assertEqual(v['source_binding_sites_covered'],18);self.assertEqual(v['GNU_target_links'],12);self.assertEqual(v['guest_rebase_runs'],64);self.assertEqual(len(v['effective_symbolic_controls']),15);self.assertTrue(v['independent_temporary_reallocation_accepted'])
 if __name__=='__main__':unittest.main(verbosity=2)
