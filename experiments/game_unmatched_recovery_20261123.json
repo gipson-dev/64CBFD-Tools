@@ -1,0 +1,65 @@
+{
+  "build": "conker/build/game-unmatched-recovery-20261123",
+  "consumer_baseline": "0305cd6c54490199cf033a2186cd44ef47a84c56",
+  "production_ELF_sha256": "370aca4f81e5197454282894dae2680d22f39bb10b442396fab8277cec9c5927",
+  "ROM_sha256": "f2ce85ad021adccf773bc62f847b4818bca5227bfdd5d14433231f8c663fd382",
+  "guards_sha256": "39c3fee6968ef420fea852480674567717b6c4f2228831a72eb4c0d027dbd685",
+  "targets": [
+    {
+      "function": "func_15195AA8",
+      "source": "conker/src/game/generated_1C2C60.c",
+      "asm": "conker/asm/1C2C60.s",
+      "original_words": 150,
+      "ROM": [
+        1847128,
+        1847728
+      ],
+      "body": "/* Register texture command indices in one of the record's five-slot arrays. */\nvoid *func_15195AA8(s32 displayList, s32 assetId, s32 doubleSize,\n                  s32 occurrence, s32 state, s32 secondary,\n                  s32 field12, s32 field13) {\n    s32 packedSize;\n    s32 index;\n    s32 searchOccurrence;\n    s32 tileCount;\n    s32 slot;\n    s32 packedScale;\n    u8 *record = NULL;\n\n    searchOccurrence = occurrence;\n    if (displayList == 0) {\n        return 0;\n    }\n    if (occurrence == -1) {\n        searchOccurrence = 0;\n    }\n    do {\n        index = func_15195868((u8 *)displayList, assetId, searchOccurrence, &tileCount);\n        if (index == -1) {\n            occurrence = 0;\n        } else {\n            if (assetId == 0) {\n                assetId = D_800E08F0;\n            }\n            record = (u8 *)D_800E08E8;\n            packedSize = *(s32 *)((u8 *)displayList + (index << 3) + 4);\n            packedScale = *(s32 *)((u8 *)displayList + (index << 3));\n            while (record != NULL && *(s16 *)(record + 8) != 0) {\n                record = *(u8 **)(record + 4);\n            }\n            if (record == NULL) {\n                record = (u8 *)func_15195984(assetId, packedSize, packedScale, doubleSize);\n                if (record != NULL) {\n                    record[0x12] = field12;\n                    record[0x13] = field13;\n                    state = 0;\n                } else {\n                    return 0;\n                }\n            } else {\n                index = func_15195A84(index, (s32)record, packedSize, doubleSize);\n                state = 0;\n            }\n            if (record[0x14] < tileCount) {\n                record[0x14] = tileCount;\n            }\n            searchOccurrence++;\n            if (secondary == 0) {\n                slot = state;\n                while (slot < 5 && ((s16 *)(record + 0x1C))[slot] != -1) {\n                    slot++;\n                }\n                if (slot < 5) {\n                    ((s16 *)(record + 0x1C))[slot] = index;\n                    record[0x30 + slot] = tileCount;\n                }\n            } else {\n                slot = state;\n                while (slot < 5 && ((s16 *)(record + 0x26))[slot] != -1) {\n                    slot++;\n                }\n                if (slot < 5) {\n                    ((s16 *)(record + 0x26))[slot] = index;\n                    record[0x35 + slot] = tileCount;\n                }\n            }\n        }\n    } while (occurrence == -1);\n    if (assetId == D_800E08F0) {\n        D_800E08F0--;\n    }\n    return record;\n}\n",
+      "declarations": "",
+      "before_source_sha256": "ac0ae1b2b5dca7d0bbc444b0623447feddbf2f018d1438109afa5ca4c4bb1b2d",
+      "original_asm_sha256": "540f52818bc616ff24520ea28277e70ec41dea676c9b54970271364c138f02c0",
+      "expected_screen": {
+        "words": 147,
+        "frame": 96,
+        "differences": 111,
+        "neighbors": 68,
+        "pools_equal": true,
+        "diagnostics_before": {},
+        "diagnostics_after": {}
+      },
+      "source_installed": false,
+      "matching_credit": 0,
+      "expected_raw_payload_sha256": "546054121161f9657a0130668abcb782e3dde0c2e9289e2079b215a5cf3cf915",
+      "expected_raw_bindings_sha256": "73b39b560c653372cf70ff49bc62c52c066b0cbd2b2107c493b8f4cafcce9051"
+    },
+    {
+      "function": "func_15022024",
+      "source": "conker/src/game/generated_49D30.c",
+      "asm": "conker/asm/49D30.s",
+      "original_words": 91,
+      "ROM": [
+        324820,
+        325184
+      ],
+      "body": "/* Find the actor's active group record and fill its two optional float pairs. */\ns32 func_15022024(f32 *first, f32 *second, s32 actorIndex, s32 group) {\n    s32 count;\n    s32 index;\n    u16 *active;\n    u8 *tag;\n    u8 *record;\n    f32 missing;\n\n    if (PAIR_GATE_49D30[group] != 1) {\n        return 0;\n    }\n    count = PAIR_COUNT_49D30[group];\n    index = 0;\n    if (count <= 0) {\n        return 0;\n    }\n    active = PAIR_ACTIVE_49D30[group];\n    do {\n        if (*active != 0) {\n            tag = PAIR_TAGS_49D30[group] + index * 8;\n            if (*(u16 *)tag == 2 &&\n                PAIR_ACTORS_49D30[actorIndex * 0x32C + 0x3B] == tag[2]) {\n                missing = D_80096A14;\n                first[1] = 0.0f;\n                second[1] = 0.0f;\n                first[0] = 0.0f;\n                second[0] = 0.0f;\n                record = PAIR_RECORDS_49D30[group] + index * 0x44;\n                if (*(f32 *)(record + 0x3C) != missing) {\n                    second[0] = *(f32 *)(record + 0x3C);\n                    second[1] = second[0];\n                    /* Retail reloads the table only after the output stores. */\n                    record = PAIR_RECORD_RELOAD_49D30(group) + index * 0x44;\n                }\n                if (*(f32 *)(record + 0x40) != missing) {\n                    first[0] = *(f32 *)(record + 0x40);\n                    first[1] = first[0];\n                }\n                return 1;\n            }\n        }\n        index++;\n        active++;\n    } while (index < count);\n    return 0;\n}\n",
+      "declarations": "extern f32 D_80096A14;\n#define PAIR_GATE_49D30 D_800C35EA\n#define PAIR_COUNT_49D30 D_800C363A\n#define PAIR_ACTIVE_49D30 D_800C35C8\n#define PAIR_TAGS_49D30 D_800C35F0\n#define PAIR_RECORDS_49D30 D_800C3958\n#define PAIR_RECORD_RELOAD_49D30(group) (((u8 *volatile *)D_800C3958)[group])\n#define PAIR_ACTORS_49D30 ((u8 *)D_800CC2D0)\n",
+      "before_source_sha256": "edf1fb08deacb759951f3d7153434ba04c24f2a933d5a594386ca7e04e293e9e",
+      "original_asm_sha256": "745b8aaa3c4871d74f21c6cf2479a494cb5e01bcb2df1486c8dbc56004c3ae41",
+      "expected_screen": {
+        "words": 87,
+        "frame": 8,
+        "differences": 90,
+        "neighbors": 56,
+        "pools_equal": true,
+        "diagnostics_before": {},
+        "diagnostics_after": {}
+      },
+      "source_installed": false,
+      "matching_credit": 0,
+      "expected_raw_payload_sha256": "98c4b906f6f2ead08efa9d0ebe1b49498b8f30f1ecbd4e68b4cdb094eacc4c74",
+      "expected_raw_bindings_sha256": "96a9e7cc1839a9e16c7f6672f6c7851c0dd3c77fee8a26b9643ec6947781f91b"
+    }
+  ],
+  "source_installed": false,
+  "matching_credit": 0
+}
