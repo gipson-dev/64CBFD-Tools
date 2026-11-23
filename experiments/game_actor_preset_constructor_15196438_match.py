@@ -6,6 +6,9 @@ MANIFEST=json.loads(Path(__file__).with_name('game_actor_preset_constructor_1519
 def installed():return sha(ROOT/MANIFEST['source'])==MANIFEST['selected_sha256']
 def prepare():
  live=installed();allowed={**MANIFEST['selected_source_hashes'],MANIFEST['object']:MANIFEST.get('padded_sha256'),'conker/build/conker.us.elf':MANIFEST.get('predicted_ELF_sha256'),'conker/retail_word_patches.us.csv':MANIFEST.get('selected_guards_sha256')}
+ if live:
+  from tools.experiments.game_actor_preset_constructor_15196438_debugger import audit
+  checked=audit();allowed[checked['object']]=checked['after_sha256']
  for n,d in MANIFEST['inputs'].items():
   frozen=OUT/'baseline'/n
   if frozen.is_file():assert sha(frozen)==d,('Frozen input changed',n)
@@ -43,6 +46,8 @@ def qualify():
  prepare();inspect_source()
  from tools.experiments import game_actor_preset_constructor_15196438_abi as abi
  abi.main()
+ from tools.experiments import game_actor_preset_constructor_15196438_debugger as debugger
+ debugger.main()
  from tools.experiments import game_actor_preset_constructor_15196438_make as make
  from tools.experiments import game_actor_preset_constructor_15196438_image as image
  make.main();q=image.main();assert q['predicted_ELF_sha256']==MANIFEST['predicted_ELF_sha256']and q['exclusions']==0 and q['metadata_permuted_records']==MANIFEST['metadata_permuted_records']
