@@ -29,7 +29,7 @@ f32 D_800A0490;
 static u8 owner[64],alternate[64];static const Row *c;static int bad,stage,draw,submitted;static u32 failed_case,failed_at,failed_value,failed_expected;
 static u32 integer(const u8 *v,int n){u32 result=0;for(int i=n-1;i>=0;i--)result=(result<<8)|v[i];return result;}
 static void store_float(u32 b){union{u32 i;f32 f;}v;v.i=b;D_800A0490=v.f;}
-void func_1516962C(s32 kind,u8 *actor,s32 flags){
+void func_1516962C(s32 kind,void *actorPointer,u8 flags){u8 *actor=actorPointer;
  if(stage++!=0||kind!=0x29||actor!=owner||flags!=0x12)bad=1;
  if(c->mode&1){owner[0x3B]^=0x55;store_float(c->coefficient^0x80000000U);}
 }
