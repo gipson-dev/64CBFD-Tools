@@ -1,4 +1,4 @@
-"""Effect floor query and conditional contact submission."""
+"""Restore actors referenced by live enabled group records."""
 from pathlib import Path
 import csv,hashlib,io,json,os,struct
 ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve();TOOLROOT=Path(__file__).resolve().parents[1]
