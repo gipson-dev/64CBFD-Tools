@@ -119,21 +119,21 @@ def faults():
  q=dict(four_stream_full_state_and_dispatched_access_prefixes=count,portable_C_fault_claim=False);(o/'faults.json').write_bytes((json.dumps(q,indent=2)+'\n').encode());return q
 def callers():
  rom=(r/'conker/conker.us.bin').read_bytes();rows=[]
- for begin,end,n,result,flag in((0x150261ac,0x150265b4,4,1,False),(0x1509fb28,0x1509fdf8,4,0,False),(0x1509fba0,0x1509fdf8,9,0,True)):
+ for begin,end,n,result,flag in((0x150261ac,0x150265b4,4,1,False),(0x1509fb28,0x1509fdf8,4,0,False),(0x1509fba0,S['func_150AE280'],7,None,True)):
   cases_run=0
   for arg in(0,256,-1,-2147483648):
    c=Case(defer=arg if begin==0x1509fb28 else 0,seed=1);initial=fixture(c);put(initial,SCRIPT+8,arg);fragment=struct.unpack_from('>'+str(n)+'I',rom,begin-0x15000000+0x2d4b0)
    if flag:put(initial,S['D_8008FDC0'],read(initial,S['D_8008FDC0'],2)|0x8000,2)
    expected,calls=reference(initial,c)
-   if flag:put(expected,MARK+4,0x2468ace0);calls.append((S['func_150AE280'],()))
+   if flag:calls.append((S['func_150AE280'],()))
    models=[]
    for ws in streams().values():
     code=dict(zip(range(ENTRY,ENTRY+404,4),ws));code[end]=0;m=Oracle(fragment,fixture(c),c,entry=begin,connected=code);put(m.memory,SCRIPT+8,arg);m.r[16]=SCRIPT;m.r[5]=S['D_8008FDC0'];m.r[4]=0x12345678;m.before=m.r[:];m.code=WindowCode(m.code,m);m.code.ends=(end,)
     try:m.run()
     except WindowBoundary:pass
     else:raise AssertionError('Caller continuation not reached')
-    assert public(m.memory)==public(expected);assert m.calls==[(ENTRY,(u32(c.defer),)),*calls];assert m.r[2]==result and m.r[29]==m.entry_sp;assert m.r[31]==(0x1509fbbc if flag else begin+8);assert m.r[16:24]==m.before[16:24]and m.f[20:]==m.fp_before[20:];models.append(m)
+    assert public(m.memory)==public(expected);assert m.calls==[(ENTRY,(u32(c.defer),)),*calls];assert (result is None or m.r[2]==result)and m.r[29]==m.entry_sp;assert m.r[31]==(0x1509fbbc if flag else begin+8);assert m.r[16:24]==m.before[16:24]and m.f[20:]==m.fp_before[20:];models.append(m)
    assert all(state(x)==state(models[0])for x in models[1:]);cases_run+=1
-  rows.append(dict(start=hex(begin),original_words=n,cases_per_stream=cases_run))
- q=dict(windows=rows,complete_dispatcher_claim=False,void_target_result_ignored=True,full_script_argument=True,second_helper_opaque=True);(o/'callers.json').write_bytes((json.dumps(q,indent=2)+'\n').encode());return q
+  rows.append(dict(start=hex(begin),original_words=n,cases_per_stream=cases_run,boundary='stack-switch helper entry'if flag else'caller branch continuation',callee_body_executed=False if flag else None))
+ q=dict(windows=rows,complete_dispatcher_claim=False,void_target_result_ignored=True,full_script_argument=True,stack_switch_body_executed=False,stack_switch_return_assumed=False);(o/'callers.json').write_bytes((json.dumps(q,indent=2)+'\n').encode());return q
 if __name__=='__main__':main();print(faults());print(callers())
