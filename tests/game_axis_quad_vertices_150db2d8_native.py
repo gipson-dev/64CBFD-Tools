@@ -1,0 +1,38 @@
+"""Typed actual quad C, separate pointer-output providers and finite FP arenas."""
+from pathlib import Path
+import hashlib,json,struct,subprocess
+from tools.experiments import game_axis_quad_vertices_150db2d8_match as target_packet
+o=target_packet.OUT
+def main():
+ source=(o/'selected-owner.c').read_text();body=target_packet.MANIFEST['native_body'];types=target_packet.MANIFEST['native_types'];assert source.count(body.rstrip())==1 and types in source
+ header='typedef unsigned char u8;typedef unsigned short u16;typedef short s16;typedef unsigned int u32;typedef int s32;typedef float f32;typedef union{struct{s16 ob[3];u16 flag;s16 tc[2];u8 cn[4];}v;unsigned long long forceAlign;}Vtx;\n#define NULL ((void*)0)\n'+types+'Vtx *func_150DB2D8(AxisQuadOwner150DB2D8*,s16);\n'
+ header+='typedef char Layout[sizeof(void*)==4&&sizeof(Vtx)==16&&sizeof(AxisQuadOwner150DB2D8)==272&&__builtin_offsetof(AxisQuadOwner150DB2D8,vertexTemplate)==192&&__builtin_offsetof(AxisQuadOwner150DB2D8,buffers)==256?1:-1];\n'
+ header+='typedef struct{u32 before[4];AxisQuadOwner150DB2D8 owner;u32 gap[4];Vtx buffer[20],alternate[20];u32 after[4];}Data;typedef struct{u32 count,metadata[3][6];}Observation;extern Data data;extern Observation observation;extern u32 mode,success,fresh,page,copies;extern s16 currentView;\n';(o/'native-shared.h').write_text(header)
+ provider=r'''
+static Vtx **cursorSlot;
+void func_151D5D60(void*p,s16 view,s32 n,Vtx**out,u8*isFresh){u32 k=observation.count++;observation.metadata[k][0]=0x151D5D60;observation.metadata[k][1]=(u32)p;observation.metadata[k][2]=(u32)(s32)view;observation.metadata[k][3]=(u32)n;observation.metadata[k][4]=0x200;observation.metadata[k][5]=0x201;cursorSlot=out;*out=success?data.buffer+(page?0:4):NULL;*isFresh=(u8)fresh;}
+void *memcpy(void*dest,const void*source,u32 n){u32 i,k=observation.count++;u8*d=dest;const u8*s=source;observation.metadata[k][0]=0x10022EC0;observation.metadata[k][1]=(u32)dest;observation.metadata[k][2]=(u32)source;observation.metadata[k][3]=n;for(i=0;i<n;i++)d[i]=s[i];copies++;if(copies==1){if(mode&1){data.owner.buffers[currentView]=(u8*)data.alternate;data.owner.halfWidth=-4.75f;}if(mode&2)*cursorSlot=data.alternate+4;}return dest;}
+''';(o/'native-provider.c').write_text('#include "native-shared.h"\n'+provider)
+ harness=r'''
+Data data;Observation observation;u32 mode,success,fresh,page,copies;static u32 row;s16 currentView;
+typedef struct{Data data;Observation observation;u32 CSR,value,copies;}Capture;static Capture actual,current;
+static u32 equal(const void*a,const void*b,u32 n){u32 i;for(i=0;i<n;i++)if(((const u8*)a)[i]!=((const u8*)b)[i])return 0;return 1;}
+__attribute__((noinline,noclone))static u32 csr(void){u32 v;__asm__ volatile("stmxcsr %0":"=m"(v)::"memory");return v;}
+static void setCSR(u32 v){__asm__ volatile("ldmxcsr %0"::"m"(v):"memory");}
+__attribute__((noinline,noclone))static Vtx*reference(AxisQuadOwner150DB2D8*p,s16 view){Vtx*cursor,*first;u8 created;f32 dx,dz;u32 i;func_151D5D60(p->buffers,view,64,&cursor,&created);first=cursor;if(!cursor)return NULL;if(created){memcpy(p->buffers[view],p->vertexTemplate,64);memcpy(p->buffers[view]+64,p->vertexTemplate,64);}dx=p->halfWidth*p->axisX;dz=-p->halfWidth*p->axisZ;for(i=0;i<4;i++){cursor[i].v.ob[0]=(s16)(s32)(i<2?p->x+dx:p->x-dx);cursor[i].v.ob[1]=(s16)(s32)(i==0||i==3?p->y+p->halfHeight:p->y-p->halfHeight);cursor[i].v.ob[2]=(s16)(s32)(i<2?p->z+dz:p->z-dz);cursor[i].v.flag=0;}return first;}
+static void fixture(void){u32 i;static const u32 modes[]={0,3,2,1};static const f32 widths[]={0.f,-0.f,1.25f,-2.75f,32767.75f,65536.5f,-65536.5f,17.f};for(i=0;i<sizeof(data);i++)((u8*)&data)[i]=(u8)(i*19+row);for(i=0;i<sizeof(observation);i++)((u8*)&observation)[i]=0;for(i=0;i<sizeof(current);i++)((u8*)&current)[i]=0;
+ data.owner.halfWidth=widths[row&7];data.owner.halfHeight=widths[(row>>3)&7];data.owner.x=10.5f;data.owner.y=-12.25f;data.owner.z=3.75f;data.owner.axisX=(row&64)?-.25f:.75f;data.owner.axisZ=(row&128)?-1.f:1.f;for(i=0;i<4;i++)data.owner.buffers[i]=(u8*)data.buffer;
+ currentView=(s16)((row>>6)&3);success=(row>>8)&1;fresh=(row>>9)&1;page=(row>>10)&1;mode=(row>>11)&3;copies=0;if(!success&&(row&16))currentView=(s16)(0x8000u|row);setCSR(0x1f80u|(modes[(row>>4)&3]<<13));}
+static void capture(Vtx*p){current.CSR=csr();current.data=data;current.observation=observation;current.value=(u32)p;current.copies=copies;}
+static s32 fail(void){u32 msg[4]={row,current.observation.count,current.value^actual.value,current.CSR^actual.CSR};__asm__ volatile("int $0x80"::"a"(4),"b"(1),"c"(msg),"d"(sizeof(msg)):"memory");return 42;}
+static s32 main(void){for(row=0;row<8192;row++){fixture();capture(func_150DB2D8(&data.owner,currentView));actual=current;fixture();capture(reference(&data.owner,currentView));if(!equal(&actual,&current,sizeof(actual)))return fail();}return 0;}
+__attribute__((force_align_arg_pointer,noreturn))void _start(void){s32 result=main();__asm__ volatile("int $0x80"::"a"(1),"b"(result):"memory");__builtin_unreachable();}
+''';(o/'native-harness.c').write_text('#include "native-shared.h"\n'+harness)
+ flags=['cc','-m32','-std=gnu99','-ffreestanding','-fno-builtin','-nostdlib','-static','-fno-pie','-no-pie','-fno-stack-protector','-msse2','-mfpmath=sse','-ffp-contract=off','-fexcess-precision=standard','-frounding-math','-ftrapping-math','-fno-fast-math','-fstrict-aliasing','-fsanitize=undefined','-fno-sanitize-recover=all','-fsanitize-undefined-trap-on-error','-flto','-Werror=lto-type-mismatch','-Wall','-Wextra','-Werror','-Wno-misleading-indentation']
+ def run(name,text,opt,expected):
+  path=o/(name+'.c');path.write_text('#include "native-shared.h"\n'+text+'\n');exe=o/(name+'.exe');q=subprocess.run([*flags,opt,str(path),str(o/'native-provider.c'),str(o/'native-harness.c'),'-o',str(exe)],capture_output=True,text=True);(o/(name+'-compile.txt')).write_text(q.stdout+q.stderr);assert q.returncode==0,(name,q.stdout,q.stderr);q=subprocess.run([str(exe)],capture_output=True,timeout=30);diagnostic=list(struct.unpack('<4I',q.stdout))if len(q.stdout)==16 else q.stdout.hex();report=dict(profile=opt,comparison_exit=q.returncode,diagnostic=diagnostic,source_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest());assert q.returncode==expected,(name,report);return report
+ profiles=[run('native-'+opt,body,'-'+opt,0)for opt in('O0','O2','O3')];controls=[]
+ for name,old,new in [('allocation-size','view, 0x40, &cursor','view, 0x20, &cursor'),('view','owner->buffers, view,','owner->buffers, (s16)(view + 1),'),('second-copy','owner->buffers[view] + 0x40','owner->buffers[view] + 0x30'),('depth','depth = -owner->halfWidth','depth = owner->halfWidth'),('corner','cursor[3].v.ob[1] = (s32)(owner->y +','cursor[3].v.ob[1] = (s32)(owner->y -'),('flag','.v.flag = 0;','.v.flag = 1;'),('return','return first;','return first + 1;')]:
+  assert old in body,name;controls.append(dict(name=name,**run('control-'+name,body.replace(old,new),'-O2',42)))
+ q=dict(cases_per_profile=8192,profiles=profiles,translation_units=3,actual_recovered_C_in_typed_owner272_and_vertex16=True,pointer_output_freshness_template_reloads_and_cursor_redirection_qualified=True,negative_s16_view_only_on_null_path=True,finite_s32_conversion_range=True,all_four_rounding_modes=True,full_owner_two_buffers_canaries_provider_metadata_return_and_MXCSR_equal=True,strict_aliasing_UBSan_traps_LTO_types=True,opaque_providers_not_original_backend_implementation=True,no_trap_or_signal_counted_as_control=True,effective_controls=controls,source_installed=target_packet.installed(),matching_credit=0);(o/'native.json').write_text(json.dumps(q,indent=2)+'\n');print(json.dumps(q),flush=True);return q
+if __name__=='__main__':main()
