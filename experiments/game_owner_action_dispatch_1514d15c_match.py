@@ -1,4 +1,4 @@
-"""Direct121word randomized billboard extents and animation-rate recovery."""
+"""Direct 109-word owner action dispatcher and qualified byte-return interface."""
 from pathlib import Path
 import csv,hashlib,io,json,os,struct,subprocess,sys
 ROOT=Path(os.environ.get('CBFD_CONSUMER_ROOT',Path(__file__).resolve().parents[2])).resolve();TOOLROOT=Path(__file__).resolve().parents[1];MANIFEST=json.loads(Path(__file__).with_name('game_owner_action_dispatch_1514d15c_manifest.json').read_bytes());OUT=ROOT/MANIFEST['build'];FUNCTION=MANIFEST['function'];ENTRY=0x1514D15C;ROM=0x17A60C;WORDS=109
